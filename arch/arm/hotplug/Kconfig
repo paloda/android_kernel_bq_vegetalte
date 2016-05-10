@@ -43,17 +43,3 @@ config ZEN_DECISION
 
 	  If unsure, say N.
 
-config BRICKED_HOTPLUG
-	   bool "Enable kernel based mpdecision"
-	   depends on MSM_RUN_QUEUE_STATS
-	   default y
-	   help
-		 This enables kernel based multi core control.
-
-config MAKO_HOTPLUG
-        bool "Mako Hotplug"
-        default n
-        help
-        Mako Hotplug: A custom hotplug by fransico franco
-
-
