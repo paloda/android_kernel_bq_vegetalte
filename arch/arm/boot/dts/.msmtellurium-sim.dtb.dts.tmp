@@ -1,0 +1,450 @@
+# 1 "arch/arm/boot/dts/qcom/msmtellurium-sim.dts"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "arch/arm/boot/dts/qcom/msmtellurium-sim.dts"
+# 14 "arch/arm/boot/dts/qcom/msmtellurium-sim.dts"
+/dts-v1/;
+
+# 1 "arch/arm/boot/dts/qcom/msmtellurium.dtsi" 1
+# 14 "arch/arm/boot/dts/qcom/msmtellurium.dtsi"
+# 1 "arch/arm/boot/dts/qcom/skeleton64.dtsi" 1
+
+
+
+
+
+
+/ {
+ #address-cells = <2>;
+ #size-cells = <2>;
+ cpus { };
+ soc { };
+ chosen { };
+ aliases { };
+ memory { device_type = "memory"; reg = <0 0 0 0>; };
+};
+# 15 "arch/arm/boot/dts/qcom/msmtellurium.dtsi" 2
+
+/ {
+ model = "Qualcomm Technologies, Inc. MSM Tellurium";
+ compatible = "qcom,msmtellurium";
+ qcom,msm-id = <264 0x0>;
+ interrupt-parent = <&intc>;
+
+ memory {
+  #address-cells = <2>;
+  #size-cells = <2>;
+
+  modem_mem: modem_region@0 {
+   linux,reserve-contiguous-region;
+   linux,reserve-region;
+   linux,remove-completely;
+   reg = <0x0 0x86800000 0x0 0x03a00000>;
+   label = "modem_mem";
+  };
+
+  reloc_mem: reloc_region@0 {
+   linux,reserve-contiguous-region;
+   linux,reserve-region;
+   linux,remove-completely;
+   reg = <0x0 0x8a200000 0x0 0x1500000>;
+   label = "reloc_mem";
+  };
+
+  other_ext_mem: other_ext_region@0 {
+   linux,reserve-contiguous-region;
+   linux,reserve-region;
+   linux,remove-completely;
+   reg = <0x0 0x86000000 0x0 0x0800000>;
+   label = "other_ext_mem";
+  };
+
+  venus_mem: venus_region@0 {
+   linux,reserve-contiguous-region;
+   linux,memory-limit = <0x90000000>;
+   reg = <0 0 0 0x0500000>;
+   label = "venus_mem";
+  };
+
+  secure_mem: secure_region@0 {
+   linux,reserve-contiguous-region;
+   reg = <0 0 0 0x6D00000>;
+   label = "secure_mem";
+  };
+
+  qseecom_mem: qseecom_region@0 {
+   linux,reserve-contiguous-region;
+   reg = <0 0 0 0x1000000>;
+   label = "qseecom_mem";
+  };
+
+  audio_mem: audio_region@0 {
+   linux,reserve-contiguous-region;
+   reg = <0 0 0 0x314000>;
+   label = "audio_mem";
+  };
+ };
+
+ soc: soc { };
+};
+
+# 1 "arch/arm/boot/dts/qcom/msmtellurium-ion.dtsi" 1
+# 13 "arch/arm/boot/dts/qcom/msmtellurium-ion.dtsi"
+&soc {
+ qcom,ion {
+  compatible = "qcom,msm-ion";
+  #address-cells = <1>;
+  #size-cells = <0>;
+
+  qcom,ion-heap@25 {
+   reg = <25>;
+   qcom,ion-heap-type = "SYSTEM";
+  };
+
+  qcom,ion-heap@21 {
+   reg = <21>;
+   qcom,ion-heap-type = "SYSTEM_CONTIG";
+  };
+
+  qcom,ion-heap@8 {
+   compatible = "qcom,msm-ion-reserve";
+   reg = <8>;
+   qcom,heap-align = <0x1000>;
+   linux,contiguous-region = <&secure_mem>;
+   qcom,ion-heap-type = "SECURE_DMA";
+  };
+
+  qcom,ion-heap@27 {
+   compatible = "qcom,msm-ion-reserve";
+   reg = <27>;
+   linux,contiguous-region = <&qseecom_mem>;
+   qcom,ion-heap-type = "DMA";
+  };
+
+  qcom,ion-heap@28 {
+   compatible = "qcom,msm-ion-reserve";
+   reg = <28>;
+   linux,contiguous-region = <&audio_mem>;
+   qcom,ion-heap-type = "DMA";
+  };
+
+  qcom,ion-heap@23 {
+   compatible = "qcom,msm-ion-reserve";
+   reg = <23>;
+   linux,contiguous-region = <&reloc_mem>;
+   qcom,ion-heap-type = "DMA";
+  };
+
+  qcom,ion-heap@26 {
+   compatible = "qcom,msm-ion-reserve";
+   reg = <26>;
+   linux,contiguous-region = <&modem_mem>;
+   qcom,ion-heap-type = "DMA";
+  };
+ };
+};
+# 80 "arch/arm/boot/dts/qcom/msmtellurium.dtsi" 2
+# 1 "arch/arm/boot/dts/qcom/msm8939-cpu.dtsi" 1
+# 13 "arch/arm/boot/dts/qcom/msm8939-cpu.dtsi"
+/ {
+ cpus {
+  #address-cells = <1>;
+  #size-cells = <0>;
+  cpu-map {
+   cluster0 {
+    core0 {
+     cpu = <&CPU4>;
+    };
+    core1 {
+     cpu = <&CPU5>;
+    };
+    core2 {
+     cpu = <&CPU6>;
+    };
+    core3 {
+     cpu = <&CPU7>;
+    };
+   };
+
+   cluster1 {
+    core0 {
+     cpu = <&CPU0>;
+    };
+    core1 {
+     cpu = <&CPU1>;
+    };
+    core2 {
+     cpu = <&CPU2>;
+    };
+    core3 {
+     cpu = <&CPU3>;
+    };
+   };
+  };
+
+  CPU0: cpu@100 {
+   device_type = "cpu";
+   compatible = "arm,cortex-a53";
+   reg = <0x100>;
+   enable-method = "qcom,arm-cortex-acc";
+   qcom,acc = <&acc0>;
+   next-level-cache = <&L2_1>;
+   L2_1: l2-cache {
+         compatible = "arm,arch-cache";
+         cache-level = <2>;
+         power-domain = <&l2ccc_1>;
+   };
+  };
+
+  CPU1: cpu@101 {
+   device_type = "cpu";
+   compatible = "arm,cortex-a53";
+   reg = <0x101>;
+   enable-method = "qcom,arm-cortex-acc";
+   qcom,acc = <&acc1>;
+   next-level-cache = <&L2_1>;
+  };
+
+  CPU2: cpu@102 {
+   device_type = "cpu";
+   compatible = "arm,cortex-a53";
+   reg = <0x102>;
+   enable-method = "qcom,arm-cortex-acc";
+   qcom,acc = <&acc2>;
+   next-level-cache = <&L2_1>;
+  };
+
+  CPU3: cpu@103 {
+   device_type = "cpu";
+   compatible = "arm,cortex-a53";
+   reg = <0x103>;
+   enable-method = "qcom,arm-cortex-acc";
+   qcom,acc = <&acc3>;
+   next-level-cache = <&L2_1>;
+  };
+
+  CPU4: cpu@0 {
+   device_type = "cpu";
+   compatible = "arm,cortex-a53";
+   reg = <0x0>;
+   enable-method = "qcom,arm-cortex-acc";
+   qcom,acc = <&acc4>;
+   next-level-cache = <&L2_0>;
+   L2_0: l2-cache {
+         compatible = "arm,arch-cache";
+         cache-level = <2>;
+         power-domain = <&l2ccc_0>;
+   };
+  };
+
+  CPU5: cpu@1 {
+   device_type = "cpu";
+   compatible = "arm,cortex-a53";
+   reg = <0x1>;
+   enable-method = "qcom,arm-cortex-acc";
+   qcom,acc = <&acc5>;
+   next-level-cache = <&L2_0>;
+  };
+
+  CPU6: cpu@2 {
+   device_type = "cpu";
+   compatible = "arm,cortex-a53";
+   reg = <0x2>;
+   enable-method = "qcom,arm-cortex-acc";
+   qcom,acc = <&acc6>;
+   next-level-cache = <&L2_0>;
+  };
+
+  CPU7: cpu@3 {
+   device_type = "cpu";
+   compatible = "arm,cortex-a53";
+   reg = <0x3>;
+   enable-method = "qcom,arm-cortex-acc";
+   qcom,acc = <&acc7>;
+   next-level-cache = <&L2_0>;
+  };
+ };
+};
+
+&soc {
+ l2ccc_0: clock-controller@b111000 {
+  compatible = "qcom,8916-l2ccc";
+  reg = <0x0b111000 0x1000>;
+ };
+
+ l2ccc_1: clock-controller@b011000 {
+  compatible = "qcom,8916-l2ccc";
+  reg = <0x0b011000 0x1000>;
+ };
+
+ acc0:clock-controller@b088000 {
+  compatible = "qcom,arm-cortex-acc";
+  reg = <0x0b088000 0x1000>;
+ };
+
+ acc1:clock-controller@b098000 {
+  compatible = "qcom,arm-cortex-acc";
+  reg = <0x0b098000 0x1000>;
+ };
+
+ acc2:clock-controller@b0a8000 {
+  compatible = "qcom,arm-cortex-acc";
+  reg = <0x0b0a8000 0x1000>;
+ };
+
+ acc3:clock-controller@b0b8000 {
+  compatible = "qcom,arm-cortex-acc";
+  reg = <0x0b0b8000 0x1000>;
+ };
+
+ acc4:clock-controller@b188000 {
+  compatible = "qcom,arm-cortex-acc";
+  reg = <0x0b188000 0x1000>;
+ };
+
+ acc5:clock-controller@b198000 {
+  compatible = "qcom,arm-cortex-acc";
+  reg = <0x0b198000 0x1000>;
+ };
+
+ acc6:clock-controller@b1a8000 {
+  compatible = "qcom,arm-cortex-acc";
+  reg = <0x0b1a8000 0x1000>;
+ };
+
+ acc7:clock-controller@b1b8000 {
+  compatible = "qcom,arm-cortex-acc";
+  reg = <0x0b1b8000 0x1000>;
+ };
+};
+# 81 "arch/arm/boot/dts/qcom/msmtellurium.dtsi" 2
+# 1 "arch/arm/boot/dts/qcom/msmtellurium-pinctrl.dtsi" 1
+# 14 "arch/arm/boot/dts/qcom/msmtellurium-pinctrl.dtsi"
+&soc {
+ tlmm_pinmux: pinctrl@1000000 {
+  compatible = "qcom,msm-tlmm-8916";
+  reg = <0x1000000 0x300000>;
+  interrupts = <0 208 0>;
+
+
+  gp: gp {
+   qcom,num-pins = <122>;
+   #qcom,pin-cells = <1>;
+   msm_gpio: msm_gpio {
+    compatible = "qcom,msm-tlmm-gp";
+    gpio-controller;
+    #gpio-cells = <2>;
+    interrupt-controller;
+    #interrupt-cells = <2>;
+    num_irqs = <122>;
+   };
+  };
+
+  pmx-uartconsole {
+   qcom,pins = <&gp 4>, <&gp 5>;
+   qcom,num-grp-pins = <2>;
+   qcom,pin-func = <2>;
+   label = "uart-console";
+   uart_console_sleep: uart-console {
+    drive-strength = <2>;
+    bias-pull-down;
+   };
+  };
+ };
+};
+# 82 "arch/arm/boot/dts/qcom/msmtellurium.dtsi" 2
+
+&soc {
+ #address-cells = <1>;
+ #size-cells = <1>;
+ ranges = <0 0 0 0xffffffff>;
+ compatible = "simple-bus";
+
+ intc: interrupt-controller@b000000 {
+  compatible = "qcom,msm-qgic2";
+  interrupt-controller;
+  #interrupt-cells = <3>;
+  reg = <0x0b000000 0x1000>,
+        <0x0b002000 0x1000>;
+ };
+
+ timer {
+  compatible = "arm,armv8-timer";
+  interrupts = <1 2 0xff08>,
+        <1 3 0xff08>,
+        <1 4 0xff08>,
+        <1 1 0xff08>;
+  clock-frequency = <19200000>;
+ };
+
+ timer@b120000 {
+  #address-cells = <1>;
+  #size-cells = <1>;
+  ranges;
+  compatible = "arm,armv7-timer-mem";
+  reg = <0xb120000 0x1000>;
+  clock-frequency = <19200000>;
+
+  frame@b121000 {
+   frame-number = <0>;
+   interrupts = <0 8 0x4>,
+         <0 7 0x4>;
+   reg = <0xb121000 0x1000>,
+         <0xb122000 0x1000>;
+  };
+
+  frame@b123000 {
+   frame-number = <1>;
+   interrupts = <0 9 0x4>;
+   reg = <0xb123000 0x1000>;
+   status = "disabled";
+  };
+
+  frame@b124000 {
+   frame-number = <2>;
+   interrupts = <0 10 0x4>;
+   reg = <0xb124000 0x1000>;
+   status = "disabled";
+  };
+
+  frame@b125000 {
+   frame-number = <3>;
+   interrupts = <0 11 0x4>;
+   reg = <0xb125000 0x1000>;
+   status = "disabled";
+  };
+
+  frame@b126000 {
+   frame-number = <4>;
+   interrupts = <0 12 0x4>;
+   reg = <0xb126000 0x1000>;
+   status = "disabled";
+  };
+
+  frame@b127000 {
+   frame-number = <5>;
+   interrupts = <0 13 0x4>;
+   reg = <0xb127000 0x1000>;
+   status = "disabled";
+  };
+
+  frame@b128000 {
+   frame-number = <6>;
+   interrupts = <0 14 0x4>;
+   reg = <0xb128000 0x1000>;
+   status = "disabled";
+  };
+ };
+
+ qcom,sps {
+  compatible = "qcom,msm_sps_4k";
+  qcom,pipe-attr-ee;
+ };
+};
+# 17 "arch/arm/boot/dts/qcom/msmtellurium-sim.dts" 2
+
+/ {
+ model = "Qualcomm Technologies, Inc. MSMTellurium Simulator";
+ compatible = "qcom,msmtellurium-sim", "qcom,msmtellurium", "qcom,sim";
+ qcom,board-id= <16 0>;
+};

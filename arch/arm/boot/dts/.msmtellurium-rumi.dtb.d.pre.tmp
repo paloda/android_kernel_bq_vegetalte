@@ -1,0 +1,6 @@
+msmtellurium-rumi.o: arch/arm/boot/dts/qcom/msmtellurium-rumi.dts \
+ arch/arm/boot/dts/qcom/msmtellurium.dtsi \
+ arch/arm/boot/dts/qcom/skeleton64.dtsi \
+ arch/arm/boot/dts/qcom/msmtellurium-ion.dtsi \
+ arch/arm/boot/dts/qcom/msm8939-cpu.dtsi \
+ arch/arm/boot/dts/qcom/msmtellurium-pinctrl.dtsi

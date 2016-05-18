@@ -1,0 +1,2 @@
+kernel/drivers/power/smb1360-charger-fg.ko
+kernel/drivers/power/battery_current_limit.ko

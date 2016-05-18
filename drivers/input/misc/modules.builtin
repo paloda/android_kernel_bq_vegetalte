@@ -1,0 +1,9 @@
+kernel/drivers/input/misc/hbtp_input.ko
+kernel/drivers/input/misc/uinput.ko
+kernel/drivers/input/misc/stk3x1x.ko
+kernel/drivers/input/misc/bstclass.ko
+kernel/drivers/input/misc/bma2x2.ko
+kernel/drivers/input/misc/bmm050_driver.ko
+kernel/drivers/input/misc/bmm050.ko
+kernel/drivers/input/misc/bmg160_driver.ko
+kernel/drivers/input/misc/bmg160.ko
