@@ -43,8 +43,15 @@ struct msm_isp_bufq *msm_isp_get_bufq(
 {
 	struct msm_isp_bufq *bufq = NULL;
 	uint32_t bufq_index = bufq_handle & 0xFF;
+<<<<<<< HEAD
 	if (bufq_index > buf_mgr->num_buf_q)
 		return bufq;
+=======
+
+	if ((bufq_handle == 0) ||
+		(bufq_index > buf_mgr->num_buf_q))
+		return NULL;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	bufq = &buf_mgr->bufq[bufq_index];
 	if (bufq->bufq_handle == bufq_handle)

@@ -35,7 +35,11 @@
 #ifdef FEATURE_WLAN_TDLS
 #define HDD_MAX_NUM_TDLS_STA ( 8 )
 #define TDLS_STA_INDEX_VALID(staId) \
+<<<<<<< HEAD
                           (((staId) >= 4) && ((staId) < 0xFF))
+=======
+                          (((staId) >= 3) && ((staId) < 0xFF))
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 #define TKIP_COUNTER_MEASURE_STARTED 1
 #define TKIP_COUNTER_MEASURE_STOPED  0 

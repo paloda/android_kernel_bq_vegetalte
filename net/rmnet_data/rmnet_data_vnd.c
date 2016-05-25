@@ -454,7 +454,10 @@ static int rmnet_vnd_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		break;
 
 	default:
+<<<<<<< HEAD
 		LOGH("Unkown IOCTL 0x%08X", cmd);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		rc = -EINVAL;
 	}
 

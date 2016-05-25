@@ -1354,6 +1354,7 @@ _request_firmware_nowait(
 	void *map_data)
 {
 	struct fw_desc *desc;
+<<<<<<< HEAD
 
 	if (dest_addr && !map_fw_mem)
 		return -EINVAL;
@@ -1364,6 +1365,18 @@ _request_firmware_nowait(
 	if (!desc)
 		return -ENOMEM;
 
+=======
+
+	if (dest_addr && !map_fw_mem)
+		return -EINVAL;
+	if (dest_addr && dest_size <= 0)
+		return -EINVAL;
+
+	desc = kzalloc(sizeof(struct fw_desc), gfp);
+	if (!desc)
+		return -ENOMEM;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	desc->module = module;
 	desc->name = name;
 	desc->device = device;
@@ -1376,12 +1389,21 @@ _request_firmware_nowait(
 	desc->map_fw_mem = map_fw_mem;
 	desc->unmap_fw_mem = unmap_fw_mem;
 	desc->map_data = map_data;
+<<<<<<< HEAD
 
 	if (!try_module_get(module)) {
 		kfree(desc);
 		return -EFAULT;
 	}
 
+=======
+
+	if (!try_module_get(module)) {
+		kfree(desc);
+		return -EFAULT;
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	get_device(desc->device);
 	INIT_WORK(&desc->work, request_firmware_work_func);
 	schedule_work(&desc->work);

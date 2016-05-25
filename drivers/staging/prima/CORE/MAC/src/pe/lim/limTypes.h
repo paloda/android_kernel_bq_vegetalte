@@ -670,7 +670,12 @@ void limProcessActionFrameNoSession(tpAniSirGlobal pMac, tANI_U8 *pRxMetaInfo);
 tSirRetStatus limPopulateMacHeader(tpAniSirGlobal, tANI_U8*, tANI_U8, tANI_U8, tSirMacAddr,tSirMacAddr);
 tSirRetStatus limSendProbeReqMgmtFrame(tpAniSirGlobal, tSirMacSSid *, tSirMacAddr, tANI_U8, tSirMacAddr, tANI_U32, tANI_U32, tANI_U8 *); 
 void limSendProbeRspMgmtFrame(tpAniSirGlobal, tSirMacAddr, tpAniSSID, short, tANI_U8, tpPESession, tANI_U8);
+<<<<<<< HEAD
 void limSendAuthMgmtFrame(tpAniSirGlobal, tSirMacAuthFrameBody *, tSirMacAddr, tANI_U8,tpPESession);
+=======
+void limSendAuthMgmtFrame(tpAniSirGlobal, tSirMacAuthFrameBody *, tSirMacAddr,
+                                             tANI_U8, tpPESession , tAniBool);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 void limSendAssocReqMgmtFrame(tpAniSirGlobal, tLimMlmAssocReq *,tpPESession);
 void limSendReassocReqMgmtFrame(tpAniSirGlobal, tLimMlmReassocReq *,tpPESession);
 #ifdef WLAN_FEATURE_VOWIFI_11R

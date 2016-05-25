@@ -48,6 +48,7 @@ module_param(allow_maxdown, bool, 0644);
 static struct cpufreq_driver *cpufreq_driver;
 static DEFINE_PER_CPU(struct cpufreq_policy *, cpufreq_cpu_data);
 static DEFINE_PER_CPU(struct cpufreq_policy *, cpufreq_cpu_data_fallback);
+<<<<<<< HEAD
 
 
 static DEFINE_PER_CPU(int, cpufreq_policy_cpu);
@@ -55,6 +56,10 @@ static DEFINE_PER_CPU(struct rw_semaphore, cpu_policy_rwsem);
 
 static DEFINE_RWLOCK(cpufreq_driver_lock);
 DEFINE_MUTEX(cpufreq_governor_lock);
+=======
+static DEFINE_RWLOCK(cpufreq_driver_lock);
+static DEFINE_MUTEX(cpufreq_governor_lock);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static LIST_HEAD(cpufreq_policy_list);
 
 #ifdef CONFIG_HOTPLUG_CPU
@@ -68,6 +73,7 @@ struct cpufreq_cpu_save_data {
 };
 static DEFINE_PER_CPU(struct cpufreq_cpu_save_data, cpufreq_policy_save);
 #endif
+<<<<<<< HEAD
 
 #define lock_policy_rwsem(mode, cpu)					\
 int lock_policy_rwsem_##mode						\
@@ -100,6 +106,14 @@ static inline bool has_target(void)
 	return cpufreq_driver->target_index || cpufreq_driver->target;
 }
 
+=======
+
+static inline bool has_target(void)
+{
+	return cpufreq_driver->target_index || cpufreq_driver->target;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*
  * rwsem to guarantee that cpufreq driver module doesn't unload during critical
  * sections
@@ -301,7 +315,12 @@ static void adjust_jiffies(unsigned long val, struct cpufreq_freqs *ci)
 		pr_debug("saving %lu as reference value for loops_per_jiffy; "
 			"freq is %u kHz\n", l_p_j_ref, l_p_j_ref_freq);
 	}
+<<<<<<< HEAD
 	if (val == CPUFREQ_POSTCHANGE && ci->old != ci->new) {
+=======
+	if ((val == CPUFREQ_POSTCHANGE && ci->old != ci->new) ||
+	    (val == CPUFREQ_RESUMECHANGE || val == CPUFREQ_SUSPENDCHANGE)) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		loops_per_jiffy = cpufreq_scale(l_p_j_ref, l_p_j_ref_freq,
 								ci->new);
 		pr_debug("scaling loops_per_jiffy to %lu "
@@ -379,6 +398,7 @@ void cpufreq_notify_transition(struct cpufreq_policy *policy,
 }
 EXPORT_SYMBOL_GPL(cpufreq_notify_transition);
 
+<<<<<<< HEAD
 /**
  * cpufreq_notify_utilization - notify CPU userspace about CPU utilization
  * change
@@ -392,6 +412,8 @@ void cpufreq_notify_utilization(struct cpufreq_policy *policy,
 	if (policy)
 		policy->util = util;
 }
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /*********************************************************************
  *                          SYSFS INTERFACE                          *
@@ -501,6 +523,9 @@ static ssize_t store_##file_name					\
 	if (ret)							\
 		return -EINVAL;						\
 									\
+	new_policy.min = new_policy.user_policy.min;			\
+	new_policy.max = new_policy.user_policy.max;			\
+									\
 	ret = sscanf(buf, "%u", &new_policy.object);			\
 	if (ret != 1)							\
 		return -EINVAL;						\
@@ -509,7 +534,12 @@ static ssize_t store_##file_name					\
 	if (ret)							\
 		pr_err("cpufreq: Frequency verification failed\n");	\
 									\
+<<<<<<< HEAD
 	policy->user_policy.object = new_policy.object;			\
+=======
+	policy->user_policy.min = new_policy.min;			\
+	policy->user_policy.max = new_policy.max;			\
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 									\
 	ret = cpufreq_set_policy(policy, &new_policy);		\
 									\
@@ -738,6 +768,26 @@ static struct attribute *default_attrs[] = {
 	NULL
 };
 
+<<<<<<< HEAD
+=======
+static struct kset *cpufreq_kset;
+struct kobject *cpufreq_global_kobject;
+EXPORT_SYMBOL(cpufreq_global_kobject);
+
+static bool cpu_frozen;
+static int cpufreq_uevent_filter(struct kset *kset, struct kobject *kobj)
+{
+	if (cpu_frozen)
+		return 0;
+	else
+		return 1;
+}
+
+static const struct kset_uevent_ops cpufreq_uevent_ops = {
+	.filter = cpufreq_uevent_filter,
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define to_policy(k) container_of(k, struct cpufreq_policy, kobj)
 #define to_attr(a) container_of(a, struct freq_attr, attr)
 
@@ -745,10 +795,22 @@ static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
 	struct cpufreq_policy *policy = to_policy(kobj);
 	struct freq_attr *fattr = to_attr(attr);
+<<<<<<< HEAD
 	ssize_t ret;
 
 	if (!down_read_trylock(&cpufreq_rwsem))
 		return -EINVAL;
+=======
+	ssize_t ret = -EINVAL;
+
+	get_online_cpus();
+
+	if (!cpu_online(policy->cpu))
+		goto unlock;
+
+	if (!down_read_trylock(&cpufreq_rwsem))
+		goto unlock;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	down_read(&policy->rwsem);
 
@@ -759,7 +821,12 @@ static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
 
 	up_read(&policy->rwsem);
 	up_read(&cpufreq_rwsem);
+<<<<<<< HEAD
 
+=======
+unlock:
+	put_online_cpus();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return ret;
 }
 
@@ -884,6 +951,7 @@ static int cpufreq_add_dev_interface(struct cpufreq_policy *policy,
 	int ret = 0;
 
 	/* prepare interface data */
+	policy->kobj.kset = cpufreq_kset;
 	ret = kobject_init_and_add(&policy->kobj, &ktype_cpufreq,
 				   &dev->kobj, "cpufreq");
 	if (ret)
@@ -1285,6 +1353,30 @@ static int cpufreq_nominate_new_policy_cpu(struct cpufreq_policy *policy,
 	return cpu_dev->id;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HOTPLUG_CPU
+static void update_related_cpus(struct cpufreq_policy *policy)
+{
+	unsigned int j;
+
+	for_each_cpu(j, policy->related_cpus) {
+		if (!cpufreq_driver->setpolicy)
+			strlcpy(per_cpu(cpufreq_policy_save, j).gov,
+				policy->governor->name, CPUFREQ_NAME_LEN);
+		per_cpu(cpufreq_policy_save, j).min = policy->user_policy.min;
+		per_cpu(cpufreq_policy_save, j).max = policy->user_policy.max;
+		pr_debug("Saving CPU%d user policy min %d and max %d\n",
+		 j, policy->user_policy.min, policy->user_policy.max);
+	}
+}
+#else
+static void update_related_cpus(struct cpufreq_policy *policy)
+{
+}
+#endif
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int __cpufreq_remove_dev_prepare(struct device *dev,
 					struct subsys_interface *sif,
 					bool frozen)
@@ -1319,6 +1411,7 @@ static int __cpufreq_remove_dev_prepare(struct device *dev,
 			return ret;
 		}
 	}
+<<<<<<< HEAD
 
 #ifdef CONFIG_HOTPLUG_CPU
 	if (!cpufreq_driver->setpolicy)
@@ -1329,11 +1422,19 @@ static int __cpufreq_remove_dev_prepare(struct device *dev,
 	pr_debug("Saving CPU%d user policy min %d and max %d\n",
 		 cpu, policy->user_policy.min, policy->user_policy.max);
 #endif
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	down_read(&policy->rwsem);
 	cpus = cpumask_weight(policy->cpus);
 	up_read(&policy->rwsem);
 
+<<<<<<< HEAD
+=======
+	if (cpus == 1)
+		update_related_cpus(policy);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (cpu != policy->cpu) {
 		sysfs_remove_link(&dev->kobj, "cpufreq");
 	} else if (cpus > 1) {
@@ -1360,10 +1461,17 @@ static int __cpufreq_remove_dev_finish(struct device *dev,
 	unsigned long flags;
 	struct cpufreq_policy *policy;
 
+<<<<<<< HEAD
 	read_lock_irqsave(&cpufreq_driver_lock, flags);
 	policy = per_cpu(cpufreq_cpu_data, cpu);
 	per_cpu(cpufreq_cpu_data, cpu) = NULL;
 	read_unlock_irqrestore(&cpufreq_driver_lock, flags);
+=======
+	write_lock_irqsave(&cpufreq_driver_lock, flags);
+	policy = per_cpu(cpufreq_cpu_data, cpu);
+	per_cpu(cpufreq_cpu_data, cpu) = NULL;
+	write_unlock_irqrestore(&cpufreq_driver_lock, flags);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (!policy) {
 		pr_debug("%s: No cpu_data found\n", __func__);
@@ -1399,12 +1507,21 @@ static int __cpufreq_remove_dev_finish(struct device *dev,
 		 */
 		if (cpufreq_driver->exit)
 			cpufreq_driver->exit(policy);
+<<<<<<< HEAD
 
 		/* Remove policy from list of active policies */
 		write_lock_irqsave(&cpufreq_driver_lock, flags);
 		list_del(&policy->policy_list);
 		write_unlock_irqrestore(&cpufreq_driver_lock, flags);
 
+=======
+
+		/* Remove policy from list of active policies */
+		write_lock_irqsave(&cpufreq_driver_lock, flags);
+		list_del(&policy->policy_list);
+		write_unlock_irqrestore(&cpufreq_driver_lock, flags);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (!frozen)
 			cpufreq_policy_free(policy);
 	} else {
@@ -1435,10 +1552,17 @@ static int cpufreq_remove_dev(struct device *dev, struct subsys_interface *sif)
 		return 0;
 
 	ret = __cpufreq_remove_dev_prepare(dev, sif, false);
+<<<<<<< HEAD
 
 	if (!ret)
 		ret = __cpufreq_remove_dev_finish(dev, sif, false);
 
+=======
+
+	if (!ret)
+		ret = __cpufreq_remove_dev_finish(dev, sif, false);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return ret;
 }
 
@@ -1482,6 +1606,7 @@ static void cpufreq_out_of_sync(unsigned int cpu, unsigned int old_freq,
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
 }
 
+<<<<<<< HEAD
 /**
  * cpufreq_quick_get_util - get the CPU utilization from policy->util
  * @cpu: CPU number
@@ -1503,6 +1628,8 @@ unsigned int cpufreq_quick_get_util(unsigned int cpu)
 }
 EXPORT_SYMBOL(cpufreq_quick_get_util);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /**
  * cpufreq_quick_get - get the CPU frequency (in kHz) from policy->cur
  * @cpu: CPU number
@@ -1550,11 +1677,16 @@ EXPORT_SYMBOL(cpufreq_quick_get_max);
 
 static unsigned int __cpufreq_get(unsigned int cpu)
 {
-	struct cpufreq_policy *policy = per_cpu(cpufreq_cpu_data, cpu);
+	struct cpufreq_policy *policy;
 	unsigned int ret_freq = 0;
+	unsigned long flags;
 
 	if (!cpufreq_driver->get || policy == 0)
 		return ret_freq;
+
+	read_lock_irqsave(&cpufreq_driver_lock, flags);
+	policy = per_cpu(cpufreq_cpu_data, cpu);
+	read_unlock_irqrestore(&cpufreq_driver_lock, flags);
 
 	ret_freq = cpufreq_driver->get(cpu);
 
@@ -1582,17 +1714,35 @@ static unsigned int __cpufreq_get(unsigned int cpu)
  */
 unsigned int cpufreq_get(unsigned int cpu)
 {
+<<<<<<< HEAD
 	struct cpufreq_policy *policy = per_cpu(cpufreq_cpu_data, cpu);
 	unsigned int ret_freq = 0;
+=======
+	struct cpufreq_policy *policy;
+	unsigned int ret_freq = 0;
+	unsigned long flags;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (cpufreq_disabled() || !cpufreq_driver)
 		return -ENOENT;
+
+<<<<<<< HEAD
+	BUG_ON(!policy);
+
+	if (!down_read_trylock(&cpufreq_rwsem))
+		return 0;
+
+=======
+	read_lock_irqsave(&cpufreq_driver_lock, flags);
+	policy = per_cpu(cpufreq_cpu_data, cpu);
+	read_unlock_irqrestore(&cpufreq_driver_lock, flags);
 
 	BUG_ON(!policy);
 
 	if (!down_read_trylock(&cpufreq_rwsem))
 		return 0;
 
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	down_read(&policy->rwsem);
 
 	ret_freq = __cpufreq_get(cpu);
@@ -1894,6 +2044,7 @@ int cpufreq_driver_target(struct cpufreq_policy *policy,
 }
 EXPORT_SYMBOL_GPL(cpufreq_driver_target);
 
+<<<<<<< HEAD
 int __cpufreq_driver_getavg(struct cpufreq_policy *policy, unsigned int cpu)
 {
     int ret = 0;
@@ -1910,6 +2061,8 @@ int __cpufreq_driver_getavg(struct cpufreq_policy *policy, unsigned int cpu)
 }
 EXPORT_SYMBOL_GPL(__cpufreq_driver_getavg);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*
  * when "event" is CPUFREQ_GOV_LIMITS
  */
@@ -2124,6 +2277,7 @@ static int cpufreq_set_policy(struct cpufreq_policy *policy,
 			CPUFREQ_NOTIFY, new_policy);
 
 	policy->min = new_policy->min;
+<<<<<<< HEAD
 	if (new_policy->cpu) {
 		cpu0_policy = cpufreq_cpu_get(0);
 		policy->max = cpu0_policy->max;
@@ -2142,6 +2296,9 @@ static int cpufreq_set_policy(struct cpufreq_policy *policy,
 		(strcmp(current->comm, "msm_thermal:fre") &&
 		strcmp(current->comm, "mpdecision")))
 			policy->max = new_policy->max;
+=======
+	policy->max = new_policy->max;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pr_debug("new min and max freqs are %u - %u kHz\n",
 					policy->min, policy->max);
@@ -2167,10 +2324,14 @@ static int cpufreq_set_policy(struct cpufreq_policy *policy,
 			}
 
 			/* start new governor */
+<<<<<<< HEAD
 			if (new_policy->cpu && cpu0_policy)
 				policy->governor = cpu0_policy->governor;
 			else
 				policy->governor = new_policy->governor;
+=======
+			policy->governor = new_policy->governor;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			if (!__cpufreq_governor(policy, CPUFREQ_GOV_POLICY_INIT)) {
 				if (!__cpufreq_governor(policy, CPUFREQ_GOV_START)) {
 					failed = 0;
@@ -2359,8 +2520,15 @@ int cpufreq_update_policy(unsigned int cpu)
 	struct cpufreq_policy new_policy;
 	int ret;
 
+<<<<<<< HEAD
 	if (!policy)
 		return -ENODEV;
+=======
+	if (!policy) {
+		ret = -ENODEV;
+		goto no_policy;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	down_write(&policy->rwsem);
 
@@ -2377,12 +2545,15 @@ int cpufreq_update_policy(unsigned int cpu)
 	 */
 	if (cpufreq_driver->get) {
 		new_policy.cur = cpufreq_driver->get(cpu);
+<<<<<<< HEAD
 
 		if (WARN_ON(!new_policy.cur)) {
 			ret = -EIO;
 			goto unlock;
 		}
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (!policy->cur) {
 			pr_debug("Driver did not initialize current freq");
 			policy->cur = new_policy.cur;
@@ -2395,14 +2566,22 @@ int cpufreq_update_policy(unsigned int cpu)
 
 	ret = cpufreq_set_policy(policy, &new_policy);
 
+<<<<<<< HEAD
 unlock:
 	up_write(&policy->rwsem);
 
 	cpufreq_cpu_put(policy);
+=======
+	up_write(&policy->rwsem);
+
+	cpufreq_cpu_put(policy);
+no_policy:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return ret;
 }
 EXPORT_SYMBOL(cpufreq_update_policy);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_LIMITER
 /*
  *	cpufreq_set_freq - set max/min freq for a cpu
@@ -2539,19 +2718,32 @@ char *cpufreq_get_gov(unsigned int cpu)
 EXPORT_SYMBOL(cpufreq_get_gov);
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int cpufreq_cpu_callback(struct notifier_block *nfb,
 					unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned long)hcpu;
 	struct device *dev;
 	bool frozen = false;
+<<<<<<< HEAD
+=======
+
+	if (action & CPU_TASKS_FROZEN)
+		cpu_frozen = true;
+	else
+		cpu_frozen = false;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	dev = get_cpu_device(cpu);
 	if (dev) {
 
+<<<<<<< HEAD
 		if (action & CPU_TASKS_FROZEN)
 			frozen = true;
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		switch (action & ~CPU_TASKS_FROZEN) {
 		case CPU_ONLINE:
 			__cpufreq_add_dev(dev, NULL, frozen);
@@ -2602,9 +2794,13 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
 
 	if (!driver_data || !driver_data->verify || !driver_data->init ||
 	    !(driver_data->setpolicy || driver_data->target_index ||
+<<<<<<< HEAD
 		    driver_data->target) ||
 	     (driver_data->setpolicy && (driver_data->target_index ||
 		    driver_data->target)))
+=======
+		    driver_data->target))
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return -EINVAL;
 
 	pr_debug("trying to register driver %s\n", driver_data->name);
@@ -2620,7 +2816,11 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
 	cpufreq_driver = driver_data;
 	write_unlock_irqrestore(&cpufreq_driver_lock, flags);
 
+	register_hotcpu_notifier(&cpufreq_cpu_notifier);
+
+	get_online_cpus();
 	ret = subsys_interface_register(&cpufreq_interface);
+	put_online_cpus();
 	if (ret)
 		goto err_null_driver;
 
@@ -2643,13 +2843,13 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
 		}
 	}
 
-	register_hotcpu_notifier(&cpufreq_cpu_notifier);
 	pr_debug("driver %s up and running\n", driver_data->name);
 
 	return 0;
 err_if_unreg:
 	subsys_interface_unregister(&cpufreq_interface);
 err_null_driver:
+	unregister_hotcpu_notifier(&cpufreq_cpu_notifier);
 	write_lock_irqsave(&cpufreq_driver_lock, flags);
 	cpufreq_driver = NULL;
 	write_unlock_irqrestore(&cpufreq_driver_lock, flags);
@@ -2694,8 +2894,14 @@ static int __init cpufreq_core_init(void)
 	if (cpufreq_disabled())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	cpufreq_global_kobject = kobject_create();
 	BUG_ON(!cpufreq_global_kobject);
+=======
+	cpufreq_kset = kset_create_and_add("cpufreq", &cpufreq_uevent_ops, &cpu_subsys.dev_root->kobj);
+	BUG_ON(!cpufreq_kset);
+	cpufreq_global_kobject = &cpufreq_kset->kobj;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	register_syscore_ops(&cpufreq_syscore_ops);
 
 	return 0;

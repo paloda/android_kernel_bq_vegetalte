@@ -78,7 +78,11 @@ static int generic_get_cmd(struct usb_audio_control *con, u8 cmd);
 #define F_AUDIO_NUM_INTERFACES		2
 
  /* B.3.1  Standard AC Interface Descriptor */
+<<<<<<< HEAD
 struct usb_interface_descriptor ac_interface_desc = {
+=======
+struct usb_interface_descriptor uac1_ac_interface_desc = {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	.bLength		= USB_DT_INTERFACE_SIZE,
 	.bDescriptorType	= USB_DT_INTERFACE,
 	.bNumEndpoints		= 0,
@@ -95,7 +99,11 @@ struct usb_interface_descriptor ac_interface_desc = {
 	)
 
  /* B.3.2  Class-Specific AC Interface Descriptor */
+<<<<<<< HEAD
 struct uac1_ac_header_descriptor_2 ac_header_desc = {
+=======
+struct uac1_ac_header_descriptor_2 uac1_ac_header_desc = {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	.bLength		= UAC_DT_AC_HEADER_SIZE(2),
 	.bDescriptorType	= USB_DT_CS_INTERFACE,
 	.bDescriptorSubtype	= UAC_HEADER,
@@ -192,6 +200,7 @@ static struct usb_audio_control microphone_volume_control = {
 	/* Todo: add real Volume control code */
 	.set = generic_set_cmd,
 	.get = generic_get_cmd,
+<<<<<<< HEAD
 };
 
 static struct usb_audio_control_selector microphone_fu_controls = {
@@ -284,6 +293,100 @@ static struct usb_audio_control_selector speaker_as_iso_out = {
 	.desc = (struct usb_descriptor_header *)&speaker_as_iso_out_desc,
 };
 
+=======
+};
+
+static struct usb_audio_control_selector microphone_fu_controls = {
+	.list = LIST_HEAD_INIT(microphone_fu_controls.list),
+	.name = "Microphone Feature Unit Controls",
+};
+
+/*---------------------------------*/
+
+ /* B.4.1  Standard AS Interface Descriptor */
+static struct usb_interface_descriptor speaker_as_interface_alt_0_desc = {
+	.bLength		= USB_DT_INTERFACE_SIZE,
+	.bDescriptorType	= USB_DT_INTERFACE,
+	.bAlternateSetting	= 0,
+	.bNumEndpoints		= 0,
+	.bInterfaceClass	= USB_CLASS_AUDIO,
+	.bInterfaceSubClass	= USB_SUBCLASS_AUDIOSTREAMING,
+};
+
+static struct usb_interface_descriptor speaker_as_interface_alt_1_desc = {
+	.bLength		= USB_DT_INTERFACE_SIZE,
+	.bDescriptorType	= USB_DT_INTERFACE,
+	.bAlternateSetting	= 1,
+	.bNumEndpoints		= 1,
+	.bInterfaceClass	= USB_CLASS_AUDIO,
+	.bInterfaceSubClass	= USB_SUBCLASS_AUDIOSTREAMING,
+};
+
+ /* B.4.2  Class-Specific AS Interface Descriptor */
+static struct uac1_as_header_descriptor speaker_as_header_desc = {
+	.bLength		= UAC_DT_AS_HEADER_SIZE,
+	.bDescriptorType	= USB_DT_CS_INTERFACE,
+	.bDescriptorSubtype	= UAC_AS_GENERAL,
+	.bTerminalLink		= SPEAKER_INPUT_TERMINAL_ID,
+	.bDelay			= 1,
+	.wFormatTag		= UAC_FORMAT_TYPE_I_PCM,
+};
+
+static struct uac_format_type_i_discrete_descriptor_1 speaker_as_type_i_desc = {
+	.bLength		= UAC_FORMAT_TYPE_I_DISCRETE_DESC_SIZE(1),
+	.bDescriptorType	= USB_DT_CS_INTERFACE,
+	.bDescriptorSubtype	= UAC_FORMAT_TYPE,
+	.bFormatType		= UAC_FORMAT_TYPE_I,
+	.bSubframeSize		= 2,
+	.bBitResolution		= 16,
+	.bSamFreqType		= 1,
+};
+
+ /* Standard ISO OUT Endpoint Descriptor */
+static struct usb_endpoint_descriptor speaker_as_ep_out_desc = {
+	.bLength		= USB_DT_ENDPOINT_AUDIO_SIZE,
+	.bDescriptorType	= USB_DT_ENDPOINT,
+	.bEndpointAddress	= USB_DIR_OUT,
+	.bmAttributes		= USB_ENDPOINT_SYNC_ADAPTIVE |
+				  USB_ENDPOINT_XFER_ISOC,
+	.wMaxPacketSize		=
+		__constant_cpu_to_le16(PLAYBACK_EP_MAX_PACKET_SIZE),
+	.bInterval		= 4,
+};
+
+static struct usb_ss_ep_comp_descriptor speaker_as_ep_out_comp_desc = {
+	 .bLength =		 sizeof(speaker_as_ep_out_comp_desc),
+	 .bDescriptorType =	 USB_DT_SS_ENDPOINT_COMP,
+
+	 .wBytesPerInterval =	cpu_to_le16(1024),
+};
+
+/* Class-specific AS ISO OUT Endpoint Descriptor */
+static struct uac_iso_endpoint_descriptor speaker_as_iso_out_desc  = {
+	.bLength		= UAC_ISO_ENDPOINT_DESC_SIZE,
+	.bDescriptorType	= USB_DT_CS_ENDPOINT,
+	.bDescriptorSubtype	= UAC_EP_GENERAL,
+	.bmAttributes		= 1,
+	.bLockDelayUnits	= 1,
+	.wLockDelay		= __constant_cpu_to_le16(1),
+};
+
+static struct usb_audio_control speaker_sample_freq_control = {
+	.list = LIST_HEAD_INIT(speaker_sample_freq_control.list),
+	.name = "Speaker Sampling Frequency Control",
+	.type = UAC_EP_CS_ATTR_SAMPLE_RATE,
+	.set  = generic_set_cmd,
+	.get  = generic_get_cmd,
+};
+
+static struct usb_audio_control_selector speaker_as_iso_out = {
+	.list = LIST_HEAD_INIT(speaker_as_iso_out.list),
+	.name = "Speaker Iso-out Endpoint Control",
+	.type = UAC_EP_GENERAL,
+	.desc = (struct usb_descriptor_header *)&speaker_as_iso_out_desc,
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*---------------------------------*/
 
 /* B.4.1  Standard AS Interface Descriptor */
@@ -369,6 +472,7 @@ static struct usb_audio_control_selector microphone_as_iso_in = {
 	.name = "Microphone Iso-IN Endpoint Control",
 	.type = UAC_EP_GENERAL,
 	.desc = (struct usb_descriptor_header *)&microphone_as_iso_in_desc,
+<<<<<<< HEAD
 };
 
 /*--------------------------------- */
@@ -440,6 +544,79 @@ static struct usb_gadget_strings audio_stringtab_dev = {
 	.strings	= audio_string_defs,
 };
 
+=======
+};
+
+/*--------------------------------- */
+
+static struct usb_descriptor_header *f_audio_desc[]  = {
+	(struct usb_descriptor_header *)&uac1_ac_interface_desc,
+	(struct usb_descriptor_header *)&uac1_ac_header_desc,
+
+	(struct usb_descriptor_header *)&microphone_input_terminal_desc,
+	(struct usb_descriptor_header *)&microphone_output_terminal_desc,
+
+	(struct usb_descriptor_header *)&speaker_input_terminal_desc,
+	(struct usb_descriptor_header *)&speaker_output_terminal_desc,
+
+	(struct usb_descriptor_header *)&microphone_as_interface_alt_0_desc,
+	(struct usb_descriptor_header *)&microphone_as_interface_alt_1_desc,
+	(struct usb_descriptor_header *)&microphone_as_header_desc,
+	(struct usb_descriptor_header *)&microphone_as_type_i_desc,
+	(struct usb_descriptor_header *)&microphone_as_ep_in_desc,
+	(struct usb_descriptor_header *)&microphone_as_iso_in_desc,
+
+	(struct usb_descriptor_header *)&speaker_as_interface_alt_0_desc,
+	(struct usb_descriptor_header *)&speaker_as_interface_alt_1_desc,
+	(struct usb_descriptor_header *)&speaker_as_header_desc,
+	(struct usb_descriptor_header *)&speaker_as_type_i_desc,
+	(struct usb_descriptor_header *)&speaker_as_ep_out_desc,
+	(struct usb_descriptor_header *)&speaker_as_iso_out_desc,
+
+	NULL,
+};
+
+static struct usb_descriptor_header *f_audio_ss_desc[]  = {
+	(struct usb_descriptor_header *)&uac1_ac_interface_desc,
+	(struct usb_descriptor_header *)&uac1_ac_header_desc,
+
+	(struct usb_descriptor_header *)&microphone_input_terminal_desc,
+	(struct usb_descriptor_header *)&microphone_output_terminal_desc,
+
+	(struct usb_descriptor_header *)&speaker_input_terminal_desc,
+	(struct usb_descriptor_header *)&speaker_output_terminal_desc,
+
+	(struct usb_descriptor_header *)&microphone_as_interface_alt_0_desc,
+	(struct usb_descriptor_header *)&microphone_as_interface_alt_1_desc,
+	(struct usb_descriptor_header *)&microphone_as_header_desc,
+	(struct usb_descriptor_header *)&microphone_as_type_i_desc,
+	(struct usb_descriptor_header *)&microphone_as_ep_in_desc,
+	(struct usb_descriptor_header *)&microphone_as_ep_in_comp_desc,
+	(struct usb_descriptor_header *)&microphone_as_iso_in_desc,
+
+	(struct usb_descriptor_header *)&speaker_as_interface_alt_0_desc,
+	(struct usb_descriptor_header *)&speaker_as_interface_alt_1_desc,
+	(struct usb_descriptor_header *)&speaker_as_header_desc,
+	(struct usb_descriptor_header *)&speaker_as_type_i_desc,
+	(struct usb_descriptor_header *)&speaker_as_ep_out_desc,
+	(struct usb_descriptor_header *)&speaker_as_ep_out_comp_desc,
+	(struct usb_descriptor_header *)&speaker_as_iso_out_desc,
+
+	NULL,
+};
+
+/* string IDs are assigned dynamically */
+
+static struct usb_string audio_string_defs[] = {
+	{  } /* end of list */
+};
+
+static struct usb_gadget_strings audio_stringtab_dev = {
+	.language	= 0x0409,	/* en-us */
+	.strings	= audio_string_defs,
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static struct usb_gadget_strings *audio_strings[] = {
 	&audio_stringtab_dev,
 	NULL,
@@ -498,6 +675,7 @@ struct f_audio {
 	struct f_audio_buf		*playback_copy_buf;
 	struct work_struct		playback_work;
 	struct list_head		play_queue;
+<<<<<<< HEAD
 
 	spinlock_t			capture_lock;
 	struct f_audio_buf		*capture_copy_buf;
@@ -505,6 +683,15 @@ struct f_audio {
 	struct list_head		capture_queue;
 	struct usb_request		*capture_req;
 
+=======
+
+	spinlock_t			capture_lock;
+	struct f_audio_buf		*capture_copy_buf;
+	struct work_struct		capture_work;
+	struct list_head		capture_queue;
+	struct usb_request		*capture_req;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	u8				alt_intf[F_AUDIO_NUM_INTERFACES];
 
 	/* Control Set command */
@@ -607,6 +794,7 @@ static void f_audio_capture_work(struct work_struct *data)
 	list_add_tail(&capture_buf->list, &audio->capture_queue);
 	spin_unlock_irqrestore(&audio->capture_lock, flags);
 }
+<<<<<<< HEAD
 
 static int
 f_audio_capture_ep_complete(struct usb_ep *ep, struct usb_request *req)
@@ -645,6 +833,46 @@ done:
 	if (err)
 		pr_err("Failed to queue %s req: err - %d\n", ep->name, err);
 
+=======
+
+static int
+f_audio_capture_ep_complete(struct usb_ep *ep, struct usb_request *req)
+{
+	struct f_audio *audio = req->context;
+	struct f_audio_buf *copy_buf = audio->capture_copy_buf;
+	unsigned long flags;
+	int err = 0;
+
+	if (copy_buf == 0) {
+		pr_debug("copy_buf == 0");
+		spin_lock_irqsave(&audio->capture_lock, flags);
+		if (list_empty(&audio->capture_queue)) {
+			spin_unlock_irqrestore(&audio->capture_lock, flags);
+			schedule_work(&audio->capture_work);
+			goto done;
+		}
+		copy_buf = list_first_entry(&audio->capture_queue,
+						struct f_audio_buf, list);
+		list_del(&copy_buf->list);
+		audio->capture_copy_buf = copy_buf;
+		spin_unlock_irqrestore(&audio->capture_lock, flags);
+	}
+
+	pr_debug("Copy %d bytes", req->actual);
+	memcpy(req->buf, copy_buf->buf + copy_buf->actual, req->actual);
+	copy_buf->actual += req->actual;
+
+	if (audio_capture_buf_size - copy_buf->actual < req->actual) {
+		f_audio_buffer_free(copy_buf);
+		audio->capture_copy_buf = 0;
+		schedule_work(&audio->capture_work);
+	}
+done:
+	err = usb_ep_queue(ep, req, GFP_ATOMIC);
+	if (err)
+		pr_err("Failed to queue %s req: err - %d\n", ep->name, err);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return err;
 }
 
@@ -930,9 +1158,15 @@ static int f_audio_get_alt(struct usb_function *f, unsigned intf)
 {
 	struct f_audio	*audio = func_to_audio(f);
 
+<<<<<<< HEAD
 	if (intf == ac_header_desc.baInterfaceNr[0])
 		return audio->alt_intf[0];
 	if (intf == ac_header_desc.baInterfaceNr[1])
+=======
+	if (intf == uac1_ac_header_desc.baInterfaceNr[0])
+		return audio->alt_intf[0];
+	if (intf == uac1_ac_header_desc.baInterfaceNr[1])
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return audio->alt_intf[1];
 
 	return 0;
@@ -949,13 +1183,18 @@ static int f_audio_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 
 	pr_debug("intf %d, alt %d\n", intf, alt);
 
+<<<<<<< HEAD
 	if (intf == ac_header_desc.baInterfaceNr[0]) {
+=======
+	if (intf == uac1_ac_header_desc.baInterfaceNr[0]) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (audio->alt_intf[0] == alt) {
 			pr_debug("Alt interface is already set to %d. Do nothing.\n",
 				alt);
 
 			return 0;
 		}
+<<<<<<< HEAD
 
 		if (alt == 1) {
 			err = usb_ep_enable(in_ep);
@@ -1012,6 +1251,64 @@ static int f_audio_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 		}
 
 		if (alt == 1) {
+=======
+
+		if (alt == 1) {
+			err = usb_ep_enable(in_ep);
+			if (err) {
+				pr_err("Failed to enable capture ep");
+				return err;
+			}
+			in_ep->driver_data = audio;
+			audio->capture_copy_buf = 0;
+
+			/* Allocate a write buffer */
+			req = usb_ep_alloc_request(in_ep, GFP_ATOMIC);
+			if (!req) {
+				pr_err("request allocation failed\n");
+				return -ENOMEM;
+			}
+			req->buf = kzalloc(req_capture_buf_size,
+						GFP_ATOMIC);
+			if (!req->buf) {
+				pr_err("request buffer allocation failed\n");
+				return -ENOMEM;
+			}
+
+			req->length = req_capture_buf_size;
+			req->context = audio;
+			req->complete =	f_audio_complete;
+			audio->capture_req = req;
+			err = usb_ep_queue(in_ep, req, GFP_ATOMIC);
+			if (err)
+				pr_err("Failed to queue %s req: err %d\n",
+				 in_ep->name, err);
+			schedule_work(&audio->capture_work);
+		} else {
+			struct f_audio_buf *capture_buf;
+			spin_lock_irqsave(&audio->capture_lock, flags);
+			while (!list_empty(&audio->capture_queue)) {
+				capture_buf =
+					list_first_entry(
+						&audio->capture_queue,
+						 struct f_audio_buf,
+						 list);
+				list_del(&capture_buf->list);
+				f_audio_buffer_free(capture_buf);
+			}
+			spin_unlock_irqrestore(&audio->capture_lock, flags);
+		}
+		audio->alt_intf[0] = alt;
+	} else if (intf == uac1_ac_header_desc.baInterfaceNr[1]) {
+		if (audio->alt_intf[1] == alt) {
+			pr_debug("Alt interface is already set to %d. Do nothing.\n",
+				alt);
+
+			return 0;
+		}
+
+		if (alt == 1) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			err = usb_ep_enable(out_ep);
 			if (err) {
 				pr_err("Failed to enable playback ep");
@@ -1128,13 +1425,20 @@ f_audio_bind(struct usb_configuration *c, struct usb_function *f)
 		pr_err("%s: failed to allocate desc interface", __func__);
 		goto fail;
 	}
+<<<<<<< HEAD
 	ac_interface_desc.bInterfaceNumber = status;
+=======
+	uac1_ac_interface_desc.bInterfaceNumber = status;
+
+	status = -ENOMEM;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	status = -ENOMEM;
 
 	status = usb_interface_id(c, f);
 	if (status < 0) {
 		pr_err("%s: failed to allocate alt interface", __func__);
+<<<<<<< HEAD
 		goto fail;
 	}
 	microphone_as_interface_alt_0_desc.bInterfaceNumber = status;
@@ -1152,6 +1456,25 @@ f_audio_bind(struct usb_configuration *c, struct usb_function *f)
 	speaker_as_interface_alt_0_desc.bInterfaceNumber = status;
 	speaker_as_interface_alt_1_desc.bInterfaceNumber = status;
 	ac_header_desc.baInterfaceNr[1] = status;
+=======
+		goto fail;
+	}
+	microphone_as_interface_alt_0_desc.bInterfaceNumber = status;
+	microphone_as_interface_alt_1_desc.bInterfaceNumber = status;
+	uac1_ac_header_desc.baInterfaceNr[0] = status;
+	audio->alt_intf[0] = 0;
+
+	status = -ENODEV;
+
+	status = usb_interface_id(c, f);
+	if (status < 0) {
+		pr_err("%s: failed to allocate alt interface", __func__);
+		goto fail;
+	}
+	speaker_as_interface_alt_0_desc.bInterfaceNumber = status;
+	speaker_as_interface_alt_1_desc.bInterfaceNumber = status;
+	uac1_ac_header_desc.baInterfaceNr[1] = status;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	audio->alt_intf[1] = 0;
 
 	status = -ENODEV;

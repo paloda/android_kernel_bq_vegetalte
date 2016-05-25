@@ -17,6 +17,7 @@ struct irq_desc;
  * struct irq_desc - interrupt descriptor
  * @irq_data:		per irq and chip data passed down to chip functions
  * @kstat_irqs:		irq stats per cpu
+ * @wakeup_irqs:	irq wakeup count from suspend
  * @handle_irq:		highlevel irq-events handler
  * @preflow_handler:	handler called before the flow handler (currently used by sparc)
  * @action:		the irq action chain
@@ -31,7 +32,8 @@ struct irq_desc;
  * @threads_handled_last: comparator field for deferred spurious detection of theraded handlers
  * @lock:		locking for SMP
  * @affinity_hint:	hint to user space for preferred irq affinity
- * @affinity_notify:	context for notification of affinity changes
+ * @affinity_notify:	list of notification clients for affinity changes
+ * @affinity_work:	Work queue for handling affinity change notifications
  * @pending_mask:	pending rebalanced interrupts
  * @threads_oneshot:	bitfield to handle shared oneshot threads
  * @threads_active:	number of irqaction threads currently running
@@ -42,6 +44,7 @@ struct irq_desc;
 struct irq_desc {
 	struct irq_data		irq_data;
 	unsigned int __percpu	*kstat_irqs;
+	unsigned int		wakeup_irqs;
 	irq_flow_handler_t	handle_irq;
 #ifdef CONFIG_IRQ_PREFLOW_FASTEOI
 	irq_preflow_handler_t	preflow_handler;
@@ -60,7 +63,8 @@ struct irq_desc {
 	struct cpumask		*percpu_enabled;
 #ifdef CONFIG_SMP
 	const struct cpumask	*affinity_hint;
-	struct irq_affinity_notify *affinity_notify;
+	struct list_head	affinity_notify;
+	struct work_struct	affinity_work;
 #ifdef CONFIG_GENERIC_PENDING_IRQ
 	cpumask_var_t		pending_mask;
 #endif

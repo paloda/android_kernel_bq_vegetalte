@@ -121,6 +121,10 @@ struct iris_device {
 	struct hci_fm_data_rd_rsp default_data;
 	struct hci_fm_spur_data spur_data;
 	unsigned char is_station_valid;
+<<<<<<< HEAD
+=======
+	struct hci_fm_blend_table blend_tbl;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 static struct video_device *priv_videodev;
@@ -1250,6 +1254,34 @@ static int hci_fm_get_ch_det_th(struct radio_hci_dev *hdev,
 	return radio_hci_send_cmd(hdev, opcode, 0, NULL);
 }
 
+<<<<<<< HEAD
+=======
+static int hci_fm_get_blend_tbl(struct radio_hci_dev *hdev,
+		unsigned long param)
+{
+	u16 opcode = hci_opcode_pack(HCI_OGF_FM_RECV_CTRL_CMD_REQ,
+				HCI_OCF_FM_GET_BLND_TBL);
+	return radio_hci_send_cmd(hdev, opcode, 0, NULL);
+}
+
+static int hci_fm_set_blend_tbl(struct radio_hci_dev *hdev,
+		unsigned long param)
+{
+	struct hci_fm_blend_table *blnd_tbl =
+			 (struct hci_fm_blend_table *) param;
+	u16 opcode;
+
+	if (blnd_tbl == NULL) {
+		FMDERR("%s, blend tbl is null\n", __func__);
+		return -EINVAL;
+	}
+	opcode = hci_opcode_pack(HCI_OGF_FM_RECV_CTRL_CMD_REQ,
+			HCI_OCF_FM_SET_BLND_TBL);
+	return radio_hci_send_cmd(hdev, opcode,
+			sizeof(struct hci_fm_blend_table), blnd_tbl);
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int radio_hci_err(__u32 code)
 {
 	switch (code) {
@@ -1295,7 +1327,11 @@ static int __radio_hci_request(struct radio_hci_dev *hdev,
 
 	err = req(hdev, param);
 
+<<<<<<< HEAD
 	schedule_timeout(timeout);
+=======
+	schedule_timeout(msecs_to_jiffies(timeout));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	remove_wait_queue(&hdev->req_wait_q, &wait);
 
@@ -1692,6 +1728,19 @@ static int hci_fm_get_spur_tbl_data(struct radio_hci_dev *hdev,
 	return radio_hci_send_cmd(hdev, opcode, sizeof(int), &spur_freq);
 }
 
+<<<<<<< HEAD
+=======
+static int hci_set_blend_tbl_req(struct hci_fm_blend_table *arg,
+		struct radio_hci_dev *hdev)
+{
+	int ret = 0;
+	struct hci_fm_blend_table *blend_tbl = arg;
+	ret = radio_hci_request(hdev, hci_fm_set_blend_tbl,
+		 (unsigned long)blend_tbl, RADIO_HCI_TIMEOUT);
+	return ret;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int hci_cmd(unsigned int cmd, struct radio_hci_dev *hdev)
 {
 	int ret = 0;
@@ -1703,86 +1752,154 @@ static int hci_cmd(unsigned int cmd, struct radio_hci_dev *hdev)
 	switch (cmd) {
 	case HCI_FM_ENABLE_RECV_CMD:
 		ret = radio_hci_request(hdev, hci_fm_enable_recv_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_DISABLE_RECV_CMD:
 		ret = radio_hci_request(hdev, hci_fm_disable_recv_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_GET_RECV_CONF_CMD:
 		ret = radio_hci_request(hdev, hci_get_fm_recv_conf_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_GET_STATION_PARAM_CMD:
 		ret = radio_hci_request(hdev,
 			hci_fm_get_station_param_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_GET_SIGNAL_TH_CMD:
 		ret = radio_hci_request(hdev,
 			hci_fm_get_sig_threshold_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_GET_PROGRAM_SERVICE_CMD:
 		ret = radio_hci_request(hdev,
 			hci_fm_get_program_service_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_GET_RADIO_TEXT_CMD:
 		ret = radio_hci_request(hdev, hci_fm_get_radio_text_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_GET_AF_LIST_CMD:
 		ret = radio_hci_request(hdev, hci_fm_get_af_list_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_CANCEL_SEARCH_CMD:
 		ret = radio_hci_request(hdev, hci_fm_cancel_search_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_RESET_CMD:
 		ret = radio_hci_request(hdev, hci_fm_reset_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_GET_FEATURES_CMD:
 		ret = radio_hci_request(hdev,
 		hci_fm_get_feature_lists_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_STATION_DBG_PARAM_CMD:
 		ret = radio_hci_request(hdev,
 		hci_fm_get_station_dbg_param_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_ENABLE_TRANS_CMD:
 		ret = radio_hci_request(hdev, hci_fm_enable_trans_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_DISABLE_TRANS_CMD:
 		ret = radio_hci_request(hdev, hci_fm_disable_trans_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case HCI_FM_GET_TX_CONFIG:
 		ret = radio_hci_request(hdev, hci_get_fm_trans_conf_req, arg,
+<<<<<<< HEAD
 			msecs_to_jiffies(RADIO_HCI_TIMEOUT));
 		break;
 	case HCI_FM_GET_DET_CH_TH_CMD:
 		ret = radio_hci_request(hdev, hci_fm_get_ch_det_th, arg,
 					msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+			RADIO_HCI_TIMEOUT);
+		break;
+	case HCI_FM_GET_DET_CH_TH_CMD:
+		ret = radio_hci_request(hdev, hci_fm_get_ch_det_th, arg,
+					RADIO_HCI_TIMEOUT);
+		break;
+	case HCI_FM_GET_BLND_TBL_CMD:
+		ret = radio_hci_request(hdev, hci_fm_get_blend_tbl, arg,
+					RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	default:
 		ret = -EINVAL;
@@ -2275,6 +2392,31 @@ static void hci_cc_get_ch_det_threshold_rsp(struct radio_hci_dev *hdev,
 	radio_hci_req_complete(hdev, status);
 }
 
+<<<<<<< HEAD
+=======
+static void hci_cc_get_blend_tbl_rsp(struct radio_hci_dev *hdev,
+		struct sk_buff *skb)
+{
+	struct iris_device *radio = video_get_drvdata(video_get_dev());
+	u8  status;
+
+	if (unlikely(radio == NULL)) {
+		FMDERR(":radio is null");
+		return;
+	}
+	if (unlikely(skb == NULL)) {
+		FMDERR("%s, socket buffer is null\n", __func__);
+		return;
+	}
+	status = skb->data[0];
+	if (!status)
+		memcpy(&radio->blend_tbl, &skb->data[1],
+			sizeof(struct hci_fm_blend_table));
+
+	radio_hci_req_complete(hdev, status);
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static inline void hci_cmd_complete_event(struct radio_hci_dev *hdev,
 		struct sk_buff *skb)
 {
@@ -2317,6 +2459,10 @@ static inline void hci_cmd_complete_event(struct radio_hci_dev *hdev,
 	case hci_recv_ctrl_cmd_op_pack(HCI_OCF_FM_EN_WAN_AVD_CTRL):
 	case hci_recv_ctrl_cmd_op_pack(HCI_OCF_FM_EN_NOTCH_CTRL):
 	case hci_recv_ctrl_cmd_op_pack(HCI_OCF_FM_SET_CH_DET_THRESHOLD):
+<<<<<<< HEAD
+=======
+	case hci_recv_ctrl_cmd_op_pack(HCI_OCF_FM_SET_BLND_TBL):
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case hci_trans_ctrl_cmd_op_pack(HCI_OCF_FM_RDS_RT_REQ):
 	case hci_trans_ctrl_cmd_op_pack(HCI_OCF_FM_RDS_PS_REQ):
 	case hci_common_cmd_op_pack(HCI_OCF_FM_DEFAULT_DATA_WRITE):
@@ -2389,6 +2535,12 @@ static inline void hci_cmd_complete_event(struct radio_hci_dev *hdev,
 	case hci_recv_ctrl_cmd_op_pack(HCI_OCF_FM_GET_CH_DET_THRESHOLD):
 		hci_cc_get_ch_det_threshold_rsp(hdev, skb);
 		break;
+<<<<<<< HEAD
+=======
+	case hci_recv_ctrl_cmd_op_pack(HCI_OCF_FM_GET_BLND_TBL):
+		hci_cc_get_blend_tbl_rsp(hdev, skb);
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		FMDERR("%s opcode 0x%x", hdev->name, opcode);
 		break;
@@ -3508,6 +3660,25 @@ static int iris_vidioc_g_ctrl(struct file *file, void *priv,
 			ctrl->value |= (cf0 << 24);
 		}
 		break;
+<<<<<<< HEAD
+=======
+	case V4L2_CID_PRIVATE_BLEND_SINRHI:
+		retval = hci_cmd(HCI_FM_GET_BLND_TBL_CMD, radio->fm_hdev);
+		if (retval < 0) {
+			FMDERR("Failed to get blend table  %d", retval);
+			goto END;
+		}
+		ctrl->value = radio->blend_tbl.scBlendSinrHi;
+		break;
+	case V4L2_CID_PRIVATE_BLEND_RMSSIHI:
+		retval = hci_cmd(HCI_FM_GET_BLND_TBL_CMD, radio->fm_hdev);
+		if (retval < 0) {
+			FMDERR("Failed to get blend table  %d", retval);
+			goto END;
+		}
+		ctrl->value = radio->blend_tbl.scBlendRmssiHi;
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		retval = -EINVAL;
 		break;
@@ -3517,8 +3688,14 @@ END:
 	if (retval > 0)
 		retval = -EINVAL;
 	if (retval < 0)
+<<<<<<< HEAD
 		FMDERR("get control failed with %d, id: %d\n",
 			retval, ctrl->id);
+=======
+		FMDERR("get control failed with %d\n", retval);
+	if (ctrl != NULL)
+		FMDERR("get control failed id: %d\n", ctrl->id);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return retval;
 }
@@ -3818,7 +3995,11 @@ static int iris_vidioc_s_ctrl(struct file *file, void *priv,
 		radio->tone_freq = ctrl->value;
 		retval = radio_hci_request(radio->fm_hdev,
 				hci_fm_tone_generator, arg,
+<<<<<<< HEAD
 				msecs_to_jiffies(RADIO_HCI_TIMEOUT));
+=======
+				RADIO_HCI_TIMEOUT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (retval < 0) {
 			FMDERR("Error while setting the tone %d", retval);
 			radio->tone_freq = saved_val;
@@ -4748,6 +4929,49 @@ static int iris_vidioc_s_ctrl(struct file *file, void *priv,
 		if (retval < 0)
 			FMDERR("get Spur data failed\n");
 		break;
+<<<<<<< HEAD
+=======
+	case V4L2_CID_PRIVATE_BLEND_SINRHI:
+		if (!is_valid_blend_value(ctrl->value)) {
+			FMDERR("%s: blend sinr count is not valid\n",
+				__func__);
+			retval = -EINVAL;
+			goto END;
+		}
+		retval = hci_cmd(HCI_FM_GET_BLND_TBL_CMD, radio->fm_hdev);
+		if (retval < 0) {
+			FMDERR("Failed to get blend table  %d", retval);
+			goto END;
+		}
+		radio->blend_tbl.scBlendSinrHi = ctrl->value;
+		retval = hci_set_blend_tbl_req(&radio->blend_tbl,
+					 radio->fm_hdev);
+		if (retval < 0) {
+			FMDERR("Failed to set blend tble %d ", retval);
+			goto END;
+		}
+		break;
+	case V4L2_CID_PRIVATE_BLEND_RMSSIHI:
+		if (!is_valid_blend_value(ctrl->value)) {
+			FMDERR("%s: blend rmssi count is not valid\n",
+				__func__);
+			retval = -EINVAL;
+			goto END;
+		}
+		retval = hci_cmd(HCI_FM_GET_BLND_TBL_CMD, radio->fm_hdev);
+		if (retval < 0) {
+			FMDERR("Failed to get blend table  %d", retval);
+			goto END;
+		}
+		radio->blend_tbl.scBlendRmssiHi = ctrl->value;
+		retval = hci_set_blend_tbl_req(&radio->blend_tbl,
+					 radio->fm_hdev);
+		if (retval < 0) {
+			FMDERR("Failed to set blend tble %d ", retval);
+			goto END;
+		}
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		retval = -EINVAL;
 		break;
@@ -5225,9 +5449,15 @@ static const struct v4l2_ioctl_ops iris_ioctl_ops = {
 extern int radio_hci_smd_init(void);
 static int iris_fops_open(struct file *f) {
 	if (transport_ready < 0) {
+<<<<<<< HEAD
 		transport_ready =  radio_hci_smd_init();
 	}
         return transport_ready;
+=======
+		transport_ready = radio_hci_smd_init();
+	}
+	return transport_ready;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 #endif
 

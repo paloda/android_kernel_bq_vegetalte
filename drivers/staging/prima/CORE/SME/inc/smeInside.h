@@ -276,6 +276,7 @@ void csrAbortCommand( tpAniSirGlobal pMac, tSmeCmd *pCommand, tANI_BOOLEAN fStop
 eHalStatus sme_AcquireGlobalLock( tSmeStruct *psSme);
 eHalStatus sme_ReleaseGlobalLock( tSmeStruct *psSme);
 
+<<<<<<< HEAD
 /* ---------------------------------------------------------------------------
     \fn sme_SetCfgScanControlList
     \brief  API to set Scan Control List
@@ -287,6 +288,8 @@ eHalStatus sme_ReleaseGlobalLock( tSmeStruct *psSme);
 eHalStatus sme_SetCfgScanControlList(tHalHandle hHal, tANI_U8 *countryCode,
                                                     tCsrChannel *pChannelList);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef FEATURE_OEM_DATA_SUPPORT
 eHalStatus oemData_ProcessOemDataReqCommand(tpAniSirGlobal pMac, tSmeCmd *pCommand);
 #endif

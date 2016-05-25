@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -37,7 +41,11 @@
 
 #include "aniGlobal.h"
 
+<<<<<<< HEAD
 #include "wniCfg.h"
+=======
+#include "wniCfgSta.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "sirMacProtDef.h"
 #include "cfgApi.h"
 #include "limTypes.h"
@@ -649,7 +657,11 @@ limApplyConfiguration(tpAniSirGlobal pMac,tpPESession psessionEntry)
 {
     tANI_U32          val=0, phyMode;
 
+<<<<<<< HEAD
     PELOG2(limLog(pMac, LOG2, FL("Applying config"));)
+=======
+    limLog(pMac, LOG1, FL("Applying config"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     limInitWdsInfoParams(pMac);
 

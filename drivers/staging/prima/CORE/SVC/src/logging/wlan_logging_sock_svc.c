@@ -30,6 +30,10 @@
  *
  ******************************************************************************/
 #ifdef WLAN_LOGGING_SOCK_SVC_ENABLE
+<<<<<<< HEAD
+=======
+#include <linux/rtc.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <vmalloc.h>
 #include <wlan_nlink_srv.h>
 #include <vos_status.h>
@@ -50,7 +54,10 @@
 #define INVALID_PID -1
 
 #define MAX_LOGMSG_LENGTH 4096
+<<<<<<< HEAD
 #define SECONDS_IN_A_DAY (86400)
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct log_msg {
 	struct list_head node;
@@ -296,6 +303,11 @@ int wlan_log_to_user(VOS_TRACE_LEVEL log_level, char *to_be_sent, int length)
 	unsigned long flags;
 
 	struct timeval tv;
+<<<<<<< HEAD
+=======
+	struct rtc_time tm;
+	unsigned long local_time;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (gapp_pid == INVALID_PID) {
 		/*
@@ -309,10 +321,21 @@ int wlan_log_to_user(VOS_TRACE_LEVEL log_level, char *to_be_sent, int length)
 		pr_err("%s\n", to_be_sent);
 	}
 
+<<<<<<< HEAD
 	/* Format the Log time [Secondselapsedinaday.microseconds] */
 	do_gettimeofday(&tv);
 	tlen = snprintf(tbuf, sizeof(tbuf), "[%s][%5lu.%06lu] ", current->comm,
 			(unsigned long) (tv.tv_sec%SECONDS_IN_A_DAY),
+=======
+	/* Format the Log time [hr:min:sec.microsec] */
+	do_gettimeofday(&tv);
+
+	/* Convert rtc to local time */
+	local_time = (u32)(tv.tv_sec - (sys_tz.tz_minuteswest * 60));
+	rtc_time_to_tm(local_time, &tm);
+	tlen = snprintf(tbuf, sizeof(tbuf), "[%s] [%02d:%02d:%02d.%06lu] ",
+			current->comm, tm.tm_hour, tm.tm_min, tm.tm_sec,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			tv.tv_usec);
 
 	/* 1+1 indicate '\n'+'\0' */

@@ -54,6 +54,16 @@ struct fb_cursor32 {
 	struct fb_image32 image;
 };
 
+<<<<<<< HEAD
+=======
+struct msmfb_reg_access32 {
+	uint8_t address;
+	uint8_t use_hs_mode;
+	uint32_t buffer_size;
+	compat_caddr_t buffer;
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct mdp_ccs32 {
 };
 
@@ -168,6 +178,15 @@ struct mdp_pa_cfg_data32 {
 	struct mdp_pa_cfg32 pa_data;
 };
 
+<<<<<<< HEAD
+=======
+struct mdp_rgb_lut_data32 {
+	uint32_t flags;
+	uint32_t lut_type;
+	struct fb_cmap32 cmap;
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct mdp_igc_lut_data32 {
 	uint32_t block;
 	uint32_t len, ops;
@@ -205,6 +224,10 @@ struct mdp_lut_cfg_data32 {
 		struct mdp_igc_lut_data32 igc_lut_data;
 		struct mdp_pgc_lut_data32 pgc_lut_data;
 		struct mdp_hist_lut_data32 hist_lut_data;
+<<<<<<< HEAD
+=======
+		struct mdp_rgb_lut_data32 rgb_lut_data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} data;
 };
 

@@ -157,6 +157,10 @@ struct mmc_platform_data {
 	unsigned int msmsdcc_fmid;
 	unsigned int msmsdcc_fmax;
 	bool nonremovable;
+<<<<<<< HEAD
+=======
+	bool is_emmc;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned int mpm_sdiowakeup_int;
 	int wpswitch_gpio;
 	bool is_wpswitch_active_low;

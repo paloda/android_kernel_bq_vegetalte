@@ -454,7 +454,11 @@ err_deep_sleep:
 
 }
 
+<<<<<<< HEAD
 void hdd_ipv6_notifier_work_queue(struct work_struct *work)
+=======
+void __hdd_ipv6_notifier_work_queue(struct work_struct *work)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
     hdd_adapter_t* pAdapter =
              container_of(work, hdd_adapter_t, ipv6NotifierWorkQueue);
@@ -462,12 +466,24 @@ void hdd_ipv6_notifier_work_queue(struct work_struct *work)
     int status;
 
     hddLog(LOG1, FL("Reconfiguring NS Offload"));
+<<<<<<< HEAD
+=======
+    if (NULL == pAdapter)
+    {
+        hddLog(LOGE, FL("Adapter is invalid"));
+        return;
+    }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
     status = wlan_hdd_validate_context(pHddCtx);
     if (0 != status)
     {
+<<<<<<< HEAD
         hddLog(LOGE, FL("HDD context is invalid"));
+=======
+        hddLog(LOGE, FL("HDD context is invalid, status = %d"), status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return;
     }
 
@@ -504,7 +520,16 @@ void hdd_ipv6_notifier_work_queue(struct work_struct *work)
 
 }
 
+<<<<<<< HEAD
 
+=======
+void hdd_ipv6_notifier_work_queue(struct work_struct *work)
+{
+     vos_ssr_protect(__func__);
+     __hdd_ipv6_notifier_work_queue(work);
+     vos_ssr_unprotect(__func__);
+}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 int wlan_hdd_ipv6_changed(struct notifier_block *nb,
                             unsigned long data, void *arg)
 {
@@ -933,7 +958,11 @@ end:
 }
 #endif
 
+<<<<<<< HEAD
 void hdd_ipv4_notifier_work_queue(struct work_struct *work)
+=======
+void __hdd_ipv4_notifier_work_queue(struct work_struct *work)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
     hdd_adapter_t* pAdapter =
              container_of(work, hdd_adapter_t, ipv4NotifierWorkQueue);
@@ -941,11 +970,23 @@ void hdd_ipv4_notifier_work_queue(struct work_struct *work)
     int status;
 
     hddLog(LOG1, FL("Reconfiguring ARP Offload"));
+<<<<<<< HEAD
+=======
+    if (NULL == pAdapter)
+    {
+        hddLog(LOGE, FL("Adapter is invalid"));
+        return;
+    }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
     status = wlan_hdd_validate_context(pHddCtx);
     if (0 != status)
     {
+<<<<<<< HEAD
         hddLog(LOGE, FL("HDD context is invalid"));
+=======
+        hddLog(LOGE, FL("HDD context is invalid, status = %d"), status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return;
     }
 
@@ -969,6 +1010,16 @@ void hdd_ipv4_notifier_work_queue(struct work_struct *work)
     }
 }
 
+<<<<<<< HEAD
+=======
+void hdd_ipv4_notifier_work_queue(struct work_struct *work)
+{
+    vos_ssr_protect(__func__);
+    __hdd_ipv4_notifier_work_queue(work);
+    vos_ssr_unprotect(__func__);
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 int wlan_hdd_ipv4_changed(struct notifier_block *nb,
                             unsigned long data, void *arg)
 {
@@ -1260,7 +1311,11 @@ static void hdd_conf_suspend_ind(hdd_context_t* pHddCtx,
          * function takes care of checking necessary conditions before
          * configuring.
          */
+<<<<<<< HEAD
         wlan_hdd_set_mc_addr_list(pAdapter, TRUE);
+=======
+        //wlan_hdd_set_mc_addr_list(pAdapter, TRUE);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 
         if( (pHddCtx->cfg_ini->fEnableMCAddrList) && WDA_IS_MCAST_FLT_ENABLE_IN_FW)
@@ -1335,7 +1390,11 @@ static void hdd_conf_resume_ind(hdd_adapter_t *pAdapter)
     /* Filer was applied during suspend inditication
      * clear it when we resume.
      */
+<<<<<<< HEAD
     wlan_hdd_set_mc_addr_list(pAdapter, FALSE);
+=======
+    //wlan_hdd_set_mc_addr_list(pAdapter, FALSE);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 }
 

@@ -384,6 +384,12 @@ void register_irq_proc(unsigned int irq, struct irq_desc *desc)
 			 &irq_disable_depth_proc_fops, (void *)(long)irq);
 	proc_create_data("wake_depth", 0444, desc->dir,
 			 &irq_wake_depth_proc_fops, (void *)(long)irq);
+<<<<<<< HEAD
+=======
+
+out_unlock:
+	mutex_unlock(&register_lock);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 void unregister_irq_proc(unsigned int irq, struct irq_desc *desc)
@@ -495,6 +501,10 @@ int show_interrupts(struct seq_file *p, void *v)
 	for_each_online_cpu(j)
 		seq_printf(p, "%10u ", kstat_irqs_cpu(i, j));
 
+#ifdef CONFIG_GENERIC_IRQ_SHOW_WAKEUP_COUNT
+	seq_printf(p, "%10u ", desc->wakeup_irqs);
+	seq_printf(p, "%-4s", irqd_is_wakeup_set(&desc->irq_data) ? "w" : "");
+#endif
 	if (desc->irq_data.chip) {
 		if (desc->irq_data.chip->irq_print_chip)
 			desc->irq_data.chip->irq_print_chip(&desc->irq_data, p);

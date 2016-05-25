@@ -127,6 +127,13 @@ struct mdss_pll_resources {
 	 */
 	uint32_t index;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Mutex to handle pll resource access
+	 */
+	struct mutex res_lock;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct mdss_pll_vco_calc {

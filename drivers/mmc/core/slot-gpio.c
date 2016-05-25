@@ -25,7 +25,11 @@ struct mmc_gpio {
 	char cd_label[0]; /* Must be last entry */
 };
 
+<<<<<<< HEAD
 static int mmc_gpio_get_status(struct mmc_host *host)
+=======
+static int mmc_gpio_read_status(struct mmc_host *host)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	int ret = -ENOSYS;
 	struct mmc_gpio *ctx = host->slot.handler_priv;
@@ -39,6 +43,18 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+int mmc_gpio_get_status(struct mmc_host *host)
+{
+	struct mmc_gpio *ctx = host->slot.handler_priv;
+
+	if (!ctx || !gpio_is_valid(ctx->cd_gpio))
+		return -ENOSYS;
+
+	return ctx->status;
+}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static irqreturn_t mmc_gpio_cd_irqt(int irq, void *dev_id)
 {
@@ -58,7 +74,11 @@ static irqreturn_t mmc_gpio_cd_irqt(int irq, void *dev_id)
 	if (host->ops->card_event)
 		host->ops->card_event(host);
 
+<<<<<<< HEAD
 	status = mmc_gpio_get_status(host);
+=======
+	status = mmc_gpio_read_status(host);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (unlikely(status < 0))
 		goto out;
 
@@ -68,6 +88,12 @@ static irqreturn_t mmc_gpio_cd_irqt(int irq, void *dev_id)
 				(host->caps2 & MMC_CAP2_CD_ACTIVE_HIGH) ?
 				"HIGH" : "LOW");
 		ctx->status = status;
+<<<<<<< HEAD
+=======
+		host->card_bad = 0;
+		host->requests = 0ULL;
+		host->request_errors = 0ULL;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		/* Schedule a card detection after a debounce timeout */
 		mmc_detect_change(host, msecs_to_jiffies(200));
@@ -100,6 +126,7 @@ static int mmc_gpio_alloc(struct mmc_host *host)
 			ctx->cd_gpio = -EINVAL;
 			ctx->ro_gpio = -EINVAL;
 			host->slot.handler_priv = ctx;
+			host->slot.get_cd = mmc_gpio_get_status;
 		}
 	}
 
@@ -218,7 +245,11 @@ int mmc_gpio_request_cd(struct mmc_host *host, unsigned int gpio)
 	ctx->cd_gpio = gpio;
 	host->slot.cd_irq = irq;
 
+<<<<<<< HEAD
 	ret = mmc_gpio_get_status(host);
+=======
+	ret = mmc_gpio_read_status(host);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ret < 0)
 		return ret;
 

@@ -381,7 +381,14 @@ int dwc3_send_gadget_generic_command(struct dwc3 *dwc, int cmd, u32 param)
 		if (!(reg & DWC3_DGCMD_CMDACT)) {
 			dev_vdbg(dwc->dev, "Command Complete --> %d\n",
 					DWC3_DGCMD_STATUS(reg));
+<<<<<<< HEAD
 			ret = 0;
+=======
+			if (DWC3_DGCMD_STATUS(reg))
+				ret = -EINVAL;
+			else
+				ret = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			break;
 		}
 
@@ -431,6 +438,11 @@ int dwc3_send_gadget_ep_cmd(struct dwc3 *dwc, unsigned ep,
 			 */
 			if (reg & 0x2000)
 				ret = -EAGAIN;
+<<<<<<< HEAD
+=======
+			else if (DWC3_DEPCMD_STATUS(reg))
+				ret = -EINVAL;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			else
 				ret = 0;
 			break;
@@ -1077,6 +1089,11 @@ static void dwc3_prepare_trbs(struct dwc3_ep *dep, bool starting)
 					struct usb_request *ureq;
 					bool mpkt = false;
 
+<<<<<<< HEAD
+=======
+					if (list_empty(&dep->request_list))
+						last_one = true;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 					chain = false;
 					if (last_req) {
 						last_one = true;
@@ -1129,6 +1146,10 @@ start_trb_queuing:
 					break;
 			}
 			dbg_queue(dep->number, &req->request, trbs_left);
+<<<<<<< HEAD
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			if (last_one)
 				break;
 		} else {
@@ -1611,7 +1632,11 @@ static int dwc3_gadget_ep_set_halt(struct usb_ep *ep, int value)
 	}
 
 	dbg_event(dep->number, "HALT", value);
+<<<<<<< HEAD
 	ret = __dwc3_gadget_ep_set_halt(dep, value);
+=======
+	ret = __dwc3_gadget_ep_set_halt(dep, value, false);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 out:
 	spin_unlock_irqrestore(&dwc->lock, flags);
 
@@ -2242,6 +2267,27 @@ static int dwc3_gadget_stop(struct usb_gadget *g,
 	return 0;
 }
 
+static int dwc3_gadget_vbus_enable_charge(struct usb_gadget *g, int is_on)
+{
+	struct dwc3		*dwc = gadget_to_dwc(g);
+	unsigned long flags;
+
+	spin_lock_irqsave(&dwc->lock, flags);
+	dwc->charge_enabled = !!is_on;
+	if (dwc->vbus_active && dwc->charge_enabled)
+		dwc3_gadget_vbus_draw(g, DWC3_IDEV_CHG_MIN);
+	spin_unlock_irqrestore(&dwc->lock, flags);
+
+	return 0;
+}
+
+static int dwc3_gadget_vbus_is_charge_enabled(struct usb_gadget *g)
+{
+	struct dwc3		*dwc = gadget_to_dwc(g);
+
+	return !!dwc->charge_enabled;
+}
+
 static const struct usb_gadget_ops dwc3_gadget_ops = {
 	.get_frame		= dwc3_gadget_get_frame,
 	.wakeup			= dwc3_gadget_wakeup,
@@ -2252,6 +2298,8 @@ static const struct usb_gadget_ops dwc3_gadget_ops = {
 	.pullup			= dwc3_gadget_pullup,
 	.udc_start		= dwc3_gadget_start,
 	.udc_stop		= dwc3_gadget_stop,
+	.vbus_set_charge_enabled = dwc3_gadget_vbus_enable_charge,
+	.vbus_get_charge_enabled = dwc3_gadget_vbus_is_charge_enabled,
 };
 
 /* -------------------------------------------------------------------------- */

@@ -12,6 +12,7 @@ obj-$(CONFIG_LEDS_BD2802)		+= leds-bd2802.o
 obj-$(CONFIG_LEDS_LOCOMO)		+= leds-locomo.o
 obj-$(CONFIG_LEDS_LM3530)		+= leds-lm3530.o
 obj-$(CONFIG_LEDS_LM3533)		+= leds-lm3533.o
+obj-$(CONFIG_LEDS_LM3633)		+= leds-lm3633.o
 obj-$(CONFIG_LEDS_LM3642)		+= leds-lm3642.o
 obj-$(CONFIG_LEDS_MIKROTIK_RB532)	+= leds-rb532.o
 obj-$(CONFIG_LEDS_S3C24XX)		+= leds-s3c24xx.o
@@ -24,6 +25,10 @@ obj-$(CONFIG_LEDS_PCA9532)		+= leds-pca9532.o
 obj-$(CONFIG_LEDS_QPNP)			+= leds-qpnp.o
 obj-$(CONFIG_LEDS_QPNP_FLASH)		+= leds-qpnp-flash.o
 obj-$(CONFIG_LEDS_QPNP_WLED)		+= leds-qpnp-wled.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_LEDS_QPNP_RGB)		+= leds-qpnp-rgb.o
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 obj-$(CONFIG_LEDS_GPIO_REGISTER)	+= leds-gpio-register.o
 obj-$(CONFIG_LEDS_GPIO)			+= leds-gpio.o
 obj-$(CONFIG_LEDS_LP3944)		+= leds-lp3944.o
@@ -58,6 +63,13 @@ obj-$(CONFIG_LEDS_MAX8997)		+= leds-max8997.o
 obj-$(CONFIG_LEDS_LM355x)		+= leds-lm355x.o
 obj-$(CONFIG_LEDS_BLINKM)		+= leds-blinkm.o
 obj-$(CONFIG_LEDS_MSM_GPIO_FLASH)	+= leds-msm-gpio-flash.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_LEDS_BD65B60)		+= leds-bd65b60.o
+obj-$(CONFIG_LEDS_ATC)			+= leds-atc.o
+obj-$(CONFIG_LEDS_ISL98611)		+= leds-isl98611.o
+obj-$(CONFIG_LEDS_ATC)			+= leds-atc.o
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 # LED SPI Drivers
 obj-$(CONFIG_LEDS_DAC124S085)		+= leds-dac124s085.o

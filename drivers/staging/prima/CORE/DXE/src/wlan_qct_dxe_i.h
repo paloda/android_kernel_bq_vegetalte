@@ -453,6 +453,10 @@ typedef enum {
 #define HDXE_MSG                     WPAL_TRACE
 #define HDXE_ASSERT(a)               VOS_ASSERT(a)
 
+<<<<<<< HEAD
+=======
+#define WLANDXE_PRONTO_TX_WQ       0x6
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*----------------------------------------------------------------------------
  *  Type Declarations
  * -------------------------------------------------------------------------*/
@@ -647,8 +651,11 @@ typedef struct
    WLANDXE_ChannelExConfigType     extraConfig;
    WLANDXE_DMAChannelType          assignedDMAChannel;
    wpt_uint64                      rxDoneHistogram;
+<<<<<<< HEAD
    wpt_timer                       healthMonitorTimer;
    wpt_msg                        *healthMonitorMsg;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 } WLANDXE_ChannelCBType;
 
 typedef struct

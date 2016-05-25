@@ -4,7 +4,11 @@ dtb-$(CONFIG_ARCH_XGENE) += apm-mustang.dtb
 targets += dtbs
 
 #used for cleaning - not building
+<<<<<<< HEAD
 subdir- := qcom
+=======
+subdir- := dts/qcom
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 DTB_NAMES := $(subst $\",,$(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES))
 ifneq ($(DTB_NAMES),)

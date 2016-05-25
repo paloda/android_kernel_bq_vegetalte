@@ -16,7 +16,11 @@ include $(srctree)/$(MACHINE)/Makefile.boot
 endif
 include $(srctree)/arch/arm/boot/dts/Makefile
 
+<<<<<<< HEAD
 include $(srctree)/arch/arm/boot/dts/Makefile
+=======
+#include $(srctree)/arch/arm/boot/dts/Makefile
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 ifneq ($(DTSSUBDIR),)
 DTSSUBDIR_INCS=$(foreach DIR, $(DTSSUBDIR), $(addsuffix /Makefile, $(addprefix $(srctree)/arch/arm/boot/dts/, $(DIR))))
 include $(DTSSUBDIR_INCS)

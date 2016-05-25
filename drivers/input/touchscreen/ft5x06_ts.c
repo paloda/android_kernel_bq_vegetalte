@@ -30,6 +30,7 @@
 #include <linux/firmware.h>
 #include <linux/debugfs.h>
 #include <linux/input/ft5x06_ts.h>
+<<<<<<< HEAD
 #include <linux/fs.h>
 #include <linux/unistd.h>
 #include <linux/uaccess.h>
@@ -37,6 +38,8 @@
 #include "lct_tp_fm_info.h"
 #include "lct_ctp_upgrade.h"
 #include "ctp_fw.h"
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #if defined(CONFIG_FB)
 #include <linux/notifier.h>
@@ -48,6 +51,7 @@
 #define FT_SUSPEND_LEVEL 1
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_FTS_GESTURE
 #include <linux/timer.h>
 #define FT_GESTURE_DOUBLECLICK		0x24
@@ -55,6 +59,8 @@
 #define FT_GESTRUE_POINTS_HEADER	8
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define FT_DRIVER_VERSION	0x02
 
 #define FT_META_REGS		3
@@ -81,11 +87,17 @@
 #define FT_REG_FW_VER		0xA6
 #define FT_REG_FW_VENDOR_ID	0xA8
 #define FT_REG_POINT_RATE	0x88
+<<<<<<< HEAD
 #define FT_REG_FREQ_HOP    	0x8B
 #define FT_REG_THGROUP		0x80
 #define FT_REG_ECC		0xCC
 #define FT_REG_RESET_FW		0x07
 #define FT_REG_FW_MAJ_VER	0xB1
+=======
+#define FT_REG_THGROUP		0x80
+#define FT_REG_ECC		0xCC
+#define FT_REG_RESET_FW		0x07
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define FT_REG_FW_MIN_VER	0xB2
 #define FT_REG_FW_SUB_MIN_VER	0xB3
 
@@ -144,7 +156,11 @@
 * make sure the application data is valid.
 */
 #define FT_FW_CHECK(x, ts_data) \
+<<<<<<< HEAD
 	(((ts_data->family_id == FT6X36_ID)&&(!ts_data->pdata->ignore_id_check)) ? \
+=======
+	(ts_data->family_id == FT6X36_ID ? \
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	(((x)->data[0x104] ^ (x)->data[0x105]) == 0xFF \
 	&& ((x)->data[0x106] ^ (x)->data[0x107]) == 0xFF) : \
 	(((x)->data[(x)->size - 8] ^ (x)->data[(x)->size - 6]) == 0xFF \
@@ -188,8 +204,11 @@
 #define PINCTRL_STATE_SUSPEND	"pmx_ts_suspend"
 #define PINCTRL_STATE_RELEASE	"pmx_ts_release"
 
+<<<<<<< HEAD
 #define FW_AUTO_UPGRADE	1
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 enum {
 	FT_BLOADER_VERSION_LZ4 = 0,
 	FT_BLOADER_VERSION_Z7 = 1,
@@ -249,6 +268,7 @@ struct ft5x06_ts_data {
 	struct pinctrl_state *pinctrl_state_release;
 };
 
+<<<<<<< HEAD
 struct device *ft5x06_dev=NULL;
 #ifdef SUPPORT_READ_TP_VERSION
 	char tp_version[50] = {0};
@@ -263,6 +283,8 @@ static char ft5x06_gesture_state;
 static char ft5x06_gesture_open=0;
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int ft5x06_i2c_read(struct i2c_client *client, char *writebuf,
 			   int writelen, char *readbuf, int readlen)
 {
@@ -375,6 +397,7 @@ static void ft5x06_update_fw_ver(struct ft5x06_ts_data *data)
 		data->fw_ver[0], data->fw_ver[1], data->fw_ver[2]);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_FTS_GESTURE
 extern void qpnp_kernel_vib_enable(int value);
 extern int stk_ps_enable_for_double_tap(void);
@@ -419,6 +442,8 @@ static void ft5x06_read_gesture_data(struct ft5x06_ts_data *data)
 }
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static irqreturn_t ft5x06_ts_interrupt(int irq, void *dev_id)
 {
 	struct ft5x06_ts_data *data = dev_id;
@@ -436,6 +461,7 @@ static irqreturn_t ft5x06_ts_interrupt(int irq, void *dev_id)
 	ip_dev = data->input_dev;
 	buf = data->tch_data;
 
+<<<<<<< HEAD
 #ifdef CONFIG_FTS_GESTURE
 	if(1 == ft5x06_gesture_open)
 	{
@@ -448,6 +474,8 @@ static irqreturn_t ft5x06_ts_interrupt(int irq, void *dev_id)
 	}
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = ft5x06_i2c_read(data->client, &reg, 1,
 			buf, data->tch_data_len);
 	if (rc < 0) {
@@ -493,6 +521,7 @@ static irqreturn_t ft5x06_ts_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int ft5x06_power_on(struct ft5x06_ts_data *data, bool on)
 {
 	int rc=0;
@@ -504,13 +533,100 @@ static int ft5x06_power_on(struct ft5x06_ts_data *data, bool on)
 			gpio_set_value(data->pdata->power_ldo_gpio, 1);	
 		}	 
 #else
+=======
+static int ft5x06_gpio_configure(struct ft5x06_ts_data *data, bool on)
+{
+	int err = 0;
+
+	if (on) {
+		if (gpio_is_valid(data->pdata->irq_gpio)) {
+			err = gpio_request(data->pdata->irq_gpio,
+						"ft5x06_irq_gpio");
+			if (err) {
+				dev_err(&data->client->dev,
+					"irq gpio request failed");
+				goto err_irq_gpio_req;
+			}
+
+			err = gpio_direction_input(data->pdata->irq_gpio);
+			if (err) {
+				dev_err(&data->client->dev,
+					"set_direction for irq gpio failed\n");
+				goto err_irq_gpio_dir;
+			}
+		}
+
+		if (gpio_is_valid(data->pdata->reset_gpio)) {
+			err = gpio_request(data->pdata->reset_gpio,
+						"ft5x06_reset_gpio");
+			if (err) {
+				dev_err(&data->client->dev,
+					"reset gpio request failed");
+				goto err_irq_gpio_dir;
+			}
+
+			err = gpio_direction_output(data->pdata->reset_gpio, 0);
+			if (err) {
+				dev_err(&data->client->dev,
+				"set_direction for reset gpio failed\n");
+				goto err_reset_gpio_dir;
+			}
+			msleep(data->pdata->hard_rst_dly);
+			gpio_set_value_cansleep(data->pdata->reset_gpio, 1);
+		}
+
+		return 0;
+	} else {
+		if (gpio_is_valid(data->pdata->irq_gpio))
+			gpio_free(data->pdata->irq_gpio);
+		if (gpio_is_valid(data->pdata->reset_gpio)) {
+			/*
+			 * This is intended to save leakage current
+			 * only. Even if the call(gpio_direction_input)
+			 * fails, only leakage current will be more but
+			 * functionality will not be affected.
+			 */
+			err = gpio_direction_input(data->pdata->reset_gpio);
+			if (err) {
+				dev_err(&data->client->dev,
+					"unable to set direction for gpio "
+					"[%d]\n", data->pdata->irq_gpio);
+			}
+			gpio_free(data->pdata->reset_gpio);
+		}
+
+		return 0;
+	}
+
+err_reset_gpio_dir:
+	if (gpio_is_valid(data->pdata->reset_gpio))
+		gpio_free(data->pdata->reset_gpio);
+err_irq_gpio_dir:
+	if (gpio_is_valid(data->pdata->irq_gpio))
+		gpio_free(data->pdata->irq_gpio);
+err_irq_gpio_req:
+	return err;
+}
+
+static int ft5x06_power_on(struct ft5x06_ts_data *data, bool on)
+{
+	int rc;
+
+	if (!on)
+		goto power_off;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = regulator_enable(data->vdd);
 	if (rc) {
 		dev_err(&data->client->dev,
 			"Regulator vdd enable failed rc=%d\n", rc);
 		return rc;
 	}
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = regulator_enable(data->vcc_i2c);
 	if (rc) {
 		dev_err(&data->client->dev,
@@ -521,29 +637,42 @@ static int ft5x06_power_on(struct ft5x06_ts_data *data, bool on)
 	return rc;
 
 power_off:
+<<<<<<< HEAD
 	#if 1
 	if (gpio_is_valid(data->pdata->power_ldo_gpio)) {
 		gpio_free(data->pdata->power_ldo_gpio);
 	}
 	#else
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = regulator_disable(data->vdd);
 	if (rc) {
 		dev_err(&data->client->dev,
 			"Regulator vdd disable failed rc=%d\n", rc);
 		return rc;
 	}
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = regulator_disable(data->vcc_i2c);
 	if (rc) {
 		dev_err(&data->client->dev,
 			"Regulator vcc_i2c disable failed rc=%d\n", rc);
+<<<<<<< HEAD
         #if 0
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		rc = regulator_enable(data->vdd);
 		if (rc) {
 			dev_err(&data->client->dev,
 				"Regulator vdd enable failed rc=%d\n", rc);
 		}
+<<<<<<< HEAD
 		#endif
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	return rc;
@@ -555,6 +684,7 @@ static int ft5x06_power_init(struct ft5x06_ts_data *data, bool on)
 
 	if (!on)
 		goto pwr_deinit;
+<<<<<<< HEAD
 #if 1
 	if (gpio_is_valid(data->pdata->power_ldo_gpio)) {
 			rc = gpio_request(data->pdata->power_ldo_gpio, "ft5x06_ldo_gpio");
@@ -569,6 +699,9 @@ static int ft5x06_power_init(struct ft5x06_ts_data *data, bool on)
 			}
 		}	
 #else
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	data->vdd = regulator_get(&data->client->dev, "vdd");
 	if (IS_ERR(data->vdd)) {
 		rc = PTR_ERR(data->vdd);
@@ -586,13 +719,21 @@ static int ft5x06_power_init(struct ft5x06_ts_data *data, bool on)
 			goto reg_vdd_put;
 		}
 	}
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	data->vcc_i2c = regulator_get(&data->client->dev, "vcc_i2c");
 	if (IS_ERR(data->vcc_i2c)) {
 		rc = PTR_ERR(data->vcc_i2c);
 		dev_err(&data->client->dev,
 			"Regulator get failed vcc_i2c rc=%d\n", rc);
+<<<<<<< HEAD
 		//goto reg_vdd_set_vtg;
+=======
+		goto reg_vdd_set_vtg;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	if (regulator_count_voltages(data->vcc_i2c) > 0) {
@@ -609,6 +750,7 @@ static int ft5x06_power_init(struct ft5x06_ts_data *data, bool on)
 
 reg_vcc_i2c_put:
 	regulator_put(data->vcc_i2c);
+<<<<<<< HEAD
 
 #if 1
 free_ldo_gpio:	
@@ -616,21 +758,33 @@ free_ldo_gpio:
 		gpio_free(data->pdata->power_ldo_gpio);
 
 #else
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 reg_vdd_set_vtg:
 	if (regulator_count_voltages(data->vdd) > 0)
 		regulator_set_voltage(data->vdd, 0, FT_VTG_MAX_UV);
 reg_vdd_put:
 	regulator_put(data->vdd);
+<<<<<<< HEAD
 #endif
 	return rc;
 
 pwr_deinit:
 #if 0
+=======
+	return rc;
+
+pwr_deinit:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (regulator_count_voltages(data->vdd) > 0)
 		regulator_set_voltage(data->vdd, 0, FT_VTG_MAX_UV);
 
 	regulator_put(data->vdd);
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (regulator_count_voltages(data->vcc_i2c) > 0)
 		regulator_set_voltage(data->vcc_i2c, 0, FT_I2C_VTG_MAX_UV);
 
@@ -692,6 +846,7 @@ err_pinctrl_get:
 	return retval;
 }
 
+<<<<<<< HEAD
 static int ft5x06_ts_pinctrl_select(struct ft5x06_ts_data *ft5x06_data,
 						bool on)
 {
@@ -721,17 +876,23 @@ static int ft5x06_ts_pinctrl_select(struct ft5x06_ts_data *ft5x06_data,
 #ifdef CONFIG_PM
 int ft5x06_gesture_open_export(void);
 int ft5x06_gesture_close_export(void);
+=======
+#ifdef CONFIG_PM
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int ft5x06_ts_suspend(struct device *dev)
 {
 	struct ft5x06_ts_data *data = dev_get_drvdata(dev);
 	char txbuf[2], i;
 	int err;
 
+<<<<<<< HEAD
 #ifdef CONFIG_FTS_GESTURE
 	if(ft5x06_gesture_open_export() == 1)
 		return 0;
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (data->loading_fw) {
 		dev_info(dev, "Firmware loading in process...\n");
 		return 0;
@@ -741,11 +902,14 @@ static int ft5x06_ts_suspend(struct device *dev)
 		dev_info(dev, "Already in suspend state\n");
 		return 0;
 	}
+<<<<<<< HEAD
 	if (data->ts_pinctrl) {
 		err = ft5x06_ts_pinctrl_select(data, false);
 		if (err < 0)
 			dev_err(dev, "Cannot get idle pinctrl state\n");
 	}
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	disable_irq(data->client->irq);
 
@@ -777,10 +941,46 @@ static int ft5x06_ts_suspend(struct device *dev)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (data->ts_pinctrl) {
+		err = pinctrl_select_state(data->ts_pinctrl,
+					data->pinctrl_state_suspend);
+		if (err < 0)
+			dev_err(dev, "Cannot get suspend pinctrl state\n");
+	}
+
+	err = ft5x06_gpio_configure(data, false);
+	if (err < 0) {
+		dev_err(&data->client->dev,
+			"failed to put gpios in suspend state\n");
+		goto gpio_configure_fail;
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	data->suspended = true;
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+gpio_configure_fail:
+	if (data->ts_pinctrl) {
+		err = pinctrl_select_state(data->ts_pinctrl,
+					data->pinctrl_state_active);
+		if (err < 0)
+			dev_err(dev, "Cannot get active pinctrl state\n");
+	}
+	if (data->pdata->power_on) {
+		err = data->pdata->power_on(true);
+		if (err)
+			dev_err(dev, "power on failed");
+	} else {
+		err = ft5x06_power_on(data, true);
+		if (err)
+			dev_err(dev, "power on failed");
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 pwr_off_fail:
 	if (gpio_is_valid(data->pdata->reset_gpio)) {
 		gpio_set_value_cansleep(data->pdata->reset_gpio, 0);
@@ -791,12 +991,16 @@ pwr_off_fail:
 	return err;
 }
 
+<<<<<<< HEAD
 static bool usb_online = false;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int ft5x06_ts_resume(struct device *dev)
 {
 	struct ft5x06_ts_data *data = dev_get_drvdata(dev);
 	int err;
 
+<<<<<<< HEAD
 #ifdef CONFIG_FTS_GESTURE
 	if(ft5x06_gesture_close_export()==1) {
 		if (usb_online)
@@ -805,6 +1009,8 @@ static int ft5x06_ts_resume(struct device *dev)
 	}
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!data->suspended) {
 		dev_dbg(dev, "Already in awake state\n");
 		return 0;
@@ -823,10 +1029,26 @@ static int ft5x06_ts_resume(struct device *dev)
 			return err;
 		}
 	}
+<<<<<<< HEAD
 	if (data->ts_pinctrl) {
 		err = ft5x06_ts_pinctrl_select(data, true);
 		if (err < 0)
 			dev_err(dev, "Cannot get default pinctrl state\n");
+=======
+
+	if (data->ts_pinctrl) {
+		err = pinctrl_select_state(data->ts_pinctrl,
+				data->pinctrl_state_active);
+		if (err < 0)
+			dev_err(dev, "Cannot get active pinctrl state\n");
+	}
+
+	err = ft5x06_gpio_configure(data, true);
+	if (err < 0) {
+		dev_err(&data->client->dev,
+			"failed to put gpios in resue state\n");
+		goto err_gpio_configuration;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	if (gpio_is_valid(data->pdata->reset_gpio)) {
@@ -837,14 +1059,38 @@ static int ft5x06_ts_resume(struct device *dev)
 
 	msleep(data->pdata->soft_rst_dly);
 
+<<<<<<< HEAD
 	if (usb_online)
 		ft5x0x_write_reg(data->client,FT_REG_FREQ_HOP,0x01);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	enable_irq(data->client->irq);
 
 	data->suspended = false;
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_gpio_configuration:
+	if (data->ts_pinctrl) {
+		err = pinctrl_select_state(data->ts_pinctrl,
+					data->pinctrl_state_suspend);
+		if (err < 0)
+			dev_err(dev, "Cannot get suspend pinctrl state\n");
+	}
+	if (data->pdata->power_on) {
+		err = data->pdata->power_on(false);
+		if (err)
+			dev_err(dev, "power off failed");
+	} else {
+		err = ft5x06_power_on(data, false);
+		if (err)
+			dev_err(dev, "power off failed");
+	}
+	return err;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static const struct dev_pm_ops ft5x06_ts_pm_ops = {
@@ -964,9 +1210,16 @@ static int ft5x06_fw_upgrade_start(struct i2c_client *client,
 		is_5336_fwsize_30 = false;
 
 	for (i = 0, j = 0; i < FT_UPGRADE_LOOP; i++) {
+<<<<<<< HEAD
 		/* reset - write 0xaa and 0x55 to reset register */
 		if ((ts_data->family_id == FT6X06_ID || ts_data->family_id == FT6X36_ID)
 				&&(!ts_data->pdata->ignore_id_check))
+=======
+		msleep(FT_EARSE_DLY_MS);
+		/* reset - write 0xaa and 0x55 to reset register */
+		if (ts_data->family_id == FT6X06_ID
+			|| ts_data->family_id == FT6X36_ID)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			reset_reg = FT_RST_CMD_REG2;
 		else
 			reset_reg = FT_RST_CMD_REG1;
@@ -982,12 +1235,19 @@ static int ft5x06_fw_upgrade_start(struct i2c_client *client,
 
 		/* Enter upgrade mode */
 		w_buf[0] = FT_UPGRADE_55;
+<<<<<<< HEAD
 		w_buf[1] = FT_UPGRADE_AA;
 		do {
 			j++;
 			ft5x06_i2c_write(client, w_buf, 2);
 			msleep(FT_RETRY_DLY);
 		} while (j < FT_MAX_TRIES);
+=======
+		ft5x06_i2c_write(client, w_buf, 1);
+		usleep(FT_55_AA_DLY_NS);
+		w_buf[0] = FT_UPGRADE_AA;
+		ft5x06_i2c_write(client, w_buf, 1);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		/* check READ_ID */
 		msleep(info.delay_readid);
@@ -1003,7 +1263,10 @@ static int ft5x06_fw_upgrade_start(struct i2c_client *client,
 			dev_err(&client->dev, "Upgrade ID mismatch(%d), IC=0x%x 0x%x, info=0x%x 0x%x\n",
 				i, r_buf[0], r_buf[1],
 				info.upgrade_id_1, info.upgrade_id_2);
+<<<<<<< HEAD
 				j=0;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		} else
 			break;
 	}
@@ -1020,8 +1283,22 @@ static int ft5x06_fw_upgrade_start(struct i2c_client *client,
 		is_5336_new_bootloader = FT_BLOADER_VERSION_LZ4;
 	else if (r_buf[0] == 7)
 		is_5336_new_bootloader = FT_BLOADER_VERSION_Z7;
+<<<<<<< HEAD
 	else if (r_buf[0] >= 0x0f )
 		is_5336_new_bootloader = FT_BLOADER_VERSION_GZF;
+=======
+	else if (r_buf[0] >= 0x0f &&
+		((ts_data->family_id == FT_FT5336_FAMILY_ID_0x11) ||
+		(ts_data->family_id == FT_FT5336_FAMILY_ID_0x12) ||
+		(ts_data->family_id == FT_FT5336_FAMILY_ID_0x13) ||
+		(ts_data->family_id == FT_FT5336_FAMILY_ID_0x14)))
+		is_5336_new_bootloader = FT_BLOADER_VERSION_GZF;
+	else
+		is_5336_new_bootloader = FT_BLOADER_VERSION_LZ4;
+
+	dev_dbg(&client->dev, "bootloader type=%d, r_buf=0x%x, family_id=0x%x\n",
+		is_5336_new_bootloader, r_buf[0], ts_data->family_id);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* is_5336_new_bootloader = FT_BLOADER_VERSION_GZF; */
 
 	/* erase app and panel paramenter area */
@@ -1144,6 +1421,7 @@ static int ft5x06_fw_upgrade_start(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lct_ft5x06_fw_upgrade_get_data(struct device *dev,struct firmware *fw)
 {
 	struct file* filp = NULL;
@@ -1188,6 +1466,12 @@ static int ft5x06_fw_upgrade(struct device *dev, bool force)
 {
 	struct ft5x06_ts_data *data = dev_get_drvdata(dev);
 	struct firmware fw;
+=======
+static int ft5x06_fw_upgrade(struct device *dev, bool force)
+{
+	struct ft5x06_ts_data *data = dev_get_drvdata(dev);
+	const struct firmware *fw = NULL;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int rc;
 	u8 fw_file_maj, fw_file_min, fw_file_sub_min, fw_file_vendor_id;
 	bool fw_upgrade = false;
@@ -1196,6 +1480,7 @@ static int ft5x06_fw_upgrade(struct device *dev, bool force)
 		dev_err(dev, "Device is in suspend state: Exit FW upgrade\n");
 		return -EBUSY;
 	}
+<<<<<<< HEAD
 	
 	fw.data = devm_kzalloc(&data->client->dev,32*1024, GFP_KERNEL);
 	if (!fw.data) {
@@ -1215,10 +1500,23 @@ static int ft5x06_fw_upgrade(struct device *dev, bool force)
 	if (fw.size < FT_FW_MIN_SIZE || fw.size > FT_FW_MAX_SIZE) {
 		lct_set_ctp_upgrade_status("File size err");
 		dev_err(dev, "Invalid firmware size (%zu)\n", fw.size);
+=======
+
+	rc = request_firmware(&fw, data->fw_name, dev);
+	if (rc < 0) {
+		dev_err(dev, "Request firmware failed - %s (%d)\n",
+						data->fw_name, rc);
+		return rc;
+	}
+
+	if (fw->size < FT_FW_MIN_SIZE || fw->size > FT_FW_MAX_SIZE) {
+		dev_err(dev, "Invalid firmware size (%zu)\n", fw->size);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		rc = -EIO;
 		goto rel_fw;
 	}
 
+<<<<<<< HEAD
 	if ((data->family_id == FT6X36_ID)&&(!data->pdata->ignore_id_check)) {
 		fw_file_maj = FT_FW_FILE_MAJ_VER_FT6X36(&fw);
 		fw_file_vendor_id = FT_FW_FILE_VENDOR_ID_FT6X36(&fw);
@@ -1228,6 +1526,17 @@ static int ft5x06_fw_upgrade(struct device *dev, bool force)
 	}
 	fw_file_min = FT_FW_FILE_MIN_VER(&fw);
 	fw_file_sub_min = FT_FW_FILE_SUB_MIN_VER(&fw);
+=======
+	if (data->family_id == FT6X36_ID) {
+		fw_file_maj = FT_FW_FILE_MAJ_VER_FT6X36(fw);
+		fw_file_vendor_id = FT_FW_FILE_VENDOR_ID_FT6X36(fw);
+	} else {
+		fw_file_maj = FT_FW_FILE_MAJ_VER(fw);
+		fw_file_vendor_id = FT_FW_FILE_VENDOR_ID(fw);
+	}
+	fw_file_min = FT_FW_FILE_MIN_VER(fw);
+	fw_file_sub_min = FT_FW_FILE_SUB_MIN_VER(fw);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	dev_info(dev, "Current firmware: %d.%d.%d", data->fw_ver[0],
 				data->fw_ver[1], data->fw_ver[2]);
@@ -1241,13 +1550,17 @@ static int ft5x06_fw_upgrade(struct device *dev, bool force)
 		fw_upgrade = true;
 
 	if (!fw_upgrade) {
+<<<<<<< HEAD
 		lct_set_ctp_upgrade_status("Version lower");
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		dev_info(dev, "Exiting fw upgrade...\n");
 		rc = -EFAULT;
 		goto rel_fw;
 	}
 
 	/* start firmware upgrade */
+<<<<<<< HEAD
 	if (FT_FW_CHECK(&fw, data)) {
 		rc = ft5x06_fw_upgrade_start(data->client, fw.data, fw.size);
 		if (rc < 0){
@@ -1269,6 +1582,20 @@ static int ft5x06_fw_upgrade(struct device *dev, bool force)
 	sprintf(tp_version, "[fw]0x%x,[ic]FT5x06",data->fw_ver[0]);
 	init_tp_fm_info(0,tp_version,"truly");
 #endif
+=======
+	if (FT_FW_CHECK(fw, data)) {
+		rc = ft5x06_fw_upgrade_start(data->client, fw->data, fw->size);
+		if (rc < 0)
+			dev_err(dev, "update failed (%d). try later...\n", rc);
+		else if (data->pdata->info.auto_cal)
+			ft5x06_auto_cal(data->client);
+	} else {
+		dev_err(dev, "FW format error\n");
+		rc = -EIO;
+	}
+
+	ft5x06_update_fw_ver(data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	FT_STORE_TS_INFO(data->ts_info, data->family_id, data->pdata->name,
 			data->pdata->num_max_touches, data->pdata->group_id,
@@ -1276,6 +1603,7 @@ static int ft5x06_fw_upgrade(struct device *dev, bool force)
 			data->pdata->fw_name, data->fw_ver[0],
 			data->fw_ver[1], data->fw_ver[2]);
 rel_fw:
+<<<<<<< HEAD
 	//release_firmware(fw);
 	return rc;
 }
@@ -1285,6 +1613,12 @@ static int ft5x06_ctp_upgrade_func(void)
 	return ft5x06_fw_upgrade(ft5x06_dev,true);
 }
 
+=======
+	release_firmware(fw);
+	return rc;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static ssize_t ft5x06_update_fw_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
@@ -1292,6 +1626,7 @@ static ssize_t ft5x06_update_fw_show(struct device *dev,
 	return snprintf(buf, 2, "%d\n", data->loading_fw);
 }
 
+<<<<<<< HEAD
 static void ft5x06_ctp_upgrade_read_ver_func(char *ver)
 {
 	if(ver == NULL)
@@ -1302,6 +1637,8 @@ static void ft5x06_ctp_upgrade_read_ver_func(char *ver)
 	return ;
 }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static ssize_t ft5x06_update_fw_store(struct device *dev,
 				struct device_attribute *attr,
 				const char *buf, size_t size)
@@ -1333,7 +1670,11 @@ static ssize_t ft5x06_update_fw_store(struct device *dev,
 	return size;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(update_fw, 0444, ft5x06_update_fw_show,
+=======
+static DEVICE_ATTR(update_fw, 0664, ft5x06_update_fw_show,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				ft5x06_update_fw_store);
 
 static ssize_t ft5x06_force_update_fw_store(struct device *dev,
@@ -1389,6 +1730,7 @@ static ssize_t ft5x06_fw_name_store(struct device *dev,
 }
 
 static DEVICE_ATTR(fw_name, 0664, ft5x06_fw_name_show, ft5x06_fw_name_store);
+<<<<<<< HEAD
 #ifdef CONFIG_FTS_GESTURE
 int ft5x06_gesture_open_export(void)
 {
@@ -1436,6 +1778,8 @@ int ft5x06_gesture_close_export(void)
 }
 EXPORT_SYMBOL(ft5x06_gesture_close_export);
 #endif
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static bool ft5x06_debug_addr_is_valid(int addr)
 {
@@ -1654,12 +1998,15 @@ static int ft5x06_parse_dt(struct device *dev,
 	if (pdata->irq_gpio < 0)
 		return pdata->irq_gpio;
 
+<<<<<<< HEAD
 	/* power ldo gpio info*/
 	pdata->power_ldo_gpio = of_get_named_gpio_flags(np, "focaltech,power_ldo-gpio",
 				0, &pdata->power_ldo_gpio_flags);
 	if (pdata->power_ldo_gpio < 0)
 		return pdata->power_ldo_gpio;
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pdata->fw_name = "ft_fw.bin";
 	rc = of_property_read_string(np, "focaltech,fw-name", &pdata->fw_name);
 	if (rc && (rc != -EINVAL)) {
@@ -1777,6 +2124,7 @@ static int ft5x06_parse_dt(struct device *dev,
 }
 #endif
 
+<<<<<<< HEAD
 void ft5x06_usbdetect_on(struct work_struct *w)
 {
 	struct ft5x06_ts_data *data = dev_get_drvdata(ft5x06_dev);
@@ -1847,6 +2195,8 @@ static const struct file_operations fts_gesture_proc_fops= {
 };
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int ft5x06_ts_probe(struct i2c_client *client,
 			   const struct i2c_device_id *id)
 {
@@ -1904,7 +2254,11 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 	data->tch_data_len = FT_TCH_LEN(pdata->num_max_touches);
 	data->tch_data = devm_kzalloc(&client->dev,
 				data->tch_data_len, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!data) {
+=======
+	if (!data->tch_data) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		dev_err(&client->dev, "Not enough memory\n");
 		return -ENOMEM;
 	}
@@ -1929,9 +2283,12 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 	__set_bit(EV_KEY, input_dev->evbit);
 	__set_bit(EV_ABS, input_dev->evbit);
 	__set_bit(BTN_TOUCH, input_dev->keybit);
+<<<<<<< HEAD
 #ifdef CONFIG_FTS_GESTURE
 	__set_bit(116, input_dev->keybit);
 #endif
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
 
 	input_mt_init_slots(input_dev, pdata->num_max_touches, 0);
@@ -1976,11 +2333,20 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 
 	err = ft5x06_ts_pinctrl_init(data);
 	if (!err && data->ts_pinctrl) {
+<<<<<<< HEAD
+=======
+		/*
+		 * Pinctrl handle is optional. If pinctrl handle is found
+		 * let pins to be configured in active state. If not
+		 * found continue further without error.
+		 */
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		err = pinctrl_select_state(data->ts_pinctrl,
 					data->pinctrl_state_active);
 		if (err < 0) {
 			dev_err(&client->dev,
 				"failed to select pin to active state");
+<<<<<<< HEAD
 			goto pinctrl_deinit;
 		}
 	} else {
@@ -2016,6 +2382,16 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 		}
 		msleep(data->pdata->hard_rst_dly);
 		gpio_set_value_cansleep(data->pdata->reset_gpio, 1);
+=======
+		}
+	}
+
+	err = ft5x06_gpio_configure(data, true);
+	if (err < 0) {
+		dev_err(&client->dev,
+			"Failed to configure the gpios\n");
+		goto err_gpio_req;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	/* make sure CTP already finish startup process */
@@ -2026,14 +2402,22 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 	err = ft5x06_i2c_read(client, &reg_addr, 1, &reg_value, 1);
 	if (err < 0) {
 		dev_err(&client->dev, "version read failed");
+<<<<<<< HEAD
 		goto free_reset_gpio;
+=======
+		goto free_gpio;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	dev_info(&client->dev, "Device ID = 0x%x\n", reg_value);
 
 	if ((pdata->family_id != reg_value) && (!pdata->ignore_id_check)) {
 		dev_err(&client->dev, "%s:Unsupported controller\n", __func__);
+<<<<<<< HEAD
 		goto free_reset_gpio;
+=======
+		goto free_gpio;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	data->family_id = pdata->family_id;
@@ -2044,6 +2428,7 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 				client->dev.driver->name, data);
 	if (err) {
 		dev_err(&client->dev, "request irq failed\n");
+<<<<<<< HEAD
 		goto free_reset_gpio;
 	}
 
@@ -2054,6 +2439,11 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 		printk("create_proc_entry gesture_proc failed\n");
 #endif
 
+=======
+		goto free_gpio;
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	err = device_create_file(&client->dev, &dev_attr_fw_name);
 	if (err) {
 		dev_err(&client->dev, "sys file creation failed\n");
@@ -2135,6 +2525,7 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 
 	ft5x06_update_fw_ver(data);
 	ft5x06_update_fw_vendor_id(data);
+<<<<<<< HEAD
 #ifdef SUPPORT_READ_TP_VERSION
 	memset(tp_version, 0, sizeof(tp_version));
 	sprintf(tp_version, "[fw]0x%x,[ic]FT5x06",data->fw_ver[0]);
@@ -2144,6 +2535,8 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 	lct_ctp_upgrade_int(ft5x06_ctp_upgrade_func,ft5x06_ctp_upgrade_read_ver_func);
 	INIT_WORK(&usbdetect_on,ft5x06_usbdetect_on);
 	INIT_WORK(&usbdetect_off,ft5x06_usbdetect_off);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	FT_STORE_TS_INFO(data->ts_info, data->family_id, data->pdata->name,
 			data->pdata->num_max_touches, data->pdata->group_id,
@@ -2167,10 +2560,13 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 	register_early_suspend(&data->early_suspend);
 #endif
 
+<<<<<<< HEAD
 #if FW_AUTO_UPGRADE
 	ft5x06_fw_upgrade(ft5x06_dev, false);
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 
 free_debug_dir:
@@ -2183,6 +2579,7 @@ free_fw_name_sys:
 	device_remove_file(&client->dev, &dev_attr_fw_name);
 irq_free:
 	free_irq(client->irq, data);
+<<<<<<< HEAD
 free_reset_gpio:
 	if (gpio_is_valid(pdata->reset_gpio))
 		gpio_free(pdata->reset_gpio);
@@ -2191,6 +2588,14 @@ free_irq_gpio:
 		gpio_free(pdata->irq_gpio);
 err_gpio_req:
 pinctrl_deinit:
+=======
+free_gpio:
+	if (gpio_is_valid(pdata->reset_gpio))
+		gpio_free(pdata->reset_gpio);
+	if (gpio_is_valid(pdata->irq_gpio))
+		gpio_free(pdata->irq_gpio);
+err_gpio_req:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (data->ts_pinctrl) {
 		if (IS_ERR_OR_NULL(data->pinctrl_state_release)) {
 			devm_pinctrl_put(data->ts_pinctrl);
@@ -2202,7 +2607,10 @@ pinctrl_deinit:
 				pr_err("failed to select relase pinctrl state\n");
 		}
 	}
+<<<<<<< HEAD
 pwr_off:
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (pdata->power_on)
 		pdata->power_on(false);
 	else

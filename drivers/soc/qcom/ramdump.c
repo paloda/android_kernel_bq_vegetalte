@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,7 +29,11 @@
 #include <linux/elf.h>
 #include <linux/wait.h>
 #include <soc/qcom/ramdump.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/dma-mapping.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define RAMDUMP_WAIT_MSECS	120000
 
@@ -44,6 +52,10 @@ struct ramdump_device {
 	struct ramdump_segment *segments;
 	size_t elfcore_size;
 	char *elfcore_buf;
+<<<<<<< HEAD
+=======
+	struct dma_attrs attrs;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 static int ramdump_open(struct inode *inode, struct file *filep)
@@ -148,7 +160,15 @@ static ssize_t ramdump_read(struct file *filep, char __user *buf, size_t count,
 
 	copy_size = min(count, (size_t)MAX_IOREMAP_SIZE);
 	copy_size = min((unsigned long)copy_size, data_left);
+<<<<<<< HEAD
 	device_mem = vaddr ?: ioremap_nocache(addr, copy_size);
+=======
+
+	init_dma_attrs(&rd_dev->attrs);
+	dma_set_attr(DMA_ATTR_SKIP_ZEROING, &rd_dev->attrs);
+	device_mem = vaddr ?: dma_remap(rd_dev->device.parent, NULL, addr,
+						copy_size, &rd_dev->attrs);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	origdevice_mem = device_mem;
 
 	if (device_mem == NULL) {
@@ -198,8 +218,14 @@ static ssize_t ramdump_read(struct file *filep, char __user *buf, size_t count,
 	}
 
 	kfree(finalbuf);
+<<<<<<< HEAD
 	if (!vaddr)
 		iounmap(origdevice_mem);
+=======
+	if (!vaddr && origdevice_mem)
+		dma_unremap(rd_dev->device.parent, origdevice_mem, copy_size);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	*pos += copy_size;
 
 	pr_debug("Ramdump(%s): Read %zd bytes from address %lx.",
@@ -208,8 +234,14 @@ static ssize_t ramdump_read(struct file *filep, char __user *buf, size_t count,
 	return *pos - orig_pos;
 
 ramdump_done:
+<<<<<<< HEAD
 	if (!vaddr)
 		iounmap(origdevice_mem);
+=======
+	if (!vaddr && origdevice_mem)
+		dma_unremap(rd_dev->device.parent, origdevice_mem, copy_size);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	kfree(finalbuf);
 	rd_dev->data_ready = 0;
 	*pos = 0;

@@ -1099,6 +1099,7 @@ void __init sanity_check_meminfo(void)
 	struct memblock_region *reg;
 #ifdef CONFIG_ENABLE_VMALLOC_SAVING
 	struct memblock_region *prev_reg = NULL;
+<<<<<<< HEAD
 
 	for_each_memblock(memory, reg) {
 		if (prev_reg == NULL) {
@@ -1111,6 +1112,20 @@ void __init sanity_check_meminfo(void)
 
 		vmalloc_limit += reg->base - (prev_reg->base + prev_reg->size);
 
+=======
+
+	for_each_memblock(memory, reg) {
+		if (prev_reg == NULL) {
+			prev_reg = reg;
+			continue;
+		}
+
+		if (reg->base > MAX_HOLE_ADDRESS)
+			break;
+
+		vmalloc_limit += reg->base - (prev_reg->base + prev_reg->size);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		prev_reg = reg;
 	}
 #endif

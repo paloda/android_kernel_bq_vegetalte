@@ -21,7 +21,7 @@
 #include <net/net_ratelimit.h>
 
 static int zero = 0;
-static int one = 1;
+//static int one = 1;
 static int ushort_max = USHRT_MAX;
 
 #ifdef CONFIG_RPS

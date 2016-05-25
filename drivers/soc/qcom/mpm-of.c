@@ -653,7 +653,11 @@ static void msm_mpm_work_fn(struct work_struct *work)
 	unsigned long flags;
 	while (1) {
 		bool allow;
+<<<<<<< HEAD
 		wait_for_completion(&wake_wq);
+=======
+		wait_for_completion_interruptible(&wake_wq);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		spin_lock_irqsave(&msm_mpm_lock, flags);
 		allow = msm_mpm_irqs_detectable(true) &&
 				msm_mpm_gpio_irqs_detectable(true);

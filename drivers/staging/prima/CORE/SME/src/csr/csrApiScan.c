@@ -2056,6 +2056,38 @@ static void csrScanAddToOccupiedChannels(
         } 
     }
 }
+<<<<<<< HEAD
+=======
+
+void csrAddChannelToOccupiedChannelList(tpAniSirGlobal pMac,
+                                     tANI_U8   channel)
+{
+    eHalStatus status;
+    tCsrChannel *pOccupiedChannels = &pMac->scan.occupiedChannels;
+    tANI_U8 numOccupiedChannels = pOccupiedChannels->numChannels;
+    tANI_U8 *pOccupiedChannelList = pOccupiedChannels->channelList;
+    if (!csrIsChannelPresentInList(pOccupiedChannelList,
+         numOccupiedChannels, channel))
+    {
+        status = csrAddToChannelListFront(pOccupiedChannelList,
+                                          numOccupiedChannels, channel);
+        if(HAL_STATUS_SUCCESS(status))
+        {
+            pOccupiedChannels->numChannels++;
+            smsLog(pMac, LOG2, FL("added channel %d to the list (count=%d)"),
+                channel, pOccupiedChannels->numChannels);
+            if (pOccupiedChannels->numChannels >
+                CSR_BG_SCAN_OCCUPIED_CHANNEL_LIST_LEN)
+            {
+                pOccupiedChannels->numChannels =
+                    CSR_BG_SCAN_OCCUPIED_CHANNEL_LIST_LEN;
+                smsLog(pMac, LOG2,
+                       FL("trim no of Channels for Occ channel list"));
+            }
+        }
+    }
+}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 
 //Put the BSS into the scan result list
@@ -2586,6 +2618,7 @@ eHalStatus csrScanFilterResults(tpAniSirGlobal pMac)
     return status;
 }
 
+<<<<<<< HEAD
 /**
  * csrScanFilterDFSResults
  *
@@ -2668,6 +2701,8 @@ eHalStatus csrScanFilterDFSResults(tpAniSirGlobal pMac)
     return status;
 }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 eHalStatus csrScanCopyResultList(tpAniSirGlobal pMac, tScanResultHandle hIn, tScanResultHandle *phResult)
 {
@@ -3484,6 +3519,10 @@ void csrApplyPower2Current( tpAniSirGlobal pMac )
 void csrApplyChannelPowerCountryInfo( tpAniSirGlobal pMac, tCsrChannel *pChannelList, tANI_U8 *countryCode, tANI_BOOLEAN updateRiva)
 {
     int i, j, count, countryIndex = -1;
+<<<<<<< HEAD
+=======
+    eNVChannelEnabledType channelEnabledType;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     tANI_U8 numChannels = 0;
     tANI_U8 tempNumChannels = 0;
     tANI_U8 channelIgnore = FALSE;
@@ -3501,6 +3540,7 @@ void csrApplyChannelPowerCountryInfo( tpAniSirGlobal pMac, tCsrChannel *pChannel
             }
         }
         tempNumChannels = CSR_MIN(pChannelList->numChannels, WNI_CFG_VALID_CHANNEL_LIST_LEN);
+<<<<<<< HEAD
 
         for(i=0; i < tempNumChannels; i++)
         {
@@ -3521,6 +3561,41 @@ void csrApplyChannelPowerCountryInfo( tpAniSirGlobal pMac, tCsrChannel *pChannel
             {
                 ChannelList.channelList[numChannels] = pChannelList->channelList[i];
                 numChannels++;
+=======
+        /* If user doesn't want to scan the DFS channels lets trim them from 
+        the valid channel list*/
+        for(i=0; i < tempNumChannels; i++)
+        {
+            channelIgnore = FALSE;
+            if( FALSE == pMac->scan.fEnableDFSChnlScan )
+            {
+                channelEnabledType =
+                    vos_nv_getChannelEnabledState(pChannelList->channelList[i]);
+            }
+            else
+            {
+                channelEnabledType = NV_CHANNEL_ENABLE;
+            }
+            if( NV_CHANNEL_ENABLE == channelEnabledType )
+            {
+                if( countryIndex != -1 )
+                {
+                    for(j=0; j < countryIgnoreList[countryIndex].channelCount; j++)
+                    {
+                        if( pChannelList->channelList[i] ==
+                                countryIgnoreList[countryIndex].channelList[j] )
+                        {
+                            channelIgnore = TRUE;
+                            break;
+                        }
+                    }
+                }
+                if( FALSE == channelIgnore )
+                {
+                   ChannelList.channelList[numChannels] = pChannelList->channelList[i];
+                   numChannels++;
+                }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             }
         }
         ChannelList.numChannels = numChannels;
@@ -3547,6 +3622,7 @@ void csrApplyChannelPowerCountryInfo( tpAniSirGlobal pMac, tCsrChannel *pChannel
     csrSetCfgCountryCode(pMac, countryCode);
 }
 
+<<<<<<< HEAD
 void csrUpdateFCCChannelList(tpAniSirGlobal pMac)
 {
     tCsrChannel ChannelList;
@@ -3571,6 +3647,8 @@ void csrUpdateFCCChannelList(tpAniSirGlobal pMac)
     csrSetCfgValidChannelList(pMac, ChannelList.channelList, chnlIndx);
 
 }
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 void csrResetCountryInformation( tpAniSirGlobal pMac, tANI_BOOLEAN fForce, tANI_BOOLEAN updateRiva )
 {
@@ -6217,6 +6295,7 @@ eHalStatus csrScanCopyRequest(tpAniSirGlobal pMac, tCsrScanRequest *pDstReq, tCs
                           /* Skip CH 144 if firmware support not present */
                           if (pSrcReq->ChannelInfo.ChannelList[index] == 144 && !ch144_support)
                               continue;
+<<<<<<< HEAD
                           /* Skip channel 12 and 13 when FCC constraint is true */
                           if ((pMac->scan.fcc_constraint) &&
                                  ((pSrcReq->ChannelInfo.ChannelList[index] ==12) ||
@@ -6227,6 +6306,8 @@ eHalStatus csrScanCopyRequest(tpAniSirGlobal pMac, tCsrScanRequest *pDstReq, tCs
                                   pSrcReq->ChannelInfo.ChannelList[index]);
                               continue;
                           }
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
                           NVchannel_state = vos_nv_getChannelEnabledState(
                                   pSrcReq->ChannelInfo.ChannelList[index]);
@@ -6289,9 +6370,13 @@ eHalStatus csrScanCopyRequest(tpAniSirGlobal pMac, tCsrScanRequest *pDstReq, tCs
                              */
                             if ( ( csrRoamIsValidChannel(pMac, pSrcReq->ChannelInfo.ChannelList[index]) ) )
                             {
+<<<<<<< HEAD
                                 if( ((pSrcReq->skipDfsChnlInP2pSearch ||
                                      (pMac->scan.fEnableDFSChnlScan ==
                                      DFS_CHNL_SCAN_DISABLED)) &&
+=======
+                                if( (pSrcReq->skipDfsChnlInP2pSearch && 
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                                     (NV_CHANNEL_DFS == vos_nv_getChannelEnabledState(pSrcReq->ChannelInfo.ChannelList[index])) )
 #ifdef FEATURE_WLAN_LFR
                                      /* 
@@ -7867,12 +7952,19 @@ eHalStatus csrGetCountryCode(tpAniSirGlobal pMac, tANI_U8 *pBuf, tANI_U8 *pbLen)
 
 void csrSetCfgScanControlList( tpAniSirGlobal pMac, tANI_U8 *countryCode, tCsrChannel *pChannelList  )
 {   
+<<<<<<< HEAD
     tANI_U8 i, j, k;
     tANI_BOOLEAN found=FALSE;  
     tANI_U8 *pControlList = NULL;
     tANI_U32 len = WNI_CFG_SCAN_CONTROL_LIST_LEN;
     tANI_U8 cfgActiveDFSChannels = 0;
     tANI_U8 *cfgActiveDFSChannelLIst = NULL;
+=======
+    tANI_U8 i, j;
+    tANI_BOOLEAN found=FALSE;  
+    tANI_U8 *pControlList = NULL;
+    tANI_U32 len = WNI_CFG_SCAN_CONTROL_LIST_LEN;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     if ( (pControlList = vos_mem_malloc(WNI_CFG_SCAN_CONTROL_LIST_LEN)) != NULL )
     {
@@ -7894,6 +7986,7 @@ void csrSetCfgScanControlList( tpAniSirGlobal pMac, tANI_U8 *countryCode, tCsrCh
                 {
                     pControlList[j+1] = csrGetScanType(pMac, pControlList[j]);
                     found = FALSE;  // reset the flag
+<<<<<<< HEAD
 
                     // When DFS mode is 2, mark static channels as active
                     if (pMac->scan.fEnableDFSChnlScan ==
@@ -7926,6 +8019,12 @@ void csrSetCfgScanControlList( tpAniSirGlobal pMac, tANI_U8 *countryCode, tCsrCh
 
             smsLog(pMac, LOG1, FL("fEnableDFSChnlScan %d"),
                                        pMac->scan.fEnableDFSChnlScan);
+=======
+                }
+                       
+            }            
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             VOS_TRACE(VOS_MODULE_ID_SME, VOS_TRACE_LEVEL_INFO,
                       "%s: dump scan control list",__func__);
             VOS_TRACE_HEX_DUMP(VOS_MODULE_ID_SME, VOS_TRACE_LEVEL_INFO,
@@ -7937,6 +8036,10 @@ void csrSetCfgScanControlList( tpAniSirGlobal pMac, tANI_U8 *countryCode, tCsrCh
     }//AllocateMemory
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 //if bgPeriod is 0, background scan is disabled. It is in millisecond units
 eHalStatus csrSetCfgBackgroundScanPeriod(tpAniSirGlobal pMac, tANI_U32 bgPeriod)
 {

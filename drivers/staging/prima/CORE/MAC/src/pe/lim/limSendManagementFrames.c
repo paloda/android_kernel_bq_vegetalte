@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -53,7 +57,11 @@
 #include "limAssocUtils.h"
 #include "limFT.h"
 #ifdef WLAN_FEATURE_11W
+<<<<<<< HEAD
 #include "wniCfg.h"
+=======
+#include "wniCfgAp.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 
 #if defined WLAN_FEATURE_VOWIFI
@@ -3461,6 +3469,24 @@ end:
 
 } // limSendReassocReqMgmtFrame
 
+<<<<<<< HEAD
+=======
+eHalStatus limAuthTxCompleteCnf(tpAniSirGlobal pMac, tANI_U32 txCompleteSuccess)
+{
+    limLog(pMac, LOG1,
+                   FL("txCompleteSuccess= %d"), txCompleteSuccess);
+    if(txCompleteSuccess)
+    {
+       pMac->authAckStatus = LIM_AUTH_ACK_RCD_SUCCESS;
+       // 'Change' timer for future activations
+       limDeactivateAndChangeTimer(pMac, eLIM_AUTH_RETRY_TIMER);
+    }
+    else
+       pMac->authAckStatus = LIM_AUTH_ACK_RCD_FAILURE;
+    return eHAL_STATUS_SUCCESS;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /**
  * \brief Send an Authentication frame
  *
@@ -3488,7 +3514,12 @@ limSendAuthMgmtFrame(tpAniSirGlobal pMac,
                      tpSirMacAuthFrameBody pAuthFrameBody,
                      tSirMacAddr           peerMacAddr,
                      tANI_U8               wepBit,
+<<<<<<< HEAD
                      tpPESession           psessionEntry 
+=======
+                     tpPESession           psessionEntry,
+                     tAniBool              waitForAck
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                                                        )
 {
     tANI_U8            *pFrame, *pBody;
@@ -3758,8 +3789,14 @@ limSendAuthMgmtFrame(tpAniSirGlobal pMac,
         txFlag |= HAL_USE_PEER_STA_REQUESTED_MASK;
     }
 
+<<<<<<< HEAD
     limLog( pMac, LOG1, FL("Sending Auth Frame over WQ5 to "MAC_ADDRESS_STR
                    " From " MAC_ADDRESS_STR),MAC_ADDR_ARRAY(pMacHdr->da),
+=======
+    limLog( pMac, LOG1,
+         FL("Sending Auth Frame over WQ5 with waitForAck %d to "MAC_ADDRESS_STR
+            " From " MAC_ADDRESS_STR), waitForAck, MAC_ADDR_ARRAY(pMacHdr->da),
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
               MAC_ADDR_ARRAY(psessionEntry->selfMacAddr));
 
     txFlag |= HAL_USE_FW_IN_TX_PATH;
@@ -3767,22 +3804,63 @@ limSendAuthMgmtFrame(tpAniSirGlobal pMac,
     MTRACE(macTrace(pMac, TRACE_CODE_TX_MGMT,
            psessionEntry->peSessionId,
            pMacHdr->fc.subType));
+<<<<<<< HEAD
     /// Queue Authentication frame in high priority WQ
     halstatus = halTxFrame( pMac, pPacket, ( tANI_U16 ) frameLen,
+=======
+    if(eSIR_TRUE == waitForAck)
+    {
+        pMac->authAckStatus = LIM_AUTH_ACK_NOT_RCD;
+
+        halstatus = halTxFrameWithTxComplete( pMac, pPacket,
+                    ( tANI_U16 ) frameLen,
+                    HAL_TXRX_FRM_802_11_MGMT,
+                    ANI_TXDIR_TODS,
+                    7,//SMAC_SWBD_TX_TID_MGMT_HIGH,
+                    limTxComplete, pFrame, limAuthTxCompleteCnf, txFlag );
+        MTRACE(macTrace(pMac, TRACE_CODE_TX_COMPLETE,
+               psessionEntry->peSessionId,
+               halstatus));
+        if (!HAL_STATUS_SUCCESS(halstatus))
+        {
+            limLog( pMac, LOGE,
+             FL("Could not send Auth frame, retCode=%X "),
+                    halstatus );
+            pMac->authAckStatus = LIM_AUTH_ACK_RCD_FAILURE;
+            //Pkt will be freed up by the callback
+        }
+    }
+    else
+    {
+      /// Queue Authentication frame in high priority WQ
+      halstatus = halTxFrame( pMac, pPacket, ( tANI_U16 ) frameLen,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                             HAL_TXRX_FRM_802_11_MGMT,
                             ANI_TXDIR_TODS,
                             7,//SMAC_SWBD_TX_TID_MGMT_HIGH,
                             limTxComplete, pFrame, txFlag );
+<<<<<<< HEAD
     MTRACE(macTrace(pMac, TRACE_CODE_TX_COMPLETE,
            psessionEntry->peSessionId,
            halstatus));
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
+=======
+      MTRACE(macTrace(pMac, TRACE_CODE_TX_COMPLETE,
+           psessionEntry->peSessionId,
+           halstatus));
+      if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
+      {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         limLog(pMac, LOGE,
                FL("*** Could not send Auth frame, retCode=%X ***"),
                halstatus);
 
         //Pkt will be freed up by the callback
+<<<<<<< HEAD
+=======
+      }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     return;

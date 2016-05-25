@@ -29,6 +29,10 @@ enum dump_client_type {
 	MSM_TMC1_REG, /* TMC_ETF */
 	MSM_LOG_BUF,
 	MSM_LOG_BUF_FIRST_IDX,
+<<<<<<< HEAD
+=======
+	MSM_TZ_LOG,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	MAX_NUM_CLIENTS,
 };
 
@@ -81,6 +85,10 @@ enum msm_dump_data_ids {
 	MSM_DUMP_DATA_TMC_REG = 0x100,
 	MSM_DUMP_DATA_LOG_BUF = 0x110,
 	MSM_DUMP_DATA_LOG_BUF_FIRST_IDX = 0x111,
+<<<<<<< HEAD
+=======
+	MSM_DUMP_DATA_TZ_LOG = 0x11F,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	MSM_DUMP_DATA_L2_TLB = 0x120,
 	MSM_DUMP_DATA_MAX = MAX_NUM_ENTRIES,
 };

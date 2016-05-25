@@ -61,7 +61,10 @@
 #define CHG_EN_BY_PIN_BIT		BIT(7)
 #define CHG_EN_ACTIVE_LOW_BIT		BIT(6)
 #define PRE_TO_FAST_REQ_CMD_BIT		BIT(5)
+<<<<<<< HEAD
 #define BAT_OVP_END_CHG_BIT		BIT(4)
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define CHG_CURR_TERM_DIS_BIT		BIT(3)
 #define CFG_AUTO_RECHG_DIS_BIT		BIT(2)
 #define CFG_CHG_INHIBIT_EN_BIT		BIT(0)
@@ -271,6 +274,7 @@ enum {
 
 static int otg_curr_ma[] = {350, 550, 950, 1500};
 
+<<<<<<< HEAD
 struct otp_backup_pool {
 	u8 reg_start;
 	u8 reg_end;
@@ -287,6 +291,8 @@ enum otp_backup_alg {
 	OTP_BACKUP_PROF_B_USE,
 };
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct smb1360_otg_regulator {
 	struct regulator_desc	rdesc;
 	struct regulator_dev	*rdev;
@@ -311,13 +317,19 @@ struct smb1360_chip {
 	bool				charging_disabled;
 	bool				recharge_disabled;
 	bool				chg_inhibit_disabled;
+<<<<<<< HEAD
 	bool				bat_ovp_end_chg_disabled;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	bool				iterm_disabled;
 	bool				shdn_after_pwroff;
 	bool				config_hard_thresholds;
 	bool				soft_jeita_supported;
+<<<<<<< HEAD
 	bool				battery_ovp_supported;
 	struct delayed_work		boardtemp_work;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int				iterm_ma;
 	int				vfloat_mv;
 	int				safety_time;
@@ -360,8 +372,11 @@ struct smb1360_chip {
 	bool				otg_fet_present;
 	bool				fet_gain_enabled;
 	int				otg_fet_enable_gpio;
+<<<<<<< HEAD
 	int				cfg_current_limited;
 	bool				lct_use_board_temp;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/* status tracking */
 	int				voltage_now;
@@ -405,6 +420,7 @@ struct smb1360_chip {
 	struct mutex			read_write_lock;
 	struct mutex			otp_gain_lock;
 	struct mutex			fg_access_request_lock;
+<<<<<<< HEAD
 	struct otp_backup_pool		otp_backup;
 	u8				current_gain_otp_reg;
 	bool				otp_hard_jeita_config;
@@ -415,6 +431,10 @@ struct smb1360_chip {
 
 static int BatteryTestStatus_enable = 0;
 
+=======
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int chg_time[] = {
 	192,
 	384,
@@ -621,6 +641,7 @@ out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int smb1360_select_fg_i2c_address(struct smb1360_chip *chip)
 {
 	unsigned short addr = chip->default_i2c_addr << 0x1;
@@ -647,6 +668,8 @@ static int smb1360_select_fg_i2c_address(struct smb1360_chip *chip)
 	return 0;
 }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define EXPONENT_MASK		0xF800
 #define MANTISSA_MASK		0x3FF
 #define SIGN_MASK		0x400
@@ -852,6 +875,7 @@ static int smb1360_enable_volatile_writes(struct smb1360_chip *chip)
 	return rc;
 }
 
+<<<<<<< HEAD
 void smb1360_otp_backup_pool_init(struct smb1360_chip *chip)
 {
 	struct otp_backup_pool *pool = &chip->otp_backup;
@@ -914,6 +938,8 @@ static int smb1360_otp_backup_alg_update(struct smb1360_chip *chip)
 	return rc;
 }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define TRIM_1C_REG		0x1C
 #define CHECK_USB100_GOOD_BIT	BIT(6)
 static bool is_usb100_broken(struct smb1360_chip *chip)
@@ -1362,7 +1388,11 @@ static int smb1360_set_appropriate_usb_current(struct smb1360_chip *chip)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (!BatteryTestStatus_enable && chip->therm_lvl_sel > 0
+=======
+	if (chip->therm_lvl_sel > 0
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			&& chip->therm_lvl_sel < (chip->thermal_levels - 1))
 		/*
 		 * consider thermal limit only when it is active and not at
@@ -1448,10 +1478,13 @@ static int smb1360_set_appropriate_usb_current(struct smb1360_chip *chip)
 			pr_debug("Couldn't find fastchg mA rc=%d\n", rc);
 			i = 0;
 		}
+<<<<<<< HEAD
 
 		if (chip->rsense_10mohm && current_ma < 600 && current_ma > 450)
 			i += 1;
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		/* set fastchg limit */
 		rc = smb1360_masked_write(chip, CHG_CURRENT_REG,
 			FASTCHG_CURR_MASK, i << FASTCHG_CURR_SHIFT);
@@ -1503,7 +1536,10 @@ static int smb1360_set_jeita_comp_curr(struct smb1360_chip *chip,
 }
 
 #define TEMP_THRE_SET(x) ((x + 300) / 10)
+<<<<<<< HEAD
 #define TEMP_THRE_GET(x) ((x * 10) - 300)
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int smb1360_set_soft_jeita_threshold(struct smb1360_chip *chip,
 					int cold_threshold, int hot_threshold)
 {
@@ -1512,7 +1548,11 @@ static int smb1360_set_soft_jeita_threshold(struct smb1360_chip *chip,
 	rc = smb1360_write(chip, JEITA_SOFT_COLD_REG,
 				TEMP_THRE_SET(cold_threshold));
 	if (rc) {
+<<<<<<< HEAD
 		pr_err("Couldn't set soft cold threshold, rc = %d\n", rc);
+=======
+		pr_err("Couldn't set cold threshold, rc = %d\n", rc);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return rc;
 	} else {
 		chip->soft_cold_thresh = cold_threshold;
@@ -1521,7 +1561,11 @@ static int smb1360_set_soft_jeita_threshold(struct smb1360_chip *chip,
 	rc = smb1360_write(chip, JEITA_SOFT_HOT_REG,
 				TEMP_THRE_SET(hot_threshold));
 	if (rc) {
+<<<<<<< HEAD
 		pr_err("Couldn't set soft hot threshold, rc = %d\n", rc);
+=======
+		pr_err("Couldn't set hot threshold, rc = %d\n", rc);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return rc;
 	} else {
 		chip->soft_hot_thresh = hot_threshold;
@@ -1530,6 +1574,7 @@ static int smb1360_set_soft_jeita_threshold(struct smb1360_chip *chip,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int smb1360_get_soft_jeita_threshold(struct smb1360_chip *chip,
 				int *cold_threshold, int *hot_threshold)
 {
@@ -1667,6 +1712,8 @@ static int smb1360_hard_jeita_otp_init(struct smb1360_chip *chip)
 	return rc;
 }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int smb1360_system_temp_level_set(struct smb1360_chip *chip,
 							int lvl_sel)
 {
@@ -1757,6 +1804,7 @@ static int smb1360_battery_is_writeable(struct power_supply *psy,
 	return rc;
 }
 
+<<<<<<< HEAD
 // lct.mshuai modify 2015-01-08
 
 static ssize_t smb1360_battery_test_status_show(struct device *dev,
@@ -2062,6 +2110,8 @@ void lct_charging_adjust(struct smb1360_chip *chip)
 	}
 }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int smb1360_battery_get_property(struct power_supply *psy,
 				       enum power_supply_property prop,
 				       union power_supply_propval *val)
@@ -2086,8 +2136,12 @@ static int smb1360_battery_get_property(struct power_supply *psy,
 		val->intval = smb1360_get_prop_charge_type(chip);
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
+<<<<<<< HEAD
 		val->intval = smb1360_get_prop_batt_capacity(chip);
                 runin_work(chip, val->intval);//add by lct.mshuai @20150108
+=======
+		val->intval = 50; /*smb1360_get_prop_batt_capacity(chip);*/
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
 		val->intval = smb1360_get_prop_chg_full_design(chip);
@@ -2128,11 +2182,14 @@ static void smb1360_external_power_changed(struct power_supply *psy)
 	else
 		current_limit = prop.intval / 1000;
 
+<<<<<<< HEAD
 	if (chip->cfg_current_limited != -EINVAL) {
 		if (current_limit > chip->cfg_current_limited)
 			current_limit = chip->cfg_current_limited;
 	}
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("current_limit = %d\n", current_limit);
 
 	if (chip->usb_psy_ma != current_limit) {
@@ -2272,6 +2329,7 @@ end:
 	pm_relax(chip->dev);
 }
 
+<<<<<<< HEAD
 static void smb1360_boardtemp_work_fn(struct work_struct *work)
 {
 	struct delayed_work *dwork = to_delayed_work(work);
@@ -2279,6 +2337,8 @@ static void smb1360_boardtemp_work_fn(struct work_struct *work)
 	lct_charging_adjust(chip);
 }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int hot_soft_handler(struct smb1360_chip *chip, u8 rt_stat)
 {
 	chip->soft_hot_rt_stat = rt_stat;
@@ -2349,7 +2409,11 @@ static int usbin_uv_handler(struct smb1360_chip *chip, u8 rt_stat)
 {
 	bool usb_present = !rt_stat;
 
+<<<<<<< HEAD
 	pr_err("chip->usb_present = %d usb_present = %d\n",
+=======
+	pr_debug("chip->usb_present = %d usb_present = %d\n",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				chip->usb_present, usb_present);
 	if (chip->usb_present && !usb_present) {
 		/* USB removed */
@@ -2361,6 +2425,7 @@ static int usbin_uv_handler(struct smb1360_chip *chip, u8 rt_stat)
 		/* USB inserted */
 		chip->usb_present = usb_present;
 		power_supply_set_present(chip->usb_psy, usb_present);
+<<<<<<< HEAD
 		if (chip->lct_use_board_temp)
 			schedule_delayed_work(&chip->boardtemp_work, msecs_to_jiffies(3000));
 	}
@@ -2394,6 +2459,8 @@ static int usbin_ov_handler(struct smb1360_chip *chip, u8 rt_stat)
 					: POWER_SUPPLY_HEALTH_GOOD;
         printk("POWER_SUPPLY_HEALTH_OVERVOLTAGE = 5 POWER_SUPPLY_HEALTH_GOOD = 1 health=%d \n", health);
 		power_supply_set_health_state(chip->usb_psy, health);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	return 0;
@@ -2474,6 +2541,7 @@ static int batt_id_complete_handler(struct smb1360_chip *chip, u8 rt_stat)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int smb1360_adjust_current_gain(struct smb1360_chip *chip,
 						int gain_factor)
 {
@@ -2500,19 +2568,81 @@ static int smb1360_adjust_current_gain(struct smb1360_chip *chip,
 
 	if (gain_factor) {
 		rc = smb1360_fg_read(chip, CURRENT_GAIN_LSB_REG, &register_s[0]);
+=======
+static int smb1360_select_fg_i2c_address(struct smb1360_chip *chip)
+{
+	unsigned short addr = chip->default_i2c_addr << 0x1;
+
+	switch (chip->fg_access_type) {
+	case FG_ACCESS_CFG:
+		addr = (addr & ~FG_I2C_CFG_MASK) | FG_CFG_I2C_ADDR;
+		break;
+	case FG_ACCESS_PROFILE_A:
+		addr = (addr & ~FG_I2C_CFG_MASK) | FG_PROFILE_A_ADDR;
+		break;
+	case FG_ACCESS_PROFILE_B:
+		addr = (addr & ~FG_I2C_CFG_MASK) | FG_PROFILE_B_ADDR;
+		break;
+	default:
+		pr_err("Invalid FG access type=%d\n", chip->fg_access_type);
+		return -EINVAL;
+	}
+
+	chip->fg_i2c_addr = addr >> 0x1;
+	pr_debug("FG_access_type=%d fg_i2c_addr=%x\n", chip->fg_access_type,
+							chip->fg_i2c_addr);
+
+	return 0;
+}
+
+static int smb1360_adjust_current_gain(struct smb1360_chip *chip,
+							int gain_factor)
+{
+	int i, rc;
+	int64_t current_gain, new_current_gain;
+	u8 reg[2];
+	u16 reg_value1 = 0, reg_value2 = 0;
+	u8 reg_val_mapping[][2] = {
+			{0xE0, 0x1D},
+			{0xE1, 0x00},
+			{0xE2, 0x1E},
+			{0xE3, 0x00},
+			{0xE4, 0x00},
+			{0xE5, 0x00},
+			{0xE6, 0x00},
+			{0xE7, 0x00},
+			{0xE8, 0x00},
+			{0xE9, 0x00},
+			{0xEA, 0x00},
+			{0xEB, 0x00},
+			{0xEC, 0x00},
+			{0xED, 0x00},
+			{0xEF, 0x00},
+			{0xF0, 0x50},
+			{0xF1, 0x00},
+	};
+
+	if (gain_factor) {
+		rc = smb1360_fg_read(chip, CURRENT_GAIN_LSB_REG, &reg[0]);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (rc) {
 			pr_err("Unable to set FG access I2C address rc=%d\n",
 									rc);
 			return rc;
 		}
 
+<<<<<<< HEAD
 		rc = smb1360_fg_read(chip, CURRENT_GAIN_MSB_REG, &register_s[1]);
+=======
+		rc = smb1360_fg_read(chip, CURRENT_GAIN_MSB_REG, &reg[1]);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (rc) {
 			pr_err("Unable to set FG access I2C address rc=%d\n",
 									rc);
 			return rc;
 		}
 
+<<<<<<< HEAD
 		reg_value1 = (register_s[1] << 8) | register_s[0];
 		current_gain = float_decode(reg_value1);
 		new_current_gain = MICRO_UNIT  + (gain_factor * current_gain);
@@ -2538,6 +2668,34 @@ static int smb1360_adjust_current_gain(struct smb1360_chip *chip,
 			pr_err("Update OTP backup algorithm failed\n");
 			return rc;
 		}
+=======
+		reg_value1 = (reg[1] << 8) | reg[0];
+		current_gain = float_decode(reg_value1);
+		new_current_gain = MICRO_UNIT  + (gain_factor * current_gain);
+		reg_value2 = float_encode(new_current_gain);
+		reg[0] = reg_value2 & 0xFF;
+		reg[1] = (reg_value2 & 0xFF00) >> 8;
+		pr_debug("current_gain_reg=0x%x current_gain_decoded=%lld new_current_gain_decoded=%lld new_current_gain_reg=0x%x\n",
+			reg_value1, current_gain, new_current_gain, reg_value2);
+
+		for (i = 0; i < ARRAY_SIZE(reg_val_mapping); i++) {
+			if (reg_val_mapping[i][0] == 0xE1)
+				reg_val_mapping[i][1] = reg[0];
+			if (reg_val_mapping[i][0] == 0xE3)
+				reg_val_mapping[i][1] = reg[1];
+
+			pr_debug("Writing reg_add=%x value=%x\n",
+				reg_val_mapping[i][0], reg_val_mapping[i][1]);
+
+			rc = smb1360_fg_write(chip, reg_val_mapping[i][0],
+					reg_val_mapping[i][1]);
+			if (rc) {
+				pr_err("Write fg address 0x%x failed, rc = %d\n",
+						reg_val_mapping[i][0], rc);
+				return rc;
+			}
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} else {
 		pr_debug("Disabling gain correction\n");
 		rc = smb1360_fg_write(chip, 0xF0, 0x00);
@@ -2568,12 +2726,19 @@ static int smb1360_otp_gain_config(struct smb1360_chip *chip, int gain_factor)
 		goto restore_fg;
 	}
 
+<<<<<<< HEAD
 	if (chip->rsense_10mohm || chip->otg_fet_present) {
 		rc = smb1360_adjust_current_gain(chip, gain_factor);
 		if (rc) {
 			pr_err("Unable to modify current gain rc=%d\n", rc);
 			goto restore_fg;
 		}
+=======
+	rc = smb1360_adjust_current_gain(chip, gain_factor);
+	if (rc) {
+		pr_err("Unable to modify current gain rc=%d\n", rc);
+		goto restore_fg;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	rc = smb1360_masked_write(chip, CFG_FG_BATT_CTRL_REG,
@@ -2741,7 +2906,10 @@ static struct irq_handler_info handlers[] = {
 			},
 			{
 				.name		= "usbin_ov",
+<<<<<<< HEAD
                                 .smb_irq	= usbin_ov_handler,
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			},
 			{
 				.name		= "unused",
@@ -3527,7 +3695,10 @@ static int smb1360_check_batt_profile(struct smb1360_chip *chip)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	/* enable FG access */
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = smb1360_enable_fg_access(chip);
 	if (rc) {
 		pr_err("FG access timed-out, rc = %d\n", rc);
@@ -3536,7 +3707,10 @@ static int smb1360_check_batt_profile(struct smb1360_chip *chip)
 	/* delay after handshaking for profile-switch to continue */
 	msleep(1500);
 
+<<<<<<< HEAD
 	/* reset FG */
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = smb1360_force_fg_reset(chip);
 	if (rc) {
 		pr_err("Couldn't reset FG rc=%d\n", rc);
@@ -3706,8 +3880,12 @@ disable_fg_reset:
 	 */
 	if (!(chip->workaround_flags & WRKRND_FG_CONFIG_FAIL)) {
 		if (chip->delta_soc != -EINVAL) {
+<<<<<<< HEAD
 			//reg = abs(((chip->delta_soc * MAX_8_BITS) / 100) - 1);
                         reg = 0x01;//optimization for report soc changed irq,please to set "qcom,fg-delta-soc" int dts to open this prop
+=======
+			reg = abs(((chip->delta_soc * MAX_8_BITS) / 100) - 1);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			pr_debug("delta_soc=%d reg=%x\n", chip->delta_soc, reg);
 			rc = smb1360_write(chip, SOC_DELTA_REG, reg);
 			if (rc) {
@@ -4033,7 +4211,11 @@ static int smb1360_jeita_init(struct smb1360_chip *chip)
 			}
 		}
 	} else {
+<<<<<<< HEAD
 		if (chip->soft_jeita_supported || chip->battery_ovp_supported) {
+=======
+		if (chip->soft_jeita_supported) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			temp = min(chip->warm_bat_ma, chip->cool_bat_ma);
 			rc = smb1360_set_jeita_comp_curr(chip, temp);
 			if (rc) {
@@ -4283,6 +4465,7 @@ static int smb1360_hw_init(struct smb1360_chip *chip)
 		return rc;
 	}
 
+<<<<<<< HEAD
         rc = smb1360_masked_write(chip, CFG_CHG_MISC_REG,
                                         BAT_OVP_END_CHG_BIT,
                                         chip->bat_ovp_end_chg_disabled ?
@@ -4292,6 +4475,8 @@ static int smb1360_hw_init(struct smb1360_chip *chip)
                 return rc;
         }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* battery missing detection */
 	rc = smb1360_masked_write(chip, CFG_BATT_MISSING_REG,
 				BATT_MISSING_SRC_THERM_BIT,
@@ -4409,6 +4594,7 @@ static int smb1360_delayed_hw_init(struct smb1360_chip *chip)
 
 	pr_debug("delayed hw init start!\n");
 
+<<<<<<< HEAD
 	if (chip->otp_hard_jeita_config) {
 		rc = smb1360_hard_jeita_otp_init(chip);
 		if (rc) {
@@ -4417,6 +4603,8 @@ static int smb1360_delayed_hw_init(struct smb1360_chip *chip)
 			return rc;
 		}
 	}
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = smb1360_check_batt_profile(chip);
 	if (rc) {
 		pr_err("Unable to modify battery profile, rc=%d\n", rc);
@@ -4585,6 +4773,7 @@ static int smb1360_parse_jeita_params(struct smb1360_chip *chip)
 		pr_debug("config_hard_thresholds = %d, cold_bat_decidegc = %d, hot_bat_decidegc = %d\n",
 			chip->config_hard_thresholds, chip->cold_bat_decidegc,
 			chip->hot_bat_decidegc);
+<<<<<<< HEAD
 	} else if (of_property_read_bool(node, "qcom,otp-hard-jeita-config")) {
 		rc = of_property_read_u32(node, "qcom,otp-cold-bat-decidegc",
 					&chip->otp_cold_bat_decidegc);
@@ -4628,6 +4817,8 @@ static int smb1360_parse_jeita_params(struct smb1360_chip *chip)
 						&chip->cool_bat_ma);
 		if (rc)
 			pr_err("cool_bat_ma property error for ovp, rc = %d\n", rc);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	if (of_property_read_bool(node, "qcom,soft-jeita-supported")) {
@@ -4676,6 +4867,7 @@ static int smb1360_parse_jeita_params(struct smb1360_chip *chip)
 		}
 
 		chip->soft_jeita_supported = true;
+<<<<<<< HEAD
 	} else {
 		/*
 		 * If no soft JEITA configuration required from devicetree,
@@ -4694,6 +4886,12 @@ static int smb1360_parse_jeita_params(struct smb1360_chip *chip)
 
 	pr_debug("soft-jeita-enabled = %d, battery-ovp-supported = %d, warm-bat-decidegc = %d, cool-bat-decidegc = %d, cool-bat-mv = %d, warm-bat-mv = %d, cool-bat-ma = %d, warm-bat-ma = %d\n",
 		chip->soft_jeita_supported, chip->battery_ovp_supported, chip->warm_bat_decidegc,
+=======
+	}
+
+	pr_debug("soft-jeita-enabled = %d, warm-bat-decidegc = %d, cool-bat-decidegc = %d, cool-bat-mv = %d, warm-bat-mv = %d, cool-bat-ma = %d, warm-bat-ma = %d\n",
+		chip->soft_jeita_supported, chip->warm_bat_decidegc,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		chip->cool_bat_decidegc, chip->cool_bat_mv, chip->warm_bat_mv,
 		chip->cool_bat_ma, chip->warm_bat_ma);
 
@@ -4780,9 +4978,12 @@ static int smb_parse_dt(struct smb1360_chip *chip)
 	chip->chg_inhibit_disabled = of_property_read_bool(node,
 						"qcom,chg-inhibit-disabled");
 
+<<<<<<< HEAD
 	chip->bat_ovp_end_chg_disabled = of_property_read_bool(node,
 						"qcom,bat-ovp-end-chg-disabled");
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	chip->charging_disabled = of_property_read_bool(node,
 						"qcom,charging-disabled");
 
@@ -4906,6 +5107,7 @@ static int smb_parse_dt(struct smb1360_chip *chip)
 		}
 	}
 
+<<<<<<< HEAD
 	rc = of_property_read_u32(node, "qcom,cfg-current-limited",
 					&chip->cfg_current_limited);
 	if (rc < 0)
@@ -4919,6 +5121,8 @@ static int smb_parse_dt(struct smb1360_chip *chip)
 		pr_err("enabled lct_use_board_temp for this project\n");
 	}
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 
@@ -4980,7 +5184,11 @@ static int smb1360_probe(struct i2c_client *client,
 	chip->default_i2c_addr = client->addr;
 
 	pr_debug("default_i2c_addr=%x\n", chip->default_i2c_addr);
+<<<<<<< HEAD
 	smb1360_otp_backup_pool_init(chip);
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = smb1360_hw_init(chip);
 	if (rc < 0) {
 		dev_err(&client->dev,
@@ -5011,6 +5219,7 @@ static int smb1360_probe(struct i2c_client *client,
 	chip->batt_psy.external_power_changed = smb1360_external_power_changed;
 	chip->batt_psy.property_is_writeable = smb1360_battery_is_writeable;
 
+<<<<<<< HEAD
         /*lct.mshuai modify @20150108*/
         rc = sysfs_create_file(&chip->client->dev.kobj,
 				&attrs[0].attr);
@@ -5054,6 +5263,8 @@ static int smb1360_probe(struct i2c_client *client,
         }
     // lct.mshuai modify @20150108
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = power_supply_register(chip->dev, &chip->batt_psy);
 	if (rc < 0) {
 		dev_err(&client->dev,
@@ -5192,6 +5403,7 @@ static int smb1360_probe(struct i2c_client *client,
 				rc);
 	}
 
+<<<<<<< HEAD
 	//add by lct.mshuai@20141113
 	if (chip->lct_use_board_temp)
 	{
@@ -5199,6 +5411,8 @@ static int smb1360_probe(struct i2c_client *client,
 		schedule_delayed_work(&chip->boardtemp_work, msecs_to_jiffies(30000));
 	}
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	dev_info(chip->dev, "SMB1360 revision=0x%x probe success! batt=%d usb=%d soc=%d\n",
 			chip->revision,
 			smb1360_get_prop_batt_present(chip),
@@ -5226,6 +5440,7 @@ static int smb1360_remove(struct i2c_client *client)
 	mutex_destroy(&chip->otp_gain_lock);
 	mutex_destroy(&chip->fg_access_request_lock);
 	debugfs_remove_recursive(chip->debug_root);
+<<<<<<< HEAD
     // add by lct.mshuai @20150108
 	sysfs_remove_file(&chip->client->dev.kobj,
 						&attrs[3].attr);
@@ -5239,6 +5454,9 @@ static int smb1360_remove(struct i2c_client *client)
         sysfs_remove_file(&chip->client->dev.kobj,
                                                 &attrs[0].attr);
     // add by lct.mshuai @20150108
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 
@@ -5318,8 +5536,11 @@ static int smb1360_resume(struct device *dev)
 		mutex_unlock(&chip->irq_complete);
 	}
 
+<<<<<<< HEAD
 	power_supply_changed(&chip->batt_psy);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 

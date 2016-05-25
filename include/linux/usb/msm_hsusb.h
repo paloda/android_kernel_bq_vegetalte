@@ -2,7 +2,11 @@
  *
  * Copyright (C) 2008 Google, Inc.
  * Author: Brian Swetland <swetland@google.com>
+<<<<<<< HEAD
  * Copyright (c) 2009-2014, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2009-2015, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -105,6 +109,12 @@ enum msm_usb_phy_type {
 };
 
 #define IDEV_CHG_MAX	1500
+<<<<<<< HEAD
+=======
+#define IDEV_CHG_DCP	1300
+#define IDEV_CHG_PROP	1200
+#define IDEV_CHG_TA	1100
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define IDEV_CHG_MIN	500
 #define IUNIT		100
 
@@ -267,9 +277,21 @@ enum usb_ctrl {
 		allowing VDDmin without putting PHY into retention.
  * @usb_id_gpio: Gpio used for USB ID detection.
  * @bool phy_dvdd_always_on: PHY DVDD is supplied by always on PMIC LDO.
+<<<<<<< HEAD
  */
 struct msm_otg_platform_data {
 	int *phy_init_seq;
+=======
+ * @bool mpp_id_routing: ID is routed via a single MPP that can be used to
+		trigger as well as sample ID voltage.
+ * @mpp_id_amux_chan: AMUX Chan when ID MPP is in Analog mode
+ * @mpp_id_pull:      Pull Value when ID MPP is in Digital mode.
+ * @mpp_id_vin:       VIN (voltage level)  when ID MPP is in Digital mode.
+ */
+struct msm_otg_platform_data {
+	int *phy_init_seq;
+	int *phy_host_init_seq;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int (*vbus_power)(bool on);
 	unsigned power_budget;
 	enum usb_mode_type mode;
@@ -298,8 +320,16 @@ struct msm_otg_platform_data {
 	bool enable_ahb2ahb_bypass;
 	bool disable_retention_with_vdd_min;
 	int usb_id_gpio;
+<<<<<<< HEAD
 	int usbid_switch;
 	bool phy_dvdd_always_on;
+=======
+	bool phy_dvdd_always_on;
+	bool mpp_id_routing;
+	unsigned int mpp_id_amux_chan;
+	unsigned int mpp_id_pull;
+	unsigned int mpp_id_vin;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct clk *system_clk;
 };
 
@@ -309,6 +339,10 @@ struct msm_otg_platform_data {
 #define PHY_HOST_MODE			BIT(2)
 #define PHY_CHARGER_CONNECTED		BIT(3)
 #define PHY_VBUS_VALID_OVERRIDE		BIT(4)
+<<<<<<< HEAD
+=======
+#define PHY_RM_PULLDOWN			BIT(5)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /* Timeout (in msec) values (min - max) associated with OTG timers */
 
@@ -381,6 +415,7 @@ struct msm_otg_platform_data {
  * @in_lpm: indicates low power mode (LPM) state.
  * @async_int: IRQ line on which ASYNC interrupt arrived in LPM.
  * @cur_power: The amount of mA available from downstream port.
+ * @otg_wq: Strict order otg workqueue for OTG works (SM/ID/SUSPEND).
  * @chg_work: Charger detection work.
  * @chg_state: The state of charger detection process.
  * @chg_type: The type of charger attached.
@@ -407,6 +442,10 @@ struct msm_otg_platform_data {
 	     the charger detection starts. When USB is disconnected and in lpm
 	     pm_done is set to true.
  * @ext_id_irq: IRQ for ID interrupt.
+<<<<<<< HEAD
+=======
+ * @falsesdp_retry_count: Counter for number of FALSE_SDP retries
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  */
 struct msm_otg {
 	struct usb_phy phy;
@@ -452,8 +491,13 @@ struct msm_otg {
 	struct notifier_block pm_notify;
 	atomic_t in_lpm;
 	atomic_t set_fpr_with_lpm_exit;
+<<<<<<< HEAD
+=======
+	bool err_event_seen;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int async_int;
 	unsigned cur_power;
+	struct workqueue_struct *otg_wq;
 	struct delayed_work chg_work;
 	struct delayed_work id_status_work;
 	struct delayed_work suspend_work;
@@ -461,7 +505,10 @@ struct msm_otg {
 	enum usb_chg_type chg_type;
 	unsigned dcd_time;
 	struct wake_lock wlock;
+<<<<<<< HEAD
         struct wake_lock plug_wake_lock;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct notifier_block usbdev_nb;
 	unsigned mA_port;
 	struct timer_list id_timer;
@@ -544,6 +591,11 @@ struct msm_otg {
 	bool pm_done;
 	struct qpnp_vadc_chip	*vadc_dev;
 	int ext_id_irq;
+<<<<<<< HEAD
+=======
+	wait_queue_head_t	host_suspend_wait;
+	int falsesdp_retry_count;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct ci13xxx_platform_data {

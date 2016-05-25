@@ -50,6 +50,10 @@ static int get_cal_path(int path_type);
 #define EC_PORT_ID_SECONDARY_MI2S_TX  2
 #define EC_PORT_ID_TERTIARY_MI2S_TX   3
 #define EC_PORT_ID_QUATERNARY_MI2S_TX 4
+<<<<<<< HEAD
+=======
+#define EC_PORT_ID_SLIMBUS_1_TX       5
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static struct mutex routing_lock;
 
@@ -59,7 +63,11 @@ static int fm_switch_enable;
 static int fm_pcmrx_switch_enable;
 static int lsm_mux_slim_port;
 static int slim0_rx_aanc_fb_port;
+<<<<<<< HEAD
 static int msm_route_ec_ref_rx = 8; /* NONE */
+=======
+static int msm_route_ec_ref_rx = 9; /* NONE */
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static uint32_t voc_session_id = ALL_SESSION_VSID;
 static int msm_route_ext_ec_ref = AFE_PORT_INVALID;
 static bool is_custom_stereo_on;
@@ -80,12 +88,20 @@ enum {
 #define SLIMBUS_4_TX_TEXT "SLIMBUS_4_TX"
 #define SLIMBUS_5_TX_TEXT "SLIMBUS_5_TX"
 #define TERT_MI2S_TX_TEXT "TERT_MI2S_TX"
+<<<<<<< HEAD
+=======
+#define QUAT_MI2S_TX_TEXT "QUAT_MI2S_TX"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define LSM_FUNCTION_TEXT "LSM Function"
 static const char * const mad_audio_mux_text[] = {
 	"None",
 	SLIMBUS_0_TX_TEXT, SLIMBUS_1_TX_TEXT, SLIMBUS_2_TX_TEXT,
 	SLIMBUS_3_TX_TEXT, SLIMBUS_4_TX_TEXT, SLIMBUS_5_TX_TEXT,
+<<<<<<< HEAD
 	TERT_MI2S_TX_TEXT
+=======
+	TERT_MI2S_TX_TEXT, QUAT_MI2S_TX_TEXT
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct msm_pcm_route_bdai_pp_params {
@@ -143,6 +159,13 @@ static void msm_pcm_routing_cfg_pp(int port_id, int copp_idx, int topology,
 		pr_debug("%s: DTS_EAGLE_COPP_TOPOLOGY_ID\n", __func__);
 		msm_dts_eagle_init_post(port_id, copp_idx, topology);
 		break;
+<<<<<<< HEAD
+=======
+	case ADM_CMD_COPP_OPEN_TOPOLOGY_ID_AUDIOSPHERE:
+		pr_debug("%s: TOPOLOGY_ID_AUDIOSPHERE\n", __func__);
+		msm_qti_pp_asphere_init(port_id, copp_idx);
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		/* custom topology specific feature param handlers */
 		break;
@@ -175,6 +198,13 @@ static void msm_pcm_routing_deinit_pp(int port_id, int topology)
 		pr_debug("%s: DTS_EAGLE_COPP_TOPOLOGY_ID\n", __func__);
 		msm_dts_eagle_deinit_post(port_id, topology);
 		break;
+<<<<<<< HEAD
+=======
+	case ADM_CMD_COPP_OPEN_TOPOLOGY_ID_AUDIOSPHERE:
+		pr_debug("%s: TOPOLOGY_ID_AUDIOSPHERE\n", __func__);
+		msm_qti_pp_asphere_deinit(port_id);
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		/* custom topology specific feature deinit handlers */
 		break;
@@ -633,7 +663,11 @@ int msm_pcm_routing_reg_phy_compr_stream(int fe_id, bool perf_mode,
 					 path_type, sample_rate, channels,
 					 topology, perf_mode, bit_width,
 					 app_type, acdb_dev_id);
+<<<<<<< HEAD
 			if ((copp_idx < 0) &&
+=======
+			if ((copp_idx < 0) ||
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				(copp_idx >= MAX_COPPS_PER_PORT)) {
 				pr_err("%s:adm open failed coppid:%d\n",
 				__func__, copp_idx);
@@ -739,7 +773,11 @@ int msm_pcm_routing_reg_phy_stream(int fedai_id, int perf_mode,
 					    sample_rate, channels, topology,
 					    perf_mode, bits_per_sample,
 					    app_type, acdb_dev_id);
+<<<<<<< HEAD
 			if ((copp_idx < 0) &&
+=======
+			if ((copp_idx < 0) ||
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				(copp_idx >= MAX_COPPS_PER_PORT)) {
 				pr_err("%s: adm open failed copp_idx:%d\n",
 					__func__, copp_idx);
@@ -1310,6 +1348,12 @@ static int msm_routing_lsm_mux_put(struct snd_kcontrol *kcontrol,
 	case 7:
 		lsm_port = AFE_PORT_ID_TERTIARY_MI2S_TX;
 		break;
+<<<<<<< HEAD
+=======
+	case 8:
+		lsm_port = AFE_PORT_ID_QUATERNARY_MI2S_TX;
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		pr_err("Default lsm port");
 		break;
@@ -1352,6 +1396,13 @@ static int msm_routing_lsm_func_get(struct snd_kcontrol *kcontrol,
 	}
 
 	port_id = i * 2 + 1 + SLIMBUS_0_RX;
+<<<<<<< HEAD
+=======
+	if (!strncmp(kcontrol->id.name, mad_audio_mux_text[8],
+			strlen(mad_audio_mux_text[8])))
+		port_id = AFE_PORT_ID_QUATERNARY_MI2S_TX;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mad_type = afe_port_get_mad_type(port_id);
 	pr_debug("%s: port_id 0x%x, mad_type %d\n", __func__, port_id,
 		 mad_type);
@@ -1423,6 +1474,12 @@ static int msm_routing_lsm_func_put(struct snd_kcontrol *kcontrol,
 		port_id = AFE_PORT_ID_TERTIARY_MI2S_TX;
 		mad_type = MAD_SW_AUDIO;
 	}
+<<<<<<< HEAD
+=======
+	if (!strncmp(kcontrol->id.name, mad_audio_mux_text[8],
+			strlen(mad_audio_mux_text[8])))
+		port_id = AFE_PORT_ID_QUATERNARY_MI2S_TX;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pr_debug("%s: port_id 0x%x, mad_type %d\n", __func__, port_id,
 		 mad_type);
@@ -1560,6 +1617,13 @@ static int msm_routing_ec_ref_rx_put(struct snd_kcontrol *kcontrol,
 		msm_route_ec_ref_rx = 7;
 		ec_ref_port_id = AFE_PORT_ID_SECONDARY_MI2S_RX;
 		break;
+<<<<<<< HEAD
+=======
+	case 8:
+		msm_route_ec_ref_rx = 8;
+		ec_ref_port_id = AFE_PORT_ID_SLIMBUS_MULTI_CHAN_1_TX;
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		msm_route_ec_ref_rx = 0; /* NONE */
 		pr_err("%s EC ref rx %ld not valid\n",
@@ -1577,9 +1641,16 @@ static int msm_routing_ec_ref_rx_put(struct snd_kcontrol *kcontrol,
 
 static const char *const ec_ref_rx[] = { "None", "SLIM_RX", "I2S_RX",
 	"PRI_MI2S_TX", "SEC_MI2S_TX",
+<<<<<<< HEAD
 	"TERT_MI2S_TX", "QUAT_MI2S_TX", "SEC_I2S_RX", "PROXY_RX"};
 static const struct soc_enum msm_route_ec_ref_rx_enum[] = {
 	SOC_ENUM_SINGLE_EXT(9, ec_ref_rx),
+=======
+	"TERT_MI2S_TX", "QUAT_MI2S_TX", "SEC_I2S_RX", "SLIMBUS_1_TX",
+	"PROXY_RX"};
+static const struct soc_enum msm_route_ec_ref_rx_enum[] = {
+	SOC_ENUM_SINGLE_EXT(10, ec_ref_rx),
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 static const struct snd_kcontrol_new ext_ec_ref_mux_ul1 =
@@ -1660,6 +1731,13 @@ static int msm_routing_ext_ec_put(struct snd_kcontrol *kcontrol,
 		msm_route_ext_ec_ref = AFE_PORT_ID_QUATERNARY_MI2S_TX;
 		state = true;
 		break;
+<<<<<<< HEAD
+=======
+	case EC_PORT_ID_SLIMBUS_1_TX:
+		msm_route_ext_ec_ref = AFE_PORT_ID_SLIMBUS_MULTI_CHAN_1_TX;
+		state = true;
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		msm_route_ext_ec_ref = AFE_PORT_INVALID;
 		break;
@@ -1676,10 +1754,17 @@ static int msm_routing_ext_ec_put(struct snd_kcontrol *kcontrol,
 
 static const char * const ext_ec_ref_rx[] = {"NONE", "PRI_MI2S_TX",
 					     "SEC_MI2S_TX", "TERT_MI2S_TX",
+<<<<<<< HEAD
 					     "QUAT_MI2S_TX"};
 
 static const struct soc_enum msm_route_ext_ec_ref_rx_enum[] = {
 	SOC_ENUM_SINGLE_EXT(5, ext_ec_ref_rx),
+=======
+					     "QUAT_MI2S_TX", "SLIMBUS_1_TX"};
+
+static const struct soc_enum msm_route_ext_ec_ref_rx_enum[] = {
+	SOC_ENUM_SINGLE_EXT(6, ext_ec_ref_rx),
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 static const struct snd_kcontrol_new voc_ext_ec_mux =
@@ -3622,6 +3707,11 @@ static const struct snd_kcontrol_new lsm_function[] = {
 		     msm_routing_lsm_func_get, msm_routing_lsm_func_put),
 	SOC_ENUM_EXT(TERT_MI2S_TX_TEXT" "LSM_FUNCTION_TEXT, lsm_func_enum,
 		    msm_routing_lsm_func_get, msm_routing_lsm_func_put),
+<<<<<<< HEAD
+=======
+	SOC_ENUM_EXT(QUAT_MI2S_TX_TEXT" "LSM_FUNCTION_TEXT, lsm_func_enum,
+		    msm_routing_lsm_func_get, msm_routing_lsm_func_put),
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 static const char * const aanc_slim_0_rx_text[] = {
@@ -3778,7 +3868,11 @@ static int msm_routing_put_app_type_cfg_control(struct snd_kcontrol *kcontrol,
 
 static const struct snd_kcontrol_new app_type_cfg_controls[] = {
 	SOC_SINGLE_MULTI_EXT("App Type Config", SND_SOC_NOPM, 0,
+<<<<<<< HEAD
 	0xFFFFFFFF, 0, 128, msm_routing_get_app_type_cfg_control,
+=======
+	0x7FFFFFFF, 0, 128, msm_routing_get_app_type_cfg_control,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	msm_routing_put_app_type_cfg_control),
 };
 
@@ -3865,6 +3959,389 @@ static struct snd_kcontrol_new msm_voc_session_controls[] = {
 			     msm_voc_session_id_put),
 };
 
+<<<<<<< HEAD
+=======
+static int msm_sound_focus_info(struct snd_kcontrol *kcontrol,
+				struct snd_ctl_elem_info *uinfo)
+{
+	uinfo->type = SNDRV_CTL_ELEM_TYPE_BYTES;
+	uinfo->count = sizeof(struct sound_focus_param);
+
+	return 0;
+}
+
+static int msm_voice_sound_focus_put(struct snd_kcontrol *kcontrol,
+				     struct snd_ctl_elem_value *ucontrol)
+{
+	int ret = 0;
+	struct sound_focus_param soundFocusData;
+
+	memcpy((void *)&soundFocusData, ucontrol->value.bytes.data,
+		sizeof(struct sound_focus_param));
+	ret = voc_set_sound_focus(soundFocusData);
+	if (ret != 0) {
+		pr_err("%s: Error setting Sound Focus Params, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+	}
+
+	return ret;
+}
+
+static int msm_voice_sound_focus_get(struct snd_kcontrol *kcontrol,
+				     struct snd_ctl_elem_value *ucontrol)
+{
+	int ret = 0;
+	struct sound_focus_param soundFocusData;
+
+	memset(&soundFocusData, 0, sizeof(struct sound_focus_param));
+
+	ret = voc_get_sound_focus(&soundFocusData);
+	if (ret != 0) {
+		pr_err("%s: Error getting Sound Focus Params, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+	memcpy(ucontrol->value.bytes.data, (void *)&soundFocusData,
+		sizeof(struct sound_focus_param));
+
+done:
+	return ret;
+}
+
+static int msm_source_tracking_info(struct snd_kcontrol *kcontrol,
+				    struct snd_ctl_elem_info *uinfo)
+{
+	uinfo->type = SNDRV_CTL_ELEM_TYPE_BYTES;
+	uinfo->count = sizeof(struct source_tracking_param);
+
+	return 0;
+}
+
+static int msm_voice_source_tracking_get(struct snd_kcontrol *kcontrol,
+					 struct snd_ctl_elem_value *ucontrol)
+{
+	int ret = 0;
+	struct source_tracking_param sourceTrackingData;
+
+	memset(&sourceTrackingData, 0, sizeof(struct source_tracking_param));
+
+	ret = voc_get_source_tracking(&sourceTrackingData);
+	if (ret != 0) {
+		pr_err("%s: Error getting Source Tracking Params, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+	memcpy(ucontrol->value.bytes.data, (void *)&sourceTrackingData,
+		sizeof(struct source_tracking_param));
+
+done:
+	return ret;
+}
+
+static int msm_audio_get_copp_idx_from_port_id(int port_id, int session_type,
+					 int *copp_idx)
+{
+	int i, idx, be_idx;
+	int ret = 0;
+	unsigned long copp;
+
+	pr_debug("%s: Enter, port_id=%d\n", __func__, port_id);
+
+	ret = q6audio_validate_port(port_id);
+	if (ret < 0) {
+		pr_err("%s: port validation failed id 0x%x ret %d\n",
+			__func__, port_id, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	for (be_idx = 0; be_idx < MSM_BACKEND_DAI_MAX; be_idx++) {
+		if (msm_bedais[be_idx].port_id == port_id)
+			break;
+	}
+	if (be_idx >= MSM_BACKEND_DAI_MAX) {
+		pr_err("%s: Invalid be id %d\n", __func__, be_idx);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	for_each_set_bit(i, &msm_bedais[be_idx].fe_sessions,
+			 MSM_FRONTEND_DAI_MM_SIZE) {
+		for (idx = 0; idx < MAX_COPPS_PER_PORT; idx++) {
+			copp = session_copp_map[i]
+				[session_type][be_idx];
+			if (test_bit(idx, &copp))
+				break;
+		}
+		if (idx >= MAX_COPPS_PER_PORT)
+			continue;
+		else
+			break;
+	}
+	if (i >= MSM_FRONTEND_DAI_MM_SIZE) {
+		pr_err("%s: Invalid FE, exiting\n", __func__);
+
+		ret = -EINVAL;
+		goto done;
+	}
+	*copp_idx = idx;
+	pr_debug("%s: copp_idx=%d\n", __func__, *copp_idx);
+
+done:
+	return ret;
+}
+
+static int msm_audio_sound_focus_derive_port_id(struct snd_kcontrol *kcontrol,
+					    const char *prefix, int *port_id)
+{
+	int ret = 0;
+
+	pr_debug("%s: Enter, prefix:%s\n", __func__, prefix);
+
+	/*
+	 * Mixer control name will be like "Sound Focus Audio Tx SLIMBUS_0"
+	 * where the prefix is "Sound Focus Audio Tx ". Skip the prefix
+	 * and compare the string with the backend name to derive the port id.
+	 */
+	if (!strcmp(kcontrol->id.name + strlen(prefix),
+					"SLIMBUS_0")) {
+		*port_id = SLIMBUS_0_TX;
+	} else if (!strcmp(kcontrol->id.name + strlen(prefix),
+					"TERT_MI2S")) {
+		*port_id = AFE_PORT_ID_TERTIARY_MI2S_TX;
+	} else if (!strcmp(kcontrol->id.name + strlen(prefix),
+                                        "QUATERNARY_MI2S")) {
+                *port_id = AFE_PORT_ID_QUATERNARY_MI2S_TX;
+        } else {
+		pr_err("%s: mixer ctl name=%s, could not derive valid port id\n",
+			__func__, kcontrol->id.name);
+
+		ret = -EINVAL;
+		goto done;
+	}
+	pr_debug("%s: mixer ctl name=%s, derived port_id=%d\n",
+		  __func__, kcontrol->id.name, *port_id);
+
+done:
+	return ret;
+}
+
+static int msm_audio_sound_focus_put(struct snd_kcontrol *kcontrol,
+				     struct snd_ctl_elem_value *ucontrol)
+{
+	int ret = 0;
+	struct sound_focus_param soundFocusData;
+	int port_id, copp_idx;
+
+	ret = msm_audio_sound_focus_derive_port_id(kcontrol,
+				"Sound Focus Audio Tx ", &port_id);
+	if (ret != 0) {
+		pr_err("%s: Error in deriving port id, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	ret = msm_audio_get_copp_idx_from_port_id(port_id, SESSION_TYPE_TX,
+					    &copp_idx);
+	if (ret != 0) {
+		pr_err("%s: Could not get copp idx for port_id=%d\n",
+			__func__, port_id);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	memcpy((void *)&soundFocusData, ucontrol->value.bytes.data,
+		sizeof(struct sound_focus_param));
+
+	ret = adm_set_sound_focus(port_id, copp_idx, soundFocusData);
+	if (ret != 0) {
+		pr_err("%s: Error setting Sound Focus Params, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+done:
+	return ret;
+}
+
+static int msm_audio_sound_focus_get(struct snd_kcontrol *kcontrol,
+					struct snd_ctl_elem_value *ucontrol)
+{
+	int ret = 0;
+	struct sound_focus_param soundFocusData;
+	int port_id, copp_idx;
+
+	ret = msm_audio_sound_focus_derive_port_id(kcontrol,
+				"Sound Focus Audio Tx ", &port_id);
+	if (ret != 0) {
+		pr_err("%s: Error in deriving port id, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	ret = msm_audio_get_copp_idx_from_port_id(port_id, SESSION_TYPE_TX,
+					    &copp_idx);
+	if (ret != 0) {
+		pr_err("%s: Could not get copp idx for port_id=%d\n",
+			__func__, port_id);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	ret = adm_get_sound_focus(port_id, copp_idx, &soundFocusData);
+	if (ret != 0) {
+		pr_err("%s: Error getting Sound Focus Params, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	memcpy(ucontrol->value.bytes.data, (void *)&soundFocusData,
+		sizeof(struct sound_focus_param));
+
+done:
+	return ret;
+}
+
+static int msm_audio_source_tracking_get(struct snd_kcontrol *kcontrol,
+					struct snd_ctl_elem_value *ucontrol)
+{
+	int ret = 0;
+	struct source_tracking_param sourceTrackingData;
+	int port_id, copp_idx;
+
+	ret = msm_audio_sound_focus_derive_port_id(kcontrol,
+				"Source Tracking Audio Tx ", &port_id);
+	if (ret != 0) {
+		pr_err("%s: Error in deriving port id, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	ret = msm_audio_get_copp_idx_from_port_id(port_id, SESSION_TYPE_TX,
+					    &copp_idx);
+	if (ret != 0) {
+		pr_err("%s: Could not get copp idx for port_id=%d\n",
+			__func__, port_id);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	ret = adm_get_source_tracking(port_id, copp_idx, &sourceTrackingData);
+	if (ret != 0) {
+		pr_err("%s: Error getting Source Tracking Params, err=%d\n",
+			  __func__, ret);
+
+		ret = -EINVAL;
+		goto done;
+	}
+
+	memcpy(ucontrol->value.bytes.data, (void *)&sourceTrackingData,
+		sizeof(struct source_tracking_param));
+
+done:
+	return ret;
+}
+
+static const struct snd_kcontrol_new msm_source_tracking_controls[] = {
+	{
+		.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+		.iface	= SNDRV_CTL_ELEM_IFACE_MIXER,
+		.name	= "Sound Focus Voice Tx SLIMBUS_0",
+		.info	= msm_sound_focus_info,
+		.get	= msm_voice_sound_focus_get,
+		.put	= msm_voice_sound_focus_put,
+	},
+	{
+		.access = SNDRV_CTL_ELEM_ACCESS_READ,
+		.iface	= SNDRV_CTL_ELEM_IFACE_MIXER,
+		.name	= "Source Tracking Voice Tx SLIMBUS_0",
+		.info	= msm_source_tracking_info,
+		.get	= msm_voice_source_tracking_get,
+	},
+	{
+		.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+		.iface	= SNDRV_CTL_ELEM_IFACE_MIXER,
+		.name	= "Sound Focus Audio Tx SLIMBUS_0",
+		.info	= msm_sound_focus_info,
+		.get	= msm_audio_sound_focus_get,
+		.put	= msm_audio_sound_focus_put,
+	},
+	{
+		.access = SNDRV_CTL_ELEM_ACCESS_READ,
+		.iface	= SNDRV_CTL_ELEM_IFACE_MIXER,
+		.name	= "Source Tracking Audio Tx SLIMBUS_0",
+		.info	= msm_source_tracking_info,
+		.get	= msm_audio_source_tracking_get,
+	},
+	{
+		.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+		.iface	= SNDRV_CTL_ELEM_IFACE_MIXER,
+		.name	= "Sound Focus Voice Tx TERT_MI2S",
+		.info	= msm_sound_focus_info,
+		.get	= msm_voice_sound_focus_get,
+		.put	= msm_voice_sound_focus_put,
+	},
+	{
+		.access = SNDRV_CTL_ELEM_ACCESS_READ,
+		.iface	= SNDRV_CTL_ELEM_IFACE_MIXER,
+		.name	= "Source Tracking Voice Tx TERT_MI2S",
+		.info	= msm_source_tracking_info,
+		.get	= msm_voice_source_tracking_get,
+	},
+	{
+		.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+		.iface	= SNDRV_CTL_ELEM_IFACE_MIXER,
+		.name	= "Sound Focus Audio Tx TERT_MI2S",
+		.info	= msm_sound_focus_info,
+		.get	= msm_audio_sound_focus_get,
+		.put	= msm_audio_sound_focus_put,
+	},
+	{
+                .access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+                .iface  = SNDRV_CTL_ELEM_IFACE_MIXER,
+                .name   = "Sound Focus Audio Tx QUATERNARY_MI2S",
+                .info   = msm_sound_focus_info,
+                .get    = msm_audio_sound_focus_get,
+                .put    = msm_audio_sound_focus_put,
+        },
+	{
+                .access = SNDRV_CTL_ELEM_ACCESS_READ,
+                .iface  = SNDRV_CTL_ELEM_IFACE_MIXER,
+                .name   = "Source Tracking Audio Tx QUATERNARY_MI2S",
+                .info   = msm_source_tracking_info,
+                .get    = msm_audio_source_tracking_get,
+        },
+	{
+		.access = SNDRV_CTL_ELEM_ACCESS_READ,
+		.iface	= SNDRV_CTL_ELEM_IFACE_MIXER,
+		.name	= "Source Tracking Audio Tx TERT_MI2S",
+		.info	= msm_source_tracking_info,
+		.get	= msm_audio_source_tracking_get,
+	},
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int spkr_prot_put_vi_lch_port(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -5034,6 +5511,10 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"LSM1 MUX", "SLIMBUS_4_TX", "SLIMBUS_4_TX"},
 	{"LSM1 MUX", "SLIMBUS_5_TX", "SLIMBUS_5_TX"},
 	{"LSM1 MUX", "TERT_MI2S_TX", "TERT_MI2S_TX"},
+<<<<<<< HEAD
+=======
+	{"LSM1 MUX", "QUAT_MI2S_TX", "QUAT_MI2S_TX"},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{"LSM1_UL_HL", NULL, "LSM1 MUX"},
 
 	{"LSM2 MUX", "SLIMBUS_0_TX", "SLIMBUS_0_TX"},
@@ -5042,6 +5523,10 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"LSM2 MUX", "SLIMBUS_4_TX", "SLIMBUS_4_TX"},
 	{"LSM2 MUX", "SLIMBUS_5_TX", "SLIMBUS_5_TX"},
 	{"LSM2 MUX", "TERT_MI2S_TX", "TERT_MI2S_TX"},
+<<<<<<< HEAD
+=======
+	{"LSM2 MUX", "QUAT_MI2S_TX", "QUAT_MI2S_TX"},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{"LSM2_UL_HL", NULL, "LSM2 MUX"},
 
 
@@ -5051,6 +5536,10 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"LSM3 MUX", "SLIMBUS_4_TX", "SLIMBUS_4_TX"},
 	{"LSM3 MUX", "SLIMBUS_5_TX", "SLIMBUS_5_TX"},
 	{"LSM3 MUX", "TERT_MI2S_TX", "TERT_MI2S_TX"},
+<<<<<<< HEAD
+=======
+	{"LSM3 MUX", "QUAT_MI2S_TX", "QUAT_MI2S_TX"},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{"LSM3_UL_HL", NULL, "LSM3 MUX"},
 
 
@@ -5060,6 +5549,10 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"LSM4 MUX", "SLIMBUS_4_TX", "SLIMBUS_4_TX"},
 	{"LSM4 MUX", "SLIMBUS_5_TX", "SLIMBUS_5_TX"},
 	{"LSM4 MUX", "TERT_MI2S_TX", "TERT_MI2S_TX"},
+<<<<<<< HEAD
+=======
+	{"LSM4 MUX", "QUAT_MI2S_TX", "QUAT_MI2S_TX"},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{"LSM4_UL_HL", NULL, "LSM4 MUX"},
 
 	{"LSM5 MUX", "SLIMBUS_0_TX", "SLIMBUS_0_TX"},
@@ -5068,6 +5561,10 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"LSM5 MUX", "SLIMBUS_4_TX", "SLIMBUS_4_TX"},
 	{"LSM5 MUX", "SLIMBUS_5_TX", "SLIMBUS_5_TX"},
 	{"LSM5 MUX", "TERT_MI2S_TX", "TERT_MI2S_TX"},
+<<<<<<< HEAD
+=======
+	{"LSM5 MUX", "QUAT_MI2S_TX", "QUAT_MI2S_TX"},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{"LSM5_UL_HL", NULL, "LSM5 MUX"},
 
 	{"LSM6 MUX", "SLIMBUS_0_TX", "SLIMBUS_0_TX"},
@@ -5075,6 +5572,10 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"LSM6 MUX", "SLIMBUS_3_TX", "SLIMBUS_3_TX"},
 	{"LSM6 MUX", "SLIMBUS_4_TX", "SLIMBUS_4_TX"},
 	{"LSM6 MUX", "SLIMBUS_5_TX", "SLIMBUS_5_TX"},
+<<<<<<< HEAD
+=======
+	{"LSM6 MUX", "QUAT_MI2S_TX", "QUAT_MI2S_TX"},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{"LSM6_UL_HL", NULL, "LSM6 MUX"},
 
 
@@ -5083,6 +5584,10 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"LSM7 MUX", "SLIMBUS_3_TX", "SLIMBUS_3_TX"},
 	{"LSM7 MUX", "SLIMBUS_4_TX", "SLIMBUS_4_TX"},
 	{"LSM7 MUX", "SLIMBUS_5_TX", "SLIMBUS_5_TX"},
+<<<<<<< HEAD
+=======
+	{"LSM7 MUX", "QUAT_MI2S_TX", "QUAT_MI2S_TX"},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{"LSM7_UL_HL", NULL, "LSM7 MUX"},
 
 
@@ -5091,6 +5596,10 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"LSM8 MUX", "SLIMBUS_3_TX", "SLIMBUS_3_TX"},
 	{"LSM8 MUX", "SLIMBUS_4_TX", "SLIMBUS_4_TX"},
 	{"LSM8 MUX", "SLIMBUS_5_TX", "SLIMBUS_5_TX"},
+<<<<<<< HEAD
+=======
+	{"LSM8 MUX", "QUAT_MI2S_TX", "QUAT_MI2S_TX"},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{"LSM8_UL_HL", NULL, "LSM8 MUX"},
 
 
@@ -5465,7 +5974,11 @@ static int msm_pcm_routing_prepare(struct snd_pcm_substream *substream)
 					    sample_rate, channels, topology,
 					    fdai->perf_mode, bits_per_sample,
 					    app_type, acdb_dev_id);
+<<<<<<< HEAD
 			if ((copp_idx < 0) &&
+=======
+			if ((copp_idx < 0) ||
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				(copp_idx >= MAX_COPPS_PER_PORT)) {
 				pr_err("%s: adm open failed\n", __func__);
 				return -EINVAL;
@@ -5719,6 +6232,12 @@ static int msm_routing_probe(struct snd_soc_platform *platform)
 				device_pp_params_mixer_controls,
 				ARRAY_SIZE(device_pp_params_mixer_controls));
 
+<<<<<<< HEAD
+=======
+	snd_soc_add_platform_controls(platform, msm_source_tracking_controls,
+				      ARRAY_SIZE(msm_source_tracking_controls));
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 

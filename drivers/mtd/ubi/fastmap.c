@@ -346,6 +346,10 @@ static int process_pool_aeb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		av = tmp_av;
 	else {
 		ubi_err(ubi->ubi_num, "orphaned volume in fastmap pool!");
+<<<<<<< HEAD
+=======
+		kmem_cache_free(ai->aeb_slab_cache, new_aeb);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return UBI_BAD_FASTMAP;
 	}
 

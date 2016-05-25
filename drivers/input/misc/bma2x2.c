@@ -1,15 +1,25 @@
 /*!
  * @section LICENSE
+<<<<<<< HEAD
  * (C) Copyright 2011~2014 Bosch Sensortec GmbH All Rights Reserved
+=======
+ * (C) Copyright 2013 Bosch Sensortec GmbH All Rights Reserved
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This software program is licensed subject to the GNU General
  * Public License (GPL).Version 2,June 1991,
  * available at http://www.fsf.org/copyleft/gpl.html
  *
  * @filename bma2x2.c
+<<<<<<< HEAD
  * @date    2014/04/04 16:13
  * @id       "564eaab"
  * @version  2.0.1
+=======
+ * @date    2014/02/13 15:50
+ * @id       "564eaab"
+ * @version  2.0
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * @brief
  * This file contains all function implementations for the BMA2X2 in linux
@@ -29,7 +39,13 @@
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 //#include <asm/mach/irq.h>
+=======
+#include <linux/regulator/consumer.h>
+#include <linux/of_gpio.h>
+#include <linux/sensors.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
 #include <linux/earlysuspend.h>
@@ -48,14 +64,27 @@
 #endif
 
 #include "bstclass.h"
+<<<<<<< HEAD
 #ifdef CONFIG_L8700_COMMON
 #include <linux/regulator/consumer.h>
 #endif
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define ACC_NAME  "ACC"
 /*#define CONFIG_BMA_ENABLE_NEWDATA_INT 1*/
 
+<<<<<<< HEAD
 #define SENSOR_NAME                 "bma2x2"
+=======
+#ifdef ENABLE_ISR_DEBUG_MSG
+#define ISR_INFO(dev, fmt, arg...) dev_info(dev, fmt, ##arg)
+#else
+#define ISR_INFO(dev, fmt, arg...)
+#endif
+
+#define SENSOR_NAME                 "bma2x2-accel"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define ABSMIN                      -512
 #define ABSMAX                      512
 #define SLOPE_THRESHOLD_VALUE       32
@@ -67,10 +96,29 @@
 #define SLOPE_X_INDEX               5
 #define SLOPE_Y_INDEX               6
 #define SLOPE_Z_INDEX               7
+<<<<<<< HEAD
 #define BMA2X2_MAX_DELAY            200
 #define BMA2X2_RANGE_SET            3  /* +/- 2G */
 #define BMA2X2_BW_SET               12 /* 125HZ  */
 
+=======
+#define BMA2X2_MIN_DELAY            1
+#define BMA2X2_MAX_DELAY            200
+#define BMA2X2_RANGE_SET            3 /* +/- 2G */
+#define BMA2X2_RANGE_SHIFT          4 /* shift 4 bits for 2G */
+#define BMA2X2_BW_SET               12 /* 125HZ  */
+
+#define I2C_RETRY_DELAY()           usleep_range(1000, 2000)
+/* wait 2ms for calibration ready */
+#define WAIT_CAL_READY()            usleep_range(2000, 2500)
+/* >3ms wait device ready */
+#define WAIT_DEVICE_READY()         usleep_range(3000, 5000)
+/* >5ms for device reset */
+#define RESET_DELAY()               usleep_range(5000, 10000)
+/* wait 10ms for self test  done */
+#define SELF_TEST_DELAY()           usleep_range(10000, 15000)
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define LOW_G_INTERRUPT             REL_Z
 #define HIGH_G_INTERRUPT            REL_HWHEEL
 #define SLOP_INTERRUPT              REL_DIAL
@@ -1244,7 +1292,14 @@
 #define BOSCH_SENSOR_PLACE_UNKNOWN (-1)
 /*! Bosch sensor remapping table size P0~P7*/
 #define MAX_AXIS_REMAP_TAB_SZ 8
+<<<<<<< HEAD
 
+=======
+#define BOSCH_SENSOR_PLANE	0
+#define BOSCH_SENSOR_UP	1
+#define BOSCH_SENSOR_DOWN	2
+#define RETRY_TIME	50
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*!
  * @brief:BMI058 feature
  *  macro definition
@@ -1344,6 +1399,19 @@ static const struct interrupt_map_t int_map[] = {
 
 #endif/*End of CONFIG_SENSORS_BMI058*/
 
+<<<<<<< HEAD
+=======
+/*BMA power supply VDD 1.62V-3.6V VIO 1.2-3.6V */
+#define BMA2x2_VDD_MIN_UV       2000000
+#define BMA2x2_VDD_MAX_UV       3400000
+#define BMA2x2_VIO_MIN_UV       1500000
+#define BMA2x2_VIO_MAX_UV       3400000
+
+/* Polling delay in msecs */
+#define POLL_INTERVAL_MIN_MS	1
+#define POLL_INTERVAL_MAX_MS	10000
+#define POLL_DEFAULT_INTERVAL_MS 200
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct bma2x2_type_map_t {
 
@@ -1368,6 +1436,7 @@ static const struct bma2x2_type_map_t sensor_type_map[] = {
 };
 
 /*!
+<<<<<<< HEAD
 * Bst sensor common definition,
 * please give parameters in BSP file.
 */
@@ -1381,6 +1450,8 @@ struct bosch_sensor_specific {
 
 
 /*!
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  * we use a typedef to hide the detail,
  * because this type might be changed
  */
@@ -1418,8 +1489,26 @@ struct bma2x2acc {
 	s16 z;
 };
 
+<<<<<<< HEAD
 struct bma2x2_data {
 	struct i2c_client *bma2x2_client;
+=======
+struct bma2x2_platform_data {
+	int poll_interval;
+	int gpio_int1;
+	int gpio_int2;
+	s8 place;
+	bool use_int;
+};
+
+struct bma2x2_suspend_state {
+	bool powerEn;
+};
+
+struct bma2x2_data {
+	struct i2c_client *bma2x2_client;
+	struct sensors_classdev cdev;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	atomic_t delay;
 	atomic_t enable;
 	atomic_t selftest_result;
@@ -1438,11 +1527,24 @@ struct bma2x2_data {
 	struct mutex mode_mutex;
 	struct delayed_work work;
 	struct work_struct irq_work;
+<<<<<<< HEAD
+=======
+	struct regulator *vdd;
+	struct regulator *vio;
+	bool power_enabled;
+	unsigned char bandwidth;
+	unsigned char range;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	struct early_suspend early_suspend;
 #endif
 	int IRQ;
+<<<<<<< HEAD
 	struct bosch_sensor_specific *bst_pd;
+=======
+	struct bma2x2_platform_data *pdata;
+	struct bma2x2_suspend_state suspend_state;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	int ref_count;
 	struct input_dev *dev_interrupt;
@@ -1471,13 +1573,44 @@ static void bma2x2_early_suspend(struct early_suspend *h);
 static void bma2x2_late_resume(struct early_suspend *h);
 #endif
 
+<<<<<<< HEAD
+=======
+static int bma2x2_open_init(struct i2c_client *client,
+			struct bma2x2_data *data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int bma2x2_set_mode(struct i2c_client *client, u8 mode);
 static int bma2x2_get_mode(struct i2c_client *client, u8 *mode);
 static int bma2x2_get_fifo_mode(struct i2c_client *client, u8 *fifo_mode);
 static int bma2x2_set_fifo_mode(struct i2c_client *client, u8 fifo_mode);
 static int bma2x2_normal_to_suspend(struct bma2x2_data *bma2x2,
 				unsigned char data1, unsigned char data2);
+<<<<<<< HEAD
 
+=======
+static int bma2x2_store_state(struct i2c_client *client,
+			struct bma2x2_data *data);
+static int bma2x2_power_ctl(struct bma2x2_data *data, bool on);
+static int bma2x2_eeprom_prog(struct i2c_client *client);
+
+static struct sensors_classdev sensors_cdev = {
+		.name = "bma2x2-accel",
+		.vendor = "bosch",
+		.version = 1,
+		.handle = SENSORS_ACCELERATION_HANDLE,
+		.type = SENSOR_TYPE_ACCELEROMETER,
+		.max_range = "156.8",	/* 16g */
+		.resolution = "0.156",	/* 15.63mg */
+		.sensor_power = "0.13",	/* typical value */
+		.min_delay = POLL_INTERVAL_MIN_MS * 1000, /* in microseconds */
+		.fifo_reserved_event_count = 0,
+		.fifo_max_event_count = 0,
+		.enabled = 0,
+		.delay_msec = POLL_DEFAULT_INTERVAL_MS, /* in millisecond */
+		.sensors_enable = NULL,
+		.sensors_poll_delay = NULL,
+		.sensors_self_test = NULL,
+};
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /*Remapping for BMA2X2*/
 
@@ -1523,6 +1656,7 @@ static void bma2x2_remap_sensor_data(struct bma2x2acc *val,
 		struct bma2x2_data *client_data)
 {
 	struct bosch_sensor_data bsd;
+<<<<<<< HEAD
 	int place;
 
 	if ((NULL == client_data->bst_pd) || (BOSCH_SENSOR_PLACE_UNKNOWN
@@ -1530,6 +1664,8 @@ static void bma2x2_remap_sensor_data(struct bma2x2acc *val,
 		place = BOSCH_SENSOR_PLACE_UNKNOWN;
 	else
 		place = client_data->bst_pd->place;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #ifdef CONFIG_SENSORS_BMI058
 /*x,y need to be invesed becase of HW Register for BMI058*/
@@ -1542,7 +1678,12 @@ static void bma2x2_remap_sensor_data(struct bma2x2acc *val,
 	bsd.z = val->z;
 #endif
 
+<<<<<<< HEAD
 	bst_remap_sensor_data_dft_tab(&bsd, place);
+=======
+	bst_remap_sensor_data_dft_tab(&bsd,
+			client_data->pdata->place);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	val->x = bsd.x;
 	val->y = bsd.y;
@@ -1557,7 +1698,11 @@ static int bma2x2_smbus_read_byte(struct i2c_client *client,
 	s32 dummy;
 	dummy = i2c_smbus_read_byte_data(client, reg_addr);
 	if (dummy < 0)
+<<<<<<< HEAD
 		return -1;
+=======
+		return -EIO;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	*data = dummy & 0x000000ff;
 
 	return 0;
@@ -1570,7 +1715,11 @@ static int bma2x2_smbus_write_byte(struct i2c_client *client,
 
 	dummy = i2c_smbus_write_byte_data(client, reg_addr, *data);
 	if (dummy < 0)
+<<<<<<< HEAD
 		return -1;
+=======
+		return -EIO;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	udelay(2);
 	return 0;
 }
@@ -1581,7 +1730,11 @@ static int bma2x2_smbus_read_byte_block(struct i2c_client *client,
 	s32 dummy;
 	dummy = i2c_smbus_read_i2c_block_data(client, reg_addr, len, data);
 	if (dummy < 0)
+<<<<<<< HEAD
 		return -1;
+=======
+		return -EIO;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 
@@ -1610,11 +1763,19 @@ static int bma_i2c_burst_read(struct i2c_client *client, u8 reg_addr,
 		if (i2c_transfer(client->adapter, msg, ARRAY_SIZE(msg)) > 0)
 			break;
 		else
+<<<<<<< HEAD
 			mdelay(1);
 	}
 
 	if (BMA_MAX_RETRY_I2C_XFER <= retry) {
 		printk(KERN_INFO "I2C xfer error");
+=======
+			I2C_RETRY_DELAY();
+	}
+
+	if (BMA_MAX_RETRY_I2C_XFER <= retry) {
+		dev_err(&client->dev, "I2C xfer error");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return -EIO;
 	}
 
@@ -1626,7 +1787,11 @@ static int bma2x2_check_chip_id(struct i2c_client *client,
 {
 	int i = 0;
 	int err = 0;
+<<<<<<< HEAD
 	unsigned char chip_id = 0;
+=======
+	unsigned char chip_id;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned char read_count = 0;
 	unsigned char bma2x2_sensor_type_count = 0;
 
@@ -1634,6 +1799,7 @@ static int bma2x2_check_chip_id(struct i2c_client *client,
 		sizeof(sensor_type_map) / sizeof(struct bma2x2_type_map_t);
 
 	while (read_count++ < CHECK_CHIP_ID_TIME_MAX) {
+<<<<<<< HEAD
 		if (bma2x2_smbus_read_byte(client, BMA2X2_CHIP_ID_REG,
 							&chip_id) < 0) {
 			dev_err(&client->dev, "Bosch Sensortec Device not found"
@@ -1641,11 +1807,23 @@ static int bma2x2_check_chip_id(struct i2c_client *client,
 			err = -ENODEV;
 			return err;
 		} else {
+=======
+		err = bma2x2_smbus_read_byte(client, BMA2X2_CHIP_ID_REG,
+							&chip_id);
+		if (err < 0) {
+			dev_err(&client->dev,
+			"Bosch Sensortec Device not found"
+			"i2c bus read error, read chip_id:%d\n", chip_id);
+			err = -ENODEV;
+			return err;
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		for (i = 0; i < bma2x2_sensor_type_count; i++) {
 			if (sensor_type_map[i].chip_id == chip_id) {
 				data->sensor_type =
 					sensor_type_map[i].sensor_type;
 				data->chip_id = chip_id;
+<<<<<<< HEAD
 					dev_notice(&client->dev,
 					"Bosch Sensortec Device detected,"
 					" HW IC name: %s\n",
@@ -1667,6 +1845,26 @@ static int bma2x2_check_chip_id(struct i2c_client *client,
 		}
 		mdelay(1);
 		}
+=======
+					dev_dbg(&client->dev,
+					"Bosch Sensortec Device detected,"
+					" HW IC name: %s\n",
+					sensor_type_map[i].sensor_name);
+				return err;
+			}
+		}
+		if (i < bma2x2_sensor_type_count) {
+			return err;
+		} else if (read_count == CHECK_CHIP_ID_TIME_MAX) {
+			dev_err(&client->dev,
+			"Failed!Bosch Sensortec Device"
+			" not found, mismatch chip_id:%d\n",
+						chip_id);
+			err = -ENODEV;
+			return err;
+		}
+		I2C_RETRY_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 	return err;
 }
@@ -1877,7 +2075,11 @@ static int bma2x2_set_Int_Enable(struct i2c_client *client, unsigned char
 		InterruptType , unsigned char value)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data1 = 0, data2 = 0;
+=======
+	unsigned char data1, data2;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if ((11 < InterruptType) && (InterruptType < 16)) {
 		switch (InterruptType) {
@@ -2026,7 +2228,11 @@ static int bma2x2_get_interruptstatus2(struct i2c_client *client, unsigned char
 		*intstatus)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_STATUS2_REG, &data);
 	*intstatus = data;
@@ -2161,7 +2367,11 @@ static int bma2x2_get_orient_flat_status(struct i2c_client *client, unsigned
 static int bma2x2_set_Int_Mode(struct i2c_client *client, unsigned char Mode)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 	comres = bma2x2_smbus_read_byte(client,
@@ -2192,7 +2402,11 @@ static int bma2x2_set_slope_duration(struct i2c_client *client, unsigned char
 		duration)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 	comres = bma2x2_smbus_read_byte(client,
@@ -2224,7 +2438,11 @@ static int bma2x2_set_slope_no_mot_duration(struct i2c_client *client,
 			unsigned char duration)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 	comres = bma2x2_smbus_read_byte(client,
@@ -2418,7 +2636,11 @@ static int bma2x2_set_tap_duration(struct i2c_client *client, unsigned char
 		duration)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_TAP_DUR__REG, &data);
 	data = BMA2X2_SET_BITSLICE(data, BMA2X2_TAP_DUR, duration);
@@ -2443,7 +2665,11 @@ static int bma2x2_get_tap_duration(struct i2c_client *client, unsigned char
 static int bma2x2_set_tap_shock(struct i2c_client *client, unsigned char setval)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_TAP_SHOCK_DURN__REG,
 			&data);
@@ -2471,7 +2697,11 @@ static int bma2x2_set_tap_quiet(struct i2c_client *client, unsigned char
 		duration)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_TAP_QUIET_DURN__REG,
 			&data);
@@ -2499,7 +2729,11 @@ static int bma2x2_set_tap_threshold(struct i2c_client *client, unsigned char
 		threshold)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_TAP_THRES__REG, &data);
 	data = BMA2X2_SET_BITSLICE(data, BMA2X2_TAP_THRES, threshold);
@@ -2524,7 +2758,11 @@ static int bma2x2_get_tap_threshold(struct i2c_client *client, unsigned char
 static int bma2x2_set_tap_samp(struct i2c_client *client, unsigned char samp)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_TAP_SAMPLES__REG, &data);
 	data = BMA2X2_SET_BITSLICE(data, BMA2X2_TAP_SAMPLES, samp);
@@ -2549,7 +2787,11 @@ static int bma2x2_get_tap_samp(struct i2c_client *client, unsigned char *status)
 static int bma2x2_set_orient_mode(struct i2c_client *client, unsigned char mode)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_ORIENT_MODE__REG, &data);
 	data = BMA2X2_SET_BITSLICE(data, BMA2X2_ORIENT_MODE, mode);
@@ -2576,7 +2818,11 @@ static int bma2x2_set_orient_blocking(struct i2c_client *client, unsigned char
 		samp)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_ORIENT_BLOCK__REG,
 			&data);
@@ -2604,7 +2850,11 @@ static int bma2x2_set_orient_hyst(struct i2c_client *client, unsigned char
 		orienthyst)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_ORIENT_HYST__REG, &data);
 	data = BMA2X2_SET_BITSLICE(data, BMA2X2_ORIENT_HYST, orienthyst);
@@ -2630,7 +2880,11 @@ static int bma2x2_set_theta_blocking(struct i2c_client *client, unsigned char
 		thetablk)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_THETA_BLOCK__REG, &data);
 	data = BMA2X2_SET_BITSLICE(data, BMA2X2_THETA_BLOCK, thetablk);
@@ -2657,7 +2911,11 @@ static int bma2x2_set_theta_flat(struct i2c_client *client, unsigned char
 		thetaflat)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_THETA_FLAT__REG, &data);
 	data = BMA2X2_SET_BITSLICE(data, BMA2X2_THETA_FLAT, thetaflat);
@@ -2683,7 +2941,11 @@ static int bma2x2_set_flat_hold_time(struct i2c_client *client, unsigned char
 		holdtime)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_FLAT_HOLD_TIME__REG,
 			&data);
@@ -2722,10 +2984,17 @@ static int bma2x2_normal_to_suspend(struct bma2x2_data *bma2x2,
 	unsigned char current_fifo_mode;
 	unsigned char current_op_mode;
 	if (bma2x2 == NULL)
+<<<<<<< HEAD
 		return -1;
 	/* get current op mode from mode register */
 	if (bma2x2_get_mode(bma2x2->bma2x2_client, &current_op_mode) < 0)
 		return -1;
+=======
+		return -EINVAL;
+	/* get current op mode from mode register */
+	if (bma2x2_get_mode(bma2x2->bma2x2_client, &current_op_mode) < 0)
+		return -EIO;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* only aimed at operatiom mode chang from normal/lpw1 mode
 	 * to suspend state.
 	*/
@@ -2734,7 +3003,11 @@ static int bma2x2_normal_to_suspend(struct bma2x2_data *bma2x2,
 		/* get current fifo mode from fifo config register */
 		if (bma2x2_get_fifo_mode(bma2x2->bma2x2_client,
 							&current_fifo_mode) < 0)
+<<<<<<< HEAD
 			return -1;
+=======
+			return -EIO;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		else {
 			bma2x2_smbus_write_byte(bma2x2->bma2x2_client,
 					BMA2X2_LOW_NOISE_CTRL_REG, &data2);
@@ -2742,7 +3015,11 @@ static int bma2x2_normal_to_suspend(struct bma2x2_data *bma2x2,
 					BMA2X2_MODE_CTRL_REG, &data1);
 			bma2x2_smbus_write_byte(bma2x2->bma2x2_client,
 				BMA2X2_FIFO_MODE__REG, &current_fifo_mode);
+<<<<<<< HEAD
 			mdelay(3);
+=======
+			WAIT_DEVICE_READY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return 0;
 		}
 	} else {
@@ -2750,7 +3027,11 @@ static int bma2x2_normal_to_suspend(struct bma2x2_data *bma2x2,
 					BMA2X2_LOW_NOISE_CTRL_REG, &data2);
 		bma2x2_smbus_write_byte(bma2x2->bma2x2_client,
 					BMA2X2_MODE_CTRL_REG, &data1);
+<<<<<<< HEAD
 		mdelay(3);
+=======
+		WAIT_DEVICE_READY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return 0;
 	}
 
@@ -2759,7 +3040,11 @@ static int bma2x2_normal_to_suspend(struct bma2x2_data *bma2x2,
 static int bma2x2_set_mode(struct i2c_client *client, unsigned char mode)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data1 = 0, data2 = 0;
+=======
+	unsigned char data1, data2;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int ret = 0;
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
@@ -2789,6 +3074,7 @@ static int bma2x2_set_mode(struct i2c_client *client, unsigned char mode)
 				&data2);
 		switch (mode) {
 		case BMA2X2_MODE_NORMAL:
+<<<<<<< HEAD
 				data1  = BMA2X2_SET_BITSLICE(data1,
 						BMA2X2_MODE_CTRL, 0);
 				data2  = BMA2X2_SET_BITSLICE(data2,
@@ -2853,6 +3139,73 @@ static int bma2x2_set_mode(struct i2c_client *client, unsigned char mode)
 				bma2x2_smbus_write_byte(client,
 						BMA2X2_MODE_CTRL_REG, &data1);
 				break;
+=======
+			data1  = BMA2X2_SET_BITSLICE(data1,
+					BMA2X2_MODE_CTRL, 0);
+			data2  = BMA2X2_SET_BITSLICE(data2,
+					BMA2X2_LOW_POWER_MODE, 0);
+			bma2x2_smbus_write_byte(client,
+					BMA2X2_MODE_CTRL_REG, &data1);
+			WAIT_DEVICE_READY();
+			bma2x2_smbus_write_byte(client,
+				BMA2X2_LOW_NOISE_CTRL_REG, &data2);
+			break;
+		case BMA2X2_MODE_LOWPOWER1:
+			data1  = BMA2X2_SET_BITSLICE(data1,
+					BMA2X2_MODE_CTRL, 2);
+			data2  = BMA2X2_SET_BITSLICE(data2,
+					BMA2X2_LOW_POWER_MODE, 0);
+			bma2x2_smbus_write_byte(client,
+					BMA2X2_MODE_CTRL_REG, &data1);
+			WAIT_DEVICE_READY();
+			bma2x2_smbus_write_byte(client,
+				BMA2X2_LOW_NOISE_CTRL_REG, &data2);
+			break;
+		case BMA2X2_MODE_SUSPEND:
+			data1  = BMA2X2_SET_BITSLICE(data1,
+					BMA2X2_MODE_CTRL, 4);
+			data2  = BMA2X2_SET_BITSLICE(data2,
+					BMA2X2_LOW_POWER_MODE, 0);
+			/*aimed at anomaly resolution when switch to suspend*/
+			ret = bma2x2_normal_to_suspend(bma2x2, data1, data2);
+			if (ret < 0)
+				dev_err(&client->dev,
+				"Error switching to suspend");
+			break;
+		case BMA2X2_MODE_DEEP_SUSPEND:
+			data1  = BMA2X2_SET_BITSLICE(data1,
+						BMA2X2_MODE_CTRL, 1);
+			data2  = BMA2X2_SET_BITSLICE(data2,
+					BMA2X2_LOW_POWER_MODE, 1);
+			bma2x2_smbus_write_byte(client,
+					BMA2X2_MODE_CTRL_REG, &data1);
+			WAIT_DEVICE_READY();
+			bma2x2_smbus_write_byte(client,
+				BMA2X2_LOW_NOISE_CTRL_REG, &data2);
+			break;
+		case BMA2X2_MODE_LOWPOWER2:
+			data1  = BMA2X2_SET_BITSLICE(data1,
+					BMA2X2_MODE_CTRL, 2);
+			data2  = BMA2X2_SET_BITSLICE(data2,
+					BMA2X2_LOW_POWER_MODE, 1);
+			bma2x2_smbus_write_byte(client,
+					BMA2X2_MODE_CTRL_REG, &data1);
+			WAIT_DEVICE_READY();
+			bma2x2_smbus_write_byte(client,
+				BMA2X2_LOW_NOISE_CTRL_REG, &data2);
+			break;
+		case BMA2X2_MODE_STANDBY:
+			data1  = BMA2X2_SET_BITSLICE(data1,
+					BMA2X2_MODE_CTRL, 4);
+			data2  = BMA2X2_SET_BITSLICE(data2,
+					BMA2X2_LOW_POWER_MODE, 1);
+			bma2x2_smbus_write_byte(client,
+				BMA2X2_LOW_NOISE_CTRL_REG, &data2);
+			WAIT_DEVICE_READY();
+			bma2x2_smbus_write_byte(client,
+					BMA2X2_MODE_CTRL_REG, &data1);
+			break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		}
 	} else {
 		comres = -1;
@@ -2865,7 +3218,11 @@ static int bma2x2_set_mode(struct i2c_client *client, unsigned char mode)
 static int bma2x2_get_mode(struct i2c_client *client, unsigned char *mode)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data1 = 0, data2 = 0;
+=======
+	unsigned char data1, data2;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_MODE_CTRL_REG, &data1);
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_LOW_NOISE_CTRL_REG,
@@ -2874,6 +3231,7 @@ static int bma2x2_get_mode(struct i2c_client *client, unsigned char *mode)
 	data1  = (data1 & 0xE0) >> 5;
 	data2  = (data2 & 0x40) >> 6;
 
+<<<<<<< HEAD
 
 	if ((data1 == 0x00) && (data2 == 0x00)) {
 		*mode  = BMA2X2_MODE_NORMAL;
@@ -2904,6 +3262,46 @@ static int bma2x2_get_mode(struct i2c_client *client, unsigned char *mode)
 				}
 			}
 		}
+=======
+	if (data2 == 0x00) {
+		switch (data1) {
+		case 0:
+			*mode  = BMA2X2_MODE_NORMAL;
+			break;
+		case 1:
+			*mode  = BMA2X2_MODE_DEEP_SUSPEND;
+			break;
+		case 2:
+			*mode  = BMA2X2_MODE_LOWPOWER1;
+			break;
+		case 4:
+		case 6:
+			*mode  = BMA2X2_MODE_SUSPEND;
+			break;
+		default:
+			comres = -ENODEV;
+			break;
+		}
+	} else if (data2 == 0x01) {
+		switch (data1) {
+		case 0:
+		case 1:
+		case 6:
+			*mode  = BMA2X2_MODE_DEEP_SUSPEND;
+			break;
+		case 2:
+			*mode  = BMA2X2_MODE_LOWPOWER2;
+			break;
+		case 4:
+			*mode  = BMA2X2_MODE_STANDBY;
+			break;
+		default:
+			comres = -ENODEV;
+			break;
+		}
+	} else {
+		comres = -ENODEV;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	return comres;
@@ -2912,7 +3310,11 @@ static int bma2x2_get_mode(struct i2c_client *client, unsigned char *mode)
 static int bma2x2_set_range(struct i2c_client *client, unsigned char Range)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data1 = 0;
+=======
+	unsigned char data1;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if ((Range == 3) || (Range == 5) || (Range == 8) || (Range == 12)) {
 		comres = bma2x2_smbus_read_byte(client, BMA2X2_RANGE_SEL_REG,
@@ -2962,7 +3364,11 @@ static int bma2x2_get_range(struct i2c_client *client, unsigned char *Range)
 static int bma2x2_set_bandwidth(struct i2c_client *client, unsigned char BW)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int Bandwidth = 0;
 
 	if (BW > 7 && BW < 16) {
@@ -3038,7 +3444,11 @@ int bma2x2_get_sleep_duration(struct i2c_client *client, unsigned char
 		*sleep_dur)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client,
 			BMA2X2_SLEEP_DUR__REG, &data);
@@ -3052,7 +3462,11 @@ int bma2x2_set_sleep_duration(struct i2c_client *client, unsigned char
 		sleep_dur)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int sleep_duration = 0;
 
 	if (sleep_dur > 4 && sleep_dur < 16) {
@@ -3144,7 +3558,11 @@ static int bma2x2_get_fifo_mode(struct i2c_client *client, unsigned char
 static int bma2x2_set_fifo_mode(struct i2c_client *client, unsigned char
 		fifo_mode)
 {
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int comres = 0;
 
 	if (fifo_mode < 4) {
@@ -3176,7 +3594,11 @@ static int bma2x2_get_fifo_trig(struct i2c_client *client, unsigned char
 static int bma2x2_set_fifo_trig(struct i2c_client *client, unsigned char
 		fifo_trig)
 {
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int comres = 0;
 
 	if (fifo_trig < 4) {
@@ -3209,7 +3631,11 @@ static int bma2x2_get_fifo_trig_src(struct i2c_client *client, unsigned char
 static int bma2x2_set_fifo_trig_src(struct i2c_client *client, unsigned char
 		trig_src)
 {
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int comres = 0;
 
 	if (trig_src < 4) {
@@ -3255,7 +3681,11 @@ static int bma2x2_get_fifo_data_sel(struct i2c_client *client, unsigned char
 static int bma2x2_set_fifo_data_sel(struct i2c_client *client, unsigned char
 		data_sel)
 {
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int comres = 0;
 
 	if (data_sel < 4) {
@@ -3316,7 +3746,11 @@ static int bma2x2_get_offset_target(struct i2c_client *client, unsigned char
 static int bma2x2_set_offset_target(struct i2c_client *client, unsigned char
 		channel, unsigned char offset)
 {
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int comres = 0;
 
 	switch (channel) {
@@ -3373,7 +3807,11 @@ static int bma2x2_get_cal_ready(struct i2c_client *client,
 					unsigned char *calrdy)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_FAST_CAL_RDY_S__REG,
 			&data);
@@ -3387,7 +3825,11 @@ static int bma2x2_set_cal_trigger(struct i2c_client *client, unsigned char
 		caltrigger)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_CAL_TRIGGER__REG, &data);
 	data = BMA2X2_SET_BITSLICE(data, BMA2X2_CAL_TRIGGER, caltrigger);
@@ -3512,7 +3954,11 @@ static int bma2x2_set_selftest_st(struct i2c_client *client, unsigned char
 		selftest)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_EN_SELF_TEST__REG,
 			&data);
@@ -3526,7 +3972,11 @@ static int bma2x2_set_selftest_st(struct i2c_client *client, unsigned char
 static int bma2x2_set_selftest_stn(struct i2c_client *client, unsigned char stn)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_NEG_SELF_TEST__REG,
 			&data);
@@ -3540,7 +3990,11 @@ static int bma2x2_set_selftest_stn(struct i2c_client *client, unsigned char stn)
 static int bma2x2_set_selftest_amp(struct i2c_client *client, unsigned char amp)
 {
 	int comres = 0;
+<<<<<<< HEAD
 	unsigned char data = 0;
+=======
+	unsigned char data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	comres = bma2x2_smbus_read_byte(client, BMA2X2_SELF_TEST_AMP__REG,
 			&data);
@@ -3790,9 +4244,15 @@ static ssize_t bma2x2_int_mode_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_Int_Mode(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static ssize_t bma2x2_int_mode_store(struct device *dev,
@@ -3821,9 +4281,15 @@ static ssize_t bma2x2_slope_duration_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_slope_duration(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -3855,9 +4321,15 @@ static ssize_t bma2x2_slope_no_mot_duration_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_slope_no_mot_duration(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -3890,9 +4362,15 @@ static ssize_t bma2x2_slope_threshold_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_slope_threshold(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -3923,9 +4401,15 @@ static ssize_t bma2x2_slope_no_mot_threshold_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_slope_no_mot_threshold(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -3956,9 +4440,15 @@ static ssize_t bma2x2_high_g_duration_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_high_g_duration(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -3990,9 +4480,15 @@ static ssize_t bma2x2_high_g_threshold_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_high_g_threshold(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4023,9 +4519,15 @@ static ssize_t bma2x2_low_g_duration_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_low_g_duration(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4057,9 +4559,15 @@ static ssize_t bma2x2_low_g_threshold_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_low_g_threshold(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4089,9 +4597,15 @@ static ssize_t bma2x2_tap_threshold_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_tap_threshold(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4121,9 +4635,15 @@ static ssize_t bma2x2_tap_duration_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_tap_duration(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4154,9 +4674,15 @@ static ssize_t bma2x2_tap_quiet_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_tap_quiet(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4188,9 +4714,15 @@ static ssize_t bma2x2_tap_shock_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_tap_shock(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4222,9 +4754,15 @@ static ssize_t bma2x2_tap_samp_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_tap_samp(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4255,9 +4793,15 @@ static ssize_t bma2x2_orient_mode_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_orient_mode(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4289,9 +4833,15 @@ static ssize_t bma2x2_orient_blocking_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_orient_blocking(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4322,9 +4872,15 @@ static ssize_t bma2x2_orient_hyst_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_orient_hyst(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4356,9 +4912,15 @@ static ssize_t bma2x2_orient_theta_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_theta_blocking(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4390,9 +4952,15 @@ static ssize_t bma2x2_flat_theta_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_theta_flat(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4423,9 +4991,15 @@ static ssize_t bma2x2_flat_hold_time_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_flat_hold_time(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 static ssize_t bma2x2_selftest_show(struct device *dev,
@@ -4436,7 +5010,12 @@ static ssize_t bma2x2_selftest_show(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", atomic_read(&bma2x2->selftest_result));
+=======
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+		atomic_read(&bma2x2->selftest_result));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4469,7 +5048,11 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	bma2x2_soft_reset(bma2x2->bma2x2_client);
+<<<<<<< HEAD
 	mdelay(5);
+=======
+	RESET_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	error = kstrtoul(buf, 10, &data);
 	if (error)
@@ -4510,21 +5093,37 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 	/* 1 for x-axis(but BMI058 is 1 for y-axis )*/
 	bma2x2_set_selftest_st(bma2x2->bma2x2_client, 1);
 	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 0);
+<<<<<<< HEAD
 	mdelay(10);
 	bma2x2_read_accel_x(bma2x2->bma2x2_client,
 					bma2x2->sensor_type, &value1);
 	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1);
 	mdelay(10);
+=======
+	SELF_TEST_DELAY();
+	bma2x2_read_accel_x(bma2x2->bma2x2_client,
+					bma2x2->sensor_type, &value1);
+	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1);
+	SELF_TEST_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	bma2x2_read_accel_x(bma2x2->bma2x2_client,
 					bma2x2->sensor_type, &value2);
 	diff = value1-value2;
 
 #ifdef CONFIG_SENSORS_BMI058
+<<<<<<< HEAD
 	printk(KERN_INFO "diff y is %d,value1 is %d, value2 is %d\n", diff,
 				value1, value2);
 	test_result_branch = 2;
 #else
 	printk(KERN_INFO "diff x is %d,value1 is %d, value2 is %d\n", diff,
+=======
+	dev_dbg(dev, "diff y is %d,value1 is %d, value2 is %d\n", diff,
+				value1, value2);
+	test_result_branch = 2;
+#else
+	dev_dbg(dev, "diff x is %d,value1 is %d, value2 is %d\n", diff,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				value1, value2);
 	test_result_branch = 1;
 #endif
@@ -4554,21 +5153,37 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 	/* 2 for y-axis but BMI058 is 1*/
 	bma2x2_set_selftest_st(bma2x2->bma2x2_client, 2);
 	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 0);
+<<<<<<< HEAD
 	mdelay(10);
 	bma2x2_read_accel_y(bma2x2->bma2x2_client,
 					bma2x2->sensor_type, &value1);
 	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1);
 	mdelay(10);
+=======
+	SELF_TEST_DELAY();
+	bma2x2_read_accel_y(bma2x2->bma2x2_client,
+					bma2x2->sensor_type, &value1);
+	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1);
+	SELF_TEST_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	bma2x2_read_accel_y(bma2x2->bma2x2_client,
 					bma2x2->sensor_type, &value2);
 	diff = value1-value2;
 
 #ifdef CONFIG_SENSORS_BMI058
+<<<<<<< HEAD
 	printk(KERN_INFO "diff x is %d,value1 is %d, value2 is %d\n", diff,
 				value1, value2);
 	test_result_branch = 1;
 #else
 	printk(KERN_INFO "diff y is %d,value1 is %d, value2 is %d\n", diff,
+=======
+	dev_dbg(dev, "diff x is %d,value1 is %d, value2 is %d\n", diff,
+				value1, value2);
+	test_result_branch = 1;
+#else
+	dev_dbg(dev, "diff y is %d,value1 is %d, value2 is %d\n", diff,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				value1, value2);
 	test_result_branch = 2;
 #endif
@@ -4598,16 +5213,28 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 
 	bma2x2_set_selftest_st(bma2x2->bma2x2_client, 3); /* 3 for z-axis*/
 	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 0);
+<<<<<<< HEAD
 	mdelay(10);
 	bma2x2_read_accel_z(bma2x2->bma2x2_client,
 					bma2x2->sensor_type, &value1);
 	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1);
 	mdelay(10);
+=======
+	SELF_TEST_DELAY();
+	bma2x2_read_accel_z(bma2x2->bma2x2_client,
+					bma2x2->sensor_type, &value1);
+	bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1);
+	SELF_TEST_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	bma2x2_read_accel_z(bma2x2->bma2x2_client,
 					bma2x2->sensor_type, &value2);
 	diff = value1-value2;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "diff z is %d,value1 is %d, value2 is %d\n", diff,
+=======
+	dev_dbg(dev, "diff z is %d,value1 is %d, value2 is %d\n", diff,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			value1, value2);
 
 	if (bma2x2->sensor_type == BMA280_TYPE) {
@@ -4636,7 +5263,11 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 	if ((bma2x2->sensor_type == BMA255_TYPE) && (result > 0)) {
 		result = 0;
 		bma2x2_soft_reset(bma2x2->bma2x2_client);
+<<<<<<< HEAD
 		mdelay(5);
+=======
+		RESET_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		bma2x2_write_reg(bma2x2->bma2x2_client, 0x32, &clear_value);
 		/* set to 8 G range */
 		if (bma2x2_set_range(bma2x2->bma2x2_client, 8) < 0)
@@ -4648,17 +5279,29 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 								for x-axis*/
 		bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 0); /*
 							positive direction*/
+<<<<<<< HEAD
 		mdelay(10);
+=======
+		SELF_TEST_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		bma2x2_read_accel_x(bma2x2->bma2x2_client,
 						bma2x2->sensor_type, &value1);
 		bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1); /*
 							negative direction*/
+<<<<<<< HEAD
 		mdelay(10);
+=======
+		SELF_TEST_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		bma2x2_read_accel_x(bma2x2->bma2x2_client,
 						bma2x2->sensor_type, &value2);
 		diff = value1-value2;
 
+<<<<<<< HEAD
 		printk(KERN_INFO "diff x is %d,value1 is %d, value2 is %d\n",
+=======
+		dev_dbg(dev, "diff x is %d,value1 is %d, value2 is %d\n",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 						diff, value1, value2);
 		if (abs(diff) < 204)
 			result |= 1;
@@ -4667,16 +5310,28 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 								for y-axis*/
 		bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 0); /*
 							positive direction*/
+<<<<<<< HEAD
 		mdelay(10);
+=======
+		SELF_TEST_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		bma2x2_read_accel_y(bma2x2->bma2x2_client,
 						bma2x2->sensor_type, &value1);
 		bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1); /*
 							negative direction*/
+<<<<<<< HEAD
 		mdelay(10);
 		bma2x2_read_accel_y(bma2x2->bma2x2_client,
 						bma2x2->sensor_type, &value2);
 		diff = value1-value2;
 		printk(KERN_INFO "diff y is %d,value1 is %d, value2 is %d\n",
+=======
+		SELF_TEST_DELAY();
+		bma2x2_read_accel_y(bma2x2->bma2x2_client,
+						bma2x2->sensor_type, &value2);
+		diff = value1-value2;
+		dev_dbg(dev, "diff y is %d,value1 is %d, value2 is %d\n",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 						diff, value1, value2);
 
 		if (abs(diff) < 204)
@@ -4686,17 +5341,29 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 								for z-axis*/
 		bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 0); /*
 							positive direction*/
+<<<<<<< HEAD
 		mdelay(10);
+=======
+		SELF_TEST_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		bma2x2_read_accel_z(bma2x2->bma2x2_client,
 						bma2x2->sensor_type, &value1);
 		bma2x2_set_selftest_stn(bma2x2->bma2x2_client, 1); /*
 							negative direction*/
+<<<<<<< HEAD
 		mdelay(10);
+=======
+		SELF_TEST_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		bma2x2_read_accel_z(bma2x2->bma2x2_client,
 						bma2x2->sensor_type, &value2);
 		diff = value1-value2;
 
+<<<<<<< HEAD
 		printk(KERN_INFO "diff z is %d,value1 is %d, value2 is %d\n",
+=======
+		dev_dbg(dev, "diff z is %d,value1 is %d, value2 is %d\n",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 						diff, value1, value2);
 		if (abs(diff) < 102)
 			result |= 4;
@@ -4705,8 +5372,13 @@ static ssize_t bma2x2_selftest_store(struct device *dev,
 	atomic_set(&bma2x2->selftest_result, (unsigned int)result);
 
 	bma2x2_soft_reset(bma2x2->bma2x2_client);
+<<<<<<< HEAD
 	mdelay(5);
 	printk(KERN_INFO "self test finished\n");
+=======
+	RESET_DELAY();
+	dev_dbg(dev, "self test finished\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return count;
 }
@@ -4764,6 +5436,12 @@ static int bma2x2_read_accel_xyz(struct i2c_client *client,
 #endif
 
 	bma2x2_remap_sensor_data(acc, client_data);
+<<<<<<< HEAD
+=======
+	acc->x = acc->x << BMA2X2_RANGE_SHIFT;
+	acc->y = acc->y << BMA2X2_RANGE_SHIFT;
+	acc->z = acc->z << BMA2X2_RANGE_SHIFT;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return comres;
 }
 
@@ -4815,7 +5493,12 @@ static ssize_t bma2x2_register_show(struct device *dev,
 	for (i = 0; i < 0x40; i++) {
 		bma2x2_smbus_read_byte(bma2x2->bma2x2_client, i, reg+i);
 
+<<<<<<< HEAD
 		count += sprintf(&buf[count], "0x%x: %d\n", i, reg[i]);
+=======
+		count += snprintf(&buf[count], PAGE_SIZE,
+			"0x%x: %d\n", i, reg[i]);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 	return count;
 
@@ -4830,9 +5513,15 @@ static ssize_t bma2x2_range_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_range(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static ssize_t bma2x2_range_store(struct device *dev,
@@ -4861,9 +5550,15 @@ static ssize_t bma2x2_bandwidth_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_bandwidth(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4899,9 +5594,15 @@ static ssize_t bma2x2_mode_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_mode(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d %d\n", data, bma2x2->ref_count);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d %d\n", data, bma2x2->ref_count);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static ssize_t bma2x2_mode_store(struct device *dev,
@@ -4933,7 +5634,11 @@ static ssize_t bma2x2_value_cache_show(struct device *dev,
 	acc_value = bma2x2->value;
 	mutex_unlock(&bma2x2->value_mutex);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d %d %d\n", acc_value.x, acc_value.y,
+=======
+	return snprintf(buf, PAGE_SIZE, "%d %d %d\n", acc_value.x, acc_value.y,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			acc_value.z);
 }
 
@@ -4947,7 +5652,11 @@ static ssize_t bma2x2_value_show(struct device *dev,
 	bma2x2_read_accel_xyz(bma2x2->bma2x2_client, bma2x2->sensor_type,
 								&acc_value);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d %d %d\n", acc_value.x, acc_value.y,
+=======
+	return snprintf(buf, PAGE_SIZE, "%d %d %d\n", acc_value.x, acc_value.y,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			acc_value.z);
 }
 
@@ -4957,7 +5666,11 @@ static ssize_t bma2x2_delay_show(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", atomic_read(&bma2x2->delay));
+=======
+	return snprintf(buf, PAGE_SIZE, "%d\n", atomic_read(&bma2x2->delay));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4967,7 +5680,11 @@ static ssize_t bma2x2_chip_id_show(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", bma2x2->chip_id);
+=======
+	return snprintf(buf, PAGE_SIZE, "%d\n", bma2x2->chip_id);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -4980,6 +5697,7 @@ static ssize_t bma2x2_place_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 	int place = BOSCH_SENSOR_PLACE_UNKNOWN;
 
+<<<<<<< HEAD
 	if (NULL != bma2x2->bst_pd)
 		place = bma2x2->bst_pd->place;
 
@@ -5004,6 +5722,13 @@ static ssize_t bma2x2_place_store(struct device *dev,
 
 	return count;
 }
+=======
+	place = bma2x2->pdata->place;
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", place);
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static ssize_t bma2x2_delay_store(struct device *dev,
 		struct device_attribute *attr,
@@ -5031,7 +5756,11 @@ static ssize_t bma2x2_enable_show(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", atomic_read(&bma2x2->enable));
+=======
+	return snprintf(buf, PAGE_SIZE, "%d\n", atomic_read(&bma2x2->enable));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5044,6 +5773,17 @@ static void bma2x2_set_enable(struct device *dev, int enable)
 	mutex_lock(&bma2x2->enable_mutex);
 	if (enable) {
 		if (pre_enable == 0) {
+<<<<<<< HEAD
+=======
+			if (bma2x2_power_ctl(bma2x2, true)) {
+				dev_err(dev, "power failed\n");
+				goto mutex_exit;
+			}
+			if (bma2x2_open_init(client, bma2x2) < 0) {
+				dev_err(dev, "set init failed\n");
+				goto mutex_exit;
+			}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			bma2x2_set_mode(bma2x2->bma2x2_client,
 					BMA2X2_MODE_NORMAL);
 #ifndef CONFIG_BMA_ENABLE_NEWDATA_INT
@@ -5055,14 +5795,31 @@ static void bma2x2_set_enable(struct device *dev, int enable)
 
 	} else {
 		if (pre_enable == 1) {
+<<<<<<< HEAD
+=======
+			if (bma2x2_store_state(client, bma2x2) < 0) {
+				dev_err(dev, "set state failed\n");
+				goto mutex_exit;
+			}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			bma2x2_set_mode(bma2x2->bma2x2_client,
 					BMA2X2_MODE_SUSPEND);
 #ifndef CONFIG_BMA_ENABLE_NEWDATA_INT
 			cancel_delayed_work_sync(&bma2x2->work);
 #endif
 			atomic_set(&bma2x2->enable, 0);
+<<<<<<< HEAD
 		}
 	}
+=======
+			if (bma2x2_power_ctl(bma2x2, false)) {
+				dev_err(dev, "power failed\n");
+				goto mutex_exit;
+			}
+		}
+	}
+mutex_exit:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mutex_unlock(&bma2x2->enable_mutex);
 
 }
@@ -5082,6 +5839,231 @@ static ssize_t bma2x2_enable_store(struct device *dev,
 
 	return count;
 }
+<<<<<<< HEAD
+=======
+
+static int bma2x2_cdev_enable(struct sensors_classdev *sensors_cdev,
+				unsigned int enable)
+{
+	struct bma2x2_data *data = container_of(sensors_cdev,
+					struct bma2x2_data, cdev);
+
+	bma2x2_set_enable(&data->bma2x2_client->dev, enable);
+	return 0;
+}
+
+static int bma2x2_is_power_enabled(struct bma2x2_data *data)
+{
+	return atomic_read(&data->enable);
+}
+
+static int bma2x2_cdev_poll_delay(struct sensors_classdev *sensors_cdev,
+				unsigned int delay_ms)
+{
+	struct bma2x2_data *data = container_of(sensors_cdev,
+					struct bma2x2_data, cdev);
+
+	if (delay_ms < BMA2X2_MIN_DELAY)
+		delay_ms = BMA2X2_MIN_DELAY;
+	if (delay_ms > BMA2X2_MAX_DELAY)
+		delay_ms = BMA2X2_MAX_DELAY;
+	atomic_set(&data->delay, (unsigned int) delay_ms);
+
+	return 0;
+}
+
+#ifdef CONFIG_SENSORS_BMI058
+static int bma2x2_select_chanel(struct i2c_client *client)
+{
+	unsigned char data_ore[3] = { BOSCH_SENSOR_PLANE };
+	signed char tmp;
+	int error, i;
+	int timeout;
+	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
+	unsigned char bmi058_channel_tb = {BMI058_OFFSET_TRIGGER_X,
+			BMI058_OFFSET_TRIGGER_Y, BMI058_OFFSET_TRIGGER_Z};
+
+	if (bma2x2->pdata->place > 3 && bma2x2->pdata->place < 8)
+		data_ore[2] = BOSCH_SENSOR_DOWN;
+	else if (bma2x2->pdata->place >= 0 && bma2x2->pdata->place < 4)
+		data_ore[2] = BOSCH_SENSOR_UP;
+	else {
+		dev_err(&client->dev, "unknown sensor place\n");
+		return -EINVAL;
+	}
+	for (i = 0; i < 3; i++) {
+		if (bma2x2_set_offset_target(client, bmi058_channel_tb[i],
+					(unsigned char)data_ore[i]) < 0) {
+			dev_err(&client->dev,
+					"set offset target error\n");
+			return -EINVAL;
+		}
+		if (bma2x2_set_cal_trigger(bma2x2->bma2x2_client,
+					(i + 1)) < 0) {
+			dev_err(&client->dev,
+					"read calibration state error\n");
+			return -EINVAL;
+		}
+		timeout = 0;
+		do {
+			WAIT_CAL_READY();
+			error = bma2x2_get_cal_ready(bma2x2->bma2x2_client,
+					&tmp);
+			if (error < 0) {
+				dev_err(&client->dev,
+						"read cal_ready error\n");
+				return error;
+			}
+			timeout++;
+			if (timeout == RETRY_TIME) {
+				dev_err(&client->dev,
+					"get fast calibration ready error\n");
+				return -EINVAL;
+			};
+
+		} while (tmp == 0);
+	}
+	return 0;
+}
+#else
+static int bma2x2_select_chanel(struct i2c_client *client)
+{
+	unsigned char data_ore[3] = { BOSCH_SENSOR_PLANE };
+	signed char tmp;
+	int error, i;
+	int timeout;
+	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
+	unsigned char channel_tab[] = {BMA2X2_OFFSET_TRIGGER_X,
+			BMA2X2_OFFSET_TRIGGER_Y, BMA2X2_OFFSET_TRIGGER_Z};
+
+	if (bma2x2->pdata->place > 3 && bma2x2->pdata->place < 8)
+		data_ore[2] = BOSCH_SENSOR_DOWN;
+	else if (bma2x2->pdata->place >= 0 && bma2x2->pdata->place < 4)
+		data_ore[2] = BOSCH_SENSOR_UP;
+	else {
+		dev_err(&client->dev, "unknown sensor place\n");
+		return -EINVAL;
+	}
+	for (i = 0; i < 3; i++) {
+		if (bma2x2_set_offset_target(client, channel_tab[i],
+			(unsigned char)data_ore[i]) < 0) {
+			dev_err(&client->dev,
+					"set offset target error\n");
+			return -EINVAL;
+		}
+		if (bma2x2_set_cal_trigger(bma2x2->bma2x2_client,
+					(i + 1)) < 0) {
+			dev_err(&client->dev,
+					"read calibration state error\n");
+			return -EINVAL;
+		}
+		timeout = 0;
+		do {
+			WAIT_CAL_READY();
+			error = bma2x2_get_cal_ready(bma2x2->bma2x2_client,
+					&tmp);
+			if (error < 0) {
+				dev_err(&client->dev,
+						"read cal_ready error\n");
+				return error;
+			}
+			timeout++;
+			if (timeout == RETRY_TIME) {
+				dev_err(&client->dev,
+					"get fast calibration ready error\n");
+				return -EINVAL;
+			};
+
+		} while (tmp == 0);
+	}
+	return 0;
+}
+#endif
+
+static int bma2x2_self_calibration_xyz(struct sensors_classdev *sensors_cdev)
+{
+	int error;
+	struct bma2x2_data *data = container_of(sensors_cdev,
+					struct bma2x2_data, cdev);
+	struct i2c_client *client = data->bma2x2_client;
+	error = bma2x2_select_chanel(client);
+	if (error < 0) {
+		dev_err(&client->dev, "xyz calibration error\n");
+		return error;
+	}
+	dev_dbg(&client->dev, "xyz axis fast calibration finished\n");
+	error = bma2x2_eeprom_prog(client);
+	if (error < 0) {
+		dev_err(&client->dev, "wirte calibration to eeprom failed\n");
+		return error;
+	}
+
+	return error;
+}
+
+static int bma2x2_eeprom_prog(struct i2c_client *client)
+{
+	int res = 0, timeout = 0;
+	unsigned char databuf;
+	res = bma2x2_smbus_read_byte(client, BMA2X2_EEPROM_CTRL_REG,
+					&databuf);
+	if (res < 0) {
+		dev_err(&client->dev, "read eeprom control reg error1\n");
+		return res;
+	}
+	databuf |= 0x01;
+	res = bma2x2_smbus_write_byte(client, BMA2X2_EEPROM_CTRL_REG,
+					&databuf);
+	if (res < 0) {
+		dev_err(&client->dev, "write eeprom control reg error1\n");
+		return res;
+	}
+
+	res = bma2x2_smbus_read_byte(client, BMA2X2_EEPROM_CTRL_REG,
+					&databuf);
+	if (res < 0) {
+		dev_err(&client->dev, "read eeprom control reg error2\n");
+		return res;
+	}
+	databuf |= 0x02;
+	res = bma2x2_smbus_write_byte(client, BMA2X2_EEPROM_CTRL_REG,
+					&databuf);
+	if (res < 0) {
+		dev_err(&client->dev, "write eeprom control reg error2\n");
+		return res;
+	}
+	do {
+		WAIT_CAL_READY();
+		res = bma2x2_smbus_read_byte(client, BMA2X2_EEPROM_CTRL_REG,
+					&databuf);
+		if (res < 0) {
+			dev_err(&client->dev, "read nvm_rdy error\n");
+			return res;
+		}
+		databuf = (databuf >> 2) & 0x01;
+		if (++timeout == 50) {
+			dev_err(&client->dev, "check nvm_rdy time out\n");
+			break;
+		}
+	} while (databuf == 0);
+
+	res = bma2x2_smbus_read_byte(client, BMA2X2_EEPROM_CTRL_REG,
+					&databuf);
+	if (res < 0) {
+		dev_err(&client->dev, "read eeprom control reg error3\n");
+		return res;
+	}
+	databuf |= 0xFE;
+	res = bma2x2_smbus_write_byte(client, BMA2X2_EEPROM_CTRL_REG,
+					&databuf);
+	if (res < 0) {
+		dev_err(&client->dev, "write eeprom control reg error3\n");
+		return res;
+	}
+	return res;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static ssize_t bma2x2_fast_calibration_x_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -5094,6 +6076,7 @@ static ssize_t bma2x2_fast_calibration_x_show(struct device *dev,
 #ifdef CONFIG_SENSORS_BMI058
 	if (bma2x2_get_offset_target(bma2x2->bma2x2_client,
 				BMI058_OFFSET_TRIGGER_X, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 #else
 	if (bma2x2_get_offset_target(bma2x2->bma2x2_client,
@@ -5102,6 +6085,16 @@ static ssize_t bma2x2_fast_calibration_x_show(struct device *dev,
 #endif
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+#else
+	if (bma2x2_get_offset_target(bma2x2->bma2x2_client,
+				BMA2X2_OFFSET_TRIGGER_X, &data) < 0)
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+#endif
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5134,6 +6127,7 @@ static ssize_t bma2x2_fast_calibration_x_store(struct device *dev,
 		return -EINVAL;
 
 	do {
+<<<<<<< HEAD
 		mdelay(2);
 		bma2x2_get_cal_ready(bma2x2->bma2x2_client, &tmp);
 
@@ -5142,12 +6136,24 @@ static ssize_t bma2x2_fast_calibration_x_store(struct device *dev,
 		timeout++;
 		if (timeout == 50) {
 			printk(KERN_INFO "get fast calibration ready error\n");
+=======
+		WAIT_CAL_READY();
+		bma2x2_get_cal_ready(bma2x2->bma2x2_client, &tmp);
+
+		timeout++;
+		if (timeout == 50) {
+			dev_err(&client->dev, "get fast calibration ready error\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return -EINVAL;
 		};
 
 	} while (tmp == 0);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "x axis fast calibration finished\n");
+=======
+	dev_dbg(&client->dev, "x axis fast calibration finished\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return count;
 }
 
@@ -5163,6 +6169,7 @@ static ssize_t bma2x2_fast_calibration_y_show(struct device *dev,
 #ifdef CONFIG_SENSORS_BMI058
 	if (bma2x2_get_offset_target(bma2x2->bma2x2_client,
 					BMI058_OFFSET_TRIGGER_Y, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 #else
 	if (bma2x2_get_offset_target(bma2x2->bma2x2_client,
@@ -5171,6 +6178,16 @@ static ssize_t bma2x2_fast_calibration_y_show(struct device *dev,
 #endif
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+#else
+	if (bma2x2_get_offset_target(bma2x2->bma2x2_client,
+					BMA2X2_OFFSET_TRIGGER_Y, &data) < 0)
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+#endif
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5203,6 +6220,7 @@ static ssize_t bma2x2_fast_calibration_y_store(struct device *dev,
 		return -EINVAL;
 
 	do {
+<<<<<<< HEAD
 		mdelay(2);
 		bma2x2_get_cal_ready(bma2x2->bma2x2_client, &tmp);
 
@@ -5211,12 +6229,24 @@ static ssize_t bma2x2_fast_calibration_y_store(struct device *dev,
 		timeout++;
 		if (timeout == 50) {
 			printk(KERN_INFO "get fast calibration ready error\n");
+=======
+		WAIT_CAL_READY();
+		bma2x2_get_cal_ready(bma2x2->bma2x2_client, &tmp);
+
+		timeout++;
+		if (timeout == 50) {
+			dev_err(&client->dev, "get fast calibration ready error\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return -EINVAL;
 		};
 
 	} while (tmp == 0);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "y axis fast calibration finished\n");
+=======
+	dev_dbg(&client->dev, "y axis fast calibration finished\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return count;
 }
 
@@ -5230,9 +6260,15 @@ static ssize_t bma2x2_fast_calibration_z_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_offset_target(bma2x2->bma2x2_client, 3, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5259,6 +6295,7 @@ static ssize_t bma2x2_fast_calibration_z_store(struct device *dev,
 		return -EINVAL;
 
 	do {
+<<<<<<< HEAD
 		mdelay(2);
 		bma2x2_get_cal_ready(bma2x2->bma2x2_client, &tmp);
 
@@ -5267,12 +6304,24 @@ static ssize_t bma2x2_fast_calibration_z_store(struct device *dev,
 		timeout++;
 		if (timeout == 50) {
 			printk(KERN_INFO "get fast calibration ready error\n");
+=======
+		WAIT_CAL_READY();
+		bma2x2_get_cal_ready(bma2x2->bma2x2_client, &tmp);
+
+		timeout++;
+		if (timeout == 50) {
+			dev_err(&client->dev, "get fast calibration ready error\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return -EINVAL;
 		};
 
 	} while (tmp == 0);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "z axis fast calibration finished\n");
+=======
+	dev_dbg(&client->dev, "z axis fast calibration finished\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return count;
 }
 
@@ -5285,9 +6334,15 @@ static ssize_t bma2x2_SleepDur_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_sleep_duration(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5318,9 +6373,15 @@ static ssize_t bma2x2_fifo_mode_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_fifo_mode(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5352,9 +6413,15 @@ static ssize_t bma2x2_fifo_trig_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_fifo_trig(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5387,9 +6454,15 @@ static ssize_t bma2x2_fifo_trig_src_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_fifo_trig_src(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5428,7 +6501,11 @@ static ssize_t bma2x2_fifo_data_sel_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 	signed char place = BOSCH_SENSOR_PLACE_UNKNOWN;
 	if (bma2x2_get_fifo_data_sel(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #ifdef CONFIG_SENSORS_BMI058
 /*Update BMI058 fifo_data_sel to the BMA2x2 common definition*/
@@ -5439,6 +6516,7 @@ static ssize_t bma2x2_fifo_data_sel_show(struct device *dev,
 #endif
 
 	/*remaping fifo_dat_sel if define virtual place in BSP files*/
+<<<<<<< HEAD
 	if ((NULL != bma2x2->bst_pd) &&
 		(BOSCH_SENSOR_PLACE_UNKNOWN != bma2x2->bst_pd->place)) {
 		place = bma2x2->bst_pd->place;
@@ -5455,6 +6533,21 @@ static ssize_t bma2x2_fifo_data_sel_show(struct device *dev,
 	}
 
 	return sprintf(buf, "%d\n", data);
+=======
+	place = bma2x2->pdata->place;
+	/* sensor with place 0 needs not to be remapped */
+	if ((place > 0) && (place < MAX_AXIS_REMAP_TAB_SZ)) {
+		/* BMA2X2_FIFO_DAT_SEL_X: 1, Y:2, Z:3;
+		* but bst_axis_remap_tab_dft[i].src_x:0, y:1, z:2
+		* so we need to +1*/
+		if (BMA2X2_FIFO_DAT_SEL_X == data)
+			data = bst_axis_remap_tab_dft[place].src_x + 1;
+		else if (BMA2X2_FIFO_DAT_SEL_Y == data)
+			data = bst_axis_remap_tab_dft[place].src_y + 1;
+	}
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5466,9 +6559,15 @@ static ssize_t bma2x2_fifo_framecount_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_fifo_framecount(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5497,9 +6596,15 @@ static ssize_t bma2x2_temperature_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_read_temperature(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5527,6 +6632,7 @@ static ssize_t bma2x2_fifo_data_sel_store(struct device *dev,
 	bma2x2->fifo_datasel = (unsigned char) data;
 
 	/*remaping fifo_dat_sel if define virtual place*/
+<<<<<<< HEAD
 	if ((NULL != bma2x2->bst_pd) &&
 		(BOSCH_SENSOR_PLACE_UNKNOWN != bma2x2->bst_pd->place)) {
 		place = bma2x2->bst_pd->place;
@@ -5548,6 +6654,26 @@ static ssize_t bma2x2_fifo_data_sel_store(struct device *dev,
 			data = BMI058_FIFO_DAT_SEL_X;
 		else if (BMA2X2_FIFO_DAT_SEL_Y == data)
 			data = BMI058_FIFO_DAT_SEL_Y;
+=======
+	place = bma2x2->pdata->place;
+	/* sensor with place 0 needs not to be remapped */
+	if ((place > 0) && (place < MAX_AXIS_REMAP_TAB_SZ)) {
+		/*Need X Y axis revesal sensor place: P1, P3, P5, P7 */
+		/* BMA2X2_FIFO_DAT_SEL_X: 1, Y:2, Z:3;
+		  * but bst_axis_remap_tab_dft[i].src_x:0, y:1, z:2
+		  * so we need to +1*/
+		if (BMA2X2_FIFO_DAT_SEL_X == data)
+			data =  bst_axis_remap_tab_dft[place].src_x + 1;
+		else if (BMA2X2_FIFO_DAT_SEL_Y == data)
+			data =  bst_axis_remap_tab_dft[place].src_y + 1;
+	}
+#ifdef CONFIG_SENSORS_BMI058
+	/*Update BMI058 fifo_data_sel to the BMA2x2 common definition*/
+	if (BMA2X2_FIFO_DAT_SEL_X == data)
+		data = BMI058_FIFO_DAT_SEL_X;
+	else if (BMA2X2_FIFO_DAT_SEL_Y == data)
+		data = BMI058_FIFO_DAT_SEL_Y;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #endif
 	if (bma2x2_set_fifo_data_sel(bma2x2->bma2x2_client,
@@ -5569,6 +6695,7 @@ static ssize_t bma2x2_fifo_data_sel_store(struct device *dev,
 static void bma2x2_single_axis_remaping(unsigned char fifo_datasel,
 		unsigned char *remap_dir, struct bma2x2_data *client_data)
 {
+<<<<<<< HEAD
 	if ((NULL == client_data->bst_pd) ||
 			(BOSCH_SENSOR_PLACE_UNKNOWN
 			 == client_data->bst_pd->place))
@@ -5610,6 +6737,43 @@ static void bma2x2_single_axis_remaping(unsigned char fifo_datasel,
 		}
 	}
 
+=======
+	signed char place = client_data->pdata->place;
+	/* sensor with place 0 needs not to be remapped */
+	if ((place <= 0)  || (place >= MAX_AXIS_REMAP_TAB_SZ))
+		return;
+
+	if (fifo_datasel < 1 || fifo_datasel > 3)
+		return;
+
+	switch (fifo_datasel) {
+	/*P2, P3, P4, P5 X axis(andorid) need to reverse*/
+	case BMA2X2_FIFO_DAT_SEL_X:
+		if (-1 == bst_axis_remap_tab_dft[place].sign_x)
+			*remap_dir = 1;
+		else
+			*remap_dir = 0;
+		break;
+	/*P1, P2, P5, P6 Y axis(andorid) need to reverse*/
+	case BMA2X2_FIFO_DAT_SEL_Y:
+		if (-1 == bst_axis_remap_tab_dft[place].sign_y)
+			*remap_dir = 1;
+		else
+			*remap_dir = 0;
+		break;
+	case BMA2X2_FIFO_DAT_SEL_Z:
+	/*P4, P5, P6, P7 Z axis(andorid) need to reverse*/
+		if (-1 == bst_axis_remap_tab_dft[place].sign_z)
+			*remap_dir = 1;
+		else
+			*remap_dir = 0;
+		break;
+	default:
+		break;
+	}
+
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return;
 }
 
@@ -5638,7 +6802,11 @@ static ssize_t bma2x2_fifo_data_out_frame_show(struct device *dev,
 	if (bma_i2c_burst_read(bma2x2->bma2x2_client,
 			BMA2X2_FIFO_DATA_OUTPUT_REG, fifo_data_out,
 						bma2x2->fifo_count * f_len) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read byte block error\n");
+=======
+		return snprintf(buf, PAGE_SIZE, "Read byte block error\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 	err = 0;
@@ -5665,7 +6833,11 @@ static ssize_t bma2x2_fifo_data_out_frame_show(struct device *dev,
 			(16 - bma2x2_sensor_bitwidth[bma2x2->sensor_type]);
 #endif
 			bma2x2_remap_sensor_data(&acc_lsb, bma2x2);
+<<<<<<< HEAD
 			len = sprintf(buf, "%d %d %d ",
+=======
+			len = snprintf(buf, PAGE_SIZE, "%d %d %d ",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				acc_lsb.x, acc_lsb.y, acc_lsb.z);
 			buf += len;
 			err += len;
@@ -5683,7 +6855,11 @@ static ssize_t bma2x2_fifo_data_out_frame_show(struct device *dev,
 #endif
 			if (axis_dir_remap)
 				value = 0 - value;
+<<<<<<< HEAD
 			len = sprintf(buf, "%d ", value);
+=======
+			len = snprintf(buf, PAGE_SIZE, "%d ", value);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			buf += len;
 			err += len;
 		}
@@ -5700,9 +6876,15 @@ static ssize_t bma2x2_offset_x_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_offset_x(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5734,9 +6916,15 @@ static ssize_t bma2x2_offset_y_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_offset_y(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5768,9 +6956,15 @@ static ssize_t bma2x2_offset_z_show(struct device *dev,
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
 	if (bma2x2_get_offset_z(bma2x2->bma2x2_client, &data) < 0)
+<<<<<<< HEAD
 		return sprintf(buf, "Read error\n");
 
 	return sprintf(buf, "%d\n", data);
+=======
+		return snprintf(buf, PAGE_SIZE, "Read error\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 }
 
@@ -5833,7 +7027,12 @@ static ssize_t bma2x2_en_sig_motion_show(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", atomic_read(&bma2x2->en_sig_motion));
+=======
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+		atomic_read(&bma2x2->en_sig_motion));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static int bma2x2_set_en_sig_motion(struct bma2x2_data *bma2x2,
@@ -5911,7 +7110,11 @@ static ssize_t bma2x2_tap_time_period_show(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", bma2x2->tap_time_period);
+=======
+	return snprintf(buf, PAGE_SIZE, "%d\n", bma2x2->tap_time_period);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static ssize_t bma2x2_tap_time_period_store(struct device *dev,
@@ -5938,7 +7141,12 @@ static ssize_t bma2x2_en_double_tap_show(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct bma2x2_data *bma2x2 = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", atomic_read(&bma2x2->en_double_tap));
+=======
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+		atomic_read(&bma2x2->en_double_tap));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static int bma2x2_set_en_double_tap(struct bma2x2_data *bma2x2,
@@ -5986,7 +7194,12 @@ static void bma2x2_tap_timeout_handle(unsigned long data)
 {
 	struct bma2x2_data *bma2x2 = (struct bma2x2_data *)data;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "tap interrupt handle, timeout\n");
+=======
+	dev_dbg(&bma2x2->bma2x2_client->dev,
+		"tap interrupt handle, timeout\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mutex_lock(&bma2x2->tap_mutex);
 	bma2x2->tap_times = 0;
 	mutex_unlock(&bma2x2->tap_mutex);
@@ -6002,6 +7215,7 @@ static void bma2x2_tap_timeout_handle(unsigned long data)
 }
 #endif
 
+<<<<<<< HEAD
 static DEVICE_ATTR(range, S_IRUGO|S_IWUSR|S_IWGRP|S_IWOTH,
 		bma2x2_range_show, bma2x2_range_store);
 static DEVICE_ATTR(bandwidth, S_IRUGO|S_IWUSR|S_IWGRP|S_IWOTH,
@@ -6136,6 +7350,118 @@ static DEVICE_ATTR(en_sig_motion, S_IRUGO|S_IWUSR|S_IWGRP|S_IWOTH,
 static DEVICE_ATTR(tap_time_period, S_IRUGO|S_IWUSR|S_IWGRP|S_IWOTH,
 		bma2x2_tap_time_period_show, bma2x2_tap_time_period_store);
 static DEVICE_ATTR(en_double_tap, S_IRUGO|S_IWUSR|S_IWGRP|S_IWOTH,
+=======
+static DEVICE_ATTR(range, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_range_show, bma2x2_range_store);
+static DEVICE_ATTR(bandwidth, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_bandwidth_show, bma2x2_bandwidth_store);
+static DEVICE_ATTR(op_mode, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_mode_show, bma2x2_mode_store);
+static DEVICE_ATTR(value, S_IRUSR|S_IRGRP,
+		bma2x2_value_show, NULL);
+static DEVICE_ATTR(value_cache, S_IRUSR|S_IRGRP,
+		bma2x2_value_cache_show, NULL);
+static DEVICE_ATTR(delay, S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP,
+		bma2x2_delay_show, bma2x2_delay_store);
+static DEVICE_ATTR(enable, S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP,
+		bma2x2_enable_show, bma2x2_enable_store);
+static DEVICE_ATTR(SleepDur, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_SleepDur_show, bma2x2_SleepDur_store);
+static DEVICE_ATTR(fast_calibration_x, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_fast_calibration_x_show,
+		bma2x2_fast_calibration_x_store);
+static DEVICE_ATTR(fast_calibration_y, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_fast_calibration_y_show,
+		bma2x2_fast_calibration_y_store);
+static DEVICE_ATTR(fast_calibration_z, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_fast_calibration_z_show,
+		bma2x2_fast_calibration_z_store);
+static DEVICE_ATTR(fifo_mode, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_fifo_mode_show, bma2x2_fifo_mode_store);
+static DEVICE_ATTR(fifo_framecount, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_fifo_framecount_show, bma2x2_fifo_framecount_store);
+static DEVICE_ATTR(fifo_trig, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_fifo_trig_show, bma2x2_fifo_trig_store);
+static DEVICE_ATTR(fifo_trig_src, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_fifo_trig_src_show, bma2x2_fifo_trig_src_store);
+static DEVICE_ATTR(fifo_data_sel, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_fifo_data_sel_show, bma2x2_fifo_data_sel_store);
+static DEVICE_ATTR(fifo_data_frame, S_IRUSR|S_IRGRP,
+		bma2x2_fifo_data_out_frame_show, NULL);
+static DEVICE_ATTR(reg, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_register_show, bma2x2_register_store);
+static DEVICE_ATTR(chip_id, S_IRUSR|S_IRGRP,
+		bma2x2_chip_id_show, NULL);
+static DEVICE_ATTR(offset_x, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_offset_x_show,
+		bma2x2_offset_x_store);
+static DEVICE_ATTR(offset_y, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_offset_y_show,
+		bma2x2_offset_y_store);
+static DEVICE_ATTR(offset_z, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_offset_z_show,
+		bma2x2_offset_z_store);
+static DEVICE_ATTR(enable_int, S_IWUSR,
+		NULL, bma2x2_enable_int_store);
+static DEVICE_ATTR(int_mode, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_int_mode_show, bma2x2_int_mode_store);
+static DEVICE_ATTR(slope_duration, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_slope_duration_show, bma2x2_slope_duration_store);
+static DEVICE_ATTR(slope_threshold, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_slope_threshold_show, bma2x2_slope_threshold_store);
+static DEVICE_ATTR(slope_no_mot_duration, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_slope_no_mot_duration_show,
+			bma2x2_slope_no_mot_duration_store);
+static DEVICE_ATTR(slope_no_mot_threshold, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_slope_no_mot_threshold_show,
+			bma2x2_slope_no_mot_threshold_store);
+static DEVICE_ATTR(high_g_duration, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_high_g_duration_show, bma2x2_high_g_duration_store);
+static DEVICE_ATTR(high_g_threshold, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_high_g_threshold_show, bma2x2_high_g_threshold_store);
+static DEVICE_ATTR(low_g_duration, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_low_g_duration_show, bma2x2_low_g_duration_store);
+static DEVICE_ATTR(low_g_threshold, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_low_g_threshold_show, bma2x2_low_g_threshold_store);
+static DEVICE_ATTR(tap_duration, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_tap_duration_show, bma2x2_tap_duration_store);
+static DEVICE_ATTR(tap_threshold, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_tap_threshold_show, bma2x2_tap_threshold_store);
+static DEVICE_ATTR(tap_quiet, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_tap_quiet_show, bma2x2_tap_quiet_store);
+static DEVICE_ATTR(tap_shock, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_tap_shock_show, bma2x2_tap_shock_store);
+static DEVICE_ATTR(tap_samp, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_tap_samp_show, bma2x2_tap_samp_store);
+static DEVICE_ATTR(orient_mode, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_orient_mode_show, bma2x2_orient_mode_store);
+static DEVICE_ATTR(orient_blocking, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_orient_blocking_show, bma2x2_orient_blocking_store);
+static DEVICE_ATTR(orient_hyst, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_orient_hyst_show, bma2x2_orient_hyst_store);
+static DEVICE_ATTR(orient_theta, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_orient_theta_show, bma2x2_orient_theta_store);
+static DEVICE_ATTR(flat_theta, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_flat_theta_show, bma2x2_flat_theta_store);
+static DEVICE_ATTR(flat_hold_time, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_flat_hold_time_show, bma2x2_flat_hold_time_store);
+static DEVICE_ATTR(selftest, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_selftest_show, bma2x2_selftest_store);
+static DEVICE_ATTR(softreset, S_IWUSR,
+		NULL, bma2x2_softreset_store);
+static DEVICE_ATTR(temperature, S_IRUSR|S_IRGRP,
+		bma2x2_temperature_show, NULL);
+static DEVICE_ATTR(place, S_IRUSR|S_IRGRP,
+		bma2x2_place_show, NULL);
+#ifdef CONFIG_SIG_MOTION
+static DEVICE_ATTR(en_sig_motion, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_en_sig_motion_show, bma2x2_en_sig_motion_store);
+#endif
+#ifdef CONFIG_DOUBLE_TAP
+static DEVICE_ATTR(tap_time_period, S_IRUSR|S_IRGRP|S_IWUSR,
+		bma2x2_tap_time_period_show, bma2x2_tap_time_period_store);
+static DEVICE_ATTR(en_double_tap, S_IRUSR|S_IRGRP|S_IWUSR,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		bma2x2_en_double_tap_show, bma2x2_en_double_tap_store);
 #endif
 
@@ -6149,6 +7475,7 @@ static struct attribute *bma2x2_attributes[] = {
 	&dev_attr_enable.attr,
 	&dev_attr_SleepDur.attr,
 	&dev_attr_reg.attr,
+<<<<<<< HEAD
 #if defined(CONFIG_L8700_COMMON)
 	&dev_attr_acc_fast_calibration_x.attr,
 	&dev_attr_acc_fast_calibration_y.attr,
@@ -6158,6 +7485,11 @@ static struct attribute *bma2x2_attributes[] = {
 	&dev_attr_fast_calibration_y.attr,
 	&dev_attr_fast_calibration_z.attr,
 #endif
+=======
+	&dev_attr_fast_calibration_x.attr,
+	&dev_attr_fast_calibration_y.attr,
+	&dev_attr_fast_calibration_z.attr,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	&dev_attr_fifo_mode.attr,
 	&dev_attr_fifo_framecount.attr,
 	&dev_attr_fifo_trig.attr,
@@ -6165,6 +7497,7 @@ static struct attribute *bma2x2_attributes[] = {
 	&dev_attr_fifo_data_sel.attr,
 	&dev_attr_fifo_data_frame.attr,
 	&dev_attr_chip_id.attr,
+<<<<<<< HEAD
 #if defined(CONFIG_L8700_COMMON)
 	&dev_attr_acc_offset_x.attr,
 	&dev_attr_acc_offset_y.attr,
@@ -6174,6 +7507,11 @@ static struct attribute *bma2x2_attributes[] = {
 	&dev_attr_offset_y.attr,
 	&dev_attr_offset_z.attr,
 #endif
+=======
+	&dev_attr_offset_x.attr,
+	&dev_attr_offset_y.attr,
+	&dev_attr_offset_z.attr,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	&dev_attr_enable_int.attr,
 	&dev_attr_int_mode.attr,
 	&dev_attr_slope_duration.attr,
@@ -6293,7 +7631,12 @@ static void bma2x2_high_g_interrupt_handle(struct bma2x2_data *bma2x2)
 			}
 		}
 
+<<<<<<< HEAD
 		printk(KERN_INFO "High G interrupt happened,exis is %d,"
+=======
+		ISR_INFO(&bma2x2->bma2x2_client->dev,
+			"High G interrupt happened,exis is %d,"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 					"first is %d,sign is %d\n", i,
 						first_value, sign_value);
 	}
@@ -6342,7 +7685,12 @@ static void bma2x2_slope_interrupt_handle(struct bma2x2_data *bma2x2)
 			}
 		}
 
+<<<<<<< HEAD
 		printk(KERN_INFO "Slop interrupt happened,exis is %d,"
+=======
+		ISR_INFO(&bma2x2->bma2x2_client->dev,
+			"Slop interrupt happened,exis is %d,"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 					"first is %d,sign is %d\n", i,
 						first_value, sign_value);
 	}
@@ -6367,7 +7715,10 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 	bma2x2_get_interruptstatus2(bma2x2->bma2x2_client, &status);
 
 	if ((status&0x80) == 0x80) {
+<<<<<<< HEAD
 		/* printk(KERN_INFO "New data interrupt happened\n");*/
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		bma2x2_read_accel_xyz(bma2x2->bma2x2_client,
 					bma2x2->sensor_type, &acc);
 		input_report_abs(bma2x2->input, ABS_X, acc.x);
@@ -6382,12 +7733,21 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 #endif
 
 	bma2x2_get_interruptstatus1(bma2x2->bma2x2_client, &status);
+<<<<<<< HEAD
 	printk(KERN_INFO "bma2x2_irq_work_func, status = 0x%x\n", status);
+=======
+	ISR_INFO(&bma2x2->bma2x2_client->dev,
+		"bma2x2_irq_work_func, status = 0x%x\n", status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #ifdef CONFIG_SIG_MOTION
 	if (status & 0x04)	{
 		if (atomic_read(&bma2x2->en_sig_motion) == 1) {
+<<<<<<< HEAD
 			printk(KERN_INFO
+=======
+			ISR_INFO(&bma2x2->bma2x2_client->dev,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				"Significant motion interrupt happened\n");
 			/* close sig sensor,
 			it will be open again if APP wants */
@@ -6403,7 +7763,12 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 #ifdef CONFIG_DOUBLE_TAP
 	if (status & 0x20) {
 		if (atomic_read(&bma2x2->en_double_tap) == 1) {
+<<<<<<< HEAD
 			printk(KERN_INFO "single tap interrupt happened\n");
+=======
+			ISR_INFO(&bma2x2->bma2x2_client->dev,
+				"single tap interrupt happened\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			bma2x2_set_Int_Enable(client, 8, 0);
 			if (bma2x2->tap_times == 0)	{
 				mod_timer(&bma2x2->tap_timer, jiffies +
@@ -6411,7 +7776,12 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 				bma2x2->tap_times = 1;
 			} else {
 				/* only double tap is judged */
+<<<<<<< HEAD
 				printk(KERN_INFO "double tap\n");
+=======
+				ISR_INFO(&bma2x2->bma2x2_client->dev,
+					"double tap\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				mutex_lock(&bma2x2->tap_mutex);
 				bma2x2->tap_times = 0;
 				del_timer(&bma2x2->tap_timer);
@@ -6429,7 +7799,12 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 	switch (status) {
 
 	case 0x01:
+<<<<<<< HEAD
 		printk(KERN_INFO "Low G interrupt happened\n");
+=======
+		ISR_INFO(&bma2x2->bma2x2_client->dev,
+			"Low G interrupt happened\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		input_report_rel(bma2x2->dev_interrupt, LOW_G_INTERRUPT,
 				LOW_G_INTERRUPT_HAPPENED);
 		break;
@@ -6445,7 +7820,12 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 #endif
 
 	case 0x08:
+<<<<<<< HEAD
 		printk(KERN_INFO "slow/ no motion interrupt happened\n");
+=======
+		ISR_INFO(&bma2x2->bma2x2_client->dev,
+			"slow/ no motion interrupt happened\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		input_report_rel(bma2x2->dev_interrupt,
 			SLOW_NO_MOTION_INTERRUPT,
 			SLOW_NO_MOTION_INTERRUPT_HAPPENED);
@@ -6453,13 +7833,23 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 
 #ifndef CONFIG_DOUBLE_TAP
 	case 0x10:
+<<<<<<< HEAD
 		printk(KERN_INFO "double tap interrupt happened\n");
+=======
+		ISR_INFO(&bma2x2->bma2x2_client->dev,
+			"double tap interrupt happened\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		input_report_rel(bma2x2->dev_interrupt,
 			DOUBLE_TAP_INTERRUPT,
 			DOUBLE_TAP_INTERRUPT_HAPPENED);
 		break;
 	case 0x20:
+<<<<<<< HEAD
 		printk(KERN_INFO "single tap interrupt happened\n");
+=======
+		ISR_INFO(&bma2x2->bma2x2_client->dev,
+			"single tap interrupt happened\n");
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		input_report_rel(bma2x2->dev_interrupt,
 			SINGLE_TAP_INTERRUPT,
 			SINGLE_TAP_INTERRUPT_HAPPENED);
@@ -6469,7 +7859,12 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 	case 0x40:
 		bma2x2_get_orient_status(bma2x2->bma2x2_client,
 				    &first_value);
+<<<<<<< HEAD
 		printk(KERN_INFO "orient interrupt happened,%s\n",
+=======
+		ISR_INFO(&bma2x2->bma2x2_client->dev,
+			"orient interrupt happened,%s\n",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				orient[first_value]);
 		if (first_value == 0)
 			input_report_abs(bma2x2->dev_interrupt,
@@ -6507,7 +7902,12 @@ static void bma2x2_irq_work_func(struct work_struct *work)
 	case 0x80:
 		bma2x2_get_orient_flat_status(bma2x2->bma2x2_client,
 				    &sign_value);
+<<<<<<< HEAD
 		printk(KERN_INFO "flat interrupt happened,flat status is %d\n",
+=======
+		ISR_INFO(&bma2x2->bma2x2_client->dev,
+			"flat interrupt happened,flat status is %d\n",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				    sign_value);
 		if (sign_value == 1) {
 			input_report_abs(bma2x2->dev_interrupt,
@@ -6540,14 +7940,149 @@ static irqreturn_t bma2x2_irq_handler(int irq, void *handle)
 }
 #endif /* defined(BMA2X2_ENABLE_INT1)||defined(BMA2X2_ENABLE_INT2) */
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 static int bma_parse_dt(struct device *dev,
 			struct bosch_sensor_specific *bst_pd)
+=======
+static int bma2x2_power_ctl(struct bma2x2_data *data, bool on)
+{
+	int ret = 0;
+	int err = 0;
+
+	if (!on && data->power_enabled) {
+		ret = regulator_disable(data->vdd);
+		if (ret) {
+			dev_err(&data->bma2x2_client->dev,
+				"Regulator vdd disable failed ret=%d\n", ret);
+			return ret;
+		}
+
+		ret = regulator_disable(data->vio);
+		if (ret) {
+			dev_err(&data->bma2x2_client->dev,
+				"Regulator vio disable failed ret=%d\n", ret);
+			err = regulator_enable(data->vdd);
+			return ret;
+		}
+		data->power_enabled = on;
+	} else if (on && !data->power_enabled) {
+		ret = regulator_enable(data->vdd);
+		if (ret) {
+			dev_err(&data->bma2x2_client->dev,
+				"Regulator vdd enable failed ret=%d\n", ret);
+			return ret;
+		}
+
+		ret = regulator_enable(data->vio);
+		if (ret) {
+			dev_err(&data->bma2x2_client->dev,
+				"Regulator vio enable failed ret=%d\n", ret);
+			err = regulator_disable(data->vdd);
+			return ret;
+		}
+		data->power_enabled = on;
+	} else {
+		dev_info(&data->bma2x2_client->dev,
+				"Power on=%d. enabled=%d\n",
+				on, data->power_enabled);
+	}
+
+	return ret;
+}
+
+static int bma2x2_power_init(struct bma2x2_data *data)
+{
+	int ret;
+
+	data->vdd = regulator_get(&data->bma2x2_client->dev, "vdd");
+	if (IS_ERR(data->vdd)) {
+		ret = PTR_ERR(data->vdd);
+		dev_err(&data->bma2x2_client->dev,
+			"Regulator get failed vdd ret=%d\n", ret);
+		return ret;
+	}
+
+	if (regulator_count_voltages(data->vdd) > 0) {
+		ret = regulator_set_voltage(data->vdd,
+				BMA2x2_VDD_MIN_UV,
+				BMA2x2_VDD_MAX_UV);
+		if (ret) {
+			dev_err(&data->bma2x2_client->dev,
+				"Regulator set failed vdd ret=%d\n",
+				ret);
+			goto reg_vdd_put;
+		}
+	}
+
+	data->vio = regulator_get(&data->bma2x2_client->dev, "vio");
+	if (IS_ERR(data->vio)) {
+		ret = PTR_ERR(data->vio);
+		dev_err(&data->bma2x2_client->dev,
+			"Regulator get failed vio ret=%d\n", ret);
+		goto reg_vdd_set;
+	}
+
+	if (regulator_count_voltages(data->vio) > 0) {
+		ret = regulator_set_voltage(data->vio,
+				BMA2x2_VIO_MIN_UV,
+				BMA2x2_VIO_MAX_UV);
+		if (ret) {
+			dev_err(&data->bma2x2_client->dev,
+			"Regulator set failed vio ret=%d\n", ret);
+			goto reg_vio_put;
+		}
+	}
+
+	return 0;
+
+reg_vio_put:
+	regulator_put(data->vio);
+reg_vdd_set:
+	if (regulator_count_voltages(data->vdd) > 0)
+		regulator_set_voltage(data->vdd, 0, BMA2x2_VDD_MAX_UV);
+reg_vdd_put:
+	regulator_put(data->vdd);
+	return ret;
+}
+
+static int bma2x2_power_deinit(struct bma2x2_data *data)
+{
+	if (regulator_count_voltages(data->vdd) > 0)
+		regulator_set_voltage(data->vdd,
+				0, BMA2x2_VDD_MAX_UV);
+
+	regulator_put(data->vdd);
+
+	if (regulator_count_voltages(data->vio) > 0)
+		regulator_set_voltage(data->vio,
+				0, BMA2x2_VIO_MAX_UV);
+
+	regulator_put(data->vio);
+
+	return 0;
+}
+
+#ifdef CONFIG_OF
+static int bma2x2_parse_dt(struct device *dev,
+			struct bma2x2_platform_data *pdata)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	struct device_node *np = dev->of_node;
 	u32 temp_val;
 	int rc;
 
+<<<<<<< HEAD
+=======
+	rc = of_property_read_u32(np, "bosch,init-interval", &temp_val);
+	if (rc && (rc != -EINVAL)) {
+		dev_err(dev, "Unable to read init-interval\n");
+		return rc;
+	} else {
+		pdata->poll_interval = temp_val;
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	rc = of_property_read_u32(np, "bosch,place", &temp_val);
 	if (rc && (rc != -EINVAL)) {
 		dev_err(dev, "Unable to read sensor place paramater\n");
@@ -6555,6 +8090,7 @@ static int bma_parse_dt(struct device *dev,
 	}
 	if (temp_val > 7 || temp_val < 0) {
 		dev_err(dev, "Invalid place parameter, use default value 0\n");
+<<<<<<< HEAD
 		bst_pd->place = 0;
 	} else {
 		bst_pd->place = temp_val;
@@ -6596,6 +8132,82 @@ static int sensor_set_power(struct i2c_client *client, int enable)
 	return 0;
 }
 #endif
+=======
+		pdata->place = 0;
+	} else {
+		pdata->place = temp_val;
+	}
+
+	pdata->use_int = of_property_read_bool(np, "bosch,use-interrupt");
+
+	pdata->gpio_int1 = of_get_named_gpio_flags(dev->of_node,
+				"bosch,gpio-int1", 0, NULL);
+
+	pdata->gpio_int2 = of_get_named_gpio_flags(dev->of_node,
+				"bosch,gpio-int2", 0, NULL);
+	return 0;
+}
+#else
+static int bma2x2_parse_dt(struct device *dev,
+			struct bma2x2_platform_data *pdata)
+{
+	return -EINVAL;
+}
+#endif
+
+#ifdef CONFIG_DOUBLE_TAP
+static void bma2x2_double_tap_disable(struct bma2x2_data *data)
+{
+	if (data->g_sensor_dev_doubletap) {
+		sysfs_remove_group(&data->g_sensor_dev_doubletap->kobj,
+			&bma2x2_double_tap_attribute_group);
+		device_destroy(data->g_sensor_dev_doubletap);
+		class_destroy(data->g_sensor_class_doubletap);
+	}
+	return;
+}
+#else
+static void bma2x2_double_tap_disable(struct bma2x2_data *data)
+{
+	return;
+}
+#endif
+
+#ifdef CONFIG_SIG_MOTION
+static void bma2x2_sig_motion_disable(struct bma2x2_data *data)
+{
+	if (data->g_sensor_dev) {
+		sysfs_remove_group(&data->g_sensor_dev->kobj,
+			&bma2x2_sig_motion_attribute_group);
+		device_destroy(data->g_sensor_dev);
+		class_destroy(data->g_sensor_class);
+	}
+	return;
+}
+#else
+static void bma2x2_sig_motion_disable(struct bma2x2_data *data)
+{
+	return;
+}
+#endif
+
+static int bma2x2_open_init(struct i2c_client *client,
+			struct bma2x2_data *data)
+{
+	int err;
+	err = bma2x2_set_bandwidth(client, data->bandwidth);
+	if (err < 0) {
+		dev_err(&client->dev, "init bandwidth error\n");
+		return err;
+	}
+	err = bma2x2_set_range(client, data->range);
+	if (err < 0) {
+		dev_err(&client->dev, "init bandwidth error\n");
+		return err;
+	}
+	return 0;
+}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static int bma2x2_probe(struct i2c_client *client,
 		const struct i2c_device_id *id)
@@ -6604,6 +8216,7 @@ static int bma2x2_probe(struct i2c_client *client,
 	struct bma2x2_data *data;
 	struct input_dev *dev;
 	struct bst_dev  *dev_acc;
+<<<<<<< HEAD
 
 #if defined(BMA2X2_ENABLE_INT1) || defined(BMA2X2_ENABLE_INT2)
 	struct bosch_sensor_specific *pdata;
@@ -6619,6 +8232,15 @@ static int bma2x2_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		printk(KERN_INFO "i2c_check_functionality error\n");
 		err = -EIO;
+=======
+	struct bma2x2_platform_data *pdata;
+
+	struct input_dev *dev_interrupt;
+
+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
+		dev_err(&client->dev, "i2c_check_functionality error\n");
+		err = -EPERM;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		goto exit;
 	}
 	data = kzalloc(sizeof(struct bma2x2_data), GFP_KERNEL);
@@ -6626,13 +8248,59 @@ static int bma2x2_probe(struct i2c_client *client,
 		err = -ENOMEM;
 		goto exit;
 	}
+<<<<<<< HEAD
 
 	/* do soft reset */
 	mdelay(5);
+=======
+	if (client->dev.of_node) {
+		pdata = devm_kzalloc(&client->dev,
+			sizeof(*pdata), GFP_KERNEL);
+		if (!pdata) {
+			dev_err(&client->dev, "Failed to allcated memory\n");
+			err = -ENOMEM;
+			goto kfree_exit;
+		}
+		err = bma2x2_parse_dt(&client->dev, pdata);
+		if (err) {
+			dev_err(&client->dev, "Failed to parse device tree\n");
+			err = -EINVAL;
+			goto pdata_free_exit;
+		}
+	} else {
+		pdata = client->dev.platform_data;
+		dev_err(&client->dev, "use  platform data\n");
+	}
+
+	if (!pdata) {
+		dev_err(&client->dev, "Cannot get device platform data\n");
+		err = -EINVAL;
+		goto kfree_exit;
+	}
+	data->pdata = pdata;
+	i2c_set_clientdata(client, data);
+	data->bma2x2_client = client;
+
+	err = bma2x2_power_init(data);
+	if (err) {
+		dev_err(&client->dev, "Failed to get sensor regulators\n");
+		err = -EINVAL;
+		goto free_i2c_clientdata_exit;
+	}
+	err = bma2x2_power_ctl(data, true);
+	if (err) {
+		dev_err(&client->dev, "Failed to enable sensor power\n");
+		err = -EINVAL;
+		goto deinit_power_exit;
+	}
+
+	RESET_DELAY();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (bma2x2_soft_reset(client) < 0) {
 		dev_err(&client->dev,
 			"i2c bus write error, pls check HW connection\n");
 		err = -EINVAL;
+<<<<<<< HEAD
 		goto kfree_exit;
 	}
 	mdelay(5);
@@ -6650,6 +8318,26 @@ static int bma2x2_probe(struct i2c_client *client,
 	bma2x2_set_bandwidth(client, BMA2X2_BW_SET);
 	bma2x2_set_range(client, BMA2X2_RANGE_SET);
 
+=======
+		goto disable_power_exit;
+	}
+	RESET_DELAY();
+	/* read and check chip id */
+	if (bma2x2_check_chip_id(client, data) < 0) {
+		err = -EINVAL;
+		goto disable_power_exit;
+	}
+	mutex_init(&data->value_mutex);
+	mutex_init(&data->mode_mutex);
+	mutex_init(&data->enable_mutex);
+	data->bandwidth = BMA2X2_BW_SET;
+	data->range = BMA2X2_RANGE_SET;
+	err = bma2x2_open_init(client, data);
+	if (err < 0) {
+		err = -EINVAL;
+		goto disable_power_exit;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #if defined(BMA2X2_ENABLE_INT1) || defined(BMA2X2_ENABLE_INT2)
 
 	pdata = client->dev.platform_data;
@@ -6725,6 +8413,7 @@ static int bma2x2_probe(struct i2c_client *client,
 	atomic_set(&data->enable, 0);
 
 	dev = input_allocate_device();
+<<<<<<< HEAD
 	if (!dev)
 		return -ENOMEM;
 
@@ -6733,6 +8422,21 @@ static int bma2x2_probe(struct i2c_client *client,
 		kfree(data);
 		input_free_device(dev); /*free the successful dev and return*/
 		return -ENOMEM;
+=======
+	if (!dev) {
+		dev_err(&client->dev,
+			"Cannot allocate input device\n");
+		err = -ENOMEM;
+		goto free_irq_exit;
+	}
+
+	dev_interrupt = input_allocate_device();
+	if (!dev_interrupt) {
+		dev_err(&client->dev,
+			"Cannot allocate input interrupt device\n");
+		err = -ENOMEM;
+		goto free_input_dev_exit;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	/* only value events reported */
@@ -6745,8 +8449,16 @@ static int bma2x2_probe(struct i2c_client *client,
 
 	input_set_drvdata(dev, data);
 	err = input_register_device(dev);
+<<<<<<< HEAD
 	if (err < 0)
 		goto err_register_input_device;
+=======
+	if (err < 0) {
+		dev_err(&client->dev,
+			"Cannot register input device\n");
+		goto free_input_interrupt_dev_exit;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/* all interrupt generated events are moved to interrupt input devices*/
 	dev_interrupt->name = "bma_interrupt";
@@ -6770,8 +8482,16 @@ static int bma2x2_probe(struct i2c_client *client,
 	input_set_drvdata(dev_interrupt, data);
 
 	err = input_register_device(dev_interrupt);
+<<<<<<< HEAD
 	if (err < 0)
 		goto err_register_input_device_interrupt;
+=======
+	if (err < 0) {
+		dev_err(&client->dev,
+			"Cannot register input interrupt device\n");
+		goto unregister_input_dev_exit;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	data->dev_interrupt = dev_interrupt;
 	data->input = dev;
@@ -6781,8 +8501,13 @@ static int bma2x2_probe(struct i2c_client *client,
 	if (IS_ERR(data->g_sensor_class)) {
 		err = PTR_ERR(data->g_sensor_class);
 		data->g_sensor_class = NULL;
+<<<<<<< HEAD
 		printk(KERN_ERR "could not allocate g_sensor_class\n");
 		goto err_create_class;
+=======
+		dev_err(&client->dev, "could not allocate g_sensor_class\n");
+		goto unregister_input_interrupt_dev_exit;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	data->g_sensor_dev = device_create(data->g_sensor_class,
@@ -6791,16 +8516,29 @@ static int bma2x2_probe(struct i2c_client *client,
 		err = PTR_ERR(data->g_sensor_dev);
 		data->g_sensor_dev = NULL;
 
+<<<<<<< HEAD
 		printk(KERN_ERR "could not allocate g_sensor_dev\n");
 		goto err_create_g_sensor_device;
+=======
+		dev_err(&client->dev, "could not allocate g_sensor_dev\n");
+		goto destroy_g_sensor_class_exit;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	dev_set_drvdata(data->g_sensor_dev, data);
 
 	err = sysfs_create_group(&data->g_sensor_dev->kobj,
 			&bma2x2_sig_motion_attribute_group);
+<<<<<<< HEAD
 	if (err < 0)
 		goto error_sysfs;
+=======
+	if (err < 0) {
+		dev_err(&client->dev,
+			"could not create sysfs for sig motion sensor\n");
+		goto free_g_sensor_dev_exit;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 
 #ifdef CONFIG_DOUBLE_TAP
@@ -6809,8 +8547,13 @@ static int bma2x2_probe(struct i2c_client *client,
 	if (IS_ERR(data->g_sensor_class_doubletap)) {
 		err = PTR_ERR(data->g_sensor_class_doubletap);
 		data->g_sensor_class_doubletap = NULL;
+<<<<<<< HEAD
 		printk(KERN_ERR "could not allocate g_sensor_class_doubletap\n");
 		goto err_create_class;
+=======
+		dev_err(&client->dev, "could not allocate g_sensor_class_doubletap\n");
+		goto remove_sig_motion_sysfs_exit;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	data->g_sensor_dev_doubletap = device_create(
@@ -6820,20 +8563,34 @@ static int bma2x2_probe(struct i2c_client *client,
 		err = PTR_ERR(data->g_sensor_dev_doubletap);
 		data->g_sensor_dev_doubletap = NULL;
 
+<<<<<<< HEAD
 		printk(KERN_ERR "could not allocate g_sensor_dev_doubletap\n");
 		goto err_create_g_sensor_device_double_tap;
+=======
+		dev_err(&client->dev, "could not allocate g_sensor_dev_doubletap\n");
+		goto destroy_dtap_class_exit;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	dev_set_drvdata(data->g_sensor_dev_doubletap, data);
 
 	err = sysfs_create_group(&data->g_sensor_dev_doubletap->kobj,
 			&bma2x2_double_tap_attribute_group);
+<<<<<<< HEAD
 	if (err < 0)
 		goto error_sysfs;
+=======
+	if (err < 0) {
+		dev_err(&client->dev,
+			"could not create sysfs for double tap sensor\n");
+		goto destroy_dtap_dev_exit;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 
 	err = sysfs_create_group(&data->input->dev.kobj,
 			&bma2x2_attribute_group);
+<<<<<<< HEAD
 	if (err < 0)
 		goto error_sysfs;
 
@@ -6841,19 +8598,42 @@ static int bma2x2_probe(struct i2c_client *client,
 	if (!dev_acc) {
 		err = -ENOMEM;
 		goto error_sysfs;
+=======
+	if (err < 0) {
+		dev_err(&client->dev,
+			"Cannot create sysfs for bma2x2\n");
+		goto remove_dtap_sysfs_exit;
+	}
+
+	dev_acc = bst_allocate_device();
+	if (!dev_acc) {
+		dev_err(&client->dev,
+			"Cannot allocate bst device\n");
+		err = -ENOMEM;
+		goto remove_bma2x2_sysfs_exit;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 	dev_acc->name = ACC_NAME;
 
 	bst_set_drvdata(dev_acc, data);
 
 	err = bst_register_device(dev_acc);
+<<<<<<< HEAD
 	if (err < 0)
 		goto bst_free_acc_exit;
+=======
+	if (err < 0) {
+		dev_err(&client->dev,
+			"Cannot register bst device\n");
+		goto bst_free_acc_exit;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	data->bst_acc = dev_acc;
 	err = sysfs_create_group(&data->bst_acc->dev.kobj,
 			&bma2x2_attribute_group);
 
+<<<<<<< HEAD
 	if (err < 0)
 		goto bst_free_exit;
 
@@ -6885,6 +8665,12 @@ static int bma2x2_probe(struct i2c_client *client,
 						data->bst_pd->name, data->bst_pd->place);
 			}
 		}
+=======
+	if (err < 0) {
+		dev_err(&client->dev,
+			"Cannot create sysfs for bst_acc.\n");
+		goto bst_free_exit;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
@@ -6909,16 +8695,41 @@ static int bma2x2_probe(struct i2c_client *client,
 			(unsigned long)data);
 #endif
 
+<<<<<<< HEAD
 	dev_notice(&client->dev, "BMA2x2 driver probe successfully");
 
 	return 0;
 
+=======
+	data->cdev = sensors_cdev;
+	data->cdev.min_delay = POLL_INTERVAL_MIN_MS * 1000;
+	data->cdev.delay_msec = pdata->poll_interval;
+	data->cdev.sensors_enable = bma2x2_cdev_enable;
+	data->cdev.sensors_poll_delay = bma2x2_cdev_poll_delay;
+	data->cdev.sensors_self_test = bma2x2_self_calibration_xyz;
+	err = sensors_classdev_register(&data->input->dev, &data->cdev);
+	if (err) {
+		dev_err(&client->dev, "create class device file failed!\n");
+		err = -EINVAL;
+		goto remove_bst_acc_sysfs_exit;
+	}
+
+	dev_notice(&client->dev, "BMA2x2 driver probe successfully");
+
+	bma2x2_power_ctl(data, false);
+	return 0;
+
+remove_bst_acc_sysfs_exit:
+	sysfs_remove_group(&data->bst_acc->dev.kobj,
+			&bma2x2_attribute_group);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 bst_free_exit:
 	bst_unregister_device(dev_acc);
 
 bst_free_acc_exit:
 	bst_free_device(dev_acc);
 
+<<<<<<< HEAD
 error_sysfs:
 	input_unregister_device(data->input);
 
@@ -6929,10 +8740,33 @@ err_create_g_sensor_device_double_tap:
 
 #ifdef CONFIG_SIG_MOTION
 err_create_g_sensor_device:
+=======
+remove_bma2x2_sysfs_exit:
+	sysfs_remove_group(&data->input->dev.kobj,
+			&bma2x2_attribute_group);
+remove_dtap_sysfs_exit:
+#ifdef CONFIG_DOUBLE_TAP
+sysfs_remove_group(&data->g_sensor_dev_doubletap->kobj,
+			&bma2x2_double_tap_attribute_group);
+destroy_dtap_dev_exit:
+	device_destroy(data->g_sensor_dev_doubletap);
+destroy_dtap_class_exit:
+	class_destroy(data->g_sensor_class_doubletap);
+remove_sig_motion_sysfs_exit:
+#endif
+
+#ifdef CONFIG_SIG_MOTION
+sysfs_remove_group(&data->g_sensor_dev->kobj,
+		&bma2x2_sig_motion_attribute_group);
+free_g_sensor_dev_exit:
+	device_destroy(data->g_sensor_dev);
+destroy_g_sensor_class_exit:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	class_destroy(data->g_sensor_class);
 #endif
 
 #if defined(CONFIG_SIG_MOTION) || defined(CONFIG_DOUBLE_TAP)
+<<<<<<< HEAD
 err_create_class:
 	input_unregister_device(data->dev_interrupt);
 #endif
@@ -6949,6 +8783,29 @@ kfree_exit:
 		kfree(data->bst_pd);
 		data->bst_pd = NULL;
 	}
+=======
+unregister_input_interrupt_dev_exit:
+#endif
+	input_unregister_device(dev_interrupt);
+unregister_input_dev_exit:
+	input_unregister_device(dev);
+free_input_interrupt_dev_exit:
+	input_free_device(dev_interrupt);
+free_input_dev_exit:
+	input_free_device(dev);
+free_irq_exit:
+disable_power_exit:
+	bma2x2_power_ctl(data, false);
+deinit_power_exit:
+	bma2x2_power_deinit(data);
+free_i2c_clientdata_exit:
+	i2c_set_clientdata(client, NULL);
+pdata_free_exit:
+	if (pdata && (client->dev.of_node))
+		devm_kfree(&client->dev, pdata);
+	data->pdata = NULL;
+kfree_exit:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	kfree(data);
 exit:
 	return err;
@@ -6991,6 +8848,7 @@ static int bma2x2_remove(struct i2c_client *client)
 {
 	struct bma2x2_data *data = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	bma2x2_set_enable(&client->dev, 0);
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	unregister_early_suspend(&data->early_suspend);
@@ -7003,6 +8861,41 @@ static int bma2x2_remove(struct i2c_client *client)
 		data->bst_pd = NULL;
 	}
 
+=======
+	sensors_classdev_unregister(&data->cdev);
+#ifdef CONFIG_HAS_EARLYSUSPEND
+	unregister_early_suspend(&data->early_suspend);
+#endif
+
+	if (data->bst_acc) {
+		bst_unregister_device(data->bst_acc);
+		bst_free_device(data->bst_acc);
+	}
+
+	bma2x2_double_tap_disable(data);
+
+	bma2x2_sig_motion_disable(data);
+
+	if (data->dev_interrupt) {
+		input_unregister_device(data->dev_interrupt);
+		input_free_device(data->dev_interrupt);
+	}
+
+	if (data->input) {
+		sysfs_remove_group(&data->input->dev.kobj,
+				&bma2x2_attribute_group);
+		input_unregister_device(data->input);
+		input_free_device(data->input);
+	}
+
+	bma2x2_set_enable(&client->dev, 0);
+	bma2x2_power_deinit(data);
+	i2c_set_clientdata(client, NULL);
+	if (data->pdata && (client->dev.of_node))
+		devm_kfree(&client->dev, data->pdata);
+	data->pdata = NULL;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	kfree(data);
 
 	return 0;
@@ -7017,11 +8910,32 @@ void bma2x2_shutdown(struct i2c_client *client)
 	mutex_unlock(&data->enable_mutex);
 }
 
+<<<<<<< HEAD
+=======
+static int bma2x2_store_state(struct i2c_client *client,
+				struct bma2x2_data *data)
+{
+	int err;
+	err = bma2x2_get_bandwidth(client, &(data->bandwidth));
+	if (err < 0) {
+		dev_err(&client->dev, "get state bandwidth failed\n");
+		return err;
+	}
+	err = bma2x2_get_range(client, &(data->range));
+	if (err < 0) {
+		dev_err(&client->dev, "get state range failed\n");
+		return err;
+	}
+	return err;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_PM
 static int bma2x2_suspend(struct i2c_client *client, pm_message_t mesg)
 {
 	struct bma2x2_data *data = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	mutex_lock(&data->enable_mutex);
 	if (atomic_read(&data->enable) == 1) {
 		bma2x2_set_mode(data->bma2x2_client, BMA2X2_MODE_SUSPEND);
@@ -7031,6 +8945,10 @@ static int bma2x2_suspend(struct i2c_client *client, pm_message_t mesg)
 	}
 	mutex_unlock(&data->enable_mutex);
 
+=======
+	data->suspend_state.powerEn = bma2x2_is_power_enabled(data);
+	bma2x2_set_enable(&client->dev, 0);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 
@@ -7038,6 +8956,7 @@ static int bma2x2_resume(struct i2c_client *client)
 {
 	struct bma2x2_data *data = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	mutex_lock(&data->enable_mutex);
 	if (atomic_read(&data->enable) == 1) {
 		bma2x2_set_mode(data->bma2x2_client, BMA2X2_MODE_NORMAL);
@@ -7047,6 +8966,10 @@ static int bma2x2_resume(struct i2c_client *client)
 #endif
 	}
 	mutex_unlock(&data->enable_mutex);
+=======
+	if (data->suspend_state.powerEn)
+		bma2x2_set_enable(&client->dev, 1);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return 0;
 }
@@ -7065,10 +8988,22 @@ static const struct i2c_device_id bma2x2_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, bma2x2_id);
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id bma2x2_of_match[] = {
+	{ .compatible = "bosch,bma2x2", },
+	{ },
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static struct i2c_driver bma2x2_driver = {
 	.driver = {
 		.owner  = THIS_MODULE,
 		.name   = SENSOR_NAME,
+<<<<<<< HEAD
+=======
+		.of_match_table = bma2x2_of_match,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	},
 	.suspend    = bma2x2_suspend,
 	.resume     = bma2x2_resume,

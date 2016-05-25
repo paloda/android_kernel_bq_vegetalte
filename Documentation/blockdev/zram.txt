@@ -14,6 +14,7 @@ Statistics for individual zram devices are exported through sysfs nodes at
 
 * Usage
 
+<<<<<<< HEAD
 There are several ways to configure and manage zram device(-s):
 a) using zram and zram_control sysfs attributes
 b) using zramctl utility, provided by util-linux (util-linux@vger.kernel.org).
@@ -51,6 +52,10 @@ and, in general case, something like:
 
 should suffice.
 
+=======
+Following shows a typical sequence of steps for using zram.
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 1) Load Module:
 	modprobe zram num_devices=4
 	This creates 4 devices: /dev/zram{0,1,2,3}
@@ -82,7 +87,11 @@ max_comp_streams adjustment.
 
 3) Select compression algorithm
 	Using comp_algorithm device attribute one can see available and
+<<<<<<< HEAD
 	currently selected (shown in square brackets) compression algorithms,
+=======
+	currently selected (shown in square brackets) compression algortithms,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	change selected compression algorithm (once the device is initialised
 	there is no way to change compression algorithm).
 
@@ -154,7 +163,11 @@ execute
 8) Stats:
 Per-device statistics are exported as various nodes under /sys/block/zram<id>/
 
+<<<<<<< HEAD
 A brief description of exported device attributes. For more details please
+=======
+A brief description of exported device attritbutes. For more details please
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 read Documentation/ABI/testing/sysfs-block-zram.
 
 Name            access            description
@@ -175,6 +188,7 @@ zero_pages        RO    the number of zero filled pages written to this disk
 orig_data_size    RO    uncompressed size of data stored in this disk
 compr_data_size   RO    compressed size of data stored in this disk
 mem_used_total    RO    the amount of memory allocated for this disk
+<<<<<<< HEAD
 mem_used_max      RW    the maximum amount of memory zram have consumed to
                         store the data (to reset this counter to the actual
                         current value, write 1 to this attribute)
@@ -183,6 +197,14 @@ mem_limit         RW    the maximum amount of memory ZRAM can use to store
 pages_compacted   RO    the number of pages freed during compaction
                         (available only via zram<id>/mm_stat node)
 compact           WO    trigger memory compaction
+=======
+mem_used_max      RW    the maximum amount memory zram have consumed to
+                        store compressed data
+mem_limit         RW    the maximum amount of memory ZRAM can use to store
+                        the compressed data
+num_migrated      RO    the number of objects migrated migrated by compaction
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 WARNING
 =======

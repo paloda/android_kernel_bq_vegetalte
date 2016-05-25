@@ -34,8 +34,13 @@
 		qcom,mdss-ib-factor = <2 1>;		/* 2 times    */
 		qcom,mdss-ib-factor-cmd = <10 6>;	/* 1.6 times */
 		qcom,mdss-clk-factor = <105 100>;	/* 1.05 times */
+<<<<<<< HEAD
 		qcom,max-bandwidth-low-kbps = <2000000>;
 		qcom,max-bandwidth-high-kbps = <2000000>;
+=======
+		qcom,max-bandwidth-low-kbps = <2100000>;
+		qcom,max-bandwidth-high-kbps = <2100000>;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		qcom,max-bandwidth-per-pipe-kbps = <1500000>;
 
 		/* VBIF QoS remapper settings*/

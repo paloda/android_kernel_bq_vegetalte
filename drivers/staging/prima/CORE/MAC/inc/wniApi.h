@@ -384,6 +384,10 @@ enum eWniMsgTypes
     eWNI_SME_HT40_OBSS_SCAN_IND, /* START and UPDATE OBSS SCAN Indication*/
     eWNI_SME_HT40_STOP_OBSS_SCAN_IND, /* STOP OBSS SCAN indication */
     eWNI_SME_MAC_SPOOF_ADDR_IND,
+<<<<<<< HEAD
+=======
+    eWNI_SME_ENCRYPT_MSG_RSP,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     eWNI_SME_MSG_TYPES_END
 };
 

@@ -84,6 +84,11 @@
 #define PMD_SECT_SPLITTING	(_AT(pmdval_t, 1) << 56)
 #define PMD_SECT_NONE		(_AT(pmdval_t, 1) << 57)
 
+#define PMD_SECT_VALID		(_AT(pmdval_t, 1) << 0)
+#define PMD_SECT_DIRTY		(_AT(pmdval_t, 1) << 55)
+#define PMD_SECT_SPLITTING	(_AT(pmdval_t, 1) << 56)
+#define PMD_SECT_NONE		(_AT(pmdval_t, 1) << 57)
+
 /*
  * To be used in assembly code with the upper page attributes.
  */
@@ -181,6 +186,12 @@ static inline pmd_t *pmd_offset(pud_t *pud, unsigned long addr)
 #define __HAVE_ARCH_PMD_WRITE
 #define pmd_write(pmd)		(!(pmd_val(pmd) & PMD_SECT_RDONLY))
 
+<<<<<<< HEAD
+=======
+#define pmd_hugewillfault(pmd)	(!pmd_young(pmd) || !pmd_write(pmd))
+#define pmd_thp_or_huge(pmd)	(pmd_huge(pmd) || pmd_trans_huge(pmd))
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 #define pmd_trans_huge(pmd)	(pmd_val(pmd) && !(pmd_val(pmd) & PMD_TABLE_BIT))
 #define pmd_trans_splitting(pmd) (pmd_val(pmd) & PMD_SECT_SPLITTING)

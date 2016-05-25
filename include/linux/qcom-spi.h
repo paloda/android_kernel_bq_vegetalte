@@ -42,4 +42,9 @@ struct msm_spi_platform_data {
 	u32  bam_producer_pipe_index;
 	bool rt_priority;
 	bool use_pinctrl;
+<<<<<<< HEAD
+=======
+	bool is_shared;
+	bool force_cs;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };

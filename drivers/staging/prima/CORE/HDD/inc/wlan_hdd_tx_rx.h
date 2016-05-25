@@ -111,7 +111,12 @@
 #define DHCP_OPTION53_STATUS_OFFSET    ( 0x11C )
 /* WLAN_DHCP_DEBUG */
 
+<<<<<<< HEAD
 #define TID3 0x60
+=======
+
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 /*--------------------------------------------------------------------------- 

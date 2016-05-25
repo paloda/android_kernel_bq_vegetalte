@@ -92,11 +92,14 @@ If there is other IOT issue because of this bandage, define NO_PAD...
 #define MIN_IEEE_8023_SIZE              46
 #define MIN_VENDOR_SPECIFIC_IE_SIZE     5
 #endif
+<<<<<<< HEAD
 #ifdef WLAN_FEATURE_TDLS_DEBUG
 #define TDLS_DEBUG_LOG_LEVEL VOS_TRACE_LEVEL_ERROR
 #else
 #define TDLS_DEBUG_LOG_LEVEL VOS_TRACE_LEVEL_INFO
 #endif
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 #ifdef FEATURE_WLAN_TDLS_INTERNAL
@@ -499,11 +502,20 @@ static tANI_U32 limPrepareTdlsFrameHeader(tpAniSirGlobal pMac, tANI_U8* pFrame,
                   (tANI_U8 *) (addr3),
                   sizeof( tSirMacAddr ));
 
+<<<<<<< HEAD
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_WARN, ("Preparing TDLS frame header to %s\n%02x:%02x:%02x:%02x:%02x:%02x/%02x:%02x:%02x:%02x:%02x:%02x/%02x:%02x:%02x:%02x:%02x:%02x"),
        (tdlsLinkType == TDLS_LINK_AP) ? "AP" : "TD",
         pMacHdr->addr1[0], pMacHdr->addr1[1], pMacHdr->addr1[2], pMacHdr->addr1[3], pMacHdr->addr1[4], pMacHdr->addr1[5],
         pMacHdr->addr2[0], pMacHdr->addr2[1], pMacHdr->addr2[2], pMacHdr->addr2[3], pMacHdr->addr2[4], pMacHdr->addr2[5],
         pMacHdr->addr3[0], pMacHdr->addr3[1], pMacHdr->addr3[2], pMacHdr->addr3[3], pMacHdr->addr3[4], pMacHdr->addr3[5]));
+=======
+    limLog(pMac, LOG1,
+           FL("Preparing TDLS frame header to %s A1:"MAC_ADDRESS_STR", A2:"MAC_ADDRESS_STR", A3:"MAC_ADDRESS_STR),
+           (tdlsLinkType == TDLS_LINK_AP) ? "AP" : "DIRECT",
+           MAC_ADDR_ARRAY(pMacHdr->addr1),
+           MAC_ADDR_ARRAY(pMacHdr->addr2),
+           MAC_ADDR_ARRAY(pMacHdr->addr3));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     //printMacAddr(pMacHdr->bssId) ;
     //printMacAddr(pMacHdr->sa) ;
@@ -544,8 +556,13 @@ static tANI_U32 limPrepareTdlsFrameHeader(tpAniSirGlobal pMac, tANI_U8* pFrame,
         psessionEntry = peFindSessionBySessionId(pMac, pMac->lim.mgmtFrameSessionId);
         if (NULL == psessionEntry)
         {
+<<<<<<< HEAD
             VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR,
                       ("%s: sessionID %d is not found"), __func__, pMac->lim.mgmtFrameSessionId);
+=======
+            limLog(pMac, LOGE, FL("sessionID %d is not found"),
+                               pMac->lim.mgmtFrameSessionId);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             return eHAL_STATUS_FAILURE;
         }
         limSendSmeMgmtTXCompletion(pMac, psessionEntry, txCompleteSuccess);
@@ -601,16 +618,28 @@ tSirRetStatus limSendTdlsDisReqFrame(tpAniSirGlobal pMac, tSirMacAddr peer_mac,
     status = dot11fGetPackedTDLSDisReqSize( pMac, &tdlsDisReq, &nPayload);
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to calculate the packed size f"
                                "or a discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to calculate the packed size for a discovery Request (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         /* We'll fall back on the worst case scenario: */
         nPayload = sizeof( tDot11fTDLSDisReq );
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while calculating "
                                "the packed size for a discovery Request ("
                                "0x%08x)."), status );
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while calculating the packed size for a discovery Request (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     /*
@@ -649,8 +678,14 @@ tSirRetStatus limSendTdlsDisReqFrame(tpAniSirGlobal pMac, tSirMacAddr peer_mac,
                              ( void** ) &pPacket );
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to allocate %d bytes for a TDLS"
                                "Discovery Request."), nBytes );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to allocate %d bytes for a TDLS Discovery Request."),
+               nBytes);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_MEM_ALLOC_FAILED;
     }
 
@@ -682,16 +717,26 @@ tSirRetStatus limSendTdlsDisReqFrame(tpAniSirGlobal pMac, tSirMacAddr peer_mac,
 
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("Failed to pack a TDLS discovery req "
                                "(0x%08x)."), status );
+=======
+        limLog(pMac, LOGE, FL("Failed to pack a TDLS discovery req (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         palPktFree( pMac->hHdd, HAL_TXRX_FRM_802_11_MGMT, 
                                    ( void* ) pFrame, ( void* ) pPacket );
         return eSIR_FAILURE;
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while packing TDLS "
                                "Discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGW, FL("There were warnings while packing TDLS Discovery Request (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
 #ifndef NO_PAD_TDLS_MIN_8023_SIZE
@@ -706,8 +751,12 @@ tSirRetStatus limSendTdlsDisReqFrame(tpAniSirGlobal pMac, tSirMacAddr peer_mac,
         padVendorSpecific[3] = 0xA0;
         padVendorSpecific[4] = 0xC6;
 
+<<<<<<< HEAD
         LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO, ("Padding Vendor Specific Ie Len = %d"),
                 padLen ));
+=======
+        limLog(pMac, LOG1, FL("Padding Vendor Specific Ie Len = %d"), padLen);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         /* padding zero if more than 5 bytes are required */
         if (padLen > MIN_VENDOR_SPECIFIC_IE_SIZE)
@@ -716,8 +765,16 @@ tSirRetStatus limSendTdlsDisReqFrame(tpAniSirGlobal pMac, tSirMacAddr peer_mac,
     }
 #endif
 
+<<<<<<< HEAD
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL, ("[TDLS] action %d (%s) -AP-> OTA "),
             SIR_MAC_TDLS_DIS_REQ, limTraceTdlsActionString(SIR_MAC_TDLS_DIS_REQ) ));
+=======
+    limLog(pMac, LOG1,
+           FL("[TDLS] action %d (%s) -AP-> OTA peer="MAC_ADDRESS_STR),
+           SIR_MAC_TDLS_DIS_REQ,
+           limTraceTdlsActionString(SIR_MAC_TDLS_DIS_REQ),
+           MAC_ADDR_ARRAY(peer_mac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     halstatus = halTxFrameWithTxComplete( pMac, pPacket, ( tANI_U16 ) nBytes,
                             HAL_TXRX_FRM_802_11_DATA,
@@ -729,7 +786,11 @@ tSirRetStatus limSendTdlsDisReqFrame(tpAniSirGlobal pMac, tSirMacAddr peer_mac,
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
         pMac->lim.mgmtFrameSessionId = 0xff;
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("could not send TDLS Dis Request frame!" ));
+=======
+        limLog(pMac, LOGE, FL("could not send TDLS Discovery Request frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_FAILURE;
     }
     pMac->lim.mgmtFrameSessionId = psessionEntry->peSessionId;
@@ -1089,8 +1150,12 @@ static tSirRetStatus limSendTdlsDisRspFrame(tpAniSirGlobal pMac,
          * Could not get Capabilities value
          * from CFG. Log error.
          */
+<<<<<<< HEAD
          limLog(pMac, LOGP,
                    FL("could not retrieve Capabilities value"));
+=======
+         limLog(pMac, LOGP, FL("could not retrieve Capabilities value"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
     swapBitField16(caps, ( tANI_U16* )&tdlsDisRsp.Capabilities );
 
@@ -1128,16 +1193,28 @@ static tSirRetStatus limSendTdlsDisRspFrame(tpAniSirGlobal pMac,
     status = dot11fGetPackedTDLSDisRspSize( pMac, &tdlsDisRsp, &nPayload);
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to calculate the packed size f"
                                "or a discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to calculate the packed size for a Discovery Response (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         /* We'll fall back on the worst case scenario: */
         nPayload = sizeof( tDot11fProbeRequest );
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while calculating "
                                "the packed size for a discovery Request ("
                                "0x%08x)."), status );
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while calculating the packed size for a Discovery Response (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     /*
@@ -1156,8 +1233,14 @@ static tSirRetStatus limSendTdlsDisRspFrame(tpAniSirGlobal pMac,
                              ( void** ) &pPacket );
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to allocate %d bytes for a TDLS"
                                "Discovery Request."), nBytes );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to allocate %d bytes for a TDLS Discovery Response."),
+               nBytes);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_MEM_ALLOC_FAILED;
     }
 
@@ -1203,16 +1286,28 @@ static tSirRetStatus limSendTdlsDisRspFrame(tpAniSirGlobal pMac,
 
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("Failed to pack a TDLS discovery req "
                                "(0x%08x)."), status );
+=======
+        limLog( pMac, LOGE,
+                FL("Failed to pack a TDLS Discovery Response (0x%08x)."),
+                status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         palPktFree( pMac->hHdd, HAL_TXRX_FRM_802_11_MGMT, 
                                    ( void* ) pFrame, ( void* ) pPacket );
         return eSIR_FAILURE;
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while packing TDLS "
                                "Discovery Request (0x%08x)."), status );
+=======
+        limLog( pMac, LOGW,
+                FL("There were warnings while packing TDLS Discovery Request (0x%08x)."),
+                status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
 #if 0
@@ -1230,6 +1325,7 @@ static tSirRetStatus limSendTdlsDisRspFrame(tpAniSirGlobal pMac,
 #endif
     if (0 != addIeLen)
     {
+<<<<<<< HEAD
         LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR,
                      ("Copy Additional Ie Len = %d"), addIeLen ));
         vos_mem_copy(pFrame + sizeof(tSirMacMgmtHdr) + nPayload, addIe,
@@ -1241,6 +1337,17 @@ static tSirRetStatus limSendTdlsDisRspFrame(tpAniSirGlobal pMac,
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL, ("[TDLS] action %d (%s) -DIRECT-> OTA"),
             SIR_MAC_TDLS_DIS_RSP, limTraceTdlsActionString(SIR_MAC_TDLS_DIS_RSP) ));
 
+=======
+        limLog(pMac, LOG1, FL("Copy Additional Ie Len = %d"), addIeLen);
+        vos_mem_copy(pFrame + sizeof(tSirMacMgmtHdr) + nPayload, addIe,
+                                                              addIeLen);
+    }
+    limLog(pMac, LOG1,
+           FL("[TDLS] action %d (%s) -DIRECT-> OTA peer="MAC_ADDRESS_STR),
+           SIR_MAC_TDLS_DIS_RSP,
+           limTraceTdlsActionString(SIR_MAC_TDLS_DIS_RSP),
+           MAC_ADDR_ARRAY(peerMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     /*
      * Transmit Discovery response and watch if this is delivered to
@@ -1256,7 +1363,11 @@ static tSirRetStatus limSendTdlsDisRspFrame(tpAniSirGlobal pMac,
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
         pMac->lim.mgmtFrameSessionId = 0xff;
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("could not send TDLS Dis Request frame!" ));
+=======
+        limLog(pMac, LOGE, FL("could not send TDLS Discovery Response frame!"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_FAILURE;
     }
     pMac->lim.mgmtFrameSessionId = psessionEntry->peSessionId;
@@ -1293,15 +1404,24 @@ static void PopulateDotfTdlsVhtAID(tpAniSirGlobal pMac, uint32 selfDot11Mode,
             else
             {
                 Aid->present = 0;
+<<<<<<< HEAD
                 limLog( pMac, LOGE, FL("pStaDs is NULL for " MAC_ADDRESS_STR ),
                         MAC_ADDR_ARRAY(peerMac));
+=======
+                limLog(pMac, LOGE, FL("pStaDs is NULL for " MAC_ADDRESS_STR),
+                                   MAC_ADDR_ARRAY(peerMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             }
         }
     }
     else
     {
         Aid->present = 0;
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("Vht not enable from ini for 2.4GHz."));
+=======
+        limLog(pMac, LOGW, FL("Vht not enable from ini for 2.4GHz."));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 }
 
@@ -1350,8 +1470,12 @@ tSirRetStatus limSendTdlsLinkSetupReqFrame(tpAniSirGlobal pMac,
          * Could not get Capabilities value
          * from CFG. Log error.
          */
+<<<<<<< HEAD
          limLog(pMac, LOGP,
                    FL("could not retrieve Capabilities value"));
+=======
+         limLog(pMac, LOGE, FL("could not retrieve Capabilities value"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     pCapInfo = (tpSirMacCapabilityInfo) &caps;
@@ -1387,6 +1511,10 @@ tSirRetStatus limSendTdlsLinkSetupReqFrame(tpAniSirGlobal pMac,
         /* Populate QOS info, needed for Peer U-APSD session */
         /* TODO: Now hardcoded, because PopulateDot11fQOSCapsStation() depends on AP's capability, and
          TDLS doesn't want to depend on AP's capability */
+<<<<<<< HEAD
+=======
+        limLog(pMac, LOG1, FL("populate QOS IE in Setup Request Frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         tdlsSetupReq.QOSCapsStation.present = 1;
         tdlsSetupReq.QOSCapsStation.max_sp_length = 0;
         tdlsSetupReq.QOSCapsStation.qack = 0;
@@ -1431,16 +1559,28 @@ tSirRetStatus limSendTdlsLinkSetupReqFrame(tpAniSirGlobal pMac,
                                                               &nPayload);
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to calculate the packed size f"
                                "or a discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to calculate the packed size for a Setup Request (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         /* We'll fall back on the worst case scenario: */
         nPayload = sizeof( tDot11fProbeRequest );
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while calculating "
                                "the packed size for a discovery Request ("
                                "0x%08x)."), status );
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while calculating the packed size for a Setup Request (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
 
@@ -1464,8 +1604,14 @@ tSirRetStatus limSendTdlsLinkSetupReqFrame(tpAniSirGlobal pMac,
                              ( void** ) &pPacket );
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to allocate %d bytes for a TDLS"
                                "Discovery Request."), nBytes );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to allocate %d bytes for a TDLS Setup Request."),
+               nBytes);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_MEM_ALLOC_FAILED;
     }
 
@@ -1492,25 +1638,45 @@ tSirRetStatus limSendTdlsLinkSetupReqFrame(tpAniSirGlobal pMac,
          MAC_ADDR_ARRAY(tdlsSetupReq.LinkIdentifier.bssid));
     }
 #endif
+<<<<<<< HEAD
     limLog( pMac, LOGW, FL("%s: SupportedChnlWidth %x rxMCSMap %x rxMCSMap %x txSupDataRate %x"),
             __func__, tdlsSetupReq.VHTCaps.supportedChannelWidthSet, tdlsSetupReq.VHTCaps.rxMCSMap,
             tdlsSetupReq.VHTCaps.txMCSMap, tdlsSetupReq.VHTCaps.txSupDataRate );
+=======
+    limLog( pMac, LOGW, FL("SupportedChnlWidth %x rxMCSMap %x rxMCSMap %x txSupDataRate %x"),
+            tdlsSetupReq.VHTCaps.supportedChannelWidthSet,
+            tdlsSetupReq.VHTCaps.rxMCSMap,
+            tdlsSetupReq.VHTCaps.txMCSMap,
+            tdlsSetupReq.VHTCaps.txSupDataRate);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     status = dot11fPackTDLSSetupReq( pMac, &tdlsSetupReq, pFrame
                                + header_offset, nPayload, &nPayload );
 
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("Failed to pack a TDLS discovery req "
                                "(0x%08x)."), status );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to pack a TDLS Setup Request (0x%08x)."),
+                   status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         palPktFree( pMac->hHdd, HAL_TXRX_FRM_802_11_MGMT, 
                                    ( void* ) pFrame, ( void* ) pPacket );
         return eSIR_FAILURE;
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while packing TDLS "
                                "Discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while packing TDLS Setup Request (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     //Copy the additional IE.
@@ -1519,6 +1685,7 @@ tSirRetStatus limSendTdlsLinkSetupReqFrame(tpAniSirGlobal pMac,
     //if there is any IOT issue.
     if( addIeLen != 0 )
     {
+<<<<<<< HEAD
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR, ("Copy Additional Ie Len = %d"),
             addIeLen ));
        vos_mem_copy( pFrame + header_offset + nPayload, addIe, addIeLen );
@@ -1526,11 +1693,26 @@ tSirRetStatus limSendTdlsLinkSetupReqFrame(tpAniSirGlobal pMac,
 
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL, ("[TDLS] action %d (%s) -AP-> OTA"),
             SIR_MAC_TDLS_SETUP_REQ, limTraceTdlsActionString(SIR_MAC_TDLS_SETUP_REQ) ));
+=======
+        limLog(pMac, LOG1, FL("Copy Additional Ie Len = %d"),
+                           addIeLen);
+        vos_mem_copy( pFrame + header_offset + nPayload, addIe, addIeLen );
+    }
+
+    limLog(pMac, LOG1, FL("[TDLS] action %d (%s) -AP-> OTA peer="MAC_ADDRESS_STR),
+                       SIR_MAC_TDLS_SETUP_REQ,
+                       limTraceTdlsActionString(SIR_MAC_TDLS_SETUP_REQ),
+                       MAC_ADDR_ARRAY(peerMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     halstatus = halTxFrameWithTxComplete( pMac, pPacket, ( tANI_U16 ) nBytes,
                             HAL_TXRX_FRM_802_11_DATA,
                             ANI_TXDIR_TODS,
+<<<<<<< HEAD
                             TID_AC_BK,
+=======
+                            TID_AC_VI,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                             limTxComplete, pFrame,
                             limMgmtTXComplete,
                             HAL_USE_BD_RATE2_FOR_MANAGEMENT_FRAME );
@@ -1538,7 +1720,11 @@ tSirRetStatus limSendTdlsLinkSetupReqFrame(tpAniSirGlobal pMac,
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
         pMac->lim.mgmtFrameSessionId = 0xff;
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("could not send TDLS Dis Request frame!" ));
+=======
+        limLog(pMac, LOGE, FL("could not send TDLS Setup Request frame!"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_FAILURE;
     }
     pMac->lim.mgmtFrameSessionId = psessionEntry->peSessionId;
@@ -1577,34 +1763,53 @@ tSirRetStatus limSendTdlsTeardownFrame(tpAniSirGlobal pMac,
 
     PopulateDot11fLinkIden( pMac, psessionEntry, &teardown.LinkIdentifier,
                                                 peerMac, (responder == TRUE) ? TDLS_RESPONDER : TDLS_INITIATOR) ;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     /*
      * now we pack it.  First, how much space are we going to need?
      */
     status = dot11fGetPackedTDLSTeardownSize( pMac, &teardown, &nPayload);
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to calculate the packed size f"
                                "or a discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to calculate the packed size for Teardown frame (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         /* We'll fall back on the worst case scenario: */
         nPayload = sizeof( tDot11fProbeRequest );
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while calculating "
                                "the packed size for a discovery Request ("
                                "0x%08x)."), status );
     }
 
 
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while calculating the packed size for Teardown frame (0x%08x)."),
+               status);
+    }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     /*
      * This frame is going out from PE as data frames with special ethertype
      * 89-0d.
      * 8 bytes of RFC 1042 header
      */
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     nBytes = nPayload + ((IS_QOS_ENABLED(psessionEntry))
                               ? sizeof(tSirMacDataHdr3a) : sizeof(tSirMacMgmtHdr))
                       + sizeof( eth_890d_header )
@@ -1635,8 +1840,14 @@ tSirRetStatus limSendTdlsTeardownFrame(tpAniSirGlobal pMac,
                              ( void** ) &pPacket );
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to allocate %d bytes for a TDLS"
                                "Discovery Request."), nBytes );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to allocate %d bytes for a TDLS Teardown Frame."),
+               nBytes);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_MEM_ALLOC_FAILED;
     }
 
@@ -1647,7 +1858,11 @@ tSirRetStatus limSendTdlsTeardownFrame(tpAniSirGlobal pMac,
      * IE formation, memory allocation is completed, Now form TDLS discovery
      * request frame
      */
+<<<<<<< HEAD
 
+=======
+    limLog(pMac, LOGE, FL("Reason of TDLS Teardown: %d"), reason);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     /* fill out the buffer descriptor */
 
     header_offset = limPrepareTdlsFrameHeader(pMac, pFrame,
@@ -1663,15 +1878,24 @@ tSirRetStatus limSendTdlsTeardownFrame(tpAniSirGlobal pMac,
     if ( DOT11F_FAILED( status ) )
     {
         limLog( pMac, LOGE, FL("Failed to pack a TDLS Teardown req (0x%08x)."),
+<<<<<<< HEAD
                 status );
+=======
+                status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         palPktFree( pMac->hHdd, HAL_TXRX_FRM_802_11_MGMT,
                                    ( void* ) pFrame, ( void* ) pPacket );
         return eSIR_FAILURE;
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while packing TDLS "
                                "Teardown Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGW, FL("There were warnings while packing TDLS Teardown frame (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 #if 0
     if(pMac->hal.pCBackFnTxComp == NULL)
@@ -1693,9 +1917,14 @@ tSirRetStatus limSendTdlsTeardownFrame(tpAniSirGlobal pMac,
 
     if( addIeLen != 0 )
     {
+<<<<<<< HEAD
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR, ("Copy Additional Ie Len = %d"),
             addIeLen ));
        vos_mem_copy( pFrame + header_offset + nPayload, addIe, addIeLen );
+=======
+        limLog(pMac, LOG1, FL("Copy Additional Ie Len = %d"), addIeLen);
+        vos_mem_copy( pFrame + header_offset + nPayload, addIe, addIeLen );
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
 #ifndef NO_PAD_TDLS_MIN_8023_SIZE
@@ -1710,8 +1939,12 @@ tSirRetStatus limSendTdlsTeardownFrame(tpAniSirGlobal pMac,
         padVendorSpecific[3] = 0xA0;
         padVendorSpecific[4] = 0xC6;
 
+<<<<<<< HEAD
         LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO, ("Padding Vendor Specific Ie Len = %d"),
                 padLen ));
+=======
+        limLog(pMac, LOG1, FL("Padding Vendor Specific Ie Len = %d"), padLen);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         /* padding zero if more than 5 bytes are required */
         if (padLen > MIN_VENDOR_SPECIFIC_IE_SIZE)
@@ -1719,9 +1952,18 @@ tSirRetStatus limSendTdlsTeardownFrame(tpAniSirGlobal pMac,
                          padLen - MIN_VENDOR_SPECIFIC_IE_SIZE, 0);
     }
 #endif
+<<<<<<< HEAD
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL, ("[TDLS] action %d (%s) -%s-> OTA"),
          SIR_MAC_TDLS_TEARDOWN, limTraceTdlsActionString(SIR_MAC_TDLS_TEARDOWN),
          (reason == eSIR_MAC_TDLS_TEARDOWN_PEER_UNREACHABLE) ? "AP": "DIRECT" ));
+=======
+    limLog(pMac, LOG1, FL("[TDLS] action %d (%s) -%s-> OTA peer="MAC_ADDRESS_STR),
+                       SIR_MAC_TDLS_TEARDOWN,
+                       limTraceTdlsActionString(SIR_MAC_TDLS_TEARDOWN),
+                       ((reason == eSIR_MAC_TDLS_TEARDOWN_PEER_UNREACHABLE) ?
+                       "AP": "DIRECT"),
+                       MAC_ADDR_ARRAY(peerMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     halstatus = halTxFrameWithTxComplete( pMac, pPacket, ( tANI_U16 ) nBytes,
                             HAL_TXRX_FRM_802_11_DATA,
@@ -1733,7 +1975,11 @@ tSirRetStatus limSendTdlsTeardownFrame(tpAniSirGlobal pMac,
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
         pMac->lim.mgmtFrameSessionId = 0xff;
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("could not send TDLS Dis Request frame!" ));
+=======
+        limLog(pMac, LOGE, FL("could not send TDLS Teardown frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_FAILURE;
 
     }
@@ -1789,8 +2035,12 @@ static tSirRetStatus limSendTdlsSetupRspFrame(tpAniSirGlobal pMac,
          * Could not get Capabilities value
          * from CFG. Log error.
          */
+<<<<<<< HEAD
          limLog(pMac, LOGP,
                    FL("could not retrieve Capabilities value"));
+=======
+         limLog(pMac, LOGE, FL("could not retrieve Capabilities value"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     pCapInfo = (tpSirMacCapabilityInfo) &caps;
@@ -1826,6 +2076,10 @@ static tSirRetStatus limSendTdlsSetupRspFrame(tpAniSirGlobal pMac,
         /* Populate QOS info, needed for Peer U-APSD session */
         /* TODO: Now hardcoded, because PopulateDot11fQOSCapsStation() depends on AP's capability, and
          TDLS doesn't want to depend on AP's capability */
+<<<<<<< HEAD
+=======
+        limLog(pMac, LOG1, FL("populate QOS IE in Setup Response frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         tdlsSetupRsp.QOSCapsStation.present = 1;
         tdlsSetupRsp.QOSCapsStation.max_sp_length = 0;
         tdlsSetupRsp.QOSCapsStation.qack = 0;
@@ -1865,16 +2119,28 @@ static tSirRetStatus limSendTdlsSetupRspFrame(tpAniSirGlobal pMac,
                                                      &nPayload);
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to calculate the packed size f"
                                "or a discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to calculate the packed size for a Setup Response (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         /* We'll fall back on the worst case scenario: */
         nPayload = sizeof( tDot11fProbeRequest );
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while calculating "
                                "the packed size for a discovery Request ("
                                "0x%08x)."), status );
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while calculating the packed size for Setup Response (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     /*
@@ -1897,8 +2163,14 @@ static tSirRetStatus limSendTdlsSetupRspFrame(tpAniSirGlobal pMac,
                              ( void** ) &pPacket );
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to allocate %d bytes for a TDLS"
                                "Discovery Request."), nBytes );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to allocate %d bytes for a TDLS Setup Response."),
+               nBytes);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_MEM_ALLOC_FAILED;
     }
 
@@ -1927,24 +2199,44 @@ static tSirRetStatus limSendTdlsSetupRspFrame(tpAniSirGlobal pMac,
          MAC_ADDR_ARRAY(tdlsSetupRsp.LinkIdentifier.bssid));
     }
 #endif
+<<<<<<< HEAD
     limLog( pMac, LOGW, FL("%s: SupportedChnlWidth %x rxMCSMap %x rxMCSMap %x txSupDataRate %x"),
             __func__, tdlsSetupRsp.VHTCaps.supportedChannelWidthSet, tdlsSetupRsp.VHTCaps.rxMCSMap,
             tdlsSetupRsp.VHTCaps.txMCSMap, tdlsSetupRsp.VHTCaps.txSupDataRate );
+=======
+    limLog(pMac, LOG1,
+           FL("SupportedChnlWidth %x rxMCSMap %x rxMCSMap %x txSupDataRate %x"),
+           tdlsSetupRsp.VHTCaps.supportedChannelWidthSet,
+           tdlsSetupRsp.VHTCaps.rxMCSMap,
+           tdlsSetupRsp.VHTCaps.txMCSMap,
+           tdlsSetupRsp.VHTCaps.txSupDataRate);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     status = dot11fPackTDLSSetupRsp( pMac, &tdlsSetupRsp, pFrame 
                                + header_offset, nPayload, &nPayload );
 
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("Failed to pack a TDLS discovery req "
                                "(0x%08x)."), status );
+=======
+        limLog(pMac, LOGE, FL("Failed to pack a TDLS Setup Response (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         palPktFree( pMac->hHdd, HAL_TXRX_FRM_802_11_MGMT, 
                                    ( void* ) pFrame, ( void* ) pPacket );
         return eSIR_FAILURE;
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while packing TDLS "
                                "Discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while packing TDLS Setup Response (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     //Copy the additional IE. 
@@ -1956,21 +2248,37 @@ static tSirRetStatus limSendTdlsSetupRspFrame(tpAniSirGlobal pMac,
        vos_mem_copy( pFrame + header_offset + nPayload, addIe, addIeLen );
     }
 
+<<<<<<< HEAD
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL, ("[TDLS] action %d (%s) -AP-> OTA"),
          SIR_MAC_TDLS_SETUP_RSP, limTraceTdlsActionString(SIR_MAC_TDLS_SETUP_RSP) ));
+=======
+    limLog(pMac, LOG1,
+           FL("[TDLS] action %d (%s) -AP-> OTA peer="MAC_ADDRESS_STR),
+           SIR_MAC_TDLS_SETUP_RSP,
+           limTraceTdlsActionString(SIR_MAC_TDLS_SETUP_RSP),
+           MAC_ADDR_ARRAY(peerMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     halstatus = halTxFrameWithTxComplete( pMac, pPacket, ( tANI_U16 ) nBytes,
                             HAL_TXRX_FRM_802_11_DATA,
                             ANI_TXDIR_TODS,
                             //ANI_TXDIR_IBSS,
+<<<<<<< HEAD
                             TID_AC_BK,
+=======
+                            TID_AC_VI,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                             limTxComplete, pFrame,
                             limMgmtTXComplete,
                             HAL_USE_BD_RATE2_FOR_MANAGEMENT_FRAME );
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
         pMac->lim.mgmtFrameSessionId = 0xff;
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("could not send TDLS Dis Request frame!" ));
+=======
+        limLog(pMac, LOGE, FL("could not send TDLS Setup Response"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_FAILURE;
     }
     pMac->lim.mgmtFrameSessionId = psessionEntry->peSessionId;
@@ -2030,6 +2338,10 @@ tSirRetStatus limSendTdlsLinkSetupCnfFrame(tpAniSirGlobal pMac, tSirMacAddr peer
     /* Check self and peer WMM capable */
     if ((1 == pMac->lim.gLimTDLSWmmMode) && (CHECK_BIT(peerCapability, TDLS_PEER_WMM_CAP)))
     {
+<<<<<<< HEAD
+=======
+       limLog(pMac, LOG1, FL("populate WMM praram in Setup Confirm"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
        PopulateDot11fWMMParams(pMac, &tdlsSetupCnf.WMMParams, psessionEntry);
     }
 
@@ -2058,16 +2370,28 @@ tSirRetStatus limSendTdlsLinkSetupCnfFrame(tpAniSirGlobal pMac, tSirMacAddr peer
                                                      &nPayload);
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to calculate the packed size f"
                                "or a discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to calculate the packed size for Setup Confirm (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         /* We'll fall back on the worst case scenario: */
         nPayload = sizeof( tDot11fProbeRequest );
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while calculating "
                                "the packed size for a discovery Request ("
                                "0x%08x)."), status );
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while calculating the packed size for Setup Confirm (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     /*
@@ -2108,8 +2432,14 @@ tSirRetStatus limSendTdlsLinkSetupCnfFrame(tpAniSirGlobal pMac, tSirMacAddr peer
                              ( void** ) &pPacket );
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGP, FL("Failed to allocate %d bytes for a TDLS"
                                "Discovery Request."), nBytes );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to allocate %d bytes for a TDLS Setup Confirm."),
+               nBytes);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_MEM_ALLOC_FAILED;
     }
 
@@ -2139,16 +2469,28 @@ tSirRetStatus limSendTdlsLinkSetupCnfFrame(tpAniSirGlobal pMac, tSirMacAddr peer
 
     if ( DOT11F_FAILED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("Failed to pack a TDLS discovery req "
                                "(0x%08x)."), status );
+=======
+        limLog(pMac, LOGE,
+               FL("Failed to pack a TDLS Setup Confirm (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         palPktFree( pMac->hHdd, HAL_TXRX_FRM_802_11_MGMT, 
                                    ( void* ) pFrame, ( void* ) pPacket );
         return eSIR_FAILURE;
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while packing TDLS "
                                "Discovery Request (0x%08x)."), status );
+=======
+        limLog(pMac, LOGW,
+               FL("There were warnings while packing TDLS Setup Confirm (0x%08x)."),
+               status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 #if 0
     if(pMac->hal.pCBackFnTxComp == NULL) 
@@ -2188,8 +2530,12 @@ tSirRetStatus limSendTdlsLinkSetupCnfFrame(tpAniSirGlobal pMac, tSirMacAddr peer
         padVendorSpecific[3] = 0xA0;
         padVendorSpecific[4] = 0xC6;
 
+<<<<<<< HEAD
         LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO, ("Padding Vendor Specific Ie Len = %d"),
                 padLen ));
+=======
+        limLog(pMac, LOG1, FL("Padding Vendor Specific Ie Len = %d"), padLen);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         /* padding zero if more than 5 bytes are required */
         if (padLen > MIN_VENDOR_SPECIFIC_IE_SIZE)
@@ -2199,8 +2545,16 @@ tSirRetStatus limSendTdlsLinkSetupCnfFrame(tpAniSirGlobal pMac, tSirMacAddr peer
 #endif
 
 
+<<<<<<< HEAD
     LIM_LOG_TDLS(VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL, ("[TDLS] action %d (%s) -AP-> OTA"),
          SIR_MAC_TDLS_SETUP_CNF, limTraceTdlsActionString(SIR_MAC_TDLS_SETUP_CNF) ));
+=======
+    limLog(pMac, LOG1,
+           FL("[TDLS] action %d (%s) -AP-> OTA peer="MAC_ADDRESS_STR),
+           SIR_MAC_TDLS_SETUP_CNF,
+           limTraceTdlsActionString(SIR_MAC_TDLS_SETUP_CNF),
+           MAC_ADDR_ARRAY(peerMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     halstatus = halTxFrameWithTxComplete( pMac, pPacket, ( tANI_U16 ) nBytes,
                             HAL_TXRX_FRM_802_11_DATA,
@@ -2214,7 +2568,11 @@ tSirRetStatus limSendTdlsLinkSetupCnfFrame(tpAniSirGlobal pMac, tSirMacAddr peer
     if ( ! HAL_STATUS_SUCCESS ( halstatus ) )
     {
         pMac->lim.mgmtFrameSessionId = 0xff;
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("could not send TDLS Dis Request frame!" ));
+=======
+        limLog(pMac, LOGE, FL("could not send TDLS Setup Confirm frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_FAILURE;
 
     }
@@ -2449,9 +2807,20 @@ static tSirRetStatus limTdlsPopulateDot11fHTCaps(tpAniSirGlobal pMac, tpPESessio
        pDot11f->shortGI40MHz = 0;
     }
 
+<<<<<<< HEAD
     dot11fLog(pMac, LOG2, FL("SupportedChnlWidth: %d, mimoPS: %d, GF: %d, shortGI20:%d, shortGI40: %d, dsssCck: %d"),
                                             pDot11f->supportedChannelWidthSet, pDot11f->mimoPowerSave,  pDot11f->greenField,
                                             pDot11f->shortGI20MHz, pDot11f->shortGI40MHz, pDot11f->dsssCckMode40MHz);
+=======
+    limLog(pMac, LOG1,
+           FL("SupportedChnlWidth: %d, mimoPS: %d, GF: %d, shortGI20:%d, shortGI40: %d, dsssCck: %d"),
+           pDot11f->supportedChannelWidthSet,
+           pDot11f->mimoPowerSave,
+           pDot11f->greenField,
+           pDot11f->shortGI20MHz,
+           pDot11f->shortGI40MHz,
+           pDot11f->dsssCckMode40MHz);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     nCfgValue = pTdlsAddStaReq->htCap.ampduParamsInfo;
 
@@ -2462,7 +2831,11 @@ static tSirRetStatus limTdlsPopulateDot11fHTCaps(tpAniSirGlobal pMac, tpPESessio
     pDot11f->mpduDensity      = pHTParametersInfo->mpduDensity;
     pDot11f->reserved1        = pHTParametersInfo->reserved;
 
+<<<<<<< HEAD
     dot11fLog( pMac, LOG2, FL( "AMPDU Param: %x" ), nCfgValue);
+=======
+    limLog(pMac, LOG1, FL("AMPDU Param: %x"), nCfgValue);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     vos_mem_copy( pDot11f->supportedMCSSet, pTdlsAddStaReq->htCap.suppMcsSet,
                   SIZE_OF_SUPPORTED_MCS_SET);
@@ -2604,7 +2977,11 @@ limTdlsPopulateMatchingRateSet(tpAniSirGlobal pMac,
                                           &val) != eSIR_SUCCESS)
     {
         /// Could not get rateset from CFG. Log error.
+<<<<<<< HEAD
         limLog(pMac, LOGP, FL("could not retrieve rateset"));
+=======
+        limLog(pMac, LOGE, FL("could not retrieve rateset"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         val = 0;
     }
     tempRateSet.numRates = val;
@@ -2622,7 +2999,11 @@ limTdlsPopulateMatchingRateSet(tpAniSirGlobal pMac,
 
     if ((tempRateSet.numRates + tempRateSet2.numRates) > 12)
     {
+<<<<<<< HEAD
         PELOGE(limLog(pMac, LOGE, FL("more than 12 rates in CFG"));)
+=======
+        limLog(pMac, LOGE, FL("more than 12 rates in CFG"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         goto error;
     }
 
@@ -2667,9 +3048,15 @@ limTdlsPopulateMatchingRateSet(tpAniSirGlobal pMac,
      */
     if (supporteRatesLength > SIR_MAC_RATESET_EID_MAX)
     {
+<<<<<<< HEAD
        limLog( pMac, LOGW, FL("Supported rates length %d more than "
                               "the Max limit, reset to Max"),
                                supporteRatesLength);
+=======
+       limLog(pMac, LOGW,
+              FL("Supported rates length %d more than the Max limit, reset to Max"),
+              supporteRatesLength);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
        supporteRatesLength = SIR_MAC_RATESET_EID_MAX;
     }
     for (i = 0; i < supporteRatesLength; i++)
@@ -2691,6 +3078,7 @@ limTdlsPopulateMatchingRateSet(tpAniSirGlobal pMac,
                 if ((tempRateSet2.rate[i] & 0x7F) ==
                     (tempRateSet.rate[j] & 0x7F))
                 {
+<<<<<<< HEAD
 #ifdef FEATURE_WLAN_NON_INTEGRATED_SOC
                     if ((bRateIndex > HAL_NUM_11B_RATES) || (aRateIndex > HAL_NUM_11A_RATES))
                     {
@@ -2699,6 +3087,17 @@ limTdlsPopulateMatchingRateSet(tpAniSirGlobal pMac,
                         return eSIR_FAILURE;
                     }
 #endif
+=======
+                    if ((bRateIndex >= SIR_NUM_11B_RATES) ||
+                        (aRateIndex >= SIR_NUM_11A_RATES))
+                    {
+                        limLog(pMac, LOGE, FL("Invalid number of rates"
+                                              "(11b->%d, 11a->%d)"),
+                                              bRateIndex,aRateIndex);
+                        return eSIR_FAILURE;
+                    }
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                     if (sirIsArate(tempRateSet2.rate[i] & 0x7f))
                     {
                         isArate=1;
@@ -2734,10 +3133,19 @@ limTdlsPopulateMatchingRateSet(tpAniSirGlobal pMac,
         for (i=0; i<val; i++)
             pStaDs->supportedRates.supportedMCSSet[i] = mcsSet[i] & pSupportedMCSSet[i];
 
+<<<<<<< HEAD
         PELOG2(limLog(pMac, LOG2, FL("limPopulateMatchingRateSet: MCS Rate Set Bitmap from CFG and DPH :"));)
         for (i=0; i<SIR_MAC_MAX_SUPPORTED_MCS_SET; i++)
         {
             PELOG2(limLog(pMac, LOG2,FL("%x %x "), mcsSet[i], pStaDs->supportedRates.supportedMCSSet[i]);)
+=======
+        limLog(pMac, LOG1, FL("MCS Rate Set Bitmap from CFG and DPH:"));
+        for (i=0; i<SIR_MAC_MAX_SUPPORTED_MCS_SET; i++)
+        {
+            limLog(pMac, LOG1, FL("%x %x"),
+                               mcsSet[i],
+                               pStaDs->supportedRates.supportedMCSSet[i]);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         }
     }
 
@@ -3116,9 +3524,15 @@ static tSirRetStatus limProcessTdlsDisReqFrame(tpAniSirGlobal pMac,
     }
     else if ( DOT11F_WARNED( status ) )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGW, FL("There were warnings while unpacking a TDLS "
                                "discovery Request frame (0x%08x, %d bytes):"),
                    status, frmLen );
+=======
+        limLog(pMac, LOGW, FL("There were warnings while unpacking a TDLS "
+                               "discovery Request frame (0x%08x, %d bytes):"),
+                   status, frmLen);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         PELOG2(sirDumpBuf(pMac, SIR_DBG_MODULE_ID, LOG2, pBody, frmLen);)
     }
 
@@ -3151,7 +3565,11 @@ static tSirRetStatus limProcessTdlsDisReqFrame(tpAniSirGlobal pMac,
              MAC_ADDR_ARRAY(tdlsDisReq.LinkIdentifier.bssid));
     if(!status)
     {
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL("TDLS discovery request frame from other BSS -> something wrong. Check RXP filter")) ;
+=======
+        limLog(pMac, LOGE, FL("TDLS discovery request frame from other BSS -> something wrong. Check RXP filter")) ;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         return eSIR_FAILURE ; 
     }
@@ -4280,18 +4698,28 @@ static tSirRetStatus limTdlsSetupAddSta(tpAniSirGlobal pMac,
 
         if( !aid )
         {
+<<<<<<< HEAD
             VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR,
               ("%s: No more free AID for peer " MAC_ADDRESS_STR),
                 __func__, MAC_ADDR_ARRAY(pAddStaReq->peerMac)) ;
+=======
+            limLog(pMac, LOGE, FL("No more free AID for peer " MAC_ADDRESS_STR),
+                               MAC_ADDR_ARRAY(pAddStaReq->peerMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             return eSIR_FAILURE;
         }
 
         /* Set the aid in peerAIDBitmap as it has been assigned to TDLS peer */
         SET_PEER_AID_BITMAP(psessionEntry->peerAIDBitmap, aid);
 
+<<<<<<< HEAD
         VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL,
               ("limTdlsSetupAddSta: Aid = %d, for peer =" MAC_ADDRESS_STR),
                 aid, MAC_ADDR_ARRAY(pAddStaReq->peerMac));
+=======
+        limLog(pMac, LOG1, FL("Aid = %d, for peer =" MAC_ADDRESS_STR),
+                           aid, MAC_ADDR_ARRAY(pAddStaReq->peerMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         pStaDs = dphGetHashEntry(pMac, aid, &psessionEntry->dph.dphHashTable);
 
         if (pStaDs)
@@ -4305,8 +4733,12 @@ static tSirRetStatus limTdlsSetupAddSta(tpAniSirGlobal pMac,
 
         if(NULL == pStaDs)
         {
+<<<<<<< HEAD
             VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR,
                         (" add hash entry failed")) ;
+=======
+            limLog(pMac, LOGE, FL("add hash entry failed"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             VOS_ASSERT(0) ;
             return eSIR_FAILURE;
         }
@@ -4342,6 +4774,7 @@ static tpDphHashNode limTdlsDelSta(tpAniSirGlobal pMac, tSirMacAddr peerMac,
     if(pStaDs)
     {
     
+<<<<<<< HEAD
         VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO, 
              ("DEL STA peer MAC: "MAC_ADDRESS_STR),
                                   MAC_ADDR_ARRAY(pStaDs->staAddr));
@@ -4349,6 +4782,14 @@ static tpDphHashNode limTdlsDelSta(tpAniSirGlobal pMac, tSirMacAddr peerMac,
         VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL,
                    ("limTdlsDelSta: STA type = %x, sta idx = %x"),pStaDs->staType,
                                                            pStaDs->staIndex) ;
+=======
+        limLog(pMac, LOG1, FL("DEL STA peer MAC: "MAC_ADDRESS_STR),
+                           MAC_ADDR_ARRAY(pStaDs->staAddr));
+        limLog(pMac, LOG1, FL("STA type = %x, sta idx = %x"),
+                           pStaDs->staType,
+                           pStaDs->staIndex);
+ 
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         limDeleteBASessions(pMac, psessionEntry, BA_BOTH_DIRECTIONS,
                             eSIR_MAC_PEER_TIMEDOUT_REASON);
         status = limDelSta(pMac, pStaDs, false, psessionEntry) ;
@@ -4923,7 +5364,11 @@ static eHalStatus limSendSmeTdlsAddStaRsp(tpAniSirGlobal pMac,
     addStaRsp = vos_mem_malloc(sizeof(tSirTdlsAddStaRsp));
     if ( NULL == addStaRsp )
     {
+<<<<<<< HEAD
         PELOGE(limLog(pMac, LOGE, FL("Failed to allocate memory"));)
+=======
+        limLog(pMac, LOGE, FL("Failed to allocate memory"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_FAILURE;
     }
 
@@ -4967,15 +5412,25 @@ eHalStatus limProcessTdlsAddStaRsp(tpAniSirGlobal pMac, void *msg,
     tANI_U16        aid = 0 ;
 
     SET_LIM_PROCESS_DEFD_MESGS(pMac, true);
+<<<<<<< HEAD
     VOS_TRACE(VOS_MODULE_ID_PE, TDLS_DEBUG_LOG_LEVEL,
             ("limTdlsAddStaRsp: staIdx=%d, staMac="MAC_ADDRESS_STR), pAddStaParams->staIdx,
                             MAC_ADDR_ARRAY(pAddStaParams->staMac));
+=======
+    limLog(pMac, LOG1, FL("staIdx=%d, staMac="MAC_ADDRESS_STR),
+                       pAddStaParams->staIdx,
+                       MAC_ADDR_ARRAY(pAddStaParams->staMac));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     if (pAddStaParams->status != eHAL_STATUS_SUCCESS)
     {
         VOS_ASSERT(0) ;
+<<<<<<< HEAD
         VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR,
                                                    ("Add sta failed ")) ;
+=======
+        limLog(pMac, LOGE, FL("Add sta failed "));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         status = eSIR_FAILURE;
         goto add_sta_error;
     }
@@ -4984,8 +5439,12 @@ eHalStatus limProcessTdlsAddStaRsp(tpAniSirGlobal pMac, void *msg,
                                          &psessionEntry->dph.dphHashTable);
     if(NULL == pStaDs)
     {
+<<<<<<< HEAD
         VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR,
                                                    ("pStaDs is NULL ")) ;
+=======
+        limLog(pMac, LOGE, FL("pStaDs is NULL "));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         status = eSIR_FAILURE;
         goto add_sta_error;
     }
@@ -5055,12 +5514,22 @@ void PopulateDot11fTdlsOffchannelParams(tpAniSirGlobal pMac,
          * Could not get Valid channel list from CFG.
          * Log error.
          */
+<<<<<<< HEAD
          limLog(pMac, LOGP,
                 FL("could not retrieve Valid channel list"));
     }
     suppChannels->num_bands = (tANI_U8) numChans;
 
     for ( i = 0U; i < suppChannels->num_bands; i++)
+=======
+         limLog(pMac, LOGE, FL("could not retrieve valid channel list"));
+         return;
+    }
+    suppChannels->num_bands = (tANI_U8) numChans;
+
+    for ( i = 0U; i < suppChannels->num_bands &&
+                  i < LIM_MAX_BANDS; i++)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     {
         suppChannels->bands[i][0] = validChan[i];
         suppChannels->bands[i][1] = 1;
@@ -5073,6 +5542,7 @@ void PopulateDot11fTdlsOffchannelParams(tpAniSirGlobal pMac,
                                      psessionEntry->htSecondaryChannelOffset);
     if (op_class == 0)
     {
+<<<<<<< HEAD
         PELOGE(limLog(pMac, LOGE, FL("Present Operating class is Wrong!!!"));)
     }
     else
@@ -5081,6 +5551,21 @@ void PopulateDot11fTdlsOffchannelParams(tpAniSirGlobal pMac,
                       psessionEntry->currentOperChannel,
                       psessionEntry->htSecondaryChannelOffset,
                       op_class);)
+=======
+        limLog(pMac, LOGE,
+               FL("Present Operating class is wrong, countryCodeCurrent: %s, currentOperChannel: %d, htSecondaryChannelOffset: %d"),
+               pMac->scan.countryCodeCurrent,
+               psessionEntry->currentOperChannel,
+               psessionEntry->htSecondaryChannelOffset);
+    }
+    else
+    {
+        limLog(pMac, LOG1,
+               FL("Present Operating channel=%d offset=%d class=%d"),
+               psessionEntry->currentOperChannel,
+               psessionEntry->htSecondaryChannelOffset,
+               op_class);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
     suppOperClasses->present = 1;
     suppOperClasses->classes[0] = op_class;
@@ -5227,15 +5712,25 @@ tSirRetStatus limProcessSmeTdlsMgmtSendReq(tpAniSirGlobal pMac,
     tANI_U8      sessionId;
     tSirResultCodes resultCode = eSIR_SME_INVALID_PARAMETERS;
 
+<<<<<<< HEAD
     VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO,
             ("Send Mgmt Recieved")) ;
+=======
+    limLog(pMac, LOG1, FL("Send Mgmt Recieved"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     if((psessionEntry = peFindSessionByBssid(pMac, pSendMgmtReq->bssid, &sessionId)) 
             == NULL)
     {
+<<<<<<< HEAD
         VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR, 
                 "PE Session does not exist for given sme sessionId %d",
                 pSendMgmtReq->sessionId);
+=======
+        limLog(pMac, LOGE,
+               FL("PE Session does not exist for given sme sessionId %d"),
+               pSendMgmtReq->sessionId);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         goto lim_tdls_send_mgmt_error;
     }
 
@@ -5256,16 +5751,25 @@ tSirRetStatus limProcessSmeTdlsMgmtSendReq(tpAniSirGlobal pMac,
             (psessionEntry->limSmeState != eLIM_SME_LINK_EST_STATE))
     {
 
+<<<<<<< HEAD
         limLog(pMac, LOGE, "send mgmt received in invalid LIMsme "
                 "state (%d)", psessionEntry->limSmeState);
+=======
+        limLog(pMac, LOGE, FL("send mgmt received in invalid LIMsme state (%d)"),
+                           psessionEntry->limSmeState);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         goto lim_tdls_send_mgmt_error;
     }
 
     switch( pSendMgmtReq->reqType )
     {
         case SIR_MAC_TDLS_DIS_REQ:
+<<<<<<< HEAD
             VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO,
                     "Transmit Discovery Request Frame") ;
+=======
+            limLog(pMac, LOG1, FL("Transmit Discovery Request Frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             /* format TDLS discovery request frame and transmit it */
             limSendTdlsDisReqFrame(pMac, pSendMgmtReq->peerMac, pSendMgmtReq->dialog, 
                     psessionEntry) ;
@@ -5273,6 +5777,10 @@ tSirRetStatus limProcessSmeTdlsMgmtSendReq(tpAniSirGlobal pMac,
             break;
         case SIR_MAC_TDLS_DIS_RSP:
             {
+<<<<<<< HEAD
+=======
+                limLog(pMac, LOG1, FL("Transmit Discovery Response Frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                 //Send a response mgmt action frame
                 limSendTdlsDisRspFrame(pMac, pSendMgmtReq->peerMac,
                         pSendMgmtReq->dialog, psessionEntry,
@@ -5283,6 +5791,10 @@ tSirRetStatus limProcessSmeTdlsMgmtSendReq(tpAniSirGlobal pMac,
             break;
         case SIR_MAC_TDLS_SETUP_REQ:
             {
+<<<<<<< HEAD
+=======
+                limLog(pMac, LOG1, FL("Transmit Setup Request Frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                 limSendTdlsLinkSetupReqFrame(pMac,
                         pSendMgmtReq->peerMac, pSendMgmtReq->dialog, psessionEntry,
                         &pSendMgmtReq->addIe[0], (pSendMgmtReq->length - sizeof(tSirTdlsSendMgmtReq))); 
@@ -5291,6 +5803,10 @@ tSirRetStatus limProcessSmeTdlsMgmtSendReq(tpAniSirGlobal pMac,
             break;
         case SIR_MAC_TDLS_SETUP_RSP:
             {
+<<<<<<< HEAD
+=======
+                limLog(pMac, LOG1, FL("Transmit Setup Response Frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                 limSendTdlsSetupRspFrame(pMac, 
                         pSendMgmtReq->peerMac, pSendMgmtReq->dialog, psessionEntry, pSendMgmtReq->statusCode,
                         &pSendMgmtReq->addIe[0], (pSendMgmtReq->length - sizeof(tSirTdlsSendMgmtReq)));
@@ -5299,6 +5815,10 @@ tSirRetStatus limProcessSmeTdlsMgmtSendReq(tpAniSirGlobal pMac,
             break;
         case SIR_MAC_TDLS_SETUP_CNF:
             {
+<<<<<<< HEAD
+=======
+                limLog(pMac, LOG1, FL("Transmit Setup Confirm Frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                 limSendTdlsLinkSetupCnfFrame(pMac, pSendMgmtReq->peerMac, pSendMgmtReq->dialog, pSendMgmtReq->peerCapability,
                         psessionEntry, &pSendMgmtReq->addIe[0], (pSendMgmtReq->length - sizeof(tSirTdlsSendMgmtReq)));  
                 resultCode = eSIR_SME_SUCCESS;
@@ -5306,6 +5826,10 @@ tSirRetStatus limProcessSmeTdlsMgmtSendReq(tpAniSirGlobal pMac,
             break;
         case SIR_MAC_TDLS_TEARDOWN:
             {
+<<<<<<< HEAD
+=======
+                limLog(pMac, LOG1, FL("Transmit Teardown Frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                 limSendTdlsTeardownFrame(pMac,
                         pSendMgmtReq->peerMac, pSendMgmtReq->statusCode, pSendMgmtReq->responder, psessionEntry,
                         &pSendMgmtReq->addIe[0], (pSendMgmtReq->length - sizeof(tSirTdlsSendMgmtReq))); 
@@ -5354,7 +5878,11 @@ void limSendSmeTdlsLinkEstablishReqRsp(tpAniSirGlobal pMac,
     pTdlsLinkEstablishReqRsp = vos_mem_malloc(sizeof(tSirTdlsLinkEstablishReqRsp));
     if ( NULL == pTdlsLinkEstablishReqRsp )
     {
+<<<<<<< HEAD
         PELOGE(limLog(pMac, LOGE, FL("Failed to allocate memory"));)
+=======
+        limLog(pMac, LOGE, FL("Failed to allocate memory"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return ;
     }
     pTdlsLinkEstablishReqRsp->statusCode = status ;
@@ -5417,7 +5945,11 @@ static eHalStatus limSendSmeTdlsDelStaRsp(tpAniSirGlobal pMac,
     pDelSta = vos_mem_malloc(sizeof(tSirTdlsDelStaRsp));
     if ( NULL == pDelSta )
     {
+<<<<<<< HEAD
         PELOGE(limLog(pMac, LOGE, FL("Failed to allocate memory"));)
+=======
+        limLog(pMac, LOGE, FL("Failed to allocate memory"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             return eSIR_FAILURE;
     }
 
@@ -5457,15 +5989,25 @@ tSirRetStatus limProcessSmeTdlsAddStaReq(tpAniSirGlobal pMac,
     tpPESession psessionEntry;
     tANI_U8      sessionId;
 
+<<<<<<< HEAD
     VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO,
                                   ("Send Mgmt Recieved")) ;
+=======
+    limLog(pMac, LOG1, FL("TDLS Add STA Request Recieved"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     if((psessionEntry = peFindSessionByBssid(pMac, pAddStaReq->bssid, &sessionId)) 
                                                                         == NULL)
     {
+<<<<<<< HEAD
          VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR, 
                     "PE Session does not exist for given sme sessionId %d",
                                                             pAddStaReq->sessionId);
+=======
+         limLog(pMac, LOGE,
+                FL("PE Session does not exist for given sme sessionId %d"),
+                pAddStaReq->sessionId);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
          goto lim_tdls_add_sta_error;
     }
     
@@ -5486,8 +6028,14 @@ tSirRetStatus limProcessSmeTdlsAddStaReq(tpAniSirGlobal pMac,
                 (psessionEntry->limSmeState != eLIM_SME_LINK_EST_STATE))
      {
      
+<<<<<<< HEAD
          limLog(pMac, LOGE, "send mgmt received in invalid LIMsme "
                 "state (%d)", psessionEntry->limSmeState);
+=======
+         limLog(pMac, LOGE,
+                FL("Add STA received in invalid LIMsme state (%d)"),
+                psessionEntry->limSmeState);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
          goto lim_tdls_add_sta_error;
      }
 
@@ -5496,7 +6044,11 @@ tSirRetStatus limProcessSmeTdlsAddStaReq(tpAniSirGlobal pMac,
      /* To start with, send add STA request to HAL */
      if (eSIR_FAILURE == limTdlsSetupAddSta(pMac, pAddStaReq, psessionEntry))
      {
+<<<<<<< HEAD
          limLog(pMac, LOGE, "%s: Add TDLS Station request failed ", __func__);
+=======
+         limLog(pMac, LOGE, FL("Add TDLS Station request failed"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
          goto lim_tdls_add_sta_error;
      }
      return eSIR_SUCCESS;
@@ -5519,15 +6071,25 @@ tSirRetStatus limProcessSmeTdlsDelStaReq(tpAniSirGlobal pMac,
     tANI_U8      sessionId;
     tpDphHashNode pStaDs = NULL ;
 
+<<<<<<< HEAD
     VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO,
             ("Send Mgmt Recieved")) ;
+=======
+    limLog(pMac, LOG1, FL("TDLS Delete STA Request Recieved"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     if((psessionEntry = peFindSessionByBssid(pMac, pDelStaReq->bssid, &sessionId)) 
             == NULL)
     {
+<<<<<<< HEAD
         VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR, 
                 "PE Session does not exist for given sme sessionId %d",
                 pDelStaReq->sessionId);
+=======
+        limLog(pMac, LOGE,
+               FL("PE Session does not exist for given sme sessionId %d"),
+               pDelStaReq->sessionId);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         limSendSmeTdlsDelStaRsp(pMac, pDelStaReq->sessionId, pDelStaReq->peerMac,
              NULL, eSIR_FAILURE) ;
         return eSIR_FAILURE;
@@ -5550,8 +6112,13 @@ tSirRetStatus limProcessSmeTdlsDelStaReq(tpAniSirGlobal pMac,
             (psessionEntry->limSmeState != eLIM_SME_LINK_EST_STATE))
     {
 
+<<<<<<< HEAD
         limLog(pMac, LOGE, "Del Sta received in invalid LIMsme state (%d)",
                psessionEntry->limSmeState);
+=======
+        limLog(pMac, LOGE, FL("Del Sta received in invalid LIMsme state (%d)"),
+                           psessionEntry->limSmeState);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         goto lim_tdls_del_sta_error;
     }
 
@@ -5627,15 +6194,25 @@ tSirRetStatus limProcesSmeTdlsLinkEstablishReq(tpAniSirGlobal pMac,
     tANI_U16 peerIdx = 0 ;
     tpDphHashNode pStaDs = NULL ;
 
+<<<<<<< HEAD
     VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_INFO,
             ("Send Mgmt Recieved")) ;
+=======
+    limLog(pMac, LOG1, FL("Link Establish Request Recieved")) ;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     if((psessionEntry = peFindSessionByBssid(pMac, pTdlsLinkEstablishReq->bssid, &sessionId))
             == NULL)
     {
+<<<<<<< HEAD
         VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR,
                 "PE Session does not exist for given sme sessionId %d",
                 pTdlsLinkEstablishReq->sessionId);
+=======
+        limLog(pMac, LOGE,
+               FL("PE Session does not exist for given sme sessionId %d"),
+               pTdlsLinkEstablishReq->sessionId);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         limSendSmeTdlsLinkEstablishReqRsp(pMac, pTdlsLinkEstablishReq->sessionId, pTdlsLinkEstablishReq->peerMac,
              NULL, eSIR_FAILURE) ;
         return eSIR_FAILURE;
@@ -5658,8 +6235,14 @@ tSirRetStatus limProcesSmeTdlsLinkEstablishReq(tpAniSirGlobal pMac,
             (psessionEntry->limSmeState != eLIM_SME_LINK_EST_STATE))
     {
 
+<<<<<<< HEAD
         limLog(pMac, LOGE, "TDLS Link Establish Request received in "
                "invalid LIMsme state (%d)", psessionEntry->limSmeState);
+=======
+        limLog(pMac, LOGE,
+               FL("TDLS Link Establish Request received in invalid LIMsme state (%d)"),
+               psessionEntry->limSmeState);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         goto lim_tdls_link_establish_error;
     }
     /*TODO Sunil , TDLSPeer Entry has the STA ID , Use it */
@@ -5667,15 +6250,24 @@ tSirRetStatus limProcesSmeTdlsLinkEstablishReq(tpAniSirGlobal pMac,
                                 &psessionEntry->dph.dphHashTable) ;
     if ( NULL == pStaDs )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGE, FL( "pStaDs is NULL" ));
+=======
+        limLog(pMac, LOGE, FL( "pStaDs is NULL"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         goto lim_tdls_link_establish_error;
 
     }
     pMsgTdlsLinkEstablishReq = vos_mem_malloc(sizeof( tTdlsLinkEstablishParams ));
     if ( NULL == pMsgTdlsLinkEstablishReq )
     {
+<<<<<<< HEAD
         limLog( pMac, LOGE,
                      FL( "Unable to allocate memory TDLS Link Establish Request" ));
+=======
+        limLog(pMac, LOGE,
+               FL("Unable to allocate memory TDLS Link Establish Request"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_MEM_ALLOC_FAILED;
     }
 
@@ -5709,7 +6301,11 @@ tSirRetStatus limProcesSmeTdlsLinkEstablishReq(tpAniSirGlobal pMac,
              * Could not get Valid channel list from CFG.
              * Log error.
              */
+<<<<<<< HEAD
              limLog(pMac, LOGP,
+=======
+             limLog(pMac, LOGE,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                     FL("could not retrieve Valid channel list"));
         }
         limTdlsGetIntersection(selfSupportedChannels, selfNumChans,
@@ -5749,7 +6345,11 @@ tSirRetStatus limDeleteTDLSPeers(tpAniSirGlobal pMac, tpPESession psessionEntry)
 
     if (NULL == psessionEntry)
     {
+<<<<<<< HEAD
         PELOGE(limLog(pMac, LOGE, FL("NULL psessionEntry"));)
+=======
+        limLog(pMac, LOGE, FL("NULL psessionEntry"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return eSIR_FAILURE;
     }
 
@@ -5765,8 +6365,13 @@ tSirRetStatus limDeleteTDLSPeers(tpAniSirGlobal pMac, tpPESession psessionEntry)
 
                 if (NULL != pStaDs)
                 {
+<<<<<<< HEAD
                     PELOGE(limLog(pMac, LOGE, FL("Deleting "MAC_ADDRESS_STR),
                            MAC_ADDR_ARRAY(pStaDs->staAddr)););
+=======
+                    limLog(pMac, LOGE, FL("Deleting "MAC_ADDRESS_STR),
+                                       MAC_ADDR_ARRAY(pStaDs->staAddr));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
                     limSendDeauthMgmtFrame(pMac, eSIR_MAC_DEAUTH_LEAVING_BSS_REASON,
                                            pStaDs->staAddr, psessionEntry, FALSE);

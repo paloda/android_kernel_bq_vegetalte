@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -40,7 +44,11 @@
  *
  */
 #include "palTypes.h"
+<<<<<<< HEAD
 #include "wniCfg.h"
+=======
+#include "wniCfgSta.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "wniApi.h"
 #include "sirCommon.h"
 #include "sirDebug.h"
@@ -1245,6 +1253,10 @@ tANI_U8 limIsTimerAllowedInPowerSaveState(tpAniSirGlobal pMac, tSirMsgQ *pMsg)
             case SIR_LIM_ASSOC_FAIL_TIMEOUT:
             case SIR_LIM_AUTH_FAIL_TIMEOUT:
             case SIR_LIM_ADDTS_RSP_TIMEOUT:
+<<<<<<< HEAD
+=======
+            case SIR_LIM_AUTH_RETRY_TIMEOUT:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                 retStatus = TRUE;
                 break;
 

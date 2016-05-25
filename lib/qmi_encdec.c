@@ -24,7 +24,14 @@
 
 #define TLV_LEN_SIZE sizeof(uint16_t)
 #define TLV_TYPE_SIZE sizeof(uint8_t)
+<<<<<<< HEAD
 #define U8_MAX 255
+=======
+
+#ifndef U8_MAX
+#define U8_MAX 255
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #ifdef CONFIG_QMI_ENCDEC_DEBUG
 

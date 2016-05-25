@@ -404,12 +404,15 @@ static int create_persistent_stats_groups(void)
 	int ret;
 	struct cpu_persistent_stats *cpu_stats;
 
+<<<<<<< HEAD
 	/* Create toplevel persistent stats kobject. */
 	ret = cpufreq_get_global_kobject();
 
 	if (ret)
 		return ret;
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	persistent_stats.persistent_stats_kobj =
 		kobject_create_and_add(persistent_stats.name,
 			cpufreq_global_kobject);
@@ -507,7 +510,10 @@ abort_reset_attr_create_failed:
 abort_enable_attr_create_failed:
 	kobject_put(persistent_stats.persistent_stats_kobj);
 abort_stats_kobj_create_failed:
+<<<<<<< HEAD
 	cpufreq_put_global_kobject();
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return ret;
 }
 
@@ -531,7 +537,10 @@ static void remove_persistent_stats_groups(void)
 
 	/* Remove the root persistent stats kobject. */
 	kobject_put(persistent_stats.persistent_stats_kobj);
+<<<<<<< HEAD
 	cpufreq_put_global_kobject();
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static struct notifier_block cpufreq_stat_cpu_notifier __refdata = {

@@ -2624,7 +2624,11 @@ struct wiphy_vendor_command {
 	struct nl80211_vendor_cmd_info info;
 	u32 flags;
 	int (*doit)(struct wiphy *wiphy, struct wireless_dev *wdev,
+<<<<<<< HEAD
 		    void *data, int data_len);
+=======
+		    const void *data, int data_len);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 /**

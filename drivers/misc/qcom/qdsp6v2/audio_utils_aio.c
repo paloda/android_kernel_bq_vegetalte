@@ -755,7 +755,13 @@ static long audio_aio_process_event_req_common(struct q6audio_aio *audio,
 	if (audio->eos_rsp && !list_empty(&audio->in_queue)) {
 		pr_debug("%s[%p]:Send flush command to release read buffers"\
 			" held up in DSP\n", __func__, audio);
+<<<<<<< HEAD
 		audio_aio_flush(audio);
+=======
+		mutex_lock(&audio->lock);
+		audio_aio_flush(audio);
+		mutex_unlock(&audio->lock);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	return rc;
@@ -1939,7 +1945,11 @@ static long audio_aio_compat_ioctl(struct file *file, unsigned int cmd,
 		struct msm_audio_buf_cfg cfg;
 		struct msm_audio_buf_cfg32 cfg_32;
 		mutex_lock(&audio->lock);
+<<<<<<< HEAD
 		if (copy_from_user(&cfg, (void *)arg, sizeof(cfg))) {
+=======
+		if (copy_from_user(&cfg_32, (void *)arg, sizeof(cfg_32))) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			pr_err("%s: copy_from_user for AUDIO_SET_CONFIG_32 failed\n",
 				__func__);
 			rc = -EFAULT;

@@ -55,6 +55,15 @@
  */
 void ptrace_disable(struct task_struct *child)
 {
+<<<<<<< HEAD
+=======
+	/*
+	 * This would be better off in core code, but PTRACE_DETACH has
+	 * grown its fair share of arch-specific worts and changing it
+	 * is likely to cause regressions on obscure architectures.
+	 */
+	user_disable_single_step(child);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 #ifdef CONFIG_HAVE_HW_BREAKPOINT

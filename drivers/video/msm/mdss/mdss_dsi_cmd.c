@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -653,7 +657,10 @@ struct dcs_cmd_req *mdss_dsi_cmdlist_get(struct mdss_dsi_ctrl_pdata *ctrl)
 	struct dcs_cmd_list *clist;
 	struct dcs_cmd_req *req = NULL;
 
+<<<<<<< HEAD
 	mutex_lock(&ctrl->cmdlist_mutex);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	clist = &ctrl->cmdlist;
 	if (clist->get != clist->put) {
 		req = &clist->list[clist->get];
@@ -663,7 +670,10 @@ struct dcs_cmd_req *mdss_dsi_cmdlist_get(struct mdss_dsi_ctrl_pdata *ctrl)
 		pr_debug("%s: tot=%d put=%d get=%d\n", __func__,
 		clist->tot, clist->put, clist->get);
 	}
+<<<<<<< HEAD
 	mutex_unlock(&ctrl->cmdlist_mutex);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return req;
 }
 
@@ -675,7 +685,10 @@ int mdss_dsi_cmdlist_put(struct mdss_dsi_ctrl_pdata *ctrl,
 	int ret = 0;
 
 	mutex_lock(&ctrl->cmd_mutex);
+<<<<<<< HEAD
 	mutex_lock(&ctrl->cmdlist_mutex);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	clist = &ctrl->cmdlist;
 	req = &clist->list[clist->put];
 	*req = *cmdreq;
@@ -694,8 +707,11 @@ int mdss_dsi_cmdlist_put(struct mdss_dsi_ctrl_pdata *ctrl,
 	pr_debug("%s: tot=%d put=%d get=%d\n", __func__,
 		clist->tot, clist->put, clist->get);
 
+<<<<<<< HEAD
 	mutex_unlock(&ctrl->cmdlist_mutex);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (req->flags & CMD_REQ_COMMIT) {
 		if (!ctrl->cmdlist_commit)
 			pr_err("cmdlist_commit not implemented!\n");

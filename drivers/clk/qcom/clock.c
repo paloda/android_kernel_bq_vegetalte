@@ -26,6 +26,10 @@
 #include <linux/mutex.h>
 #include <linux/of.h>
 #include <linux/clk/msm-clk-provider.h>
+<<<<<<< HEAD
+=======
+#include <linux/string.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <trace/events/power.h>
 #include "clock.h"
 
@@ -961,6 +965,14 @@ static int __init clock_late_init(void)
 	}
 
 	list_for_each_entry_safe(h, h_temp, &handoff_list, list) {
+<<<<<<< HEAD
+=======
+		pr_crit("%s: clk %s\n", __func__, h->clk->dbg_name);
+		if (strcmp("a53ss_cci_pll",h->clk->dbg_name)==0) {
+			pr_crit("skipping...\n");
+			continue;
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		clk_disable_unprepare(h->clk);
 		list_del(&h->list);
 		kfree(h);

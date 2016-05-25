@@ -1,7 +1,11 @@
 /*
  * f_qdss.c -- QDSS function Driver
  *
+<<<<<<< HEAD
  * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,11 +28,21 @@
 #include "u_qdss.c"
 #include "usb_gadget_xport.h"
 #include "u_data_ipa.h"
+<<<<<<< HEAD
 
 static unsigned int nr_qdss_ports;
 static unsigned int no_data_bam_ports;
 static unsigned int data_hsic_ports_no;
 static unsigned int no_ipa_ports;
+=======
+#include "u_rmnet.h"
+
+static unsigned int nr_qdss_ports;
+static unsigned int no_qdss_data_bam_ports;
+static unsigned int data_hsic_ports_no;
+static unsigned int no_ipa_ports;
+static unsigned int no_bam_dmux_ports;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static struct qdss_ports {
 	enum transport_type		data_xport;
@@ -38,6 +52,10 @@ static struct qdss_ports {
 	unsigned	char		port_num;
 	struct f_qdss			*port;
 	struct gadget_ipa_port		ipa_port;
+<<<<<<< HEAD
+=======
+	struct grmnet			bam_dmux_port;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 } qdss_ports[NR_QDSS_PORTS];
 
 
@@ -507,6 +525,10 @@ static void usb_qdss_disconnect_work(struct work_struct *work)
 	if (qdss->port_num >= nr_qdss_ports) {
 		pr_err("%s: supporting ports#%u port_id:%u", __func__,
 				nr_qdss_ports, portno);
+<<<<<<< HEAD
+=======
+		msm_bam_set_qdss_usb_active(false);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return;
 	}
 	pr_debug("usb_qdss_disconnect_work\n");
@@ -544,6 +566,13 @@ static void usb_qdss_disconnect_work(struct work_struct *work)
 		gp = &qdss_ports[qdss->port_num].ipa_port;
 		ipa_data_disconnect(gp, qdss->port_num);
 		break;
+<<<<<<< HEAD
+=======
+	case USB_GADGET_XPORT_BAM_DMUX:
+		gbam_disconnect(&qdss_ports[qdss->port_num].bam_dmux_port,
+				portno, USB_GADGET_XPORT_BAM);
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case USB_GADGET_XPORT_HSIC:
 		pr_debug("usb_qdss_disconnect_work: HSIC transport\n");
 		ghsic_data_disconnect(&qdss->port, portno);
@@ -555,6 +584,10 @@ static void usb_qdss_disconnect_work(struct work_struct *work)
 				xport_to_str(dxport));
 	}
 
+<<<<<<< HEAD
+=======
+	msm_bam_set_qdss_usb_active(false);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static void qdss_disable(struct usb_function *f)
@@ -581,6 +614,10 @@ static void qdss_disable(struct usb_function *f)
 	qdss->usb_connected = 0;
 	switch (dxport) {
 	case USB_GADGET_XPORT_BAM2BAM_IPA:
+<<<<<<< HEAD
+=======
+	case USB_GADGET_XPORT_BAM_DMUX:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		spin_unlock_irqrestore(&qdss->lock, flags);
 		usb_qdss_disconnect_work(&qdss->disconnect_w);
 		return;
@@ -592,6 +629,10 @@ static void qdss_disable(struct usb_function *f)
 	spin_unlock_irqrestore(&qdss->lock, flags);
 	/*cancell all active xfers*/
 	qdss_eps_disable(f);
+<<<<<<< HEAD
+=======
+	msm_bam_set_qdss_usb_active(true);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	queue_work(qdss->wq, &qdss->disconnect_w);
 }
 
@@ -670,7 +711,11 @@ static void usb_qdss_connect_work(struct work_struct *work)
 
 	if (ctrl_xport == USB_GADGET_XPORT_QTI) {
 		status = gqti_ctrl_connect(&qdss->port, DPL_QTI_CTRL_PORT_NO,
+<<<<<<< HEAD
 					qdss->data_iface_id, ctrl_xport,
+=======
+					qdss->data_iface_id, dxport,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 					USB_GADGET_DPL);
 		if (status) {
 			pr_err("%s: gqti_ctrl_connect failed: err:%d\n",
@@ -715,6 +760,19 @@ static void usb_qdss_connect_work(struct work_struct *work)
 		}
 		qdss->data_enabled = 1;
 		break;
+<<<<<<< HEAD
+=======
+	case USB_GADGET_XPORT_BAM_DMUX:
+		qdss_ports[qdss->port_num].bam_dmux_port.gadget =
+						qdss->cdev->gadget;
+		qdss_ports[qdss->port_num].bam_dmux_port.in =
+						qdss->port.data;
+		status = gbam_connect(&qdss_ports[qdss->port_num].bam_dmux_port,
+				port_num, USB_GADGET_XPORT_BAM, 0, 0);
+		if (status)
+			pr_err("BAM_DMUX connect failed with %d\n", status);
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case USB_GADGET_XPORT_HSIC:
 		pr_debug("usb_qdss_connect_work: HSIC transport\n");
 		status = ghsic_data_connect(&qdss->port, port_num);
@@ -762,7 +820,12 @@ static int qdss_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 		if (config_ep_by_speed(gadget, f, qdss->port.data))
 			return -EINVAL;
 
+<<<<<<< HEAD
 		if (dxport == USB_GADGET_XPORT_BAM2BAM_IPA) {
+=======
+		if (dxport == USB_GADGET_XPORT_BAM2BAM_IPA ||
+				dxport == USB_GADGET_XPORT_BAM_DMUX) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			qdss->usb_connected = 1;
 			usb_qdss_connect_work(&qdss->connect_w);
 			return 0;
@@ -814,9 +877,16 @@ static int qdss_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 		}
 	}
 	if (qdss->usb_connected && (ch->app_conn ||
+<<<<<<< HEAD
 		(dxport == USB_GADGET_XPORT_HSIC)))
 		queue_work(qdss->wq, &qdss->connect_w);
 	msm_bam_set_qdss_usb_active(true);
+=======
+		(dxport == USB_GADGET_XPORT_HSIC))) {
+		msm_bam_set_qdss_usb_active(true);
+		queue_work(qdss->wq, &qdss->connect_w);
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 fail:
 	pr_err("qdss_set_alt failed\n");
@@ -1147,6 +1217,12 @@ static int qdss_init_port(const char *ctrl_name, const char *data_name,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	pr_debug("ctrl name = %s data_name %s port_name %s\n",
+			ctrl_name, data_name, port_name);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("%s: port#:%d, data port: %s\n",
 		__func__, nr_qdss_ports, data_name);
 
@@ -1180,9 +1256,15 @@ static int qdss_init_port(const char *ctrl_name, const char *data_name,
 
 	switch (qdss_port->data_xport) {
 	case USB_GADGET_XPORT_BAM:
+<<<<<<< HEAD
 		qdss_port->data_xport_num = no_data_bam_ports;
 		no_data_bam_ports++;
 		pr_debug("USB_GADGET_XPORT_BAM %d\n", no_data_bam_ports);
+=======
+		qdss_port->data_xport_num = no_qdss_data_bam_ports;
+		no_qdss_data_bam_ports++;
+		pr_debug("USB_GADGET_XPORT_BAM %d\n", no_qdss_data_bam_ports);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	case USB_GADGET_XPORT_BAM2BAM_IPA:
 		qdss_port->data_xport_num = no_ipa_ports;
@@ -1195,6 +1277,14 @@ static int qdss_init_port(const char *ctrl_name, const char *data_name,
 		qdss_port->data_xport_num = data_hsic_ports_no;
 		data_hsic_ports_no++;
 		break;
+<<<<<<< HEAD
+=======
+	case USB_GADGET_XPORT_BAM_DMUX:
+		qdss_port->data_xport_num = no_bam_dmux_ports;
+		no_bam_dmux_ports++;
+		pr_debug("USB_GADGET_XPORT_BAM_DMUX %u\n", no_bam_dmux_ports);
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case USB_GADGET_XPORT_NONE:
 		break;
 	default:
@@ -1211,9 +1301,16 @@ fail_probe:
 		kfree(qdss_ports[i].port);
 
 	nr_qdss_ports = 0;
+<<<<<<< HEAD
 	no_data_bam_ports = 0;
 	data_hsic_ports_no = 0;
 	no_ipa_ports = 0;
+=======
+	no_qdss_data_bam_ports = 0;
+	data_hsic_ports_no = 0;
+	no_ipa_ports = 0;
+	no_bam_dmux_ports = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return ret;
 }
 
@@ -1222,9 +1319,15 @@ static int qdss_gport_setup(void)
 	int	port_idx;
 	int	i;
 
+<<<<<<< HEAD
 	pr_debug("%s: bam ports: %u data hsic ports: %u nr_qdss_ports: %u ipa_ports:%u\n",
 			__func__, no_data_bam_ports, data_hsic_ports_no,
 			nr_qdss_ports, no_ipa_ports);
+=======
+	pr_debug("%s: bam ports: %u data hsic ports: %u ipa_ports:%u bam_dmux_port:%u nr_qdss_ports:%u\n",
+			__func__, no_qdss_data_bam_ports, data_hsic_ports_no,
+			no_ipa_ports, no_bam_dmux_ports, nr_qdss_ports);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (data_hsic_ports_no) {
 		pr_debug("%s: go to setup hsic data\n", __func__);
@@ -1263,5 +1366,27 @@ static int qdss_gport_setup(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (no_bam_dmux_ports) {
+		port_idx = gbam_setup(no_bam_dmux_ports);
+		if (port_idx < 0) {
+			pr_err("%s(): gbam_setup failed with %d\n",
+					__func__, port_idx);
+			return port_idx;
+		}
+
+		for (i = 0; i < no_bam_dmux_ports; i++) {
+			if (qdss_ports[i].data_xport ==
+					USB_GADGET_XPORT_BAM_DMUX) {
+				qdss_ports[i].data_xport_num = port_idx;
+				pr_debug("%s: BAM-DMUX data_xport_num = %d\n",
+					__func__, qdss_ports[i].data_xport_num);
+				port_idx++;
+			}
+		}
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }

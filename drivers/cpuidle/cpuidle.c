@@ -173,6 +173,7 @@ void cpuidle_install_idle_handler(void)
 		/* Make sure all changes finished before we switch to new idle */
 		smp_wmb();
 		initialized = 1;
+		kick_all_cpus_sync();
 	}
 }
 
@@ -234,8 +235,11 @@ static int poll_idle(struct cpuidle_device *dev,
 
 	t1 = ktime_get();
 	local_irq_enable();
-	while (!need_resched())
-		cpu_relax();
+	if (!current_set_polling_and_test()) {
+		while (!need_resched())
+			cpu_relax();
+	}
+	current_clr_polling();
 
 	t2 = ktime_get();
 	diff = ktime_to_us(ktime_sub(t2, t1));

@@ -626,6 +626,7 @@ __bfq_entity_update_weight_prio(struct bfq_service_tree *old_st,
 		old_st->wsum -= entity->weight;
 
 		if (entity->new_weight != entity->orig_weight) {
+<<<<<<< HEAD
 			if (entity->new_weight < BFQ_MIN_WEIGHT ||
 			    entity->new_weight > BFQ_MAX_WEIGHT) {
 				printk(KERN_CRIT "update_weight_prio: "
@@ -637,6 +638,18 @@ __bfq_entity_update_weight_prio(struct bfq_service_tree *old_st,
 			entity->ioprio =
 				bfq_weight_to_ioprio(entity->orig_weight);
 		}
+=======
+			entity->orig_weight = entity->new_weight;
+			entity->ioprio =
+				bfq_weight_to_ioprio(entity->orig_weight);
+		} else if (entity->new_ioprio != entity->ioprio) {
+			entity->ioprio = entity->new_ioprio;
+			entity->orig_weight =
+					bfq_ioprio_to_weight(entity->ioprio);
+		} else
+			entity->new_weight = entity->orig_weight =
+				bfq_ioprio_to_weight(entity->ioprio);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		entity->ioprio_class = entity->new_ioprio_class;
 		entity->ioprio_changed = 0;

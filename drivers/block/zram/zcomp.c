@@ -74,6 +74,7 @@ static void zcomp_strm_free(struct zcomp *comp, struct zcomp_strm *zstrm)
  * allocate new zcomp_strm structure with ->private initialized by
  * backend, return NULL on error
  */
+<<<<<<< HEAD
 static struct zcomp_strm *zcomp_strm_alloc(struct zcomp *comp, gfp_t flags)
 {
 	struct zcomp_strm *zstrm = kmalloc(sizeof(*zstrm), flags);
@@ -81,11 +82,24 @@ static struct zcomp_strm *zcomp_strm_alloc(struct zcomp *comp, gfp_t flags)
 		return NULL;
 
 	zstrm->private = comp->backend->create(flags);
+=======
+static struct zcomp_strm *zcomp_strm_alloc(struct zcomp *comp)
+{
+	struct zcomp_strm *zstrm = kmalloc(sizeof(*zstrm), GFP_KERNEL);
+	if (!zstrm)
+		return NULL;
+
+	zstrm->private = comp->backend->create();
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/*
 	 * allocate 2 pages. 1 for compressed data, plus 1 extra for the
 	 * case when compressed size is larger than the original one
 	 */
+<<<<<<< HEAD
 	zstrm->buffer = (void *)__get_free_pages(flags | __GFP_ZERO, 1);
+=======
+	zstrm->buffer = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!zstrm->private || !zstrm->buffer) {
 		zcomp_strm_free(comp, zstrm);
 		zstrm = NULL;
@@ -120,6 +134,7 @@ static struct zcomp_strm *zcomp_strm_multi_find(struct zcomp *comp)
 		/* allocate new zstrm stream */
 		zs->avail_strm++;
 		spin_unlock(&zs->strm_lock);
+<<<<<<< HEAD
 		/*
 		 * This function can be called in swapout/fs write path
 		 * so we can't use GFP_FS|IO. And it assumes we already
@@ -130,6 +145,10 @@ static struct zcomp_strm *zcomp_strm_multi_find(struct zcomp *comp)
 		 */
 		zstrm = zcomp_strm_alloc(comp, GFP_NOIO | __GFP_NORETRY |
 					__GFP_NOWARN);
+=======
+
+		zstrm = zcomp_strm_alloc(comp);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (!zstrm) {
 			spin_lock(&zs->strm_lock);
 			zs->avail_strm--;
@@ -217,7 +236,11 @@ static int zcomp_strm_multi_create(struct zcomp *comp, int max_strm)
 	zs->max_strm = max_strm;
 	zs->avail_strm = 1;
 
+<<<<<<< HEAD
 	zstrm = zcomp_strm_alloc(comp, GFP_KERNEL);
+=======
+	zstrm = zcomp_strm_alloc(comp);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!zstrm) {
 		kfree(zs);
 		return -ENOMEM;
@@ -267,7 +290,11 @@ static int zcomp_strm_single_create(struct zcomp *comp)
 
 	comp->stream = zs;
 	mutex_init(&zs->strm_lock);
+<<<<<<< HEAD
 	zs->zstrm = zcomp_strm_alloc(comp, GFP_KERNEL);
+=======
+	zs->zstrm = zcomp_strm_alloc(comp);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!zs->zstrm) {
 		kfree(zs);
 		return -ENOMEM;

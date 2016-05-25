@@ -3979,7 +3979,11 @@ static struct ahash_alg _qcrypto_ahash_algos[] = {
 			.base		= {
 				.cra_name	 = "sha256",
 				.cra_driver_name = "qcrypto-sha256",
+<<<<<<< HEAD
 				.cra_priority	 = 300,
+=======
+				.cra_priority	 = 110,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				.cra_flags	 = CRYPTO_ALG_TYPE_AHASH |
 							CRYPTO_ALG_ASYNC,
 				.cra_blocksize	 = SHA256_BLOCK_SIZE,

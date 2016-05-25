@@ -791,6 +791,10 @@ int sps_bam_pipe_connect(struct sps_pipe *bam_pipe,
 	void *desc_buf = NULL;
 	u32 pipe_index;
 	int result;
+<<<<<<< HEAD
+=======
+	unsigned long flags = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/* Clear the client pipe state and hw init struct */
 	pipe_clear(bam_pipe);
@@ -983,11 +987,20 @@ int sps_bam_pipe_connect(struct sps_pipe *bam_pipe,
 	}
 
 	/* Indicate initialization is complete */
+<<<<<<< HEAD
 	dev->pipes[pipe_index] = bam_pipe;
 	dev->pipe_active_mask |= 1UL << pipe_index;
 	list_add_tail(&bam_pipe->list, &dev->pipes_q);
 
 	bam_pipe->state |= BAM_STATE_INIT;
+=======
+	spin_lock_irqsave(&dev->isr_lock, flags);
+	dev->pipes[pipe_index] = bam_pipe;
+	dev->pipe_active_mask |= 1UL << pipe_index;
+	list_add_tail(&bam_pipe->list, &dev->pipes_q);
+	bam_pipe->state |= BAM_STATE_INIT;
+	spin_unlock_irqrestore(&dev->isr_lock, flags);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	result = 0;
 exit_err:
 	if (result) {
@@ -1025,8 +1038,16 @@ int sps_bam_pipe_disconnect(struct sps_bam *dev, u32 pipe_index)
 	pipe = dev->pipes[pipe_index];
 	if (BAM_PIPE_IS_ASSIGNED(pipe)) {
 		if ((dev->pipe_active_mask & (1UL << pipe_index))) {
+<<<<<<< HEAD
 			list_del(&pipe->list);
 			dev->pipe_active_mask &= ~(1UL << pipe_index);
+=======
+			unsigned long flags = 0;
+			spin_lock_irqsave(&dev->isr_lock, flags);
+			list_del(&pipe->list);
+			dev->pipe_active_mask &= ~(1UL << pipe_index);
+			spin_unlock_irqrestore(&dev->isr_lock, flags);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		}
 		dev->pipe_remote_mask &= ~(1UL << pipe_index);
 		if (pipe->connect.options & SPS_O_NO_DISABLE)
@@ -1448,8 +1469,13 @@ int sps_bam_pipe_transfer(struct sps_bam *dev,
 			 u32 pipe_index, struct sps_transfer *transfer)
 {
 	struct sps_iovec *iovec;
+<<<<<<< HEAD
 	u32 count;
 	u32 flags;
+=======
+	u32 count = 0;
+	u32 flags = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	void *user;
 	int n;
 	int result;
@@ -2112,6 +2138,10 @@ int sps_bam_get_free_count(struct sps_bam *dev, u32 pipe_index,
 int sps_bam_set_satellite(struct sps_bam *dev, u32 pipe_index)
 {
 	struct sps_pipe *pipe = dev->pipes[pipe_index];
+<<<<<<< HEAD
+=======
+	unsigned long flags = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/*
 	 * Switch to satellite control is only supported on processor
@@ -2153,10 +2183,18 @@ int sps_bam_set_satellite(struct sps_bam *dev, u32 pipe_index)
 	}
 
 	/* Indicate satellite control */
+<<<<<<< HEAD
+=======
+	spin_lock_irqsave(&dev->isr_lock, flags);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	list_del(&pipe->list);
 	dev->pipe_active_mask &= ~(1UL << pipe_index);
 	dev->pipe_remote_mask |= pipe->pipe_index_mask;
 	pipe->state |= BAM_STATE_REMOTE;
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&dev->isr_lock, flags);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return 0;
 }

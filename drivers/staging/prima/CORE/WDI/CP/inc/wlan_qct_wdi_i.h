@@ -465,6 +465,14 @@ typedef enum
 
   WDI_SPOOF_MAC_ADDR_REQ                         = 101,
 
+<<<<<<< HEAD
+=======
+  WDI_GET_FW_STATS_REQ                           = 102,
+
+  /* Send command to encrypt the given message */
+  WDI_ENCRYPT_MSG_REQ                            = 103,
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
   WDI_MAX_REQ,
 
   /*Send a suspend Indication down to HAL*/
@@ -503,7 +511,10 @@ typedef enum
   /* csa channel switch req*/
   WDI_CH_SWITCH_REQ_V1,
   WDI_TDLS_CHAN_SWITCH_REQ,
+<<<<<<< HEAD
   WDI_SET_RTS_CTS_HTVHT_IND,
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
   /*Keep adding the indications to the max request
     such that we keep them sepparate */
@@ -791,6 +802,13 @@ typedef enum
   WDI_EXTSCAN_RESET_SIGNF_RSSI_CHANGE_RSP        = 100,
 #endif
   WDI_SPOOF_MAC_ADDR_RSP                         = 101,
+<<<<<<< HEAD
+=======
+  WDI_GET_FW_STATS_RSP                           = 102,
+
+  /* Send command to encrypt the given message */
+  WDI_ENCRYPT_MSG_RSP                            = 103,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
   /*-------------------------------------------------------------------------
     Indications
      !! Keep these last in the enum if possible
@@ -5826,6 +5844,23 @@ WDI_ProcessBatchScanResultInd
 
 #endif /* FEATURE_WLAN_BATCH_SCAN */
 
+<<<<<<< HEAD
+=======
+WDI_Status
+WDI_ProcessGetFwStatsReq
+(
+  WDI_ControlBlockType*  pWDICtx,
+  WDI_EventInfoType*     pEventData
+);
+
+WDI_Status
+WDI_ProcessGetFwStatsRsp
+(
+  WDI_ControlBlockType*  pWDICtx,
+  WDI_EventInfoType*     pEventData
+);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef FEATURE_WLAN_CH_AVOID
 /**
  @brief v -
@@ -6078,6 +6113,7 @@ WDI_ProcessSpoofMacAddrRsp
   WDI_EventInfoType*     pEventData
 );
 
+<<<<<<< HEAD
 /**
  @brief WDI_ProcessSetRtsCtsHtvhtInd
         Set RTS/CTS indication for diff modes.
@@ -6091,10 +6127,23 @@ WDI_ProcessSpoofMacAddrRsp
 
 WDI_Status
 WDI_ProcessSetRtsCtsHtvhtInd
+=======
+WDI_Status
+WDI_ProcessEncryptMsgReq
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 (
   WDI_ControlBlockType*  pWDICtx,
   WDI_EventInfoType*     pEventData
 );
 
+<<<<<<< HEAD
+=======
+WDI_Status
+WDI_ProcessEncryptMsgRsp
+(
+  WDI_ControlBlockType*  pWDICtx,
+  WDI_EventInfoType*     pEventData
+);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif /*WLAN_QCT_WDI_I_H*/
 

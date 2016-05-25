@@ -92,6 +92,10 @@ const v_U8_t hdd_QdiscAcToTlAC[] = {
 #define HDD_TX_TIMEOUT_RATELIMIT_INTERVAL 20*HZ
 #define HDD_TX_TIMEOUT_RATELIMIT_BURST    1
 #define HDD_TX_STALL_SSR_THRESHOLD        5
+<<<<<<< HEAD
+=======
+#define HDD_TX_STALL_SSR_THRESHOLD_HIGH   13
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define HDD_TX_STALL_RECOVERY_THRESHOLD HDD_TX_STALL_SSR_THRESHOLD - 2
 
 static DEFINE_RATELIMIT_STATE(hdd_tx_timeout_rs,                 \
@@ -382,6 +386,11 @@ void hdd_mon_tx_mgmt_pkt(hdd_adapter_t* pAdapter)
    struct sk_buff* skb;
    hdd_adapter_t* pMonAdapter = NULL;
    struct ieee80211_hdr *hdr;
+<<<<<<< HEAD
+=======
+   hdd_context_t *pHddCtx;
+   int ret = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
    if (pAdapter == NULL)
    {
@@ -390,7 +399,18 @@ void hdd_mon_tx_mgmt_pkt(hdd_adapter_t* pAdapter)
       VOS_ASSERT(0);
       return;
    }
+<<<<<<< HEAD
 
+=======
+   pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
+   ret = wlan_hdd_validate_context(pHddCtx);
+   if (0 != ret)
+   {
+       VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+                 "%s: HDD context is not valid, ret =%d",__func__, ret);
+       return;
+   }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    pMonAdapter = hdd_get_adapter( pAdapter->pHddCtx, WLAN_HDD_MONITOR );
    if (pMonAdapter == NULL)
    {
@@ -476,12 +496,26 @@ fail:
    return;
 }
 
+<<<<<<< HEAD
 void hdd_mon_tx_work_queue(struct work_struct *work)
+=======
+void __hdd_mon_tx_work_queue(struct work_struct *work)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
    hdd_adapter_t* pAdapter = container_of(work, hdd_adapter_t, monTxWorkQueue);
    hdd_mon_tx_mgmt_pkt(pAdapter);
 }
 
+<<<<<<< HEAD
+=======
+void hdd_mon_tx_work_queue(struct work_struct *work)
+{
+   vos_ssr_protect(__func__);
+   __hdd_mon_tx_work_queue(work);
+   vos_ssr_unprotect(__func__);
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 int hdd_mon_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
    v_U16_t rt_hdr_len;
@@ -822,6 +856,20 @@ int hdd_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
    }
    else
    {
+<<<<<<< HEAD
+=======
+      if (eConnectionState_Associated != pHddStaCtx->conn_info.connState)
+      {
+         VOS_TRACE( VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_INFO,
+                FL("Tx frame in not associated state in %d context"),
+                    pAdapter->device_mode);
+         ++pAdapter->stats.tx_dropped;
+         ++pAdapter->hdd_stats.hddTxRxStats.txXmitDropped;
+         ++pAdapter->hdd_stats.hddTxRxStats.txXmitDroppedAC[qid];
+         kfree_skb(skb);
+         return NETDEV_TX_OK;
+      }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
       STAId = pHddStaCtx->conn_info.staId[0];
    }
 
@@ -847,8 +895,21 @@ int hdd_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 #endif
 
    spin_lock(&pAdapter->wmm_tx_queue[qid].lock);
+<<<<<<< HEAD
    if (WLAN_HDD_IBSS == pAdapter->device_mode)
    {
+=======
+   /*CR 463598,384996*/
+   /*For every increment of 10 pkts in the queue, we inform TL about pending pkts.
+    *We check for +1 in the logic,to take care of Zero count which
+    *occurs very frequently in low traffic cases */
+   if((pAdapter->wmm_tx_queue[qid].count + 1) % 10 == 0)
+   {
+      /* Use the following debug statement during Engineering Debugging.There are chance that this will lead to a Watchdog Bark
+            * if it is in the mainline code and if the log level is enabled by someone for debugging
+           VOS_TRACE( VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_INFO,"%s:Queue is Filling up.Inform TL again about pending packets", __func__);*/
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
       status = WLANTL_STAPktPending( (WLAN_HDD_GET_CTX(pAdapter))->pvosContext,
                                     STAId, qid
                                     );
@@ -865,6 +926,7 @@ int hdd_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
          return NETDEV_TX_OK;
       }
    }
+<<<<<<< HEAD
    else
    {
      //If we have already reached the max queue size, disable the TX queue
@@ -896,6 +958,8 @@ int hdd_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
         }
      }
    }
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    //If we have already reached the max queue size, disable the TX queue
    if ( pAdapter->wmm_tx_queue[qid].count == pAdapter->wmm_tx_queue[qid].max_size)
    {
@@ -905,7 +969,11 @@ int hdd_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
          pAdapter->isTxSuspended[qid] = VOS_TRUE;
          txSuspended = VOS_TRUE;
          MTRACE(vos_trace(VOS_MODULE_ID_HDD, TRACE_CODE_HDD_STOP_NETDEV,
+<<<<<<< HEAD
                           pAdapter->sessionId, ac));
+=======
+                          pAdapter->sessionId, qid));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    }
 
    /* If 3/4th of the max queue size is used then enable the flag.
@@ -1065,7 +1133,13 @@ VOS_STATUS hdd_Ibss_GetStaId(hdd_station_ctx_t *pHddStaCtx, v_MACADDR_t *pMacAdd
 void __hdd_tx_timeout(struct net_device *dev)
 {
    hdd_adapter_t *pAdapter =  WLAN_HDD_GET_PRIV_PTR(dev);
+<<<<<<< HEAD
    struct netdev_queue *txq;
+=======
+   hdd_context_t *pHddCtx;
+   struct netdev_queue *txq;
+   hdd_remain_on_chan_ctx_t *pRemainChanCtx;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    int i = 0;
    v_ULONG_t diff_in_jiffies = 0;
 
@@ -1080,6 +1154,18 @@ void __hdd_tx_timeout(struct net_device *dev)
       return;
    }
 
+<<<<<<< HEAD
+=======
+   pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
+   if (NULL == pHddCtx)
+   {
+      VOS_TRACE( VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_ERROR,
+              FL("HDD context is NULL"));
+      VOS_ASSERT(0);
+      return;
+   }
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    ++pAdapter->hdd_stats.hddTxRxStats.txTimeoutCount;
 
    //Getting here implies we disabled the TX queues for too long. Queues are 
@@ -1101,7 +1187,11 @@ void __hdd_tx_timeout(struct net_device *dev)
               pAdapter->isTxSuspended[2],
               pAdapter->isTxSuspended[3]);
 
+<<<<<<< HEAD
    for (i = 0; i < 8; i++)
+=======
+   for (i = 0; i < dev->num_tx_queues; i++)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    {
       txq = netdev_get_tx_queue(dev, i);
       VOS_TRACE( VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_ERROR,
@@ -1147,6 +1237,7 @@ void __hdd_tx_timeout(struct net_device *dev)
       WLANTL_TLDebugMessage(WLANTL_DEBUG_FW_CLEANUP);
    }
 
+<<<<<<< HEAD
    if (pAdapter->hdd_stats.hddTxRxStats.continuousTxTimeoutCount >
        HDD_TX_STALL_SSR_THRESHOLD)
    {
@@ -1156,6 +1247,43 @@ void __hdd_tx_timeout(struct net_device *dev)
                    __func__);
        WLANTL_FatalError();
        return;
+=======
+   pRemainChanCtx = hdd_get_remain_on_channel_ctx(pHddCtx);
+   if (!pRemainChanCtx)
+   {
+      if (pAdapter->hdd_stats.hddTxRxStats.continuousTxTimeoutCount >
+          HDD_TX_STALL_SSR_THRESHOLD)
+      {
+          // Driver could not recover, issue SSR
+          VOS_TRACE(VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_ERROR,
+                    "%s: Cannot recover from Data stall Issue SSR",
+                      __func__);
+          WLANTL_FatalError();
+          return;
+      }
+   }
+   else
+   {
+      VOS_TRACE(VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_ERROR,
+                "Remain on channel in progress");
+      /* The supplicant can retry "P2P Invitation Request" for 120 times
+       * and so there is a possbility that we can remain off channel for
+       * the entire duration of these retries(which can be max 60sec).
+       * If we encounter such a case, let us not trigger SSR after 30sec
+       * but wait for 60sec to let the device go on home channel and start
+       * tx. If tx does not start within 70sec we will issue SSR.
+       */
+      if (pAdapter->hdd_stats.hddTxRxStats.continuousTxTimeoutCount >
+          HDD_TX_STALL_SSR_THRESHOLD_HIGH)
+      {
+          // Driver could not recover, issue SSR
+          VOS_TRACE(VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_ERROR,
+                    "%s: Cannot recover from Data stall Issue SSR",
+                      __func__);
+          WLANTL_FatalError();
+          return;
+      }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    }
 
    /* If Tx stalled for a long time then *hdd_tx_timeout* is called
@@ -1188,14 +1316,22 @@ void hdd_tx_timeout(struct net_device *dev)
 }
 
 /**============================================================================
+<<<<<<< HEAD
   @brief hdd_stats() - Function registered with the Linux OS for 
+=======
+  @brief __hdd_stats() - Function registered with the Linux OS for
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
   device TX/RX statistic
 
   @param dev      : [in] pointer to Libra network device
   
   @return         : pointer to net_device_stats structure
   ===========================================================================*/
+<<<<<<< HEAD
 struct net_device_stats* hdd_stats(struct net_device *dev)
+=======
+struct net_device_stats* __hdd_stats(struct net_device *dev)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
    hdd_adapter_t *pAdapter =  WLAN_HDD_GET_PRIV_PTR(dev);
 
@@ -1210,6 +1346,19 @@ struct net_device_stats* hdd_stats(struct net_device *dev)
    return &pAdapter->stats;
 }
 
+<<<<<<< HEAD
+=======
+struct net_device_stats* hdd_stats(struct net_device *dev)
+{
+    struct net_device_stats* dev_stats;
+
+    vos_ssr_protect(__func__);
+    dev_stats = __hdd_stats(dev);
+    vos_ssr_unprotect(__func__);
+
+    return dev_stats;
+}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /**============================================================================
   @brief hdd_init_tx_rx() - Init function to initialize Tx/RX
@@ -1699,7 +1848,11 @@ VOS_STATUS hdd_tx_fetch_packet_cbk( v_VOID_t *vosContext,
    
    if(pAdapter->sessionCtx.station.conn_info.uIsAuthenticated == VOS_TRUE)
       pPktMetaInfo->ucIsEapol = 0;       
+<<<<<<< HEAD
    else 
+=======
+   else
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
       pPktMetaInfo->ucIsEapol = hdd_IsEAPOLPacket( pVosPacket ) ? 1 : 0;
 
    if (pHddCtx->cfg_ini->gEnableDebugLog)
@@ -1708,7 +1861,11 @@ VOS_STATUS hdd_tx_fetch_packet_cbk( v_VOID_t *vosContext,
                                           pHddCtx->cfg_ini->gEnableDebugLog);
       if (VOS_PKT_PROTO_TYPE_EAPOL & proto_type)
       {
+<<<<<<< HEAD
          VOS_TRACE(VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_INFO,
+=======
+         VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                    "STA TX EAPOL");
       }
       else if (VOS_PKT_PROTO_TYPE_DHCP & proto_type)
@@ -2063,7 +2220,11 @@ VOS_STATUS hdd_rx_packet_cbk( v_VOID_t *vosContext,
                                              pHddCtx->cfg_ini->gEnableDebugLog);
          if (VOS_PKT_PROTO_TYPE_EAPOL & proto_type)
          {
+<<<<<<< HEAD
             VOS_TRACE(VOS_MODULE_ID_HDD_DATA, VOS_TRACE_LEVEL_INFO,
+=======
+            VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                       "STA RX EAPOL");
          }
          else if (VOS_PKT_PROTO_TYPE_DHCP & proto_type)

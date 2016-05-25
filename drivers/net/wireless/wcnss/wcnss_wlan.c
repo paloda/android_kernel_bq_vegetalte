@@ -1833,7 +1833,11 @@ static void wcnss_notify_vbat(enum qpnp_tm_state state, void *ctx)
 			ADC_TM_LOW_THR_ENABLE;
 		penv->vbat_monitor_params.low_thr = WCNSS_VBATT_THRESHOLD -
 		WCNSS_VBATT_GUARD;
+<<<<<<< HEAD
 		penv->vbat_monitor_params.high_thr = 0;
+=======
+		penv->vbat_monitor_params.high_thr = WCNSS_VBATT_THRESHOLD*2;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_debug("wcnss: high voltage notification triggered\n");
 	} else {
 		pr_debug("wcnss: unknown voltage notification state: %d\n",
@@ -2059,7 +2063,11 @@ static void wcnssctrl_rx_handler(struct work_struct *worker)
 {
 	int len = 0;
 	int rc = 0;
+<<<<<<< HEAD
 	unsigned char buf[sizeof(struct wcnss_version)];
+=======
+	unsigned char buf[sizeof(struct wcnss_version)] = {0};
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned char build[WCNSS_MAX_BUILD_VER_LEN+1];
 	struct smd_msg_hdr *phdr;
 	struct smd_msg_hdr smd_msg;
@@ -2085,6 +2093,12 @@ static void wcnssctrl_rx_handler(struct work_struct *worker)
 	}
 	len -= sizeof(struct smd_msg_hdr);
 
+<<<<<<< HEAD
+=======
+    // avoid warnings
+    if (len < 0) len = 0;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	phdr = (struct smd_msg_hdr *)buf;
 
 	switch (phdr->msg_type) {

@@ -10,12 +10,19 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/device.h>
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <linux/hrtimer.h>
 #include <linux/of_device.h>
 #include <linux/spmi.h>
@@ -36,6 +43,11 @@
 #define QPNP_VIB_VTG_SET_MASK		0x1F
 #define QPNP_VIB_LOGIC_SHIFT		4
 
+<<<<<<< HEAD
+=======
+#define QPNP_HAPTIC_THRESHOLD		60
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 enum qpnp_vib_mode {
 	QPNP_VIB_MANUAL,
 	QPNP_VIB_DTEST1,
@@ -64,11 +76,66 @@ struct qpnp_vib {
 	u16 base;
 	int state;
 	int vtg_level;
+<<<<<<< HEAD
 	int timeout;
 	struct mutex lock;
 };
 
 struct qpnp_vib *whole_vib;
+=======
+	int vtg_level_normal;
+	int vtg_level_haptic;
+	int timeout;
+	int haptic_threshold;
+	int boot_up_vibe;
+	struct mutex lock;
+};
+
+static struct qpnp_vib *vib_dev;
+
+static ssize_t qpnp_vib_level_show(struct device *dev,
+                                        struct device_attribute *attr,
+                                        char *buf)
+{
+        struct timed_output_dev *tdev = dev_get_drvdata(dev);
+        struct qpnp_vib *vib = container_of(tdev, struct qpnp_vib,
+                                         timed_dev);
+
+        return scnprintf(buf, PAGE_SIZE, "%d\n", vib->vtg_level_normal);
+}
+
+
+static ssize_t qpnp_vib_level_store(struct device *dev,
+                                        struct device_attribute *attr,
+                                        const char *buf, size_t count)
+{
+        struct timed_output_dev *tdev = dev_get_drvdata(dev);
+        struct qpnp_vib *vib = container_of(tdev, struct qpnp_vib,
+                                         timed_dev);
+        int val;
+        int rc;
+
+        rc = kstrtoint(buf, 10, &val);
+        if (rc) {
+                pr_err("%s: error getting level\n", __func__);
+                return -EINVAL;
+        }
+
+        if (val < QPNP_VIB_MIN_LEVEL) {
+                pr_err("%s: level %d not in range (%d - %d), using min.", __func__, val, QPNP_VIB_MIN_LEVEL, QPNP_VIB_MAX_LEVEL);
+                val = QPNP_VIB_MIN_LEVEL;
+        } else if (val > QPNP_VIB_MAX_LEVEL) {
+                pr_err("%s: level %d not in range (%d - %d), using max.", __func__, val, QPNP_VIB_MIN_LEVEL, QPNP_VIB_MAX_LEVEL);
+                val = QPNP_VIB_MAX_LEVEL;
+        }
+
+        vib->vtg_level_normal = val;
+
+        return strnlen(buf, count);
+}
+
+static DEVICE_ATTR(vtg_level, S_IRUGO | S_IWUSR, qpnp_vib_level_show, qpnp_vib_level_store);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static int qpnp_vib_read_u8(struct qpnp_vib *vib, u8 *data, u16 reg)
 {
@@ -192,6 +259,11 @@ static void qpnp_vib_enable(struct timed_output_dev *dev, int value)
 		value = (value > vib->timeout ?
 				 vib->timeout : value);
 		vib->state = 1;
+<<<<<<< HEAD
+=======
+		vib->vtg_level = (value < vib->haptic_threshold) ?
+				vib->vtg_level_haptic : vib->vtg_level_normal;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		hrtimer_start(&vib->vib_timer,
 			      ktime_set(value / 1000, (value % 1000) * 1000000),
 			      HRTIMER_MODE_REL);
@@ -200,6 +272,7 @@ static void qpnp_vib_enable(struct timed_output_dev *dev, int value)
 	schedule_work(&vib->work);
 }
 
+<<<<<<< HEAD
 void qpnp_kernel_vib_enable(int value)
 {
        qpnp_vib_enable(&(whole_vib->timed_dev),value);
@@ -207,10 +280,16 @@ void qpnp_kernel_vib_enable(int value)
 
 EXPORT_SYMBOL(qpnp_kernel_vib_enable);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static void qpnp_vib_update(struct work_struct *work)
 {
 	struct qpnp_vib *vib = container_of(work, struct qpnp_vib,
 					 work);
+<<<<<<< HEAD
+=======
+	qpnp_vibrator_config(vib);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	qpnp_vib_set(vib, vib->state);
 }
 
@@ -270,17 +349,49 @@ static int qpnp_vib_parse_dt(struct qpnp_vib *vib)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	vib->vtg_level = QPNP_VIB_DEFAULT_VTG_LVL;
 	rc = of_property_read_u32(spmi->dev.of_node,
 			"qcom,vib-vtg-level-mV", &temp_val);
 	if (!rc) {
 		vib->vtg_level = temp_val;
+=======
+	vib->vtg_level_normal = QPNP_VIB_DEFAULT_VTG_LVL;
+	rc = of_property_read_u32(spmi->dev.of_node,
+			"qcom,vib-vtg-level-mV", &temp_val);
+	if (!rc) {
+		vib->vtg_level_normal = temp_val;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} else if (rc != -EINVAL) {
 		dev_err(&spmi->dev, "Unable to read vtg level\n");
 		return rc;
 	}
 
+<<<<<<< HEAD
 	vib->vtg_level /= 100;
+=======
+	vib->vtg_level_normal /= 100;
+	vib->vtg_level = vib->vtg_level_normal;
+	vib->vtg_level_haptic = vib->vtg_level_normal;
+
+	rc = of_property_read_u32(spmi->dev.of_node,
+			"qcom,vib-vtg-level-mV-haptic", &temp_val);
+	if (!rc)
+		vib->vtg_level_haptic = temp_val/100;
+
+	vib->haptic_threshold = QPNP_HAPTIC_THRESHOLD;
+
+	rc = of_property_read_u32(spmi->dev.of_node,
+			"qcom,vib-haptic-threshold-ms", &temp_val);
+	if (!rc)
+		vib->haptic_threshold = temp_val;
+
+	rc = of_property_read_u32(spmi->dev.of_node,
+			"qcom,vib-boot-up-vibe-ms", &temp_val);
+	if (!rc)
+		vib->boot_up_vibe = temp_val;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (vib->vtg_level < QPNP_VIB_MIN_LEVEL)
 		vib->vtg_level = QPNP_VIB_MIN_LEVEL;
 	else if (vib->vtg_level > QPNP_VIB_MAX_LEVEL)
@@ -335,6 +446,7 @@ static int qpnp_vib_parse_dt(struct qpnp_vib *vib)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t qpnp_vib_level_show(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
@@ -389,6 +501,8 @@ static ssize_t qpnp_vib_level_store(struct device *dev,
 }
 static DEVICE_ATTR(vtg_level, S_IRUGO | S_IWUSR, qpnp_vib_level_show, qpnp_vib_level_store);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int qpnp_vibrator_probe(struct spmi_device *spmi)
 {
 	struct qpnp_vib *vib;
@@ -436,10 +550,20 @@ static int qpnp_vibrator_probe(struct spmi_device *spmi)
 	if (rc < 0)
 		return rc;
 
+<<<<<<< HEAD
 	whole_vib=vib;
 
 	device_create_file(vib->timed_dev.dev, &dev_attr_vtg_level);
 
+=======
+	device_create_file(vib->timed_dev.dev, &dev_attr_vtg_level);
+
+	vib_dev = vib;
+
+	if (vib->boot_up_vibe)
+		qpnp_vib_enable(&vib->timed_dev, vib->boot_up_vibe);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return rc;
 }
 

@@ -39,7 +39,11 @@
 #include "wniApi.h"
 
 #include "sirCommon.h"
+<<<<<<< HEAD
 #include "wniCfg.h"
+=======
+#include "wniCfgSta.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "cfgApi.h"
 
 
@@ -457,8 +461,18 @@ limRestoreFromAuthState(tpAniSirGlobal pMac, tSirResultCodes resultCode, tANI_U1
     sessionEntry->limMlmState = sessionEntry->limPrevMlmState;
     
     MTRACE(macTrace(pMac, TRACE_CODE_MLM_STATE, sessionEntry->peSessionId, sessionEntry->limMlmState));
+<<<<<<< HEAD
 
 
+=======
+    /* Set the authAckStatus status flag as sucess as
+     * host have received the auth rsp and no longer auth
+     * retry is needed also cancel the auth rety timer
+     */
+    pMac->authAckStatus = LIM_AUTH_ACK_RCD_SUCCESS;
+    // 'Change' timer for future activations
+    limDeactivateAndChangeTimer(pMac, eLIM_AUTH_RETRY_TIMER);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     // 'Change' timer for future activations
     limDeactivateAndChangeTimer(pMac, eLIM_AUTH_FAIL_TIMER);
 

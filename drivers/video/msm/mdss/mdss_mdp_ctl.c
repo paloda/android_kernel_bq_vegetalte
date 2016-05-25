@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -684,6 +688,7 @@ static void mdss_mdp_perf_calc_mixer(struct mdss_mdp_mixer *mixer,
 		perf->mdp_clk_rate =
 			mdss_mdp_clk_fudge_factor(mixer, perf->mdp_clk_rate);
 
+<<<<<<< HEAD
 		if (!pinfo)	/* perf for bus writeback */
 			perf->bw_overlap =
 				fps * mixer->width * mixer->height * 3;
@@ -691,6 +696,21 @@ static void mdss_mdp_perf_calc_mixer(struct mdss_mdp_mixer *mixer,
 		else if ((pinfo->type == MIPI_CMD_PANEL) &&
 			 (pinfo->mipi.dsi_pclk_rate > perf->mdp_clk_rate))
 			perf->mdp_clk_rate = pinfo->mipi.dsi_pclk_rate;
+=======
+		if (!pinfo) {	/* perf for bus writeback */
+			perf->bw_overlap =
+				fps * mixer->width * mixer->height * 3;
+		} else if (pinfo->type == MIPI_CMD_PANEL) {
+			u32 dsi_transfer_rate = mixer->width * v_total;
+
+			/* adjust transfer time from micro seconds */
+			dsi_transfer_rate = mult_frac(dsi_transfer_rate,
+				1000000, pinfo->mdp_transfer_time_us);
+
+			if (dsi_transfer_rate > perf->mdp_clk_rate)
+				perf->mdp_clk_rate = dsi_transfer_rate;
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	/*
@@ -923,7 +943,12 @@ int mdss_mdp_perf_bw_check(struct mdss_mdp_ctl *ctl,
 {
 	struct mdss_data_type *mdata = ctl->mdata;
 	struct mdss_mdp_perf_params perf;
+<<<<<<< HEAD
 	u32 bw, threshold;
+=======
+	u32 bw, threshold, i;
+	u64 bw_sum_of_intfs = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/* we only need bandwidth check on real-time clients (interfaces) */
 	if (ctl->intf_type == MDSS_MDP_NO_INTF)
@@ -932,9 +957,24 @@ int mdss_mdp_perf_bw_check(struct mdss_mdp_ctl *ctl,
 	__mdss_mdp_perf_calc_ctl_helper(ctl, &perf,
 			left_plist, left_cnt, right_plist, right_cnt,
 			PERF_CALC_PIPE_CALC_SMP_SIZE);
+<<<<<<< HEAD
 
 	/* convert bandwidth to kb */
 	bw = DIV_ROUND_UP_ULL(perf.bw_ctl, 1000);
+=======
+	ctl->bw_pending = perf.bw_ctl;
+
+	for (i = 0; i < mdata->nctl; i++) {
+		struct mdss_mdp_ctl *temp = mdata->ctl_off + i;
+		if (temp->power_state == MDSS_PANEL_POWER_ON) {
+			bw_sum_of_intfs += temp->bw_pending;
+			temp->bw_pending = 0;
+		}
+	}
+
+	/* convert bandwidth to kb */
+	bw = DIV_ROUND_UP_ULL(bw_sum_of_intfs, 1000);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("calculated bandwidth=%uk\n", bw);
 
 	threshold = ctl->is_video_mode ? mdata->max_bw_low : mdata->max_bw_high;

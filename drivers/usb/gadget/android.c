@@ -25,6 +25,11 @@
 #include <linux/utsname.h>
 #include <linux/platform_device.h>
 #include <linux/pm_qos.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+#include <linux/switch.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <linux/of.h>
 
 #include <linux/usb/ch9.h>
@@ -40,6 +45,12 @@
 #ifdef CONFIG_SND_PCM
 #include "f_audio_source.c"
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SND_RAWMIDI
+#include "f_midi.c"
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "f_mass_storage.c"
 #define USB_ETH_RNDIS y
 #include "f_diag.c"
@@ -67,6 +78,10 @@
 #include "u_bam_data.c"
 #include "f_ecm.c"
 #include "u_ether.c"
+<<<<<<< HEAD
+=======
+#include "f_usbnet.c"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "u_qc_ether.c"
 #ifdef CONFIG_TARGET_CORE
 #endif
@@ -90,6 +105,15 @@ static const char longname[] = "Gadget Android";
 
 #define ANDROID_DEVICE_NODE_NAME_LENGTH 11
 
+<<<<<<< HEAD
+=======
+/* f_midi configuration */
+#define MIDI_INPUT_PORTS    1
+#define MIDI_OUTPUT_PORTS   1
+#define MIDI_BUFFER_SIZE    512
+#define MIDI_QUEUE_LENGTH   32
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct android_usb_function {
 	char *name;
 	void *config;
@@ -206,6 +230,14 @@ struct android_dev {
 
 	/* A list node inside the android_dev_list */
 	struct list_head list_item;
+<<<<<<< HEAD
+=======
+	/* To control USB enumeration based on phone lock */
+	bool secured;
+
+	/* reboot notifier */
+	 struct notifier_block android_reboot;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct android_configuration {
@@ -265,7 +297,10 @@ static struct usb_device_descriptor device_desc = {
 	.bDeviceClass         = USB_CLASS_PER_INTERFACE,
 	.idVendor             = __constant_cpu_to_le16(VENDOR_ID),
 	.idProduct            = __constant_cpu_to_le16(PRODUCT_ID),
+<<<<<<< HEAD
 	.bcdDevice            = __constant_cpu_to_le16(0xffff),
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	.bNumConfigurations   = 1,
 };
 
@@ -1768,6 +1803,7 @@ static int serial_function_bind_config(struct android_usb_function *f,
 	char *name, *xport_name = NULL;
 	char buf[32], *b, xport_name_buf[32], *tb;
 	int err = -1, i;
+<<<<<<< HEAD
         static int serial_initialized = 0, ports = 0, org_ports = 0;
 	struct serial_function_config *config = f->config;
 	
@@ -1790,6 +1826,10 @@ static int serial_function_bind_config(struct android_usb_function *f,
 		ports = org_ports;
 	else
 		ports = 1;
+=======
+	static int serial_initialized = 0, ports = 0;
+	struct serial_function_config *config = f->config;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (serial_initialized)
 		goto bind_config;
@@ -1837,10 +1877,16 @@ static int serial_function_bind_config(struct android_usb_function *f,
 			goto err_gser_usb_get_function;
 		}
 	}
+<<<<<<< HEAD
 	org_ports = ports;
 
 bind_config:
         config->instances_on = ports;
+=======
+	config->instances_on = ports;
+
+bind_config:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	for (i = 0; i < ports; i++) {
 		err = usb_add_function(c, config->f_serial[i]);
 		if (err) {
@@ -2528,6 +2574,13 @@ static int mass_storage_lun_init(struct android_usb_function *f,
 
 static void mass_storage_function_cleanup(struct android_usb_function *f)
 {
+<<<<<<< HEAD
+=======
+	struct mass_storage_function_config *config;
+
+	config = f->config;
+	fsg_common_put(config->common);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	kfree(f->config);
 	f->config = NULL;
 }
@@ -2642,9 +2695,35 @@ static DEVICE_ATTR(luns, S_IRUGO | S_IWUSR,
 				mass_storage_lun_info_show,
 				mass_storage_lun_info_store);
 
+<<<<<<< HEAD
 static struct device_attribute *mass_storage_function_attributes[] = {
 	&dev_attr_inquiry_string,
 	&dev_attr_luns,
+=======
+static ssize_t mass_storage_cdrom_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct android_usb_function *f = dev_get_drvdata(dev);
+	struct mass_storage_function_config *config = f->config;
+	int value;
+
+	if (sscanf(buf, "%d", &value) == 1) {
+		pr_info("android_usb: cdrom_enable =  %d\n", value);
+		config->common->luns[0].cdrom = !!value;
+		config->common->luns[0].ro = !!value;
+		return size;
+	}
+
+	return -EINVAL;
+}
+
+static DEVICE_ATTR(cdrom, S_IWUSR, NULL, mass_storage_cdrom_store);
+
+static struct device_attribute *mass_storage_function_attributes[] = {
+	&dev_attr_inquiry_string,
+	&dev_attr_luns,
+	&dev_attr_cdrom,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	NULL
 };
 
@@ -2734,7 +2813,12 @@ static ssize_t audio_source_pcm_show(struct device *dev,
 	struct audio_source_config *config = f->config;
 
 	/* print PCM card and device numbers */
+<<<<<<< HEAD
 	return sprintf(buf, "%d %d\n", config->card, config->device);
+=======
+	return snprintf(buf, PAGE_SIZE,
+			"%d %d\n", config->card, config->device);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static DEVICE_ATTR(pcm, S_IRUGO, audio_source_pcm_show, NULL);
@@ -2800,6 +2884,146 @@ static struct android_usb_function uasp_function = {
 	.bind_config	= uasp_function_bind_config,
 };
 
+<<<<<<< HEAD
+=======
+static int usbnet_function_init(struct android_usb_function *f,
+				struct usb_composite_dev *cdev)
+{
+	struct usbnet_device *dev;
+	struct usbnet_context *context;
+	struct net_device *net_dev;
+	int ret;
+
+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+	if (!dev)
+		return -ENOMEM;
+
+	net_dev = alloc_netdev(sizeof(struct usbnet_context),
+			   "usb%d", usb_ether_setup);
+	if (!net_dev) {
+		pr_err("%s: alloc_netdev error\n", __func__);
+		return -EINVAL;
+	}
+
+	ret = register_netdev(net_dev);
+	if (ret) {
+		pr_err("%s: register_netdev error\n", __func__);
+		free_netdev(net_dev);
+		return -EINVAL;
+	}
+
+	ret = device_create_file(&net_dev->dev, &dev_attr_description);
+	if (ret < 0) {
+		pr_err("%s: sys file creation  error\n", __func__);
+		unregister_netdev(net_dev);
+		free_netdev(net_dev);
+		return -EINVAL;
+	}
+
+	context = netdev_priv(net_dev);
+	INIT_WORK(&context->usbnet_config_wq, usbnet_if_config);
+
+	context->config = 0;
+	dev->net_ctxt = context;
+
+	f->config = dev;
+
+#ifdef CONFIG_SWITCH
+	switch_dev_register(&usbnet_enable_device);
+#endif
+	return 0;
+}
+
+static void usbnet_function_cleanup(struct android_usb_function *f)
+{
+	struct usbnet_device *dev = f->config;
+
+	usbnet_cleanup(dev);
+#ifdef CONFIG_SWITCH
+	switch_dev_unregister(&usbnet_enable_device);
+#endif
+}
+
+static int usbnet_function_bind_config(struct android_usb_function *f, struct usb_configuration *c)
+{
+	struct usbnet_device *dev = f->config;
+
+	return usbnet_bind_config(dev, c);
+}
+
+static int usbnet_function_ctrlrequest(struct android_usb_function *f, struct usb_composite_dev *cdev,
+					const struct usb_ctrlrequest *c)
+{
+	struct usbnet_device *dev = f->config;
+
+	return usbnet_ctrlrequest(dev, cdev, c);
+}
+
+static struct android_usb_function usbnet_function = {
+	.name		= "usbnet",
+	.init		= usbnet_function_init,
+	.cleanup	= usbnet_function_cleanup,
+	.bind_config	= usbnet_function_bind_config,
+	.ctrlrequest	= usbnet_function_ctrlrequest,
+};
+
+#ifdef CONFIG_SND_RAWMIDI
+static int midi_function_init(struct android_usb_function *f,
+					struct usb_composite_dev *cdev)
+{
+	struct midi_alsa_config *config;
+
+	config = kzalloc(sizeof(struct midi_alsa_config), GFP_KERNEL);
+	f->config = config;
+	if (!config)
+		return -ENOMEM;
+	config->card = -1;
+	config->device = -1;
+	return 0;
+}
+
+static void midi_function_cleanup(struct android_usb_function *f)
+{
+	kfree(f->config);
+}
+
+static int midi_function_bind_config(struct android_usb_function *f,
+						struct usb_configuration *c)
+{
+	struct midi_alsa_config *config = f->config;
+
+	return f_midi_bind_config(c, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
+			MIDI_INPUT_PORTS, MIDI_OUTPUT_PORTS, MIDI_BUFFER_SIZE,
+			MIDI_QUEUE_LENGTH, config);
+}
+
+static ssize_t midi_alsa_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct android_usb_function *f = dev_get_drvdata(dev);
+	struct midi_alsa_config *config = f->config;
+
+	/* print ALSA card and device numbers */
+	return sprintf(buf, "%d %d\n", config->card, config->device);
+}
+
+static DEVICE_ATTR(alsa, S_IRUGO, midi_alsa_show, NULL);
+
+static struct device_attribute *midi_function_attributes[] = {
+	&dev_attr_alsa,
+	NULL
+};
+
+static struct android_usb_function midi_function = {
+	.name		= "midi",
+	.init		= midi_function_init,
+	.cleanup	= midi_function_cleanup,
+	.bind_config	= midi_function_bind_config,
+	.attributes	= midi_function_attributes,
+};
+#endif
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static struct android_usb_function *supported_functions[] = {
 	&ffs_function,
 	&mbim_function,
@@ -2826,8 +3050,17 @@ static struct android_usb_function *supported_functions[] = {
 #ifdef CONFIG_SND_PCM
 	&audio_source_function,
 #endif
+<<<<<<< HEAD
 	&uasp_function,
 	&charger_function,
+=======
+#ifdef CONFIG_SND_RAWMIDI
+	&midi_function,
+#endif
+	&uasp_function,
+	&charger_function,
+	&usbnet_function,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	NULL
 };
 
@@ -3229,7 +3462,12 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 		 */
 		cdev->desc.idVendor = device_desc.idVendor;
 		cdev->desc.idProduct = device_desc.idProduct;
+<<<<<<< HEAD
 		cdev->desc.bcdDevice = device_desc.bcdDevice;
+=======
+		if (device_desc.bcdDevice)
+			cdev->desc.bcdDevice = device_desc.bcdDevice;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		cdev->desc.bDeviceClass = device_desc.bDeviceClass;
 		cdev->desc.bDeviceSubClass = device_desc.bDeviceSubClass;
 		cdev->desc.bDeviceProtocol = device_desc.bDeviceProtocol;
@@ -3249,7 +3487,12 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 			}
 		if (audio_enabled)
 			msleep(100);
+<<<<<<< HEAD
 		err = android_enable(dev);
+=======
+		if (!dev->secured)
+			err = android_enable(dev);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (err < 0) {
 			pr_err("%s: android_enable failed\n", __func__);
 			dev->connected = 0;
@@ -3259,7 +3502,12 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 		}
 		dev->enabled = true;
 	} else if (!enabled && dev->enabled) {
+<<<<<<< HEAD
 		android_disable(dev);
+=======
+		if (!dev->secured)
+			android_disable(dev);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		list_for_each_entry(conf, &dev->configs, list_item)
 			list_for_each_entry(f_holder, &conf->enabled_functions,
 						enabled_list) {
@@ -3351,6 +3599,52 @@ field ## _store(struct device *pdev, struct device_attribute *attr,	\
 }									\
 static DEVICE_ATTR(field, S_IRUGO | S_IWUSR, field ## _show, field ## _store);
 
+<<<<<<< HEAD
+=======
+static ssize_t secure_show(struct device *pdev, struct device_attribute *attr,
+			   char *buf)
+{
+	struct android_dev *dev = dev_get_drvdata(pdev);
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", dev->secured);
+}
+
+static ssize_t secure_store(struct device *pdev, struct device_attribute *attr,
+			    const char *buff, size_t size)
+{
+	struct android_dev *dev = dev_get_drvdata(pdev);
+	struct usb_composite_dev *cdev = dev->cdev;
+	int secured = 0;
+
+	if (!cdev)
+		return -ENODEV;
+	mutex_lock(&dev->mutex);
+
+	sscanf(buff, "%d", &secured);
+	if (secured && !dev->secured) {
+		if (dev->enabled)
+			android_disable(dev);
+		dev->secured = true;
+		usb_gadget_set_charge_enabled(cdev->gadget, 1);
+		pr_info("android_usb: secured\n");
+	} else if (!secured && dev->secured) {
+		if (dev->enabled)
+			android_enable(dev);
+		dev->secured = false;
+		usb_gadget_set_charge_enabled(cdev->gadget, 0);
+		pr_info("android_usb: unsecured\n");
+	} else {
+		pr_err("android_usb: already %s\n",
+				dev->secured ? "secured" : "unsecured");
+	}
+
+	mutex_unlock(&dev->mutex);
+
+	return size;
+}
+
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define DESCRIPTOR_ATTR(field, format_string)				\
 static ssize_t								\
 field ## _show(struct device *dev, struct device_attribute *attr,	\
@@ -3417,6 +3711,10 @@ ANDROID_DEV_ATTR(idle_pc_rpm_no_int_secs, "%u\n");
 static DEVICE_ATTR(state, S_IRUGO, state_show, NULL);
 static DEVICE_ATTR(remote_wakeup, S_IRUGO | S_IWUSR,
 		remote_wakeup_show, remote_wakeup_store);
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(secure, S_IRUGO | S_IWUSR, secure_show, secure_store);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static struct device_attribute *android_usb_attributes[] = {
 	&dev_attr_idVendor,
@@ -3439,6 +3737,10 @@ static struct device_attribute *android_usb_attributes[] = {
 	&dev_attr_pm_qos_state,
 	&dev_attr_state,
 	&dev_attr_remote_wakeup,
+<<<<<<< HEAD
+=======
+	&dev_attr_secure,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	NULL
 };
 
@@ -3785,6 +4087,52 @@ static int usb_diag_update_pid_and_serial_num(u32 pid, const char *snum)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static bool is_mmi_factory(void)
+{
+	struct device_node *np = of_find_node_by_path("/chosen");
+	u32 fact_cable = 0;
+
+	if (np)
+		of_property_read_u32(np, "mmi,factory-cable", &fact_cable);
+
+	of_node_put(np);
+	return !!fact_cable ? true : false;
+}
+
+static void configure_mmi_factory(struct platform_device *pdev,
+		struct android_usb_platform_data *pdata)
+{
+	int prop_len = 0;
+	if (is_mmi_factory()) {
+		of_get_property(pdev->dev.of_node,
+				"mmi,pm-qos-latency-factory",
+				&prop_len);
+		if (prop_len == sizeof(pdata->pm_qos_latency)) {
+			pr_info("Override pm_qos latency with factory mode\n");
+			of_property_read_u32_array(pdev->dev.of_node,
+				"mmi,pm-qos-latency-factory",
+				pdata->pm_qos_latency,
+				prop_len/sizeof(*pdata->pm_qos_latency));
+		} else {
+			pr_info("pm_qos latency for factory not specified\n");
+		}
+	}
+}
+
+static int android_reboot_notifier(struct notifier_block *nb,
+				unsigned long event,
+				void *unused)
+{
+	struct android_dev *dev =
+		container_of(nb, struct android_dev, android_reboot);
+	pr_err("Android reboot  - de-enumerate\n");
+	android_disable(dev);
+	return NOTIFY_DONE;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int android_probe(struct platform_device *pdev)
 {
 	struct android_usb_platform_data *pdata;
@@ -3811,6 +4159,11 @@ static int android_probe(struct platform_device *pdev)
 			pr_info("pm_qos latency not specified %d\n", prop_len);
 		}
 
+<<<<<<< HEAD
+=======
+		configure_mmi_factory(pdev, pdata);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ret = of_property_read_u32(pdev->dev.of_node,
 					"qcom,usb-core-id",
 					&usb_core_id);
@@ -3932,6 +4285,18 @@ static int android_probe(struct platform_device *pdev)
 	}
 	strlcpy(android_dev->pm_qos, "high", sizeof(android_dev->pm_qos));
 
+<<<<<<< HEAD
+=======
+	if (is_mmi_factory()) {
+		android_dev->android_reboot.notifier_call =
+						android_reboot_notifier;
+		android_dev->android_reboot.next = NULL;
+		android_dev->android_reboot.priority = 2;
+		ret = register_reboot_notifier(&android_dev->android_reboot);
+		if (ret)
+			dev_err(&pdev->dev, "register for reboot failed\n");
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return ret;
 err_probe:
 	android_destroy_device(android_dev);

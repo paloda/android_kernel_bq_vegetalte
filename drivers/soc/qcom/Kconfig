@@ -310,6 +310,21 @@ config MSM_WATCHDOG_V2
 	  deadlocks. It does not run during the bootup process, so it will
 	  not catch any early lockups.
 
+<<<<<<< HEAD
+=======
+config MSM_WATCHDOG_CTX_PRINT
+	bool "Print context dump saved by secure mode watchdog handler"
+	default n
+	depends on MSM_WATCHDOG_V2
+	depends on MSM_MEMORY_DUMP_V2
+	depends on PSTORE_RAM_ANNOTATION_APPEND
+	help
+	  After enabling this option, kernel will reserve bigger buffer
+	  for secure mode watchdog handler to save info. And kernel will
+	  try to print the info if it looks valid.
+	  If unsure, say N
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 config MSM_FORCE_WDOG_BITE_ON_PANIC
 	bool "MSM force watchdog bite"
 	depends on MSM_WATCHDOG_V2
@@ -561,6 +576,47 @@ config MSM_PERFORMANCE
 	  It ensures that no more than a user specified number of CPUs stay
 	  online at any given point in time.
 
+<<<<<<< HEAD
 source "drivers/soc/qcom/memshare/Kconfig"
 
+=======
+config MSM_PERFORMANCE_HOTPLUG_ON
+        bool "Hotplug functionality through msm_performance turned on"
+        depends on MSM_PERFORMANCE
+        default y
+        help
+	  If some other core-control driver is present turn off the core-control
+	  capability of msm_performance driver. Setting this flag to false will
+          compile out the nodes needed for core-control functionality through
+          msm_performance.
+
+source "drivers/soc/qcom/memshare/Kconfig"
+
+config BOOTINFO
+	bool "Boot Information Feature"
+	default n
+	help
+	  This feature provides access to certain boot information
+	  from both kernel context (via function call) and user
+	  context (via /proc/bootinfo).
+
+config MMI_SOC_INFO
+	default n
+	bool "Motorola Mobility SOC Info"
+	help
+	  Provide mechanism to export MSM SOC info.
+
+config MMI_RAM_INFO
+	default n
+	bool "Motorola Mobility RAM Info"
+	help
+	Provide mechanism to access RAM size and MR registers values via sysfs.
+
+config MMI_UNIT_INFO
+	default n
+	bool "Motorola Mobility Unit Info"
+	help
+	Provide mechanism to expose unit information to other cpu via smem.
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 endif # ARCH_MSM

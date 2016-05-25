@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -26,6 +30,10 @@
 #include <linux/of.h>
 #include <linux/clk/msm-clock-generic.h>
 #include <soc/qcom/clock-local2.h>
+<<<<<<< HEAD
+=======
+#include <soc/qcom/mmi_soc_info.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 DEFINE_VDD_REGS_INIT(vdd_cpu, 1);
 
@@ -297,6 +305,11 @@ static int clock_a7_probe(struct platform_device *pdev)
 	else
 		get_speed_bin(pdev, &speed_bin, &version);
 
+<<<<<<< HEAD
+=======
+	mmi_acpu_bin_set(&speed_bin, NULL, &version);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	snprintf(prop_name, ARRAY_SIZE(prop_name),
 			"qcom,speed%d-bin-v%d", speed_bin, version);
 	rc = of_get_fmax_vdd_class(pdev, &a7ssmux.c, prop_name);

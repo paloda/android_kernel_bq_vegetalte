@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012, 2014, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -23,11 +27,20 @@ struct event_timer_info;
  * add_event_timer() : Add a wakeup event. Intended to be called
  *                     by clients once. Returns a handle to be used
  *                     for future transactions.
+<<<<<<< HEAD
+=======
+ * @irq : Interrupt number to track affinity.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  * @function : The callback function will be called when event
  *             timer expires.
  * @data : Callback data provided by client.
  */
+<<<<<<< HEAD
 struct event_timer_info *add_event_timer(void (*function)(void *), void *data);
+=======
+struct event_timer_info *add_event_timer(uint32_t irq,
+				void (*function)(void *), void *data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /** activate_event_timer() : Set the expiration time for an event in absolute
  *                           ktime. This is a oneshot event timer, clients
@@ -55,20 +68,35 @@ void destroy_event_timer(struct event_timer_info *event);
  *                          returns a ktime value of the next
  *                          expiring event.
  */
+<<<<<<< HEAD
 ktime_t get_next_event_time(void);
 #else
 static inline void *add_event_timer(void (*function)(void *), void *data)
+=======
+ktime_t get_next_event_time(int cpu);
+#else
+static inline void *add_event_timer(uint32_t irq, void (*function)(void *),
+						void *data)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	return NULL;
 }
 
 static inline void activate_event_timer(void *event, ktime_t event_time) {}
 
+<<<<<<< HEAD
 static inline void deactivate_event_timer(void *event) {}
 
 static inline void destroy_event_timer(void *event) {}
 
 static inline ktime_t get_next_event_time(void)
+=======
+static inline void  deactivate_event_timer(void *event) {}
+
+static inline void destroy_event_timer(void *event) {}
+
+static inline ktime_t get_next_event_time(int cpu)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	return ns_to_ktime(0);
 }

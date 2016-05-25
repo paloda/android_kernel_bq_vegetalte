@@ -58,7 +58,11 @@
 #include "mdss_mdp_trace.h"
 
 #define AXI_HALT_TIMEOUT_US	0x4000
+<<<<<<< HEAD
 #define AUTOSUSPEND_TIMEOUT_MS	200
+=======
+#define AUTOSUSPEND_TIMEOUT_MS	50
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct mdss_data_type *mdss_res;
 
@@ -339,6 +343,10 @@ static int mdss_mdp_bus_scale_set_quota(u64 ab_quota_rt, u64 ab_quota_nrt,
 		u32 nrt_axi_port_cnt = mdss_res->nrt_axi_port_cnt;
 		u32 total_axi_port_cnt = mdss_res->axi_port_cnt;
 		u32 rt_axi_port_cnt = total_axi_port_cnt - nrt_axi_port_cnt;
+<<<<<<< HEAD
+=======
+		int match_cnt = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		if (!bw_table || !total_axi_port_cnt ||
 		    total_axi_port_cnt > MAX_AXI_PORT_COUNT) {
@@ -378,6 +386,23 @@ static int mdss_mdp_bus_scale_set_quota(u64 ab_quota_rt, u64 ab_quota_nrt,
 			}
 		}
 
+<<<<<<< HEAD
+=======
+		for (i = 0; i < total_axi_port_cnt; i++) {
+			vect = &bw_table->usecase
+				[mdss_res->curr_bw_uc_idx].vectors[i];
+			/* avoid performing updates for small changes */
+			if ((ab_quota[i] == vect->ab) &&
+				(ib_quota[i] == vect->ib))
+				match_cnt++;
+		}
+
+		if (match_cnt == total_axi_port_cnt) {
+			pr_debug("skip BW vote\n");
+			return 0;
+		}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		new_uc_idx = (mdss_res->curr_bw_uc_idx %
 			(bw_table->num_usecases - 1)) + 1;
 
@@ -670,7 +695,11 @@ int mdss_iommu_ctrl(int enable)
 
 	if (enable) {
 		if (mdata->iommu_ref_cnt == 0) {
+<<<<<<< HEAD
 			mdss_bus_scale_set_quota(MDSS_HW_IOMMU, SZ_1M, SZ_1M);
+=======
+			mdss_bus_scale_set_quota(MDSS_IOMMU_RT, SZ_1M, SZ_1M);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			rc = mdss_iommu_attach(mdata);
 		}
 		mdata->iommu_ref_cnt++;
@@ -679,7 +708,11 @@ int mdss_iommu_ctrl(int enable)
 			mdata->iommu_ref_cnt--;
 			if (mdata->iommu_ref_cnt == 0) {
 				rc = mdss_iommu_dettach(mdata);
+<<<<<<< HEAD
 				mdss_bus_scale_set_quota(MDSS_HW_IOMMU, 0, 0);
+=======
+				mdss_bus_scale_set_quota(MDSS_IOMMU_RT, 0, 0);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			}
 		} else {
 			pr_err("unbalanced iommu ref\n");

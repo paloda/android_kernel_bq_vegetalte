@@ -83,8 +83,16 @@ obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4)		+= synaptics_i2c_rmi4.o
 obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
 obj-$(CONFIG_TOUCHSCREEN_BU21150)	+= bu21150.o
 obj-$(CONFIG_INPUT_MT_WRAPPER)		+= input_mt_wrapper.o
+<<<<<<< HEAD
 
 obj-y	+= lct_tp_fm_info.o
 obj-y	+= lct_ctp_selftest.o
 obj-y	+= lct_ctp_upgrade.o
 obj-y	+= lct_if_ctp_upgrade.o
+=======
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_I2C) += synaptics_dsx_i2c.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_RMI_DEV) += synaptics_dsx_rmi_dev.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_TEST_REPORTING) += synaptics_dsx_test_reporting.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE_MMI) += synaptics_dsx_fw_update.o
+obj-$(CONFIG_TOUCHSCREEN_TOUCHX)	+= touchx.o
+>>>>>>> ca57d1d... Merge in Linux 3.10.100

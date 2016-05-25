@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -82,7 +86,12 @@ enum
     eLIM_DEAUTH_ACK_TIMER,
     eLIM_PERIODIC_JOIN_PROBE_REQ_TIMER,
     eLIM_INSERT_SINGLESHOT_NOA_TIMER,
+<<<<<<< HEAD
     eLIM_CONVERT_ACTIVE_CHANNEL_TO_PASSIVE
+=======
+    eLIM_CONVERT_ACTIVE_CHANNEL_TO_PASSIVE,
+    eLIM_AUTH_RETRY_TIMER
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 #define LIM_DISASSOC_DEAUTH_ACK_TIMEOUT         500

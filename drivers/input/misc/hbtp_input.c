@@ -243,7 +243,11 @@ reg_off:
 static long hbtp_input_ioctl_handler(struct file *file, unsigned int cmd,
 				 unsigned long arg, void __user *p)
 {
+<<<<<<< HEAD
 	int error;
+=======
+	int error = -EFAULT;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct hbtp_input_mt mt_data;
 	struct hbtp_input_absinfo absinfo[ABS_MT_LAST - ABS_MT_FIRST + 1];
 	struct hbtp_input_key key_data;

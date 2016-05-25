@@ -1502,7 +1502,11 @@ static struct rcg_clk pdm2_clk_src = {
 	},
 };
 
+<<<<<<< HEAD
 static struct clk_freq_tbl ftbl_gcc_sdcc1_2_apps_clk[] = {
+=======
+static struct clk_freq_tbl ftbl_gcc_sdcc1_apps_clk[] = {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	F(  144000,	gcc_xo,	16,	3,	25),
 	F(    400000,	      gcc_xo,       12,	  1,	4),
 	F(  20000000,	   gpll0_out_main,  10,	  1,	4),
@@ -1514,10 +1518,30 @@ static struct clk_freq_tbl ftbl_gcc_sdcc1_2_apps_clk[] = {
 	F_END
 };
 
+<<<<<<< HEAD
 static struct rcg_clk sdcc1_apps_clk_src = {
 	.cmd_rcgr_reg = SDCC1_APPS_CMD_RCGR,
 	.set_rate = set_rate_mnd,
 	.freq_tbl = ftbl_gcc_sdcc1_2_apps_clk,
+=======
+static struct clk_freq_tbl ftbl_gcc_sdcc2_apps_clk[] = {
+	F(  144000,	gcc_xo,	16,	3,	25),
+	F(    400000,	      gcc_xo,       12,	  1,	4),
+	F(  20000000,	   gpll0_out_main,  10,	  1,	4),
+	F(  25000000,	   gpll0_out_main,  16,	  1,	2),
+	F(  50000000,	   gpll0_out_main,  16,	  0,	0),
+	F( 100000000,	   gpll0_out_main,   8,	  0,	0),
+	F( 160000000,	   gpll0_out_main,   5,	  0,	0),
+	F( 177770000,      gpll0_out_main, 4.5,    0,    0),
+	F( 200000000,	   gpll0_out_main,   4,	  0,	0),
+	F_END
+};
+
+static struct rcg_clk sdcc1_apps_clk_src = {
+	.cmd_rcgr_reg = SDCC1_APPS_CMD_RCGR,
+	.set_rate = set_rate_mnd,
+	.freq_tbl = ftbl_gcc_sdcc1_apps_clk,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	.current_freq = &rcg_dummy_freq,
 	.base = &virt_bases[GCC_BASE],
 	.c = {
@@ -1531,7 +1555,11 @@ static struct rcg_clk sdcc1_apps_clk_src = {
 static struct rcg_clk sdcc2_apps_clk_src = {
 	.cmd_rcgr_reg = SDCC2_APPS_CMD_RCGR,
 	.set_rate = set_rate_mnd,
+<<<<<<< HEAD
 	.freq_tbl = ftbl_gcc_sdcc1_2_apps_clk,
+=======
+	.freq_tbl = ftbl_gcc_sdcc2_apps_clk,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	.current_freq = &rcg_dummy_freq,
 	.base = &virt_bases[GCC_BASE],
 	.c = {
@@ -3487,6 +3515,12 @@ static int msm_gcc_probe(struct platform_device *pdev)
 	clk_set_rate(&apss_ahb_clk_src.c, 19200000);
 	clk_prepare_enable(&apss_ahb_clk_src.c);
 
+<<<<<<< HEAD
+=======
+	if (compat_bin)
+		gcc_bimc_gfx_clk.c.depends = NULL;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	dev_info(&pdev->dev, "Registered GCC clocks\n");
 
 	return 0;

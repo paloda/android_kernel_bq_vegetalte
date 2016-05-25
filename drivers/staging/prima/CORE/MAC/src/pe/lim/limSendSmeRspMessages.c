@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -41,7 +45,11 @@
 #include "sirCommon.h"
 #include "aniGlobal.h"
 
+<<<<<<< HEAD
 #include "wniCfg.h"
+=======
+#include "wniCfgSta.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "sysDef.h"
 #include "cfgApi.h"
 
@@ -787,16 +795,26 @@ limSendSmeScanRsp(tpAniSirGlobal pMac, tANI_U16 length,
             }
             curMsgLen = msgLen;
 
+<<<<<<< HEAD
             PELOG2(limLog(pMac, LOG2, FL("ScanRsp : msgLen %d, bssDescr Len=%d"),
                           msgLen, ptemp->bssDescription.length);)
+=======
+            limLog(pMac, LOG1, FL("ScanRsp : msgLen %d, bssDescr Len=%d"),
+                          msgLen, ptemp->bssDescription.length);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             pDesc->length
                     = ptemp->bssDescription.length;
             vos_mem_copy( (tANI_U8 *) &pDesc->bssId,
                           (tANI_U8 *) &ptemp->bssDescription.bssId,
                            ptemp->bssDescription.length);
 
+<<<<<<< HEAD
             PELOG2(limLog(pMac, LOG2, FL("BssId "));
             limPrintMacAddr(pMac, ptemp->bssDescription.bssId, LOG2);)
+=======
+            limLog(pMac, LOG1, FL("BssId "));
+            limPrintMacAddr(pMac, ptemp->bssDescription.bssId, LOG1);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
             pSirSmeScanRsp->sessionId   = smesessionId;
             pSirSmeScanRsp->transcationId = smetranscationId;
@@ -830,7 +848,11 @@ limSendSmeScanRsp(tpAniSirGlobal pMac, tANI_U16 length,
         mmhMsg.bodyval = 0;
         MTRACE(macTraceMsgTx(pMac, NO_SESSION, mmhMsg.type));
         limSysProcessMmhMsgApi(pMac, &mmhMsg, ePROT);
+<<<<<<< HEAD
         PELOG2(limLog(pMac, LOG2, FL("statusCode : eSIR_SME_SUCCESS"));)
+=======
+        limLog(pMac, LOG1, FL("statusCode : eSIR_SME_SUCCESS"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     return;

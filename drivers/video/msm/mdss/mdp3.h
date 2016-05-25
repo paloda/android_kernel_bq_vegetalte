@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  * Copyright (C) 2007 Google Incorporated
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,6 +37,10 @@
 #define SVS_MAX_PIXEL		(540 * 960)
 
 #define KOFF_TIMEOUT msecs_to_jiffies(84)
+<<<<<<< HEAD
+=======
+#define WAIT_DMA_TIMEOUT msecs_to_jiffies(84)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 enum  {
 	MDP3_CLK_AHB,
@@ -67,9 +75,22 @@ enum {
 	MDP3_CLIENT_DMA_P,
 	MDP3_CLIENT_DSI = 1,
 	MDP3_CLIENT_PPP,
+<<<<<<< HEAD
 	MDP3_CLIENT_MAX,
 };
 
+=======
+	MDP3_CLIENT_IOMMU,
+	MDP3_CLIENT_MAX,
+};
+
+enum {
+	DI_PARTITION_NUM = 0,
+	DI_DOMAIN_NUM = 1,
+	DI_MAX,
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct mdp3_bus_handle_map {
 	struct msm_bus_vectors *bus_vector;
 	struct msm_bus_paths *usecases;
@@ -100,6 +121,22 @@ struct mdp3_iommu_ctx_map {
 	int attached;
 };
 
+<<<<<<< HEAD
+=======
+struct mdp3_iommu_meta {
+	struct rb_node node;
+	struct ion_handle *handle;
+	struct rb_root iommu_maps;
+	struct kref ref;
+	struct sg_table *table;
+	struct dma_buf *dbuf;
+	int mapped_size;
+	unsigned long size;
+	dma_addr_t iova_addr;
+	unsigned long flags;
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define MDP3_MAX_INTR 28
 
 struct mdp3_intr_cb {
@@ -139,6 +176,10 @@ struct mdp3_hw_resource {
 	struct mdp3_dma dma[MDP3_DMA_MAX];
 	struct mdp3_intf intf[MDP3_DMA_OUTPUT_SEL_MAX];
 
+<<<<<<< HEAD
+=======
+	struct rb_root iommu_root;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	spinlock_t irq_lock;
 	u32 irq_ref_count[MDP3_MAX_INTR];
 	u32 irq_mask;
@@ -166,6 +207,10 @@ struct mdp3_img_data {
 	dma_addr_t addr;
 	u32 len;
 	u32 flags;
+<<<<<<< HEAD
+=======
+	u32 padding;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int p_need;
 	struct file *srcp_file;
 	struct ion_handle *srcp_ihdl;
@@ -185,8 +230,13 @@ int mdp3_clk_set_rate(int clk_type, unsigned long clk_rate, int client);
 int mdp3_clk_enable(int enable, int dsi_clk);
 int mdp3_res_update(int enable, int dsi_clk, int client);
 int mdp3_bus_scale_set_quota(int client, u64 ab_quota, u64 ib_quota);
+<<<<<<< HEAD
 int mdp3_put_img(struct mdp3_img_data *data);
 int mdp3_get_img(struct msmfb_data *img, struct mdp3_img_data *data);
+=======
+int mdp3_put_img(struct mdp3_img_data *data, int client);
+int mdp3_get_img(struct msmfb_data *img, struct mdp3_img_data *data, int client);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 int mdp3_iommu_enable(void);
 int mdp3_iommu_disable(void);
 int mdp3_iommu_is_attached(void);
@@ -205,6 +255,11 @@ void mdp3_check_dsi_ctrl_status(struct work_struct *work,
 				uint32_t interval);
 int mdp3_dynamic_clock_gating_ctrl(int enable);
 int mdp3_footswitch_ctrl(int enable);
+<<<<<<< HEAD
+=======
+int mdp3_qos_remapper_setup(struct mdss_panel_data *panel);
+int mdp3_splash_done(struct mdss_panel_info *panel_info);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define MDP3_REG_WRITE(addr, val) writel_relaxed(val, mdp3_res->mdp_base + addr)
 #define MDP3_REG_READ(addr) readl_relaxed(mdp3_res->mdp_base + addr)

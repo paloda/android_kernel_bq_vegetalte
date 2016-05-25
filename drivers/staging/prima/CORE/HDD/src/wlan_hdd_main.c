@@ -1962,6 +1962,71 @@ static void getBcnMissRateCB(VOS_STATUS status, int bcnMissRate, void *data)
     return;
 }
 
+<<<<<<< HEAD
+=======
+void hdd_FWStatisCB( VOS_STATUS status, void *fwStats, void *data )
+{
+    fwStatsContext_t *fwStatsCtx;
+    fwStatsResult_t  *fwStatsResult;
+    hdd_adapter_t *pAdapter;
+
+    hddLog(VOS_TRACE_LEVEL_INFO, FL(" with status = %d"),status);
+
+    if (NULL == data)
+    {
+        hddLog(VOS_TRACE_LEVEL_ERROR, FL("argument data is NULL"));
+        return;
+    }
+    /* there is a race condition that exists between this callback
+       function and the caller since the caller could time out either
+       before or while this code is executing.  we use a spinlock to
+       serialize these actions */
+    spin_lock(&hdd_context_lock);
+    fwStatsCtx = (fwStatsContext_t *) data;
+    if (fwStatsCtx->magic != FW_STATS_CONTEXT_MAGIC)
+    {
+        hddLog(VOS_TRACE_LEVEL_ERROR,
+               FL("invalid context magic: %08x"), fwStatsCtx->magic);
+        spin_unlock(&hdd_context_lock);
+        return;
+    }
+    pAdapter = fwStatsCtx->pAdapter;
+    if ((NULL == pAdapter) || (WLAN_HDD_ADAPTER_MAGIC != pAdapter->magic))
+    {
+        hddLog(VOS_TRACE_LEVEL_ERROR,
+              FL("pAdapter returned is NULL or invalid"));
+        spin_unlock(&hdd_context_lock);
+        return;
+    }
+    pAdapter->fwStatsRsp.type = 0;
+    if ((VOS_STATUS_SUCCESS == status) && (NULL != fwStats))
+    {
+        fwStatsResult = (fwStatsResult_t *)fwStats;
+        switch( fwStatsResult->type )
+        {
+            case FW_UBSP_STATS:
+            {
+                 memcpy(&pAdapter->fwStatsRsp,fwStatsResult,sizeof(fwStatsResult_t));
+
+                 hddLog(VOS_TRACE_LEVEL_INFO,
+                  FL("ubsp_enter_cnt = %d ubsp_jump_ddr_cnt = %d"),
+                  pAdapter->fwStatsRsp.hddFwStatsData.ubspStats.ubsp_enter_cnt,
+                  pAdapter->fwStatsRsp.hddFwStatsData.ubspStats.ubsp_jump_ddr_cnt);
+            }
+            break;
+            default:
+            {
+                   hddLog(VOS_TRACE_LEVEL_ERROR,
+                    FL(" No handling for stats type %d"),fwStatsResult->type);
+            }
+         }
+    }
+    complete(&(fwStatsCtx->completion));
+    spin_unlock(&hdd_context_lock);
+    return;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int hdd_get_dwell_time(hdd_config_t *pCfg, tANI_U8 *command, char *extra, tANI_U8 n, tANI_U8 *len)
 {
     int ret = 0;
@@ -2119,6 +2184,7 @@ static int hdd_set_dwell_time(hdd_adapter_t *pAdapter, tANI_U8 *command)
 
     return ret;
 }
+<<<<<<< HEAD
 static int hdd_cmd_setFccChannel(hdd_context_t *pHddCtx, tANI_U8 *cmd,
                                                                  tANI_U8 cmd_len)
 {
@@ -2148,6 +2214,8 @@ static int hdd_cmd_setFccChannel(hdd_context_t *pHddCtx, tANI_U8 *cmd,
 }
 
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static int hdd_driver_command(hdd_adapter_t *pAdapter,
                               hdd_priv_data_t *ppriv_data)
@@ -3482,6 +3550,7 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
            pHddCtx->cfg_ini->isFastTransitionEnabled = ft;
            sme_UpdateFastTransitionEnabled((tHalHandle)(pHddCtx->hHal), ft);
        }
+<<<<<<< HEAD
        else if (strncmp(command, "SETDFSSCANMODE", 14) == 0)
        {
            tANI_U8 *value = command;
@@ -3536,6 +3605,9 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
                goto exit;
            }
        }
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
        else if (strncmp(command, "FASTREASSOC", 11) == 0)
        {
            tANI_U8 *value = command;
@@ -3596,7 +3668,12 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
            /* Proceed with scan/roam */
            smeIssueFastRoamNeighborAPEvent(WLAN_HDD_GET_HAL_CTX(pAdapter),
                                            &targetApBssid[0],
+<<<<<<< HEAD
                                            (tSmeFastRoamTrigger)(trigger));
+=======
+                                           (tSmeFastRoamTrigger)(trigger),
+                                           channel);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
        }
 #endif
 #ifdef FEATURE_WLAN_ESE
@@ -4250,6 +4327,7 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
            }
        }
 #endif
+<<<<<<< HEAD
        else if (strncasecmp(command, "SET_FCC_CHANNEL", 15) == 0)
        {
           /*
@@ -4262,13 +4340,121 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
            * country code is set
            */
            ret = hdd_cmd_setFccChannel(pHddCtx, command, 15);
+=======
+       else if (strncmp(command, "GETFWSTATS", 10) == 0)
+       {
+           eHalStatus status;
+           char *buf = NULL;
+           char len;
+           long waitRet;
+           fwStatsContext_t fwStatsCtx;
+           fwStatsResult_t *fwStatsRsp = &(pAdapter->fwStatsRsp);
+           tANI_U8 *ptr = command;
+           int stats = *(ptr + 11) - '0';
+
+           hddLog(VOS_TRACE_LEVEL_INFO, FL("stats = %d "),stats);
+           if (!IS_FEATURE_FW_STATS_ENABLE)
+           {
+               hddLog(VOS_TRACE_LEVEL_INFO,
+                     FL("Get Firmware stats feature not supported"));
+               ret = -EINVAL;
+               goto exit;
+           }
+
+           if (FW_STATS_MAX <= stats || 0 >= stats)
+           {
+               hddLog(VOS_TRACE_LEVEL_INFO,
+                        FL(" stats %d not supported"),stats);
+               ret = -EINVAL;
+               goto exit;
+           }
+
+           init_completion(&(fwStatsCtx.completion));
+           fwStatsCtx.magic = FW_STATS_CONTEXT_MAGIC;
+           fwStatsCtx.pAdapter = pAdapter;
+           fwStatsRsp->type = 0;
+           status = sme_GetFwStats( (tHalHandle)pHddCtx->hHal, stats,
+                                   (&fwStatsCtx), hdd_FWStatisCB);
+           if (eHAL_STATUS_SUCCESS != status)
+           {
+               hddLog(VOS_TRACE_LEVEL_ERROR,
+                       FL(" fail to post WDA cmd status = %d"), status);
+               ret = -EINVAL;
+               goto exit;
+           }
+           waitRet = wait_for_completion_timeout
+                             (&(fwStatsCtx.completion), FW_STATE_WAIT_TIME);
+           if (waitRet <= 0)
+           {
+               hddLog(VOS_TRACE_LEVEL_ERROR,
+                        FL("failed to wait on GwtFwstats"));
+               //Make magic number to zero so that callback is not executed.
+               spin_lock(&hdd_context_lock);
+               fwStatsCtx.magic = 0x0;
+               spin_unlock(&hdd_context_lock);
+               ret = -EINVAL;
+               goto exit;
+           }
+           if (fwStatsRsp->type)
+           {
+               buf = kmalloc(FW_STATE_RSP_LEN, GFP_KERNEL);
+               if (!buf)
+               {
+                 hddLog(VOS_TRACE_LEVEL_ERROR,
+                       FL(" failed to allocate memory"));
+                 ret = -ENOMEM;
+                 goto exit;
+               }
+               switch( fwStatsRsp->type )
+               {
+                   case FW_UBSP_STATS:
+                   {
+                        len = snprintf(buf, FW_STATE_RSP_LEN,
+                              "GETFWSTATS: ubsp_enter_cnt %d ubsp_jump_ddr_cnt %d",
+                              fwStatsRsp->hddFwStatsData.ubspStats.ubsp_enter_cnt,
+                              fwStatsRsp->hddFwStatsData.ubspStats.ubsp_jump_ddr_cnt);
+                   }
+                   break;
+                   default:
+                   {
+                        hddLog(VOS_TRACE_LEVEL_ERROR, FL( "No handling for stats type %d"),fwStatsRsp->type);
+                        ret = -EFAULT;
+                        kfree(buf);
+                        goto exit;
+                   }
+               }
+               if (copy_to_user(priv_data.buf, buf, len + 1))
+               {
+                   hddLog(VOS_TRACE_LEVEL_ERROR,
+                      FL(" failed to copy data to user buffer"));
+                   ret = -EFAULT;
+                   kfree(buf);
+                   goto exit;
+               }
+               ret = len;
+               kfree(buf);
+           }
+           else
+           {
+               hddLog(VOS_TRACE_LEVEL_ERROR,
+                   FL("failed to fetch the stats"));
+               ret = -EFAULT;
+               goto exit;
+           }
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
        }
        else {
            MTRACE(vos_trace(VOS_MODULE_ID_HDD,
                             TRACE_CODE_HDD_UNSUPPORTED_IOCTL,
                             pAdapter->sessionId, 0));
+<<<<<<< HEAD
            hddLog( VOS_TRACE_LEVEL_WARN, "%s: Unsupported GUI command %s",
                    __func__, command);
+=======
+           hddLog( VOS_TRACE_LEVEL_WARN, FL("Unsupported GUI command %s"),
+                   command);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
        }
    }
 exit:
@@ -5309,7 +5495,11 @@ int hdd_open(struct net_device *dev)
    return ret;
 }
 
+<<<<<<< HEAD
 int hdd_mon_open (struct net_device *dev)
+=======
+int __hdd_mon_open (struct net_device *dev)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
    hdd_adapter_t *pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
 
@@ -5323,6 +5513,21 @@ int hdd_mon_open (struct net_device *dev)
 
    return 0;
 }
+<<<<<<< HEAD
+=======
+
+int hdd_mon_open (struct net_device *dev)
+{
+    int ret;
+
+    vos_ssr_protect(__func__);
+    ret = __hdd_mon_open(dev);
+    vos_ssr_unprotect(__func__);
+
+    return ret;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /**---------------------------------------------------------------------------
 
   \brief __hdd_stop() - HDD stop function
@@ -5395,7 +5600,11 @@ int __hdd_stop (struct net_device *dev)
    mutex_lock(&pHddCtx->tdls_lock);
 #endif
    /* DeInit the adapter. This ensures datapath cleanup as well */
+<<<<<<< HEAD
    hdd_deinit_adapter(pHddCtx, pAdapter);
+=======
+   hdd_deinit_adapter(pHddCtx, pAdapter, TRUE);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef FEATURE_WLAN_TDLS
    mutex_unlock(&pHddCtx->tdls_lock);
 #endif
@@ -5516,7 +5725,11 @@ static void __hdd_uninit (struct net_device *dev)
 #ifdef FEATURE_WLAN_TDLS
       mutex_lock(&pHddCtx->tdls_lock);
 #endif
+<<<<<<< HEAD
       hdd_deinit_adapter(pHddCtx, pAdapter);
+=======
+      hdd_deinit_adapter(pHddCtx, pAdapter, TRUE);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef FEATURE_WLAN_TDLS
       mutex_unlock(&pHddCtx->tdls_lock);
 #endif
@@ -5810,11 +6023,36 @@ VOS_STATUS hdd_read_cfg_file(v_VOID_t *pCtx, char *pFileName,
 
 static int __hdd_set_mac_address(struct net_device *dev, void *addr)
 {
+<<<<<<< HEAD
    hdd_adapter_t *pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
    struct sockaddr *psta_mac_addr = addr;
    eHalStatus halStatus = eHAL_STATUS_SUCCESS;
 
    ENTER();
+=======
+   hdd_adapter_t *pAdapter;
+   hdd_context_t *pHddCtx;
+   struct sockaddr *psta_mac_addr = addr;
+   eHalStatus halStatus = eHAL_STATUS_SUCCESS;
+   int ret = 0;
+
+   ENTER();
+   pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
+   if (NULL == pAdapter)
+   {
+       VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+                 "%s: Adapter is NULL",__func__);
+       return -EINVAL;
+   }
+   pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
+   ret = wlan_hdd_validate_context(pHddCtx);
+   if (0 != ret)
+   {
+       VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+                 "%s: HDD context is not valid",__func__);
+       return ret;
+   }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
    memcpy(&pAdapter->macAddressCurrent, psta_mac_addr->sa_data, ETH_ALEN);
    memcpy(dev->dev_addr, psta_mac_addr->sa_data, ETH_ALEN);
@@ -6220,7 +6458,11 @@ void hdd_cleanup_actionframe( hdd_context_t *pHddCtx, hdd_adapter_t *pAdapter )
    return;
 }
 
+<<<<<<< HEAD
 void hdd_deinit_adapter( hdd_context_t *pHddCtx, hdd_adapter_t *pAdapter )
+=======
+void hdd_deinit_adapter( hdd_context_t *pHddCtx, hdd_adapter_t *pAdapter, tANI_U8 rtnl_held )
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
    ENTER();
    switch ( pAdapter->device_mode )
@@ -6257,7 +6499,11 @@ void hdd_deinit_adapter( hdd_context_t *pHddCtx, hdd_adapter_t *pAdapter )
 
          hdd_cleanup_actionframe(pHddCtx, pAdapter);
 
+<<<<<<< HEAD
          hdd_unregister_hostapd(pAdapter);
+=======
+         hdd_unregister_hostapd(pAdapter, rtnl_held);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
          hdd_set_conparam( 0 );
          wlan_hdd_set_monitor_tx_adapter( WLAN_HDD_GET_CTX(pAdapter), NULL );
          break;
@@ -6635,7 +6881,11 @@ hdd_adapter_t* hdd_open_adapter( hdd_context_t *pHddCtx, tANI_U8 session_type,
 #ifdef FEATURE_WLAN_TDLS
             mutex_lock(&pHddCtx->tdls_lock);
 #endif
+<<<<<<< HEAD
             hdd_deinit_adapter(pHddCtx, pAdapter);
+=======
+            hdd_deinit_adapter(pHddCtx, pAdapter, rtnl_held);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef FEATURE_WLAN_TDLS
             mutex_unlock(&pHddCtx->tdls_lock);
 #endif
@@ -6689,7 +6939,11 @@ hdd_adapter_t* hdd_open_adapter( hdd_context_t *pHddCtx, tANI_U8 session_type,
          status = hdd_register_hostapd( pAdapter, rtnl_held );
          if( VOS_STATUS_SUCCESS != status )
          {
+<<<<<<< HEAD
             hdd_deinit_adapter(pHddCtx, pAdapter);
+=======
+            hdd_deinit_adapter(pHddCtx, pAdapter, rtnl_held);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             goto err_free_netdev;
          }
 
@@ -7794,12 +8048,17 @@ v_U8_t hdd_get_operating_channel( hdd_context_t *pHddCtx, device_mode_t mode )
 #ifdef WLAN_FEATURE_PACKET_FILTERING
 /**---------------------------------------------------------------------------
 
+<<<<<<< HEAD
   \brief hdd_set_multicast_list() - 
+=======
+  \brief __hdd_set_multicast_list() -
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
   This used to set the multicast address list.
 
   \param  - dev - Pointer to the WLAN device.
   - skb - Pointer to OS packet (sk_buff).
+<<<<<<< HEAD
   \return - success/fail 
 
   --------------------------------------------------------------------------*/
@@ -7810,20 +8069,49 @@ static void hdd_set_multicast_list(struct net_device *dev)
    int i = 0;
    struct netdev_hw_addr *ha;
 
+=======
+  \return - success/fail
+
+  --------------------------------------------------------------------------*/
+static void __hdd_set_multicast_list(struct net_device *dev)
+{
+   hdd_adapter_t *pAdapter;
+   hdd_context_t *pHddCtx;
+   int mc_count;
+   int i = 0, ret = 0;
+   struct netdev_hw_addr *ha;
+
+   pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    if (NULL == pAdapter)
    {
       hddLog(VOS_TRACE_LEVEL_ERROR,
             "%s: Adapter context is Null", __func__);
       return;
    }
+<<<<<<< HEAD
 
+=======
+   pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
+   ret = wlan_hdd_validate_context(pHddCtx);
+   if (0 != ret)
+   {
+      hddLog(VOS_TRACE_LEVEL_ERROR,
+                 "%s: HDD context is not valid",__func__);
+       return;
+   }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    if (dev->flags & IFF_ALLMULTI)
    {
       hddLog(VOS_TRACE_LEVEL_INFO,
             "%s: allow all multicast frames", __func__);
       pAdapter->mc_addr_list.mc_cnt = 0;
    }
+<<<<<<< HEAD
    else 
+=======
+   else
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    {
       mc_count = netdev_mc_count(dev);
       hddLog(VOS_TRACE_LEVEL_INFO,
@@ -7844,13 +8132,27 @@ static void hdd_set_multicast_list(struct net_device *dev)
          memset(&(pAdapter->mc_addr_list.addr[i][0]), 0, ETH_ALEN);
          memcpy(&(pAdapter->mc_addr_list.addr[i][0]), ha->addr, ETH_ALEN);
          hddLog(VOS_TRACE_LEVEL_INFO, "%s: mlist[%d] = "MAC_ADDRESS_STR,
+<<<<<<< HEAD
                __func__, i, 
+=======
+               __func__, i,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                MAC_ADDR_ARRAY(pAdapter->mc_addr_list.addr[i]));
          i++;
       }
    }
    return;
 }
+<<<<<<< HEAD
+=======
+
+static void hdd_set_multicast_list(struct net_device *dev)
+{
+   vos_ssr_protect(__func__);
+   __hdd_set_multicast_list(dev);
+   vos_ssr_unprotect(__func__);
+}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 
 /**---------------------------------------------------------------------------
@@ -8032,6 +8334,23 @@ void hdd_wlan_exit(hdd_context_t *pHddCtx)
       // Unloading, restart logic is no more required.
       wlan_hdd_restart_deinit(pHddCtx);
 
+<<<<<<< HEAD
+=======
+#ifdef FEATURE_WLAN_TDLS
+      /* At the time of driver unloading; if tdls connection is present;
+       * hdd_rx_packet_cbk calls wlan_hdd_tdls_find_peer.
+       * wlan_hdd_tdls_find_peer always checks for valid context;
+       * as load/unload in progress there can be a race condition.
+       * hdd_rx_packet_cbk calls wlan_hdd_tdls_find_peer only
+       * when tdls state is enabled.
+       * As soon as driver set load/unload flag; tdls flag also needs
+       * to be disabled so that hdd_rx_packet_cbk won't call
+       * wlan_hdd_tdls_find_peer.
+       */
+      wlan_hdd_tdls_set_mode(pHddCtx, eTDLS_SUPPORT_DISABLED, FALSE);
+#endif
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
       vosStatus = hdd_get_front_adapter ( pHddCtx, &pAdapterNode );
       while (NULL != pAdapterNode && VOS_STATUS_E_EMPTY != vosStatus)
       {
@@ -8053,7 +8372,11 @@ void hdd_wlan_exit(hdd_context_t *pHddCtx)
 #ifdef FEATURE_WLAN_TDLS
             mutex_lock(&pHddCtx->tdls_lock);
 #endif
+<<<<<<< HEAD
             hdd_deinit_adapter(pHddCtx, pAdapter);
+=======
+            hdd_deinit_adapter(pHddCtx, pAdapter, FALSE);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef FEATURE_WLAN_TDLS
             mutex_unlock(&pHddCtx->tdls_lock);
 #endif
@@ -8084,6 +8407,7 @@ void hdd_wlan_exit(hdd_context_t *pHddCtx)
       // Power has completed all scans will be cancelled.
       if (pHddCtx->scan_info.mScanPending)
       {
+<<<<<<< HEAD
           hddLog(VOS_TRACE_LEVEL_INFO,
                  FL("abort scan mode: %d sessionId: %d"),
                      pAdapter->device_mode,
@@ -8091,6 +8415,18 @@ void hdd_wlan_exit(hdd_context_t *pHddCtx)
            hdd_abort_mac_scan(pHddCtx,
                               pHddCtx->scan_info.sessionId,
                               eCSR_SCAN_ABORT_DEFAULT);
+=======
+          if(NULL != pAdapter)
+          {
+             hddLog(VOS_TRACE_LEVEL_INFO,
+                    FL("abort scan mode: %d sessionId: %d"),
+                       pAdapter->device_mode,
+                       pAdapter->sessionId);
+          }
+          hdd_abort_mac_scan(pHddCtx,
+                             pHddCtx->scan_info.sessionId,
+                             eCSR_SCAN_ABORT_DEFAULT);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
       }
    }
    else
@@ -8308,6 +8644,7 @@ free_hdd_ctx:
    hdd_set_ssr_required (VOS_FALSE);
 }
 
+<<<<<<< HEAD
 /*wangxun*/
 static VOS_STATUS hdd_update_wifi_mac(hdd_context_t* pHddCtx)
 {
@@ -8419,6 +8756,8 @@ static VOS_STATUS hdd_update_wifi_mac(hdd_context_t* pHddCtx)
 }
 
 /*end*/
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /**---------------------------------------------------------------------------
 
@@ -9186,7 +9525,10 @@ int hdd_wlan_startup(struct device *dev )
              "%s: WLAN Mac Addr: "
              MAC_ADDRESS_STR, __func__,
              MAC_ADDR_ARRAY(pHddCtx->cfg_ini->intfMacAddr[0].bytes));
+<<<<<<< HEAD
     printk("[WIFI] hdd_wlan_startup | WLAN Mac Addr: "MAC_ADDRESS_STR, MAC_ADDR_ARRAY(pHddCtx->cfg_ini->intfMacAddr[0].bytes));
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
       /* Here, passing Arg2 as 1 because we do not want to change the
          last 3 bytes (means non OUI bytes) of first interface mac
@@ -9199,10 +9541,14 @@ int hdd_wlan_startup(struct device *dev )
                 "using MAC from ini file ", __func__);
       }
    }
+<<<<<<< HEAD
    else if (
         (VOS_STATUS_SUCCESS != hdd_update_config_from_nv(pHddCtx)) &&
         (VOS_STATUS_SUCCESS != hdd_update_wifi_mac(pHddCtx))
     )
+=======
+   else if (VOS_STATUS_SUCCESS != hdd_update_config_from_nv(pHddCtx))
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    {
       // Apply the NV to cfg.dat
       /* Prima Update MAC address only at here */
@@ -9970,12 +10316,27 @@ static void hdd_driver_exit(void)
    //Get the HDD context.
    pHddCtx = (hdd_context_t *)vos_get_context(VOS_MODULE_ID_HDD, pVosContext );
 
+<<<<<<< HEAD
    if (!pHddCtx)
    {
        hddLog(VOS_TRACE_LEVEL_FATAL,"%s: module exit called before probe",__func__);
    }
    else
    {
+=======
+   if(!pHddCtx)
+   {
+      hddLog(VOS_TRACE_LEVEL_FATAL,"%s: module exit called before probe",__func__);
+   }
+   else
+   {
+      /* We wait for active entry threads to exit from driver
+       * by waiting until rtnl_lock is available.
+       */
+      rtnl_lock();
+      rtnl_unlock();
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
       INIT_COMPLETION(pHddCtx->ssr_comp_var);
       if ((pHddCtx->isLogpInProgress) && (FALSE ==
                   vos_is_wlan_in_badState(VOS_MODULE_ID_HDD, NULL)))
@@ -9992,10 +10353,15 @@ static void hdd_driver_exit(void)
          }
       }
 
+<<<<<<< HEAD
       rtnl_lock();
       pHddCtx->isLoadUnloadInProgress = WLAN_HDD_UNLOAD_IN_PROGRESS;
       vos_set_load_unload_in_progress(VOS_MODULE_ID_VOSS, TRUE);
       rtnl_unlock();
+=======
+      pHddCtx->isLoadUnloadInProgress = WLAN_HDD_UNLOAD_IN_PROGRESS;
+      vos_set_load_unload_in_progress(VOS_MODULE_ID_VOSS, TRUE);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
        /* Driver Need to send country code 00 in below condition
         * 1) If gCountryCodePriority is set to 1; and last country
@@ -10393,10 +10759,31 @@ v_BOOL_t hdd_is_apps_power_collapse_allowed(hdd_context_t* pHddCtx)
         {
             if (((pConfig->fIsImpsEnabled || pConfig->fIsBmpsEnabled)
                  && (pmcState != IMPS && pmcState != BMPS && pmcState != UAPSD
+<<<<<<< HEAD
                   &&  pmcState != STOPPED && pmcState != STANDBY)) ||
                  (eANI_BOOLEAN_TRUE == scanRspPending) ||
                  (eANI_BOOLEAN_TRUE == inMiddleOfRoaming))
             {
+=======
+                  &&  pmcState != STOPPED && pmcState != STANDBY &&
+                      pmcState != WOWL)) ||
+                 (eANI_BOOLEAN_TRUE == scanRspPending) ||
+                 (eANI_BOOLEAN_TRUE == inMiddleOfRoaming))
+            {
+                if(pmcState == FULL_POWER &&
+                   sme_IsCoexScoIndicationSet(pHddCtx->hHal))
+                {
+                    /*
+                     * When SCO indication comes from Coex module , host will
+                     * enter in to full power mode, but this should not prevent
+                     * apps processor power collapse.
+                     */
+                    hddLog(LOG1,
+                       FL("Allow apps power collapse"
+                          "even when sco indication is set"));
+                    return TRUE;
+                }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                 hddLog( LOGE, "%s: do not allow APPS power collapse-"
                     "pmcState = %d scanRspPending = %d inMiddleOfRoaming = %d",
                     __func__, pmcState, scanRspPending, inMiddleOfRoaming );
@@ -10858,6 +11245,7 @@ VOS_STATUS wlan_hdd_cancel_remain_on_channel(hdd_context_t *pHddCtx)
     return VOS_STATUS_SUCCESS;
 }
 
+<<<<<<< HEAD
 /**
  * wlan_hdd_handle_dfs_chan_scan () - handles disable/enable DFS channels
  *
@@ -10944,6 +11332,31 @@ VOS_STATUS wlan_hdd_handle_dfs_chan_scan(hdd_context_t *pHddCtx,
     }
 
     return status;
+=======
+hdd_remain_on_chan_ctx_t *hdd_get_remain_on_channel_ctx(hdd_context_t *pHddCtx)
+{
+    hdd_adapter_t *pAdapter;
+    hdd_adapter_list_node_t *pAdapterNode = NULL, *pNext = NULL;
+    hdd_cfg80211_state_t *cfgState;
+    hdd_remain_on_chan_ctx_t *pRemainChanCtx = NULL;
+    VOS_STATUS vosStatus;
+
+    vosStatus = hdd_get_front_adapter (pHddCtx, &pAdapterNode);
+    while (NULL != pAdapterNode && VOS_STATUS_E_EMPTY != vosStatus)
+    {
+        pAdapter = pAdapterNode->pAdapter;
+        if (NULL != pAdapter)
+        {
+            cfgState = WLAN_HDD_GET_CFG_STATE_PTR(pAdapter);
+            pRemainChanCtx = cfgState->remain_on_chan_ctx;
+            if (pRemainChanCtx)
+                break;
+        }
+        vosStatus = hdd_get_next_adapter (pHddCtx, pAdapterNode, &pNext);
+        pAdapterNode = pNext;
+    }
+    return pRemainChanCtx;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 //Register the module init/exit functions

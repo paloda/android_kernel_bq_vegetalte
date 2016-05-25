@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -36,7 +40,11 @@
  *
  */
 #include "palTypes.h"
+<<<<<<< HEAD
 #include "wniCfg.h"
+=======
+#include "wniCfgSta.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "aniGlobal.h"
 #include "sirApi.h"
 #include "sirParams.h"
@@ -88,6 +96,11 @@ static void limProcessAuthFailureTimeout(tpAniSirGlobal);
 static void limProcessAuthRspTimeout(tpAniSirGlobal, tANI_U32);
 static void limProcessAssocFailureTimeout(tpAniSirGlobal, tANI_U32);
 static void limProcessPeriodicJoinProbeReqTimer(tpAniSirGlobal);
+<<<<<<< HEAD
+=======
+static void limProcessAuthRetryTimer(tpAniSirGlobal);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static void limProcessMlmRemoveKeyReq(tpAniSirGlobal pMac, tANI_U32 * pMsgBuf);
 void 
@@ -125,6 +138,10 @@ limSetChannel(tpAniSirGlobal pMac, tANI_U8 channel, tANI_U8 secChannelOffset, tP
 void
 limProcessMlmReqMessages(tpAniSirGlobal pMac, tpSirMsgQ Msg)
 {
+<<<<<<< HEAD
+=======
+    MTRACE(macTraceMsgRx(pMac, NO_SESSION, Msg->type));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     switch (Msg->type)
     {
         case LIM_MLM_START_REQ:             limProcessMlmStartReq(pMac, Msg->bodyptr);   break;
@@ -158,6 +175,12 @@ limProcessMlmReqMessages(tpAniSirGlobal pMac, tpSirMsgQ Msg)
                                             limProcessInsertSingleShotNOATimeout(pMac); break;
         case SIR_LIM_CONVERT_ACTIVE_CHANNEL_TO_PASSIVE:
                                             limConvertActiveChannelToPassiveChannel(pMac); break;
+<<<<<<< HEAD
+=======
+        case SIR_LIM_AUTH_RETRY_TIMEOUT:
+                                            limProcessAuthRetryTimer(pMac);
+                                            break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         case SIR_LIM_DISASSOC_ACK_TIMEOUT:  limProcessDisassocAckTimeout(pMac); break;
         case SIR_LIM_DEAUTH_ACK_TIMEOUT:    limProcessDeauthAckTimeout(pMac); break;
         case LIM_MLM_ADDBA_REQ:             limProcessMlmAddBAReq( pMac, Msg->bodyptr ); break;
@@ -266,9 +289,18 @@ limSuspendLink(tpAniSirGlobal pMac, tSirLinkTrafficCheck trafficCheck,  SUSPEND_
       return;
    }
 
+<<<<<<< HEAD
    if( pMac->lim.gpLimSuspendCallback )
    {
       limLog( pMac, LOGE, "%s:%d: gLimSuspendLink callback is not NULL...something is wrong", __func__, __LINE__ );
+=======
+   if( pMac->lim.gpLimSuspendCallback ||
+       pMac->lim.gLimSystemInScanLearnMode )
+   {
+      limLog( pMac, LOGE, FL("Something is wrong, SuspendLinkCbk:%p "
+              "IsSystemInScanLearnMode:%d"), pMac->lim.gpLimSuspendCallback,
+               pMac->lim.gLimSystemInScanLearnMode );
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
       callback( pMac, eHAL_STATUS_FAILURE, data ); 
       return;
    }
@@ -430,7 +462,10 @@ void limContinuePostChannelScan(tpAniSirGlobal pMac)
         (limActiveScanAllowed(pMac, channelNum)))
     {
         TX_TIMER *periodicScanTimer;
+<<<<<<< HEAD
         PELOG2(limLog(pMac, LOG2, FL("ACTIVE Scan chan %d, sending probe"), channelNum);)
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         pMac->lim.probeCounter++;
         do
@@ -438,8 +473,13 @@ void limContinuePostChannelScan(tpAniSirGlobal pMac)
             /* Prepare and send Probe Request frame for all the SSIDs present in the saved MLM 
                     */
        
+<<<<<<< HEAD
             PELOGE(limLog(pMac, LOG1, FL("sending ProbeReq number %d, for SSID %s on channel: %d"),
                                                 i, pMac->lim.gpLimMlmScanReq->ssId[i].ssId, channelNum);)
+=======
+            limLog(pMac, LOG1, FL("sending ProbeReq number %d, for SSID %s on channel: %d"),
+                                                i, pMac->lim.gpLimMlmScanReq->ssId[i].ssId, channelNum);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             // include additional IE if there is
             status = limSendProbeReqMgmtFrame( pMac, &pMac->lim.gpLimMlmScanReq->ssId[i],
                pMac->lim.gpLimMlmScanReq->bssId, channelNum, pMac->lim.gSelfMacAddr, 
@@ -525,7 +565,11 @@ void limContinuePostChannelScan(tpAniSirGlobal pMac)
     else
     {
         tANI_U32 val;
+<<<<<<< HEAD
         PELOG2(limLog(pMac, LOG2, FL("START PASSIVE Scan chan %d"), channelNum);)
+=======
+        limLog(pMac, LOG1, FL("START PASSIVE Scan chan %d"), channelNum);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         /// Passive Scanning. Activate maxChannelTimer
         MTRACE(macTrace(pMac, TRACE_CODE_TIMER_DEACTIVATE, NO_SESSION, eLIM_MAX_CHANNEL_TIMER));
@@ -662,12 +706,15 @@ void limCovertChannelScanType(tpAniSirGlobal pMac,tANI_U8 channelNum, tANI_BOOLE
         limLog(pMac, LOGE, FL("Invalid scan control list length:%d"), len);
         return ;
     }
+<<<<<<< HEAD
     if (pMac->fActiveScanOnDFSChannels)
     {
         limLog(pMac, LOG1, FL("DFS feature triggered,"
                               "block scan type conversion"));
         return ;
     }
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     for (i=0; (i+1) < len; i+=2)
     {
         if (channelPair[i] == channelNum)
@@ -1305,8 +1352,13 @@ limContinueChannelScan(tpAniSirGlobal pMac)
     }
 
     channelNum = limGetCurrentScanChannel(pMac);
+<<<<<<< HEAD
     PELOG2(limLog(pMac, LOG2, FL("Current Channel to be scanned is %d"),
            channelNum);)
+=======
+    limLog(pMac, LOG1, FL("Current Channel to be scanned is %d"),
+           channelNum);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     limSendHalStartScanReq(pMac, channelNum, eLIM_HAL_START_SCAN_WAIT_STATE);
     return;
@@ -1512,18 +1564,31 @@ void limSetOemDataReqMode(tpAniSirGlobal pMac, eHalStatus status, tANI_U32* data
     if(status != eHAL_STATUS_SUCCESS)
     {
         limLog(pMac, LOGE, FL("OEM_DATA: failed in suspend link"));
+<<<<<<< HEAD
         goto error;
+=======
+        /* If failed to suspend the link, there is no need
+         * to resume link. Return failure.
+         */
+        limSetOemDataReqModeFailed(pMac, status, data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
     else
     {
         PELOGE(limLog(pMac, LOGE, FL("OEM_DATA: Calling limSendHalOemDataReq"));)
         limSendHalOemDataReq(pMac);
+<<<<<<< HEAD
         return;
     }
 
 error:
     limResumeLink(pMac, limSetOemDataReqModeFailed, NULL);
     return ;
+=======
+    }
+
+    return;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 } /*** end limSendHalOemDataReq() ***/
 
 #endif //FEATURE_OEM_DATA_SUPPORT
@@ -2284,6 +2349,15 @@ limProcessMlmJoinReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
           //suspend link
           limLog(pMac, LOG1, FL("Suspend link as LimSession on sessionid %d"
           "is off channel"),sessionId);
+<<<<<<< HEAD
+=======
+          if (limIsLinkSuspended(pMac))
+          {
+            limLog(pMac, LOGE, FL("Link is already suspended for some other"
+                   " reason. Return failure on sessionId:%d"), sessionId);
+            goto error;
+          }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
           limSuspendLink(pMac, eSIR_DONT_CHECK_LINK_TRAFFIC_BEFORE_SCAN, 
                    limProcessMlmPostJoinSuspendLink, (tANI_U32*)psessionEntry );
         }
@@ -2305,6 +2379,7 @@ limProcessMlmJoinReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
     else
     {
         /**
+<<<<<<< HEAD
               * Should not have received JOIN req in states other than
               * Idle state or on AP.
               * Return join confirm with invalid parameters code.
@@ -2315,10 +2390,17 @@ limProcessMlmJoinReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
                psessionEntry->limMlmState);)
         limPrintMlmState(pMac, LOGE, psessionEntry->limMlmState);
         
+=======
+         * Should not have received JOIN req in states other than
+         * Idle state or on AP.
+         * Return join confirm with invalid parameters code.
+         */
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         limLog(pMac, LOGE,
                FL("SessionId:%d Unexpected Join request for role %d state %d "),
                psessionEntry->peSessionId,psessionEntry->limSystemRole,
                psessionEntry->limMlmState);
+<<<<<<< HEAD
     }
 
 error: 
@@ -2330,6 +2412,20 @@ error:
         limPostSmeMessage(pMac, LIM_MLM_JOIN_CNF, (tANI_U32 *) &mlmJoinCnf);
 
 
+=======
+        limPrintMlmState(pMac, LOGE, psessionEntry->limMlmState);
+    }
+
+error: 
+    vos_mem_free(pMsgBuf);
+    if (psessionEntry != NULL)
+        psessionEntry->pLimMlmJoinReq = NULL;
+
+    mlmJoinCnf.resultCode = eSIR_SME_RESOURCES_UNAVAILABLE;
+    mlmJoinCnf.sessionId = sessionId;
+    mlmJoinCnf.protStatusCode = eSIR_MAC_UNSPEC_FAILURE_STATUS;
+    limPostSmeMessage(pMac, LIM_MLM_JOIN_CNF, (tANI_U32 *) &mlmJoinCnf);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 } /*** limProcessMlmJoinReq() ***/
 
 
@@ -2489,6 +2585,7 @@ limProcessMlmAuthReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
                                   (tANI_U8) pMac->lim.gpLimMlmAuthReq->authType;
         authFrameBody.authTransactionSeqNumber = SIR_MAC_AUTH_FRAME_1;
         authFrameBody.authStatusCode = 0;
+<<<<<<< HEAD
         limSendAuthMgmtFrame(pMac,
                              &authFrameBody,
                              pMac->lim.gpLimMlmAuthReq->peerMacAddr,
@@ -2497,6 +2594,19 @@ limProcessMlmAuthReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
         //assign appropriate sessionId to the timer object
         pMac->lim.limTimers.gLimAuthFailureTimer.sessionId = sessionId;
  
+=======
+        pMac->authAckStatus = LIM_AUTH_ACK_NOT_RCD;
+        limSendAuthMgmtFrame(pMac,
+                             &authFrameBody,
+                             pMac->lim.gpLimMlmAuthReq->peerMacAddr,
+                             LIM_NO_WEP_IN_FC, psessionEntry, eSIR_TRUE);
+
+        //assign appropriate sessionId to the timer object
+        pMac->lim.limTimers.gLimAuthFailureTimer.sessionId = sessionId;
+        /* assign appropriate sessionId to the timer object */
+        pMac->lim.limTimers.gLimPeriodicAuthRetryTimer.sessionId = sessionId;
+        limDeactivateAndChangeTimer(pMac, eLIM_AUTH_RETRY_TIMER);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         // Activate Auth failure timer
         MTRACE(macTrace(pMac, TRACE_CODE_TIMER_ACTIVATE, psessionEntry->peSessionId, eLIM_AUTH_FAIL_TIMER));
         if (tx_timer_activate(&pMac->lim.limTimers.gLimAuthFailureTimer)
@@ -2509,7 +2619,21 @@ limProcessMlmAuthReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
             // Cleanup as if auth timer expired
             limProcessAuthFailureTimeout(pMac);
         }
+<<<<<<< HEAD
 
+=======
+        else
+        {
+            MTRACE(macTrace(pMac, TRACE_CODE_TIMER_ACTIVATE,
+                    psessionEntry->peSessionId, eLIM_AUTH_RETRY_TIMER));
+            // Activate Auth Retry timer
+            if (tx_timer_activate(&pMac->lim.limTimers.gLimPeriodicAuthRetryTimer)
+                                                                   != TX_SUCCESS)
+            {
+               limLog(pMac, LOGP, FL("could not activate Auth Retry timer"));
+            }
+        }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         return;
     }
     else
@@ -4218,6 +4342,78 @@ static void limProcessPeriodicJoinProbeReqTimer(tpAniSirGlobal pMac)
     return;
 } /*** limProcessPeriodicJoinProbeReqTimer() ***/
 
+<<<<<<< HEAD
+=======
+/**
+ * limProcessAuthRetryTimer()
+ *
+ *FUNCTION:
+ * This function is called to process Auth Retry request
+ *  send during joining process.
+ *
+ *LOGIC:
+ *
+ *ASSUMPTIONS:
+ *
+ *NOTE:
+ *
+ * @param  pMac      Pointer to Global MAC structure
+ * @return None
+ */
+
+static void limProcessAuthRetryTimer(tpAniSirGlobal pMac)
+{
+    tpPESession  psessionEntry;
+    limLog(pMac, LOG1, FL(" ENTER "));
+    if ((psessionEntry =
+         peFindSessionBySessionId(pMac,
+            pMac->lim.limTimers.gLimPeriodicAuthRetryTimer.sessionId)) == NULL)
+    {
+        limLog(pMac, LOGE,FL("session does not exist for given SessionId : %d"),
+                     pMac->lim.limTimers.gLimPeriodicAuthRetryTimer.sessionId);
+        return;
+    }
+
+    if ((VOS_TRUE ==
+            tx_timer_running(&pMac->lim.limTimers.gLimAuthFailureTimer)) &&
+           (psessionEntry->limMlmState == eLIM_MLM_WT_AUTH_FRAME2_STATE) &&
+                      (LIM_AUTH_ACK_RCD_SUCCESS != pMac->authAckStatus))
+    {
+        tSirMacAuthFrameBody    authFrameBody;
+
+        /* Send the auth retry only in case we have received ack failure
+         * else just restart the retry timer.
+         */
+        if (LIM_AUTH_ACK_RCD_FAILURE == pMac->authAckStatus)
+        {
+          /// Prepare & send Authentication frame
+          authFrameBody.authAlgoNumber =
+                 (tANI_U8) pMac->lim.gpLimMlmAuthReq->authType;
+          authFrameBody.authTransactionSeqNumber = SIR_MAC_AUTH_FRAME_1;
+          authFrameBody.authStatusCode = 0;
+          limLog(pMac, LOGW, FL("Retry Auth "));
+          pMac->authAckStatus = LIM_AUTH_ACK_NOT_RCD;
+          limSendAuthMgmtFrame(pMac,
+                        &authFrameBody,
+                        pMac->lim.gpLimMlmAuthReq->peerMacAddr,
+                        LIM_NO_WEP_IN_FC, psessionEntry, eSIR_TRUE);
+        }
+
+        limDeactivateAndChangeTimer(pMac, eLIM_AUTH_RETRY_TIMER);
+
+        // Activate Auth Retry timer
+        if (tx_timer_activate(&pMac->lim.limTimers.gLimPeriodicAuthRetryTimer)
+                                                                != TX_SUCCESS)
+        {
+            limLog(pMac, LOGE,
+               FL("could not activate Auth Retry failure timer"));
+            return;
+        }
+    }
+    return;
+} /*** limProcessAuthRetryTimer() ***/
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /**
  * limProcessAuthFailureTimeout()

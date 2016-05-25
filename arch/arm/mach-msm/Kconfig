@@ -149,6 +149,10 @@ config ARCH_MSM8916
 	select ARCH_WANT_KMAP_ATOMIC_FLUSH
 	select MSM_RPM_LOG
 	select MSM_JTAGV8 if CORESIGHT_ETMV4
+<<<<<<< HEAD
+=======
+	select HAS_MACH_MEMUTILS
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	select RCU_BOOST if DEBUG_KMEMLEAK
 
 config ARCH_FSM9900
@@ -349,12 +353,15 @@ config ARCH_MSM8226
 	select MSM_IRQ
 endmenu
 
+<<<<<<< HEAD
 config L8700_COMMON
     default n
     bool "Longcheer L8700 board"
     help
         Support for the L8700 longcheer board.
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 config MSM_KRAIT_TBB_ABORT_HANDLER
 	bool "Krait TBB/TBH data abort handler"
 	depends on ARCH_MSM_KRAIT
@@ -427,6 +434,7 @@ config MSM_STACKED_MEMORY
 	  This option is used to indicate the presence of on-die stacked
 	  memory.  When present this memory bank is used for a high speed
 	  shared memory interface.  When not present regular RAM is used.
+<<<<<<< HEAD
 
 config PHYS_OFFSET
 	hex
@@ -441,6 +449,22 @@ config PHYS_OFFSET
 	default "0x00200000" if !MSM_STACKED_MEMORY
 	default "0x10000000"
 
+=======
+
+config PHYS_OFFSET
+	hex
+	default "0x00000000" if ARCH_MSM8974
+	default "0x00000000" if ARCH_APQ8084
+	default "0x00000000" if ARCH_MSM8226
+	default "0x00000000" if ARCH_MSM8610
+	default "0x0b600000" if ARCH_FSM9900
+	default "0x00000000" if ARCH_FSM9010
+	default "0x00000000" if ARCH_MDM9630
+	default "0x80000000" if ARCH_MSMZIRC
+	default "0x00200000" if !MSM_STACKED_MEMORY
+	default "0x10000000"
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 config KERNEL_MSM_CONTIG_MEM_REGION
 	bool "Enable in-kernel contiguous memory region"
 	depends on ARCH_MSM8974
@@ -460,6 +484,7 @@ choice
 	prompt "AMSS modem firmware version"
 
 	default MSM_AMSS_VERSION_6225
+<<<<<<< HEAD
 
 	config MSM_AMSS_VERSION_6210
 		bool "6.2.10"
@@ -467,6 +492,15 @@ choice
 	config MSM_AMSS_VERSION_6220
 		bool "6.2.20"
 
+=======
+
+	config MSM_AMSS_VERSION_6210
+		bool "6.2.10"
+
+	config MSM_AMSS_VERSION_6220
+		bool "6.2.20"
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	config MSM_AMSS_VERSION_6225
 		bool "6.2.20 + New ADSP"
 endchoice
@@ -892,9 +926,15 @@ config MSM_CACHE_ERP
 	  log. Enabling this feature can be used as a system debugging technique
 	  if cache corruption is suspected. Cache error statistics will also be
 	  reported in /proc/cpu/msm_cache_erp.
+<<<<<<< HEAD
 
 	  For production builds, you should probably say 'N' here.
 
+=======
+
+	  For production builds, you should probably say 'N' here.
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 config MSM_L1_ERR_PANIC
 	bool "Panic on L1 cache errors"
 	depends on MSM_CACHE_ERP
@@ -1054,4 +1094,72 @@ config FSM9900_GSM_NL
 	  The serial port connection can be established to communicate with the
 	  GSM NL module.
 
+<<<<<<< HEAD
+=======
+config MMI_DEVICE_DTBS
+	depends on ARCH_MSM
+	default n
+	bool "Motorola Mobility Device DTBs"
+	help
+	  Only include Motorola device specific DTBs to limit the number that
+	  get built during kernel compilation.
+
+config MMI_LUX_DTB
+	depends on ARCH_MSM8916
+	default n
+	bool "Motorola Lux Device DTBs"
+	help
+	  Only include Motorola Lux specific DTBs to limit the number that
+	  get built during kernel compilation.
+
+	  Lux is a Motorola device that uses MSM8939 chipset, which uses the
+	  MSM8916 defconfig.
+
+	  If unsure, say 'n'.
+
+config MMI_MERLIN_DTB
+	depends on ARCH_MSM8916
+	default n
+	bool "Motorola Merlin Device DTBs"
+	help
+	  Only include Motorola Merlin specific DTBs to limit the number that
+	  get built during kernel compilation.
+
+	  Merlin is a Motorola device that uses MSM8939 chipset, which uses the
+	  MSM8916 defconfig.
+
+	  If unsure, say 'n'.
+
+config MMI_OSPREY_DTB
+	depends on ARCH_MSM8916
+	default n
+	bool "Motorola Osprey Device DTBs"
+	help
+	  Only include Motorola Osprey specific DTBs to limit the number that
+	  get built during kernel compilation.
+
+	  Osprey is a Motorola device that uses MSM8916 chipset, which uses the
+	  MSM8916 defconfig.
+
+	  If unsure, say 'n'.
+
+config MMI_SURNIA_DTB
+	depends on ARCH_MSM8916
+	default n
+	bool "Motorola Surnia Device DTBs"
+	help
+	  Only include Motorola Surnia specific DTBs to limit the number that
+	  get built during kernel compilation.
+
+	  Surnia is a Motorola device that uses MSM8916 chipset, which uses the
+	  MSM8916 defconfig.
+
+	  If unsure, say 'n'.
+
+config HAS_MACH_MEMUTILS
+	default n
+	bool "Motorola MSM memcpy enhancements"
+	help
+	Faster memcpy performance for MSM8916.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 endif

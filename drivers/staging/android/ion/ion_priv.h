@@ -33,6 +33,11 @@
 
 #include "ion.h"
 
+<<<<<<< HEAD
+=======
+#define ION_ALLOC_CLIENT_NAME_SIZE 64
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct ion_buffer *ion_handle_buffer(struct ion_handle *handle);
 
 /**
@@ -61,6 +66,10 @@ struct ion_buffer *ion_handle_buffer(struct ion_handle *handle);
  *			handle, used for debugging
  * @pid:		pid of last client to reference this buffer in a
  *			handle, used for debugging
+<<<<<<< HEAD
+=======
+ * @alloc_client_name   name of original allocator, used for debugging
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 */
 struct ion_buffer {
 	struct kref ref;
@@ -88,6 +97,10 @@ struct ion_buffer {
 	int handle_count;
 	char task_comm[TASK_COMM_LEN];
 	pid_t pid;
+<<<<<<< HEAD
+=======
+	char alloc_client_name[ION_ALLOC_CLIENT_NAME_SIZE];
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 void ion_buffer_destroy(struct ion_buffer *buffer);
 

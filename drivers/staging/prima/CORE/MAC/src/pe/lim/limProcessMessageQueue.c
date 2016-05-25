@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2013 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -44,7 +48,11 @@
 #include "wlan_qct_pal_packet.h"
 #include "wlan_qct_wda.h"
 
+<<<<<<< HEAD
 #include "wniCfg.h"
+=======
+#include "wniCfgSta.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "cfgApi.h"
 #include "sirCommon.h"
 #include "utilsApi.h"
@@ -358,8 +366,13 @@ static void limHandleUnknownA2IndexFrames(tpAniSirGlobal pMac, void *pRxPacketIn
 
         if (limIsGroupAddr(pMacHdr->addr2))
         {
+<<<<<<< HEAD
             PELOG2(limLog(pMac, LOG2, FL("Ignoring A2 Invalid Packet received for MC/BC:"));
                     limPrintMacAddr(pMac, pMacHdr->addr2, LOG2);)
+=======
+            limLog(pMac, LOG1, FL("Ignoring A2 Invalid Packet received for MC/BC:"));
+                    limPrintMacAddr(pMac, pMacHdr->addr2, LOG1);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
                 return;
         }
@@ -1086,7 +1099,11 @@ limProcessAbortScanInd(tpAniSirGlobal pMac, tANI_U8 SessionId)
      * SME should send WNI_CFG_BACKGROUND_SCAN_PERIOD indication 
      * to start the background scan again
      */
+<<<<<<< HEAD
     PELOG2(limLog(pMac, LOG2, FL("Processing AbortScan Ind"));)
+=======
+    limLog(pMac, LOG1, FL("Processing AbortScan Ind"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     limAbortBackgroundScan(pMac);
 
@@ -1821,6 +1838,10 @@ limProcessMessages(tpAniSirGlobal pMac, tpSirMsgQ  limMsg)
         case SIR_LIM_DISASSOC_ACK_TIMEOUT:
         case SIR_LIM_DEAUTH_ACK_TIMEOUT:
         case SIR_LIM_CONVERT_ACTIVE_CHANNEL_TO_PASSIVE:
+<<<<<<< HEAD
+=======
+        case SIR_LIM_AUTH_RETRY_TIMEOUT:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
             // These timeout messages are handled by MLM sub module
 
             limProcessMlmReqMessages(pMac,

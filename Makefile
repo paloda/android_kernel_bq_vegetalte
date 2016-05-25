@@ -1,8 +1,17 @@
 VERSION = 3
 PATCHLEVEL = 10
+<<<<<<< HEAD
 SUBLEVEL = 49
 EXTRAVERSION =
+=======
+SUBLEVEL = 100
+EXTRAVERSION = -r15c
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 NAME = TOSSUG Baby Fish
+
+# Added by SQK
+TOP := $(dir $(lastword $(MAKEFILE_LIST)))
+print-%  : ; @echo $* = $($*)
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -126,10 +135,15 @@ PHONY += $(MAKECMDGOALS) sub-make
 $(filter-out _all sub-make $(CURDIR)/Makefile, $(MAKECMDGOALS)) _all: sub-make
 	@:
 
+# KBUILD_RELSRC is the relative path from output to source; this was added so
+# that the absolute path to source files wouldn't get encoded in vmlinux and
+# module binaries
+SUB_KBUILD_SRC = $(if $(KBUILD_RELSRC),$(KBUILD_RELSRC),$(CURDIR))
+
 sub-make: FORCE
 	$(if $(KBUILD_VERBOSE:1=),@)$(MAKE) -C $(KBUILD_OUTPUT) \
-	KBUILD_SRC=$(CURDIR) \
-	KBUILD_EXTMOD="$(KBUILD_EXTMOD)" -f $(CURDIR)/Makefile \
+	KBUILD_SRC=$(SUB_KBUILD_SRC) \
+	KBUILD_EXTMOD="$(KBUILD_EXTMOD)" -f $(SUB_KBUILD_SRC)/Makefile \
 	$(filter-out _all sub-make,$(MAKECMDGOALS))
 
 # Leave processing to above invocation of make
@@ -377,7 +391,14 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
+<<<<<<< HEAD
 		   -fno-delete-null-pointer-checks
+=======
+		   -fno-delete-null-pointer-checks \
+		   $(call cc-option,-Wno-unused-const-variable,) \
+		   -std=gnu89
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
@@ -577,7 +598,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
 else
-KBUILD_CFLAGS	+= -O2
+KBUILD_CFLAGS	+= -O3
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
@@ -872,7 +893,8 @@ define filechk_utsrelease.h
 	  echo '"$(KERNELRELEASE)" exceeds $(uts_len) characters' >&2;    \
 	  exit 1;                                                         \
 	fi;                                                               \
-	(echo \#define UTS_RELEASE \"$(KERNELRELEASE)\";)
+	(echo \#define UTS_RELEASE \"$(KERNELRELEASE)\";                  \
+	echo \#define SHORT_UTS_RELEASE \"$(KERNELVERSION)$(CONFIG_LOCALVERSION)\";)
 endef
 
 define filechk_version.h
@@ -1447,6 +1469,11 @@ endif
 clean := -f $(if $(KBUILD_SRC),$(srctree)/)scripts/Makefile.clean obj
 
 endif	# skip-makefile
+
+# dt image builder
+ifeq "$(TOP)" "./"
+include bootimage.mk
+endif
 
 PHONY += FORCE
 FORCE:

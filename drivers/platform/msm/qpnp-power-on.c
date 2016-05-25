@@ -24,6 +24,10 @@
 #include <linux/input.h>
 #include <linux/log2.h>
 #include <linux/qpnp/power-on.h>
+<<<<<<< HEAD
+=======
+#include <linux/time.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define CREATE_MASK(NUM_BITS, POS) \
 	((unsigned char) (((1 << (NUM_BITS)) - 1) << (POS)))
@@ -76,6 +80,13 @@
 
 #define QPNP_PON_SEC_UNLOCK			0xA5
 
+<<<<<<< HEAD
+=======
+/* spared registers for storing extra reset information */
+#define QPNP_PON_EXTRA_RESET_INFO_1(base)	(base + 0x8D)
+#define QPNP_PON_EXTRA_RESET_INFO_2(base)	(base + 0x8E)
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define QPNP_PON_WARM_RESET_TFT			BIT(4)
 
 #define QPNP_PON_RESIN_PULL_UP			BIT(0)
@@ -165,6 +176,11 @@ struct qpnp_pon {
 	bool store_hard_reset_reason;
 };
 
+<<<<<<< HEAD
+=======
+int qpnp_pon_key_status;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static struct qpnp_pon *sys_reset_dev;
 
 static u32 s1_delay[PON_S1_COUNT_MAX + 1] = {
@@ -348,6 +364,44 @@ static ssize_t qpnp_pon_dbc_store(struct device *dev,
 
 static DEVICE_ATTR(debounce_us, 0664, qpnp_pon_dbc_show, qpnp_pon_dbc_store);
 
+<<<<<<< HEAD
+=======
+int qpnp_pon_store_extra_reset_info(u16 mask, u16 val)
+{
+	int rc = 0;
+	u16 extra_reset_info_reg;
+	struct qpnp_pon *pon = sys_reset_dev;
+
+	if (!pon)
+		return -ENODEV;
+
+	if (mask & 0xFF) {
+		extra_reset_info_reg = QPNP_PON_EXTRA_RESET_INFO_1(pon->base);
+		rc = qpnp_pon_masked_write(pon, extra_reset_info_reg,
+		    mask & 0xFF, val & 0xFF);
+		if (rc) {
+			pr_err("Failed to store extra reset info to 0x%x\n",
+			    extra_reset_info_reg);
+			return rc;
+		}
+	}
+
+	if (mask & 0xFF00) {
+		extra_reset_info_reg = QPNP_PON_EXTRA_RESET_INFO_2(pon->base);
+		rc = qpnp_pon_masked_write(pon, extra_reset_info_reg,
+		    (mask & 0xFF00) >> 8, (val & 0xFF00) >> 8);
+		if (rc) {
+			pr_err("Failed to store extra reset info to 0x%x\n",
+			    extra_reset_info_reg);
+			return rc;
+		}
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL(qpnp_pon_store_extra_reset_info);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /**
  * qpnp_pon_system_pwr_off - Configure system-reset PMIC for shutdown or reset
  * @type: Determines the type of power off to perform - shutdown, reset, etc
@@ -556,6 +610,12 @@ qpnp_pon_input_dispatch(struct qpnp_pon *pon, u32 pon_type)
 	struct qpnp_pon_config *cfg = NULL;
 	u8 pon_rt_sts = 0, pon_rt_bit = 0;
 	u32 key_status;
+<<<<<<< HEAD
+=======
+	struct timeval timestamp;
+	struct tm tm;
+	char buff[255];
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	cfg = qpnp_get_cfg(pon, pon_type);
 	if (!cfg)
@@ -573,9 +633,27 @@ qpnp_pon_input_dispatch(struct qpnp_pon *pon, u32 pon_type)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	switch (cfg->pon_type) {
 	case PON_KPDPWR:
 		pon_rt_bit = QPNP_PON_KPDPWR_N_SET;
+=======
+	qpnp_pon_key_status = pon_rt_sts;
+
+	switch (cfg->pon_type) {
+	case PON_KPDPWR:
+		pon_rt_bit = QPNP_PON_KPDPWR_N_SET;
+		/* get the time stamp in readable format to print*/
+		do_gettimeofday(&timestamp);
+		time_to_tm((time_t)(timestamp.tv_sec), 0, &tm);
+		snprintf(buff, sizeof(buff),
+			"%u-%02d-%02d %02d:%02d:%02d UTC",
+			(int) tm.tm_year + 1900, tm.tm_mon + 1,
+			tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+		pr_info("Report pwrkey %s event at: %s\n", pon_rt_bit &
+			pon_rt_sts ? "press" : "release", buff);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	case PON_RESIN:
 		pon_rt_bit = QPNP_PON_RESIN_N_SET;
@@ -604,8 +682,11 @@ qpnp_pon_input_dispatch(struct qpnp_pon *pon, u32 pon_type)
 
 	input_report_key(pon->pon_input, cfg->key_code, key_status);
 	input_sync(pon->pon_input);
+<<<<<<< HEAD
 	pr_notice("%s: KEY[%u] %s\n", __func__,
 		    cfg->key_code, key_status ? "Down" : "Up");
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	cfg->old_state = !!key_status;
 

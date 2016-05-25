@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -30,6 +34,7 @@
 #include "mdss_panel.h"
 #include "mdss_mdp.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_L8700_COMMON
 #define STATUS_CHECK_INTERVAL_MS 2000
 #else
@@ -40,6 +45,15 @@
 
 static uint32_t interval = STATUS_CHECK_INTERVAL_MS;
 static uint32_t dsi_status_disable = DSI_STATUS_CHECK_DISABLE;
+=======
+#define STATUS_CHECK_INTERVAL_MS 8000
+#define STATUS_CHECK_INTERVAL_MIN_MS 50
+#define DSI_STATUS_CHECK_INIT -1
+#define DSI_STATUS_CHECK_DISABLE 1
+
+static uint32_t interval = STATUS_CHECK_INTERVAL_MS;
+static int32_t dsi_status_disable = DSI_STATUS_CHECK_INIT;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct dsi_status_data *pstatus_data;
 
 /*
@@ -64,8 +78,12 @@ static void check_dsi_ctrl_status(struct work_struct *work)
 		return;
 	}
 
+<<<<<<< HEAD
 	if (mdss_panel_is_power_off(pdsi_status->mfd->panel_power_state) ||
 			pdsi_status->mfd->shutdown_pending) {
+=======
+	if (mdss_panel_is_power_off(pdsi_status->mfd->panel_power_state)) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_err("%s: panel off\n", __func__);
 		return;
 	}
@@ -139,6 +157,7 @@ static int fb_event_callback(struct notifier_block *self,
 
 	pinfo = &ctrl_pdata->panel_data.panel_info;
 
+<<<<<<< HEAD
 	if (!(pinfo->esd_check_enabled)) {
 		pr_debug("ESD check is not enaled in panel dtsi\n");
 		return NOTIFY_DONE;
@@ -146,6 +165,13 @@ static int fb_event_callback(struct notifier_block *self,
 
 	if (dsi_status_disable) {
 		pr_debug("%s: DSI status disabled\n", __func__);
+=======
+	if ((!(pinfo->esd_check_enabled) &&
+			dsi_status_disable) ||
+			(dsi_status_disable == DSI_STATUS_CHECK_DISABLE)) {
+		pr_debug("ESD check is disabled.\n");
+		cancel_delayed_work(&pdata->check_status);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return NOTIFY_DONE;
 	}
 

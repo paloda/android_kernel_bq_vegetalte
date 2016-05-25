@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -211,6 +215,10 @@ struct mdss_mdp_ctl {
 	struct mdss_mdp_perf_params new_perf;
 	u32 perf_transaction_status;
 	bool perf_release_ctl_bw;
+<<<<<<< HEAD
+=======
+	u64 bw_pending;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	bool traffic_shaper_enabled;
 	u32  traffic_shaper_mdp_clk;
@@ -251,6 +259,10 @@ struct mdss_mdp_ctl {
 	int (*restore_fnc) (struct mdss_mdp_ctl *ctl);
 
 	struct blocking_notifier_head notifier_head;
+<<<<<<< HEAD
+=======
+	void (*ctx_dump_fnc) (struct mdss_mdp_ctl *ctl);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	void *priv_data;
 	u32 wb_type;
@@ -495,6 +507,10 @@ struct mdss_overlay_private {
 	struct mdss_mdp_data free_list[MAX_FREE_LIST_SIZE];
 	int free_list_size;
 	int ad_state;
+<<<<<<< HEAD
+=======
+	int dyn_pu_state;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	bool handoff;
 	u32 splash_mem_addr;
@@ -931,8 +947,15 @@ void mdss_mdp_crop_rect(struct mdss_rect *src_rect,
 	const struct mdss_rect *sci_rect);
 
 
+<<<<<<< HEAD
 int mdss_mdp_wb_kickoff(struct msm_fb_data_type *mfd);
 int mdss_mdp_wb_ioctl_handler(struct msm_fb_data_type *mfd, u32 cmd, void *arg);
+=======
+int mdss_mdp_wb_kickoff(struct msm_fb_data_type *mfd,
+		struct mdss_mdp_commit_cb *commit_cb);
+int mdss_mdp_wb_ioctl_handler(struct msm_fb_data_type *mfd, u32 cmd, void *arg);
+int mdss_dsi_ioctl_handler(struct mdss_panel_data *pdata, u32 cmd, void *arg);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 int mdss_mdp_get_ctl_mixers(u32 fb_num, u32 *mixer_id);
 u32 mdss_mdp_get_mixercfg(struct mdss_mdp_mixer *mixer);

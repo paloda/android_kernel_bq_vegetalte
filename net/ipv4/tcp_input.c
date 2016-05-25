@@ -4023,6 +4023,7 @@ static void tcp_sack_remove(struct tcp_sock *tp)
 	struct tcp_sack_block *sp = &tp->selective_acks[0];
 	int num_sacks = tp->rx_opt.num_sacks;
 	int this_sack;
+	if (num_sacks > 4) num_sacks = 4;
 
 	/* Empty ofo queue, hence, all the SACKs are eaten. Clear. */
 	if (skb_queue_empty(&tp->out_of_order_queue)) {
@@ -4932,7 +4933,7 @@ static int tcp_copy_to_iovec(struct sock *sk, struct sk_buff *skb, int hlen)
 		err = skb_copy_datagram_iovec(skb, hlen, tp->ucopy.iov, chunk);
 	else
 		err = skb_copy_and_csum_datagram_iovec(skb, hlen,
-						       tp->ucopy.iov);
+						       tp->ucopy.iov, chunk);
 
 	if (!err) {
 		tp->ucopy.len -= chunk;
@@ -5286,7 +5287,7 @@ slow_path:
 	if (len < (th->doff << 2) || tcp_checksum_complete_user(sk, skb))
 		goto csum_error;
 
-	if (!th->ack && !th->rst)
+	if (!th->ack && !th->rst && !th->syn)
 		goto discard;
 
 	/*
@@ -5701,7 +5702,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 			goto discard;
 	}
 
-	if (!th->ack && !th->rst)
+	if (!th->ack && !th->rst && !th->syn)
 		goto discard;
 
 	if (!tcp_validate_incoming(sk, skb, th, 0))

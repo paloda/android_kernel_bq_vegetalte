@@ -707,6 +707,18 @@ config MFD_PALMAS
 	  If you say yes here you get support for the Palmas
 	  series of PMIC chips from Texas Instruments.
 
+config MFD_TI_LMU
+	tristate "TI Lighting Management Unit driver"
+	depends on I2C
+	select MFD_CORE
+	select REGMAP_I2C
+	help
+	  Say yes here to enable support for TI LMU chips.
+
+	  TI LMU MFD supports LM3532, LM3631, LM3633, LM3695 and LM3697.
+	  It consists of backlight, light effect, LED and regulator driver.
+	  It provides consistent device controls for lighting functions.
+
 config MFD_TI_SSP
 	tristate "TI Sequencer Serial Port support"
 	depends on ARCH_DAVINCI_TNETV107X
@@ -782,9 +794,6 @@ config MFD_TPS65217
 	  These include voltage regulators, lithium ion/polymer battery
 	  charger, wled and other features that are often used in portable
 	  devices.
-
-	  This driver can also be built as a module.  If so, the module
-	  will be called tps65217.
 
 config MFD_TPS6586X
 	bool "TI TPS6586x Power Management chips"
@@ -1036,11 +1045,24 @@ config MFD_WM5102
 	help
 	  Support for Wolfson Microelectronics WM5102 low power audio SoC
 
-config MFD_WM5110
-	bool "Wolfson Microelectronics WM5110"
+config MFD_FLORIDA
+	bool "Wolfson Microelectronics Florida class codecs"
 	depends on MFD_ARIZONA
 	help
-	  Support for Wolfson Microelectronics WM5110 low power audio SoC
+	  Support for Wolfson Microelectronics Florida class low power audio SoC
+	  such as the WM8280
+
+config MFD_WM8998
+	bool "Support Wolfson Microelectronics WM8998"
+	depends on MFD_ARIZONA
+	help
+	  Support for Wolfson Microelectronics WM8998 low power audio SoC
+
+config MFD_WM8997
+	bool "Wolfson Microelectronics WM8997"
+	depends on MFD_ARIZONA
+	help
+	  Support for Wolfson Microelectronics WM8997 low power audio SoC
 
 config MFD_WM8400
 	bool "Wolfson Microelectronics WM8400"

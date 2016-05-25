@@ -2,7 +2,11 @@
  * Core MDSS framebuffer driver.
  *
  * Copyright (C) 2007 Google Incorporated
+<<<<<<< HEAD
  * Copyright (c) 2008-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2008-2014, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -105,6 +109,11 @@ static int mdss_fb_pan_idle(struct msm_fb_data_type *mfd);
 static int mdss_fb_send_panel_event(struct msm_fb_data_type *mfd,
 					int event, void *arg);
 static void mdss_fb_set_mdp_sync_pt_threshold(struct msm_fb_data_type *mfd);
+<<<<<<< HEAD
+=======
+static void mdss_fb_scale_bl(struct msm_fb_data_type *mfd, u32 *bl_lvl);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 void mdss_fb_no_update_notify_timer_cb(unsigned long data)
 {
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)data;
@@ -235,6 +244,14 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 	struct msm_fb_data_type *mfd = dev_get_drvdata(led_cdev->dev->parent);
 	int bl_lvl;
 
+<<<<<<< HEAD
+=======
+	if (mfd->boot_notification_led) {
+		led_trigger_event(mfd->boot_notification_led, 0);
+		mfd->boot_notification_led = NULL;
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (value > mfd->panel_info->brightness_max)
 		value = mfd->panel_info->brightness_max;
 
@@ -355,7 +372,11 @@ static void mdss_fb_parse_dt_split(struct msm_fb_data_type *mfd)
 static ssize_t mdss_fb_store_split(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t len)
 {
+<<<<<<< HEAD
 	u32 data[2] = {0};
+=======
+	int data[2] = {0};
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct fb_info *fbi = dev_get_drvdata(dev);
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
 
@@ -751,13 +772,115 @@ static struct attribute_group mdss_fb_attr_group = {
 	.attrs = mdss_fb_attrs,
 };
 
+<<<<<<< HEAD
+=======
+static struct mdss_panel_info *get_panel_info(struct device *dev)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = fbi->par;
+	struct mdss_panel_info *pinfo = mfd->panel_info;
+
+	return pinfo;
+}
+
+static ssize_t panel_name_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct mdss_panel_info *pinfo = get_panel_info(dev);
+
+	return snprintf(buf, PAGE_SIZE, "%s\n", pinfo->panel_family_name);
+}
+
+static ssize_t panel_ver_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct mdss_panel_info *pinfo = get_panel_info(dev);
+
+	return snprintf(buf, PAGE_SIZE, "0x%08x\n", pinfo->panel_ver);
+}
+
+static ssize_t panel_supplier_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct mdss_panel_info *pinfo = get_panel_info(dev);
+
+	return snprintf(buf, PAGE_SIZE, "%s\n", pinfo->panel_supplier);
+}
+
+static ssize_t panel_man_id_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct mdss_panel_info *pinfo = get_panel_info(dev);
+
+	return snprintf(buf, PAGE_SIZE, "0x%02x\n",
+		pinfo->panel_ver & 0xff);
+}
+
+static ssize_t panel_controller_ver_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct mdss_panel_info *pinfo = get_panel_info(dev);
+
+	return snprintf(buf, PAGE_SIZE, "0x%02x\n",
+		(pinfo->panel_ver & 0xff00) >> 8);
+}
+
+static ssize_t panel_controller_drv_ver_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct mdss_panel_info *pinfo = get_panel_info(dev);
+
+	return snprintf(buf, PAGE_SIZE, "0x%02x\n",
+		(pinfo->panel_ver & 0xff0000) >> 16);
+}
+
+static DEVICE_ATTR(panel_name, S_IRUGO,
+					panel_name_show, NULL);
+static DEVICE_ATTR(panel_ver, S_IRUGO,
+					panel_ver_show, NULL);
+static DEVICE_ATTR(panel_supplier, S_IRUGO,
+					panel_supplier_show, NULL);
+static DEVICE_ATTR(man_id, S_IRUGO,
+					panel_man_id_show, NULL);
+static DEVICE_ATTR(controller_ver, S_IRUGO,
+					panel_controller_ver_show, NULL);
+static DEVICE_ATTR(controller_drv_ver, S_IRUGO,
+					panel_controller_drv_ver_show, NULL);
+static struct attribute *panel_id_attrs[] = {
+	&dev_attr_panel_name.attr,
+	&dev_attr_panel_ver.attr,
+	&dev_attr_panel_supplier.attr,
+	&dev_attr_man_id.attr,
+	&dev_attr_controller_ver.attr,
+	&dev_attr_controller_drv_ver.attr,
+	NULL,
+};
+
+static struct attribute_group panel_id_attr_group = {
+	.attrs = panel_id_attrs,
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int mdss_fb_create_sysfs(struct msm_fb_data_type *mfd)
 {
 	int rc;
 
 	rc = sysfs_create_group(&mfd->fbi->dev->kobj, &mdss_fb_attr_group);
+<<<<<<< HEAD
 	if (rc)
 		pr_err("sysfs group creation failed, rc=%d\n", rc);
+=======
+	if (rc) {
+		pr_err("sysfs group creation failed, rc=%d\n", rc);
+		goto err;
+	}
+
+	rc = sysfs_create_group(&mfd->fbi->dev->kobj, &panel_id_attr_group);
+	if (rc)
+		pr_err("panel id group creation failed, rc=%d\n", rc);
+
+err:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return rc;
 }
 
@@ -782,6 +905,10 @@ static int mdss_fb_probe(struct platform_device *pdev)
 	struct msm_fb_data_type *mfd = NULL;
 	struct mdss_panel_data *pdata;
 	struct fb_info *fbi;
+<<<<<<< HEAD
+=======
+	const char *data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int rc;
 	u32 cell_index = 0;
 
@@ -796,7 +923,10 @@ static int mdss_fb_probe(struct platform_device *pdev)
 	if (cell_index > fbi_list_index)
 		return -EPROBE_DEFER;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/*
 	 * alloc framebuffer info + par data
 	 */
@@ -807,6 +937,10 @@ static int mdss_fb_probe(struct platform_device *pdev)
 	}
 
 	mfd = (struct msm_fb_data_type *)fbi->par;
+<<<<<<< HEAD
+=======
+	pdata->mfd = mfd;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mfd->key = MFD_KEY;
 	mfd->fbi = fbi;
 	mfd->panel_info = &pdata->panel_info;
@@ -824,11 +958,52 @@ static int mdss_fb_probe(struct platform_device *pdev)
 	mfd->fb_imgType = MDP_RGBA_8888;
 	mfd->calib_mode_bl = 0;
 
+<<<<<<< HEAD
+=======
+	if (mfd->panel_info->cont_splash_enabled) {
+		mfd->bl_updated = true;
+		MDSS_BRIGHT_TO_BL(mfd->bl_level,
+				mfd->panel_info->brightness_max,
+				mfd->panel_info->bl_max,
+				mfd->panel_info->brightness_max);
+
+		mfd->bl_level_scaled = mfd->bl_level;
+		if (!IS_CALIB_MODE_BL(mfd))
+			mdss_fb_scale_bl(mfd, &mfd->bl_level_scaled);
+	}
+
+	if (mfd->panel.type == MIPI_VIDEO_PANEL ||
+				mfd->panel.type == MIPI_CMD_PANEL) {
+		rc = of_property_read_string(pdev->dev.of_node,
+				"qcom,mdss-fb-format", &data);
+		if (!rc) {
+			if (!strcmp(data, "rgb888"))
+				mfd->fb_imgType = MDP_RGB_888;
+			else if (!strcmp(data, "rgb565"))
+				mfd->fb_imgType = MDP_RGB_565;
+			else
+				mfd->fb_imgType = MDP_RGBA_8888;
+		}
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mfd->pdev = pdev;
 	mfd->split_mode = MDP_SPLIT_MODE_NONE;
 	if (pdata->next)
 		mfd->split_mode = MDP_SPLIT_MODE_LM;
 	mfd->mdp = *mdp_instance;
+<<<<<<< HEAD
+=======
+
+	rc = of_property_read_bool(pdev->dev.of_node,
+		"qcom,boot-indication-enabled");
+
+	if (rc) {
+		led_trigger_register_simple("boot-indication",
+			&(mfd->boot_notification_led));
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	INIT_LIST_HEAD(&mfd->proc_list);
 
 	mutex_init(&mfd->bl_lock);
@@ -1198,6 +1373,10 @@ void mdss_fb_set_backlight(struct msm_fb_data_type *mfd, u32 bkl_lvl)
 			pdata->set_backlight(pdata, temp);
 			mfd->bl_level = bkl_lvl;
 			mfd->bl_level_scaled = temp;
+<<<<<<< HEAD
+=======
+			mfd->bl_updated = 1;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			bl_notify_needed = true;
 		}
 		if (bl_notify_needed)
@@ -1222,6 +1401,11 @@ void mdss_fb_update_backlight(struct msm_fb_data_type *mfd)
 			if (mfd->mdp.ad_calc_bl)
 				(*mfd->mdp.ad_calc_bl)(mfd, temp, &temp,
 								&bl_notify);
+<<<<<<< HEAD
+=======
+			if (!IS_CALIB_MODE_BL(mfd))
+				mdss_fb_scale_bl(mfd, &temp);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			pdata->set_backlight(pdata, temp);
 			mfd->bl_level_scaled = mfd->unset_bl_level;
 			mfd->bl_updated = 1;
@@ -1263,6 +1447,7 @@ static void mdss_fb_stop_disp_thread(struct msm_fb_data_type *mfd)
 	mfd->disp_thread = NULL;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_L8700_COMMON)
 static bool boot_mode_charge;
 static int __init mdss_fb_boot_mode(char *opt)
@@ -1278,6 +1463,8 @@ static int __init mdss_fb_boot_mode(char *opt)
 __setup("androidboot.mode=", mdss_fb_boot_mode);
 #endif
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int mdss_fb_unblank_sub(struct msm_fb_data_type *mfd)
 {
 	int ret = 0;
@@ -1315,6 +1502,7 @@ static int mdss_fb_unblank_sub(struct msm_fb_data_type *mfd)
 				msecs_to_jiffies(mfd->idle_time));
 	}
 
+<<<<<<< HEAD
 #if defined(CONFIG_L8700_COMMON)
 	if (boot_mode_charge)
 		goto error;
@@ -1339,6 +1527,8 @@ static int mdss_fb_unblank_sub(struct msm_fb_data_type *mfd)
 		mutex_unlock(&mfd->bl_lock);
 	}
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 error:
 	return ret;
 }
@@ -1349,7 +1539,10 @@ static int mdss_fb_blank_sub(int blank_mode, struct fb_info *info,
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
 	int ret = 0;
 	int cur_power_state, req_power_state = MDSS_PANEL_POWER_OFF;
+<<<<<<< HEAD
 	u32 cur_bl = 0;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (!mfd || !op_enable)
 		return -EPERM;
@@ -1405,7 +1598,24 @@ static int mdss_fb_blank_sub(int blank_mode, struct fb_info *info,
 	default:
 		pr_debug("blank powerdown called. cur mode=%d, req mode=%d\n",
 			cur_power_state, req_power_state);
+<<<<<<< HEAD
 		if (mdss_fb_is_power_on(mfd) && mfd->mdp.off_fnc) {
+=======
+		/*
+		 * If doze mode is requested when panel is already off,
+		 * then first unblank the panel before entering doze mode
+		 */
+		if ((MDSS_PANEL_POWER_DOZE == req_power_state) &&
+			mdss_fb_is_power_off(mfd) && mfd->mdp.on_fnc) {
+			pr_debug("off --> doze. switch to on first\n");
+			ret = mfd->mdp.on_fnc(mfd);
+			if (ret == 0)
+				mfd->panel_power_state = MDSS_PANEL_POWER_ON;
+		}
+
+		if (mdss_fb_is_power_on(mfd) && mfd->mdp.off_fnc) {
+			int bl_level_old;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			cur_power_state = mfd->panel_power_state;
 
 			mutex_lock(&mfd->update.lock);
@@ -1422,12 +1632,34 @@ static int mdss_fb_blank_sub(int blank_mode, struct fb_info *info,
 				/* Stop Display thread */
 				if (mfd->disp_thread)
 					mdss_fb_stop_disp_thread(mfd);
+<<<<<<< HEAD
 				cur_bl = mfd->bl_level;
 				mutex_lock(&mfd->bl_lock);
 				mdss_fb_set_backlight(mfd, 0);
 				mfd->bl_updated = 0;
 				mfd->unset_bl_level = cur_bl;
 				mutex_unlock(&mfd->bl_lock);
+=======
+
+				if (mfd->bl_updated)
+					bl_level_old = mfd->bl_level;
+				else
+					bl_level_old = mfd->unset_bl_level;
+
+				mutex_lock(&mfd->bl_lock);
+				mdss_fb_set_backlight(mfd, 0);
+				mfd->unset_bl_level = bl_level_old;
+				mfd->bl_updated = 0;
+				mutex_unlock(&mfd->bl_lock);
+
+				if (mfd->shutdown_pending &&
+					mfd->panel_info->bl_shutdown_delay)
+					usleep_range(
+					mfd->panel_info->bl_shutdown_delay
+					* 1000,
+					mfd->panel_info->bl_shutdown_delay
+					* 1000);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			}
 			mfd->panel_power_state = req_power_state;
 
@@ -1557,6 +1789,10 @@ int mdss_fb_alloc_fb_ion_memory(struct msm_fb_data_type *mfd, size_t fb_size)
 		}
 	} else {
 		pr_err("No IOMMU Domain\n");
+<<<<<<< HEAD
+=======
+		rc = -EINVAL;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		goto fb_mmap_failed;
 	}
 
@@ -2787,10 +3023,22 @@ static int __mdss_fb_display_thread(void *data)
 				mfd->index);
 
 	while (1) {
+<<<<<<< HEAD
 		wait_event(mfd->commit_wait_q,
 				(atomic_read(&mfd->commits_pending) ||
 				 kthread_should_stop()));
 
+=======
+		ret = wait_event_interruptible(mfd->commit_wait_q,
+				(atomic_read(&mfd->commits_pending) ||
+				 kthread_should_stop()));
+
+		if (ret) {
+			pr_info("%s: interrupted", __func__);
+			continue;
+		}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (kthread_should_stop())
 			break;
 
@@ -2859,10 +3107,13 @@ static int mdss_fb_check_var(struct fb_var_screeninfo *var,
 			(var->blue.offset == 0) &&
 			(var->green.offset == 8) &&
 			(var->red.offset == 16)) &&
+<<<<<<< HEAD
 		    !((var->transp.offset == 0) &&
 			(var->blue.offset == 24) &&
 			(var->green.offset == 16) &&
 			(var->red.offset == 8)) &&
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		    !((var->transp.offset == 24) &&
 			(var->blue.offset == 16) &&
 			(var->green.offset == 8) &&
@@ -2909,7 +3160,11 @@ static int mdss_fb_check_var(struct fb_var_screeninfo *var,
 		int rc;
 
 		memcpy(&mfd->reconfig_panel_info, mfd->panel_info,
+<<<<<<< HEAD
 				sizeof(mfd->reconfig_panel_info));
+=======
+			sizeof(mfd->reconfig_panel_info));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		mdss_fb_var_to_panelinfo(var, &mfd->reconfig_panel_info);
 		rc = mdss_fb_send_panel_event(mfd, MDSS_EVENT_CHECK_PARAMS,
 			&mfd->reconfig_panel_info);
@@ -3560,6 +3815,20 @@ int mdss_fb_get_phys_info(dma_addr_t *start, unsigned long *len, int fb_num)
 }
 EXPORT_SYMBOL(mdss_fb_get_phys_info);
 
+<<<<<<< HEAD
+=======
+bool msm_fb_get_cont_splash(void)
+{
+	struct msm_fb_data_type *mfd = NULL;
+	/*Check primary panel cont splash state*/
+	mfd = (struct msm_fb_data_type *)fbi_list[0]->par;
+	if (mfd)
+		return mfd->panel_info->cont_splash_enabled;
+	return false;
+}
+EXPORT_SYMBOL(msm_fb_get_cont_splash);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 int __init mdss_fb_init(void)
 {
 	int rc = -ENODEV;

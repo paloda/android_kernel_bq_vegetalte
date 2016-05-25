@@ -25,6 +25,10 @@ enum transport_type {
 	USB_GADGET_XPORT_HSIC,
 	USB_GADGET_XPORT_HSUART,
 	USB_GADGET_XPORT_ETHER,
+<<<<<<< HEAD
+=======
+	USB_GADGET_XPORT_BAM_DMUX,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	USB_GADGET_XPORT_NONE,
 };
 
@@ -51,6 +55,11 @@ static char *xport_to_str(enum transport_type t)
 		return "HSUART";
 	case USB_GADGET_XPORT_ETHER:
 		return "ETHER";
+<<<<<<< HEAD
+=======
+	case USB_GADGET_XPORT_BAM_DMUX:
+		return "BAM_DMUX";
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case USB_GADGET_XPORT_NONE:
 		return "NONE";
 	default:
@@ -81,6 +90,11 @@ static enum transport_type str_to_xport(const char *name)
 		return USB_GADGET_XPORT_HSUART;
 	if (!strncasecmp("ETHER", name, XPORT_STR_LEN))
 		return USB_GADGET_XPORT_ETHER;
+<<<<<<< HEAD
+=======
+	if (!strncasecmp("BAM_DMUX", name, XPORT_STR_LEN))
+		return USB_GADGET_XPORT_BAM_DMUX;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!strncasecmp("", name, XPORT_STR_LEN))
 		return USB_GADGET_XPORT_NONE;
 

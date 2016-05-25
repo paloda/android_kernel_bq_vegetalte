@@ -1064,6 +1064,7 @@ static void sdhci_prepare_data(struct sdhci_host *host, struct mmc_command *cmd)
 	/* Set the DMA boundary value and block size */
 	sdhci_set_blk_size_reg(host, data->blksz, SDHCI_DEFAULT_BOUNDARY_ARG);
 	sdhci_writew(host, data->blocks, SDHCI_BLOCK_COUNT);
+	host->last_blocks = 0;
 }
 
 static void sdhci_set_transfer_mode(struct sdhci_host *host,
@@ -1167,7 +1168,11 @@ static void sdhci_finish_data(struct sdhci_host *host)
 		tasklet_schedule(&host->finish_tasklet);
 }
 
+<<<<<<< HEAD
 #define SDHCI_REQUEST_TIMEOUT	10 /* Default request timeout in seconds */
+=======
+#define SDHCI_REQUEST_TIMEOUT	8 /* Default request timeout in seconds */
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static void sdhci_send_command(struct sdhci_host *host, struct mmc_command *cmd)
 {
@@ -1200,6 +1205,7 @@ static void sdhci_send_command(struct sdhci_host *host, struct mmc_command *cmd)
 		}
 		timeout--;
 		udelay(1);
+<<<<<<< HEAD
 	}
 
 	mod_timer(&host->timer, jiffies + SDHCI_REQUEST_TIMEOUT * HZ);
@@ -1207,6 +1213,31 @@ static void sdhci_send_command(struct sdhci_host *host, struct mmc_command *cmd)
 	if (cmd->cmd_timeout_ms > SDHCI_REQUEST_TIMEOUT * MSEC_PER_SEC)
 		mod_timer(&host->timer, jiffies +
 				(msecs_to_jiffies(cmd->cmd_timeout_ms * 2)));
+=======
+	}
+
+	/*
+	 * Set the controller catch-all timer to:
+	 *  - 20s for quirky cards
+	 * otherwise:
+	 *  - 500ms for CMD13
+	 *  - 8s for everything else
+	 */
+	if ((host->mmc->card) && (host->mmc->card->quirks & MMC_QUIRK_INAND_DATA_TIMEOUT))
+		timeout = 20000;
+	else {
+		if (cmd->opcode == MMC_SEND_STATUS)
+			timeout = 500;
+		else
+			timeout = SDHCI_REQUEST_TIMEOUT * MSEC_PER_SEC;
+	}
+
+	if (timeout < cmd->cmd_timeout_ms * 2)
+		timeout = cmd->cmd_timeout_ms * 2;
+
+	host->timeout_jiffies = msecs_to_jiffies(timeout);
+	mod_timer(&host->timer, jiffies + host->timeout_jiffies);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	host->cmd = cmd;
 
@@ -1247,6 +1278,12 @@ static void sdhci_send_command(struct sdhci_host *host, struct mmc_command *cmd)
 	if (cmd->data)
 		host->data_start_time = ktime_get();
 	trace_mmc_cmd_rw_start(cmd->opcode, cmd->arg, cmd->flags);
+<<<<<<< HEAD
+=======
+
+	mmc_cmd_log(host->mmc, cmd->opcode, cmd->arg);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	sdhci_writew(host, SDHCI_MAKE_CMD(cmd->opcode, flags), SDHCI_COMMAND);
 }
 
@@ -1270,6 +1307,7 @@ static void sdhci_finish_command(struct sdhci_host *host)
 		} else {
 			host->cmd->resp[0] = sdhci_readl(host, SDHCI_RESPONSE);
 		}
+		mmc_cmd_log_resp(host->mmc, host->cmd->resp[0]);
 	}
 
 	/* Finished CMD23, now send actual command. */
@@ -1792,6 +1830,26 @@ static void sdhci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		sdhci_runtime_pm_put(host);
 		return;
 	}
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Firstly check card presence from cd-gpio.  The return could
+	 * be one of the following possibilities:
+	 *     negative: cd-gpio is not available
+	 *     zero: cd-gpio is used, and card is removed
+	 *     one: cd-gpio is used, and card is present
+	 */
+	present = mmc_gpio_get_cd(host->mmc);
+	if (present < 0) {
+		/* If polling, assume that the card is always present. */
+		if (host->quirks & SDHCI_QUIRK_BROKEN_CARD_DETECTION)
+			present = 1;
+		else
+			present = sdhci_readl(host, SDHCI_PRESENT_STATE) &
+					SDHCI_CARD_PRESENT;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/*
 	 * Firstly check card presence from cd-gpio.  The return could
@@ -2667,10 +2725,10 @@ static void sdhci_card_event(struct mmc_host *mmc)
 
 	/* Check host->mrq first in case we are runtime suspended */
 	if (host->mrq &&
-	    !(sdhci_readl(host, SDHCI_PRESENT_STATE) & SDHCI_CARD_PRESENT)) {
-		pr_err("%s: Card removed during transfer!\n",
-			mmc_hostname(host->mmc));
-		pr_err("%s: Resetting controller.\n",
+	    ((!(host->quirks & SDHCI_QUIRK_BROKEN_CARD_DETECTION) &&
+	      !(sdhci_readl(host, SDHCI_PRESENT_STATE) & SDHCI_CARD_PRESENT)) ||
+	     mmc_gpio_get_cd(host->mmc) == 0)) {
+		pr_err("%s: card removed during transfer\n",
 			mmc_hostname(host->mmc));
 
 		sdhci_reset(host, SDHCI_RESET_CMD);
@@ -2683,6 +2741,20 @@ static void sdhci_card_event(struct mmc_host *mmc)
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+static int sdhci_select_drive_strength(struct mmc_host *mmc, int host_drv,
+		int card_drv)
+{
+	struct sdhci_host *host = mmc_priv(mmc);
+
+	if (host->ops && host->ops->select_drive_strength)
+		return host->ops->select_drive_strength(host, host_drv,
+							card_drv);
+	return 0;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int sdhci_stop_request(struct mmc_host *mmc)
 {
 	struct sdhci_host *host = mmc_priv(mmc);
@@ -2746,6 +2818,10 @@ static const struct mmc_host_ops sdhci_ops = {
 	.execute_tuning			= sdhci_execute_tuning,
 	.card_event			= sdhci_card_event,
 	.card_busy	= sdhci_card_busy,
+<<<<<<< HEAD
+=======
+	.select_drive_strength		= sdhci_select_drive_strength,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	.enable		= sdhci_enable,
 	.disable	= sdhci_disable,
 	.stop_request = sdhci_stop_request,
@@ -2850,11 +2926,29 @@ static void sdhci_timeout_timer(unsigned long data)
 {
 	struct sdhci_host *host;
 	unsigned long flags;
+	unsigned int blocks = 0;
 
 	host = (struct sdhci_host*)data;
 
 	spin_lock_irqsave(&host->lock, flags);
 
+	if (host->data) {
+		blocks = (sdhci_readw(host, SDHCI_BLOCK_SIZE) & 0xFFF) *
+			 sdhci_readw(host, SDHCI_BLOCK_COUNT);
+		/* If the transfer is not actually stuck, keep waiting. */
+		if (blocks != host->last_blocks) {
+			pr_info("%s: %swaiting on long transfer (%d of %d blocks)\n",
+				mmc_hostname(host->mmc),
+				host->last_blocks ? "still " : "",
+				(host->data->blksz * host->data->blocks) -
+				blocks,
+				(host->data->blksz * host->data->blocks));
+			host->last_blocks = blocks;
+			mod_timer(&host->timer,
+				  jiffies + host->timeout_jiffies);
+			goto out;
+		}
+	}
 	if (host->mrq) {
 		if (!host->mrq->cmd->ignore_timeout) {
 			pr_err("%s: Timeout waiting for hardware interrupt.\n",
@@ -2866,8 +2960,13 @@ static void sdhci_timeout_timer(unsigned long data)
 			pr_info("%s: bytes to transfer: %d transferred: %d\n",
 				mmc_hostname(host->mmc),
 				(host->data->blksz * host->data->blocks),
+<<<<<<< HEAD
 				(sdhci_readw(host, SDHCI_BLOCK_SIZE) & 0xFFF) *
 				sdhci_readw(host, SDHCI_BLOCK_COUNT));
+=======
+				(host->data->blksz * host->data->blocks) -
+				blocks);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			host->data->error = -ETIMEDOUT;
 			sdhci_finish_data(host);
 		} else {
@@ -2880,6 +2979,7 @@ static void sdhci_timeout_timer(unsigned long data)
 		}
 	}
 
+out:
 	mmiowb();
 	spin_unlock_irqrestore(&host->lock, flags);
 }
@@ -3015,7 +3115,11 @@ static void sdhci_show_adma_error(struct sdhci_host *host)
 static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
 {
 	u32 command;
+<<<<<<< HEAD
 	bool pr_msg = false;
+=======
+	bool pr_msg = true;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	BUG_ON(intmask == 0);
 
 	command = SDHCI_GET_CMD(sdhci_readw(host, SDHCI_COMMAND));
@@ -3061,9 +3165,14 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
 	else if (intmask & SDHCI_INT_DATA_END_BIT)
 		host->data->error = -EILSEQ;
 	else if ((intmask & SDHCI_INT_DATA_CRC) &&
+<<<<<<< HEAD
 		(command != MMC_BUS_TEST_R))
+=======
+		 (command != MMC_BUS_TEST_R)) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		host->data->error = -EILSEQ;
-	else if (intmask & SDHCI_INT_ADMA_ERROR) {
+		pr_msg = false;
+	} else if (intmask & SDHCI_INT_ADMA_ERROR) {
 		pr_err("%s: ADMA error\n", mmc_hostname(host->mmc));
 		sdhci_show_adma_error(host);
 		host->data->error = -EIO;
@@ -3075,12 +3184,19 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
 			if ((command != MMC_SEND_TUNING_BLOCK_HS400) &&
 			    (command != MMC_SEND_TUNING_BLOCK_HS200) &&
 			    (command != MMC_SEND_TUNING_BLOCK)) {
+<<<<<<< HEAD
 				pr_msg = true;
 				if (intmask & SDHCI_INT_DATA_CRC)
 					host->flags |= SDHCI_NEEDS_RETUNING;
 			}
 		} else {
 			pr_msg = true;
+=======
+				if (intmask & SDHCI_INT_DATA_CRC)
+					host->flags |= SDHCI_NEEDS_RETUNING;
+			} else
+				pr_msg = false;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		}
 		if (pr_msg && __ratelimit(&host->dbg_dump_rs)) {
 			pr_err("%s: data txfr (0x%08x) error: %d after %lld ms\n",

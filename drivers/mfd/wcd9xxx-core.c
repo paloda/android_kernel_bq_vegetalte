@@ -1082,7 +1082,11 @@ static int wcd9xxx_enable_static_supplies(struct wcd9xxx *wcd9xxx,
 		}
 	}
 
+<<<<<<< HEAD
 	while (ret && --i)
+=======
+	while (ret && (--i > 0))
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (!pdata->regulator[i].ondemand)
 			regulator_disable(wcd9xxx->supplies[i].consumer);
 

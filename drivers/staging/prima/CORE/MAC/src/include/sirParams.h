@@ -120,9 +120,16 @@ typedef enum {
 #endif
 
    DYNAMIC_WMM_PS        = 43,
+<<<<<<< HEAD
 
    MAC_SPOOFED_SCAN      = 44,
    BMU_ERROR_GENERIC_RECOVERY = 45,
+=======
+   MAC_SPOOFED_SCAN      = 44,
+   BMU_ERROR_GENERIC_RECOVERY = 45,
+   DISA                  = 46,
+   FW_STATS              = 47,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    WPS_PRBRSP_TMPL       = 48,
    BCN_IE_FLT_DELTA      = 49,
    //MAX_FEATURE_SUPPORTED = 128
@@ -692,7 +699,14 @@ typedef struct sSirMbMsgP2p
 #endif
 #define SIR_HAL_SPOOF_MAC_ADDR_REQ            (SIR_HAL_ITC_MSG_TYPES_BEGIN + 260)
 
+<<<<<<< HEAD
 #define SIR_HAL_SET_RTS_CTS_HTVHT            (SIR_HAL_ITC_MSG_TYPES_BEGIN + 268)
+=======
+#define SIR_HAL_FW_STATS_GET_REQ              (SIR_HAL_ITC_MSG_TYPES_BEGIN + 262)
+
+#define SIR_HAL_ENCRYPT_MSG_REQ               (SIR_HAL_ITC_MSG_TYPES_BEGIN + 263)
+#define SIR_HAL_ENCRYPT_MSG_RSP               (SIR_HAL_ITC_MSG_TYPES_BEGIN + 264)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define SIR_HAL_MSG_TYPES_END              (SIR_HAL_MSG_TYPES_BEGIN + 0x1FF)
 // CFG message types
@@ -794,6 +808,11 @@ typedef struct sSirMbMsgP2p
 #define SIR_LIM_TDLS_LINK_SETUP_CNF_TIMEOUT (SIR_LIM_TIMEOUT_MSG_START + 0x2B)
 #endif
 #define SIR_LIM_CONVERT_ACTIVE_CHANNEL_TO_PASSIVE (SIR_LIM_TIMEOUT_MSG_START + 0x2C)
+<<<<<<< HEAD
+=======
+#define SIR_LIM_AUTH_RETRY_TIMEOUT            (SIR_LIM_TIMEOUT_MSG_START + 0x2D)
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define SIR_LIM_MSG_TYPES_END            (SIR_LIM_MSG_TYPES_BEGIN+0xFF)
 
 // SCH message types

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -185,6 +189,10 @@ struct msm8x16_wcd_spmi {
 	int base;
 };
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_SND_SOC_FSA8500
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static const struct wcd_mbhc_intr intr_ids = {
 	.mbhc_sw_intr =  MSM8X16_WCD_IRQ_MBHC_HS_DET,
 	.mbhc_btn_press_intr = MSM8X16_WCD_IRQ_MBHC_PRESS,
@@ -194,12 +202,17 @@ static const struct wcd_mbhc_intr intr_ids = {
 	.hph_left_ocp = MSM8X16_WCD_IRQ_HPHL_OCP,
 	.hph_right_ocp = MSM8X16_WCD_IRQ_HPHR_OCP,
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static int msm8x16_wcd_dt_parse_vreg_info(struct device *dev,
 	struct msm8x16_wcd_regulator *vreg,
 	const char *vreg_name, bool ondemand);
 static struct msm8x16_wcd_pdata *msm8x16_wcd_populate_dt_pdata(
 	struct device *dev);
+<<<<<<< HEAD
 static int msm8x16_wcd_enable_ext_mb_source(struct snd_soc_codec *codec,
 					    bool turn_on);
 static void msm8x16_trim_btn_reg(struct snd_soc_codec *codec);
@@ -207,6 +220,12 @@ static void msm8x16_wcd_set_micb_v(struct snd_soc_codec *codec);
 static void msm8x16_wcd_set_boost_v(struct snd_soc_codec *codec);
 static void msm8x16_wcd_set_auto_zeroing(struct snd_soc_codec *codec,
 		bool enable);
+=======
+static void msm8x16_wcd_set_micb_v(struct snd_soc_codec *codec);
+static void msm8x16_wcd_set_boost_v(struct snd_soc_codec *codec);
+static void msm8x16_wcd_configure_cap(struct snd_soc_codec *codec,
+		bool micbias1, bool micbias2);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct msm8x16_wcd_spmi msm8x16_wcd_modules[MAX_MSM8X16_WCD_DEVICE];
 
@@ -214,6 +233,15 @@ static void *modem_state_notifier;
 
 static struct snd_soc_codec *registered_codec;
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_SND_SOC_FSA8500
+static int msm8x16_wcd_enable_ext_mb_source(struct snd_soc_codec *codec,
+					    bool turn_on);
+static void msm8x16_trim_btn_reg(struct snd_soc_codec *codec);
+static void msm8x16_wcd_set_auto_zeroing(struct snd_soc_codec *codec,
+		bool enable);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static void msm8x16_wcd_compute_impedance(s16 l, s16 r, uint32_t *zl,
 				uint32_t *zr, bool high)
 {
@@ -263,7 +291,13 @@ static const struct wcd_mbhc_cb mbhc_cb = {
 	.set_micbias_value = msm8x16_wcd_set_micb_v,
 	.set_auto_zeroing = msm8x16_wcd_set_auto_zeroing,
 	.get_hwdep_fw_cal = msm8x16_wcd_get_hwdep_fw_cal,
+<<<<<<< HEAD
 };
+=======
+	.set_cap_mode = msm8x16_wcd_configure_cap,
+};
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static const uint32_t wcd_imped_val[] = {4, 8, 12, 16,
 					20, 24, 28, 32,
@@ -971,7 +1005,12 @@ static struct msm8x16_wcd_pdata *msm8x16_wcd_populate_dt_pdata(
 	BUG_ON(static_cnt <= 0 || ond_cnt < 0);
 	if ((static_cnt + ond_cnt) > ARRAY_SIZE(pdata->regulator)) {
 		dev_err(dev, "%s: Num of supplies %u > max supported %zd\n",
+<<<<<<< HEAD
 			__func__, static_cnt, ARRAY_SIZE(pdata->regulator));
+=======
+				__func__, (static_cnt + ond_cnt),
+					ARRAY_SIZE(pdata->regulator));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ret = -EINVAL;
 		goto err;
 	}
@@ -1705,9 +1744,12 @@ static const struct snd_kcontrol_new msm8x16_wcd_snd_controls[] = {
 			  MSM8X16_WCD_A_CDC_IIR2_GAIN_B1_CTL,
 			0,  -84, 40, digital_gain),
 
+<<<<<<< HEAD
 	SOC_SINGLE("MICBIAS CAPLESS Switch",
 		   MSM8X16_WCD_A_ANALOG_MICB_1_EN, 6, 1, 0),
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	SOC_ENUM("TX1 HPF cut off", cf_dec1_enum),
 	SOC_ENUM("TX2 HPF cut off", cf_dec2_enum),
 
@@ -1967,6 +2009,10 @@ static int msm8x16_wcd_put_dec_enum(struct snd_kcontrol *kcontrol,
 	u16 tx_mux_ctl_reg;
 	u8 adc_dmic_sel = 0x0;
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	char *dec_num;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (ucontrol->value.enumerated.item[0] > e->max - 1) {
 		dev_err(codec->dev, "%s: Invalid enum value: %d\n",
@@ -1992,7 +2038,18 @@ static int msm8x16_wcd_put_dec_enum(struct snd_kcontrol *kcontrol,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ret = kstrtouint(strpbrk(dec_name, "12"), 10, &decimator);
+=======
+	dec_num = strpbrk(dec_name, "12");
+	if (dec_num == NULL) {
+		dev_err(codec->dev, "%s: Invalid DEC selected\n", __func__);
+		ret = -EINVAL;
+		goto out;
+	}
+
+	ret = kstrtouint(dec_num, 10, &decimator);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ret < 0) {
 		dev_err(codec->dev, "%s: Invalid decimator = %s\n",
 			__func__, dec_name);
@@ -2345,8 +2402,19 @@ static int msm8x16_wcd_codec_enable_dmic(struct snd_soc_dapm_widget *w,
 	s32 *dmic_clk_cnt;
 	unsigned int dmic;
 	int ret;
+<<<<<<< HEAD
 
 	ret = kstrtouint(strpbrk(w->name, "12"), 10, &dmic);
+=======
+	char *dec_num = strpbrk(w->name, "12");
+
+	if (dec_num == NULL) {
+		dev_err(codec->dev, "%s: Invalid DMIC\n", __func__);
+		return -EINVAL;
+	}
+
+	ret = kstrtouint(dec_num, 10, &dmic);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ret < 0) {
 		dev_err(codec->dev,
 			"%s: Invalid DMIC line on the codec\n", __func__);
@@ -2395,6 +2463,10 @@ static int msm8x16_wcd_codec_enable_dmic(struct snd_soc_dapm_widget *w,
 }
 
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_SND_SOC_FSA8500
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static void msm8x16_wcd_set_auto_zeroing(struct snd_soc_codec *codec,
 					bool enable)
 {
@@ -2440,6 +2512,10 @@ static void msm8x16_trim_btn_reg(struct snd_soc_codec *codec)
 		pr_debug("%s: This device is trimmed at ATE\n", __func__);
 	}
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int msm8x16_wcd_enable_ext_mb_source(struct snd_soc_codec *codec,
 					    bool turn_on)
 {
@@ -2474,6 +2550,10 @@ static int msm8x16_wcd_enable_ext_mb_source(struct snd_soc_codec *codec,
 
 	return ret;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static int msm8x16_wcd_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
@@ -2484,6 +2564,11 @@ static int msm8x16_wcd_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 	char *internal2_text = "Internal2";
 	char *internal3_text = "Internal3";
 	char *external2_text = "External2";
+<<<<<<< HEAD
+=======
+	char *external_text = "External";
+	bool micbias2;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	dev_dbg(codec->dev, "%s %d\n", __func__, event);
 	switch (w->reg) {
@@ -2498,6 +2583,10 @@ static int msm8x16_wcd_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	micbias2 = (snd_soc_read(codec, MSM8X16_WCD_A_ANALOG_MICB_2_EN) & 0x80);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		if (strnstr(w->name, internal1_text, 30)) {
@@ -2508,7 +2597,12 @@ static int msm8x16_wcd_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 		} else if (strnstr(w->name, internal3_text, 30)) {
 			snd_soc_update_bits(codec, micb_int_reg, 0x2, 0x2);
 		}
+<<<<<<< HEAD
 		snd_soc_update_bits(codec,
+=======
+		if (!strnstr(w->name, external_text, 30))
+			snd_soc_update_bits(codec,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				MSM8X16_WCD_A_ANALOG_MICB_1_EN, 0x05, 0x04);
 
 		break;
@@ -2526,6 +2620,11 @@ static int msm8x16_wcd_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 			msm8x16_notifier_call(codec,
 					WCD_EVENT_PRE_MICBIAS_2_ON);
 		}
+<<<<<<< HEAD
+=======
+		if (w->reg == MSM8X16_WCD_A_ANALOG_MICB_1_EN)
+			msm8x16_wcd_configure_cap(codec, true, micbias2);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		if (strnstr(w->name, internal1_text, 30)) {
@@ -2544,8 +2643,13 @@ static int msm8x16_wcd_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 					WCD_EVENT_PRE_MICBIAS_2_OFF);
 			break;
 		}
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, MSM8X16_WCD_A_ANALOG_MICB_1_EN,
 				0x44, 0x00);
+=======
+		if (w->reg == MSM8X16_WCD_A_ANALOG_MICB_1_EN)
+			msm8x16_wcd_configure_cap(codec, false, micbias2);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 	return 0;
@@ -2597,6 +2701,10 @@ static int msm8x16_wcd_codec_enable_dec(struct snd_soc_dapm_widget *w,
 	u16 dec_reset_reg, tx_vol_ctl_reg, tx_mux_ctl_reg;
 	u8 dec_hpf_cut_of_freq;
 	int offset;
+<<<<<<< HEAD
+=======
+	char *dec_num;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pdata = snd_soc_card_get_drvdata(codec->card);
 	dev_dbg(codec->dev, "%s %d\n", __func__, event);
@@ -2615,7 +2723,18 @@ static int msm8x16_wcd_codec_enable_dec(struct snd_soc_dapm_widget *w,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ret = kstrtouint(strpbrk(dec_name, "12"), 10, &decimator);
+=======
+	dec_num = strpbrk(dec_name, "12");
+	if (dec_num == NULL) {
+		dev_err(codec->dev, "%s: Invalid Decimator\n", __func__);
+		ret = -EINVAL;
+		goto out;
+	}
+
+	ret = kstrtouint(dec_num, 10, &decimator);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ret < 0) {
 		dev_err(codec->dev,
 			"%s: Invalid decimator = %s\n", __func__, dec_name);
@@ -2663,10 +2782,13 @@ static int msm8x16_wcd_codec_enable_dec(struct snd_soc_dapm_widget *w,
 			snd_soc_update_bits(codec, tx_mux_ctl_reg, 0x30,
 					    CF_MIN_3DB_150HZ << 4);
 		}
+<<<<<<< HEAD
 		snd_soc_update_bits(codec,
 				MSM8X16_WCD_A_ANALOG_TX_1_2_TXFE_CLKDIV,
 				0x51, 0x40);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 		/* enable HPF */
@@ -2848,6 +2970,10 @@ static int msm8x16_wcd_codec_enable_rx_bias(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_SND_SOC_FSA8500
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static uint32_t wcd_get_impedance_value(uint32_t imped)
 {
 	int i;
@@ -2910,10 +3036,15 @@ void wcd_imped_config(struct snd_soc_codec *codec,
 
 	pr_debug("%s: Exit\n", __func__);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static int msm8x16_wcd_hphl_dac_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	uint32_t impedl, impedr;
 	struct snd_soc_codec *codec = w->codec;
 	struct msm8x16_wcd_priv *msm8x16_wcd = snd_soc_codec_get_drvdata(codec);
@@ -2922,6 +3053,18 @@ static int msm8x16_wcd_hphl_dac_event(struct snd_soc_dapm_widget *w,
 	dev_dbg(codec->dev, "%s %s %d\n", __func__, w->name, event);
 	ret = wcd_mbhc_get_impedance(&msm8x16_wcd->mbhc,
 			&impedl, &impedr);
+=======
+	struct snd_soc_codec *codec = w->codec;
+#ifndef CONFIG_SND_SOC_FSA8500
+	uint32_t impedl, impedr;
+	struct msm8x16_wcd_priv *msm8x16_wcd = snd_soc_codec_get_drvdata(codec);
+	int ret;
+
+	ret = wcd_mbhc_get_impedance(&msm8x16_wcd->mbhc,
+			&impedl, &impedr);
+#endif
+	dev_dbg(codec->dev, "%s %s %d\n", __func__, w->name, event);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -2931,18 +3074,32 @@ static int msm8x16_wcd_hphl_dac_event(struct snd_soc_dapm_widget *w,
 			MSM8X16_WCD_A_DIGITAL_CDC_DIG_CLK_CTL, 0x01, 0x01);
 		snd_soc_update_bits(codec,
 			MSM8X16_WCD_A_DIGITAL_CDC_ANA_CLK_CTL, 0x02, 0x02);
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_SND_SOC_FSA8500
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (!ret)
 			wcd_imped_config(codec, impedl, true);
 		else
 			dev_err(codec->dev, "Failed to get mbhc impedance %d\n",
 				ret);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 		snd_soc_update_bits(codec,
 			MSM8X16_WCD_A_ANALOG_RX_HPH_L_PA_DAC_CTL, 0x02, 0x00);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
+<<<<<<< HEAD
 		wcd_imped_config(codec, impedl, false);
+=======
+#ifndef CONFIG_SND_SOC_FSA8500
+		wcd_imped_config(codec, impedl, false);
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		snd_soc_update_bits(codec,
 			MSM8X16_WCD_A_DIGITAL_CDC_ANA_CLK_CTL, 0x02, 0x00);
 		snd_soc_update_bits(codec,
@@ -3772,8 +3929,15 @@ static const struct snd_soc_dapm_widget msm8x16_wcd_dapm_widgets[] = {
 	SND_SOC_DAPM_VIRT_MUX("ADC2 MUX", SND_SOC_NOPM, 0, 0,
 		&tx_adc2_mux),
 
+<<<<<<< HEAD
 	SND_SOC_DAPM_MICBIAS("MIC BIAS External",
 		MSM8X16_WCD_A_ANALOG_MICB_1_EN, 7, 0),
+=======
+	SND_SOC_DAPM_MICBIAS_E("MIC BIAS External",
+		MSM8X16_WCD_A_ANALOG_MICB_1_EN, 7, 0,
+		msm8x16_wcd_codec_enable_micbias, SND_SOC_DAPM_POST_PMU |
+		SND_SOC_DAPM_POST_PMD),
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	SND_SOC_DAPM_MICBIAS_E("MIC BIAS External2",
 		MSM8X16_WCD_A_ANALOG_MICB_2_EN, 7, 0,
@@ -3894,10 +4058,17 @@ static void msm8x16_wcd_update_reg_defaults(struct snd_soc_codec *codec)
 static const struct msm8x16_wcd_reg_mask_val
 	msm8x16_wcd_codec_reg_init_val[] = {
 
+<<<<<<< HEAD
 	/* Initialize current threshold to 350MA
 	 * number of wait and run cycles to 4096
 	 */
 	{MSM8X16_WCD_A_ANALOG_RX_COM_OCP_CTL, 0xFF, 0x12},
+=======
+	/* Initialize current threshold to 280MA
+	 * number of wait and run cycles to 4096
+	 */
+	{MSM8X16_WCD_A_ANALOG_RX_COM_OCP_CTL, 0xFF, 0x11},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{MSM8X16_WCD_A_ANALOG_RX_COM_OCP_COUNT, 0xFF, 0xFF},
 };
 
@@ -3974,12 +4145,36 @@ static int msm8x16_wcd_device_up(struct snd_soc_codec *codec)
 	struct msm8x16_wcd_priv *msm8x16_wcd_priv =
 		snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
+=======
+	u32 reg;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	dev_dbg(codec->dev, "%s: device up!\n", __func__);
 
 	mutex_lock(&codec->mutex);
 
 	clear_bit(BUS_DOWN, &msm8x16_wcd_priv->status_mask);
 
+<<<<<<< HEAD
+=======
+	for (reg = 0; reg < ARRAY_SIZE(msm8x16_wcd_reset_reg_defaults); reg++)
+		if (msm8x16_wcd_reg_readable[reg])
+			msm8x16_wcd_write(codec,
+				reg, msm8x16_wcd_reset_reg_defaults[reg]);
+
+	if (codec->reg_def_copy) {
+		pr_debug("%s: Update ASOC cache", __func__);
+		kfree(codec->reg_cache);
+		codec->reg_cache = kmemdup(codec->reg_def_copy,
+						codec->reg_size, GFP_KERNEL);
+		if (!codec->reg_cache) {
+			pr_err("%s: Cache update failed!\n", __func__);
+			mutex_unlock(&codec->mutex);
+			return -ENOMEM;
+		}
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	snd_soc_card_change_online_state(codec->card, 1);
 	/* delay is required to make sure sound card state updated */
 	usleep_range(5000, 5100);
@@ -3988,6 +4183,7 @@ static int msm8x16_wcd_device_up(struct snd_soc_codec *codec)
 	msm8x16_wcd_codec_init_reg(codec);
 	msm8x16_wcd_update_reg_defaults(codec);
 
+<<<<<<< HEAD
 	codec->cache_sync = true;
 	snd_soc_cache_sync(codec);
 	codec->cache_sync = false;
@@ -4003,6 +4199,17 @@ static int msm8x16_wcd_device_up(struct snd_soc_codec *codec)
 	wcd_mbhc_stop(&msm8x16_wcd_priv->mbhc);
 	wcd_mbhc_start(&msm8x16_wcd_priv->mbhc,
 			msm8x16_wcd_priv->mbhc.mbhc_cfg);
+=======
+	msm8x16_wcd_set_boost_v(codec);
+
+	msm8x16_wcd_set_micb_v(codec);
+	msm8x16_wcd_configure_cap(codec, false, false);
+#ifndef CONFIG_SND_SOC_FSA8500
+	wcd_mbhc_stop(&msm8x16_wcd_priv->mbhc);
+	wcd_mbhc_start(&msm8x16_wcd_priv->mbhc,
+			msm8x16_wcd_priv->mbhc.mbhc_cfg);
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	mutex_unlock(&codec->mutex);
 
@@ -4095,6 +4302,43 @@ static void msm8x16_wcd_set_boost_v(struct snd_soc_codec *codec)
 			0x1F, msm8x16_wcd_priv->boost_voltage);
 }
 
+<<<<<<< HEAD
+=======
+static void msm8x16_wcd_configure_cap(struct snd_soc_codec *codec,
+		bool micbias1, bool micbias2)
+{
+
+	struct msm8916_asoc_mach_data *pdata = NULL;
+
+	pdata = snd_soc_card_get_drvdata(codec->card);
+
+	pr_debug("\n %s: micbias1 %x micbias2 = %d\n", __func__, micbias1,
+			micbias2);
+	if (micbias1 && micbias2) {
+		if ((pdata->micbias1_cap_mode
+		     == MICBIAS_EXT_BYP_CAP) ||
+		    (pdata->micbias2_cap_mode
+		     == MICBIAS_EXT_BYP_CAP))
+			snd_soc_update_bits(codec,
+				MSM8X16_WCD_A_ANALOG_MICB_1_EN,
+				0x40, (MICBIAS_EXT_BYP_CAP << 6));
+		else
+			snd_soc_update_bits(codec,
+				MSM8X16_WCD_A_ANALOG_MICB_1_EN,
+				0x40, (MICBIAS_NO_EXT_BYP_CAP << 6));
+	} else if (micbias2) {
+		snd_soc_update_bits(codec, MSM8X16_WCD_A_ANALOG_MICB_1_EN,
+				0x40, (pdata->micbias2_cap_mode << 6));
+	} else if (micbias1) {
+		snd_soc_update_bits(codec, MSM8X16_WCD_A_ANALOG_MICB_1_EN,
+				0x40, (pdata->micbias1_cap_mode << 6));
+	} else {
+		snd_soc_update_bits(codec, MSM8X16_WCD_A_ANALOG_MICB_1_EN,
+				0x40, 0x00);
+	}
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 {
 	struct msm8x16_wcd_priv *msm8x16_wcd_priv;
@@ -4191,8 +4435,15 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	wcd_mbhc_init(&msm8x16_wcd_priv->mbhc, codec, &mbhc_cb, &intr_ids,
 			true);
+=======
+#ifndef CONFIG_SND_SOC_FSA8500
+	wcd_mbhc_init(&msm8x16_wcd_priv->mbhc, codec, &mbhc_cb, &intr_ids,
+			true);
+#endif
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	msm8x16_wcd_priv->mclk_enabled = false;
 	msm8x16_wcd_priv->clock_active = false;
@@ -4201,6 +4452,11 @@ static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 	/* Set initial MICBIAS voltage level */
 	msm8x16_wcd_set_micb_v(codec);
 
+<<<<<<< HEAD
+=======
+	/* Set initial cap mode */
+	msm8x16_wcd_configure_cap(codec, false, false);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	registered_codec = codec;
 	modem_state_notifier =
 	    subsys_notif_register_notifier("modem",
@@ -4445,7 +4701,11 @@ static int msm8x16_wcd_enable_static_supplies(struct msm8x16_wcd *msm8x16,
 		}
 	}
 
+<<<<<<< HEAD
 	while (ret && --i)
+=======
+	while (ret && (--i > 0))
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (!pdata->regulator[i].ondemand)
 			regulator_disable(msm8x16->supplies[i].consumer);
 
@@ -4546,6 +4806,14 @@ static int msm8x16_wcd_spmi_probe(struct spmi_device *spmi)
 			__func__);
 		pdata = spmi->dev.platform_data;
 	}
+<<<<<<< HEAD
+=======
+	if (pdata == NULL) {
+		dev_err(&spmi->dev, "%s:Platform data failed to populate\n",
+			__func__);
+		goto rtn;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	msm8x16 = kzalloc(sizeof(struct msm8x16_wcd), GFP_KERNEL);
 	if (msm8x16 == NULL) {

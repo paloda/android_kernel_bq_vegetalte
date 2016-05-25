@@ -77,11 +77,21 @@ static const struct mmc_fixup mmc_fixups[] = {
 	 */
 	MMC_FIXUP("H8G2d", CID_MANFID_HYNIX, CID_OEMID_ANY, add_quirk_mmc,
 		  MMC_QUIRK_CACHE_DISABLE),
+<<<<<<< HEAD
 	MMC_FIXUP(CID_NAME_ANY, CID_MANFID_NUMONYX_MICRON, CID_OEMID_ANY,
 		add_quirk_mmc, MMC_QUIRK_CACHE_DISABLE),
 	MMC_FIXUP("MMC16G", CID_MANFID_KINGSTON, CID_OEMID_ANY, add_quirk_mmc,
 		  MMC_QUIRK_CACHE_DISABLE),
 
+=======
+
+	MMC_FIXUP("MMC16G", CID_MANFID_KINGSTON, CID_OEMID_ANY, add_quirk_mmc,
+		  MMC_QUIRK_CACHE_DISABLE),
+
+	MMC_FIXUP_FW_VER(CID_NAME_ANY, CID_MANFID_MICRON2, CID_OEMID_ANY,
+			 add_quirk_mmc, MMC_QUIRK_CACHE_DISABLE, 6, 0xaf),
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	END_FIXUP
 };
 
@@ -334,6 +344,21 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 	 */
 	card->ext_csd.rev = ext_csd[EXT_CSD_REV];
 
+<<<<<<< HEAD
+=======
+	/* Needed here for firmware-specific fixups. */
+	if (card->ext_csd.rev >= 6)
+		card->ext_csd.firmware_version =
+			(u64)ext_csd[EXT_CSD_FIRMWARE_VERSION + 0] << 0 |
+			(u64)ext_csd[EXT_CSD_FIRMWARE_VERSION + 1] << 8 |
+			(u64)ext_csd[EXT_CSD_FIRMWARE_VERSION + 2] << 16 |
+			(u64)ext_csd[EXT_CSD_FIRMWARE_VERSION + 3] << 24 |
+			(u64)ext_csd[EXT_CSD_FIRMWARE_VERSION + 4] << 32 |
+			(u64)ext_csd[EXT_CSD_FIRMWARE_VERSION + 5] << 40 |
+			(u64)ext_csd[EXT_CSD_FIRMWARE_VERSION + 6] << 48 |
+			(u64)ext_csd[EXT_CSD_FIRMWARE_VERSION + 7] << 56;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* fixup device after ext_csd revision field is updated */
 	mmc_fixup_device(card, mmc_fixups);
 
@@ -557,6 +582,9 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 				"rpmb", 0, false,
 				MMC_BLK_DATA_AREA_RPMB);
 		}
+
+		/* Handle the CID year roll-over. */
+		card->cid.year += 16;
 	}
 
 	card->ext_csd.raw_erased_mem_count = ext_csd[EXT_CSD_ERASED_MEM_CONT];
@@ -598,10 +626,37 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 			ext_csd[EXT_CSD_MAX_PACKED_WRITES];
 		card->ext_csd.max_packed_reads =
 			ext_csd[EXT_CSD_MAX_PACKED_READS];
+		card->ext_csd.raw_drive_strength =
+			ext_csd[EXT_CSD_DRIVE_STRENGTH];
 	} else {
 		card->ext_csd.data_sector_size = 512;
 	}
 
+	/* eMMC v5 or later */
+	if (card->ext_csd.rev >= 7) {
+		card->ext_csd.device_version =
+			ext_csd[EXT_CSD_DEVICE_VERSION + 0] << 0 |
+			ext_csd[EXT_CSD_DEVICE_VERSION + 1] << 8;
+		card->ext_csd.raw_optimal_trim_size =
+			ext_csd[EXT_CSD_OPTIMAL_TRIM_UNIT_SIZE];
+		card->ext_csd.raw_optimal_write_size =
+			ext_csd[EXT_CSD_OPTIMAL_WRITE_SIZE];
+		card->ext_csd.raw_optimal_read_size =
+			ext_csd[EXT_CSD_OPTIMAL_READ_SIZE];
+		card->ext_csd.pre_eol_info =
+			ext_csd[EXT_CSD_PRE_EOL_INFO];
+		card->ext_csd.dev_life_time_est_a =
+			ext_csd[EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_A];
+		card->ext_csd.dev_life_time_est_b =
+			ext_csd[EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_B];
+		memcpy(card->ext_csd.vendor_health_report,
+		       &ext_csd[EXT_CSD_VENDOR_PROPRIETARY_HEALTH_REPORT],
+		       sizeof(card->ext_csd.vendor_health_report));
+		card->ext_csd.ffu_capable =
+			((ext_csd[EXT_CSD_SUPPORTED_MODE] & 0x1) == 0x1) &&
+			((ext_csd[EXT_CSD_FW_CONFIG] & 0x1) == 0x0);
+		card->ext_csd.ffu_mode_op = ext_csd[EXT_CSD_FFU_FEATURES];
+	}
 out:
 	return err;
 }
@@ -689,6 +744,27 @@ MMC_DEV_ATTR(enhanced_area_offset, "%llu\n",
 MMC_DEV_ATTR(enhanced_area_size, "%u\n", card->ext_csd.enhanced_area_size);
 MMC_DEV_ATTR(raw_rpmb_size_mult, "%#x\n", card->ext_csd.raw_rpmb_size_mult);
 MMC_DEV_ATTR(rel_sectors, "%#x\n", card->ext_csd.rel_sectors);
+MMC_DEV_ATTR(firmware_version, "0x%016llx\n", card->ext_csd.firmware_version);
+MMC_DEV_ATTR(device_version, "0x%04x\n", card->ext_csd.device_version);
+MMC_DEV_ATTR(optimal_trim_unit_size, "%d\n",
+		card->ext_csd.raw_optimal_trim_size);
+MMC_DEV_ATTR(optimal_write_size, "%d\n", card->ext_csd.raw_optimal_write_size);
+MMC_DEV_ATTR(optimal_read_size, "%d\n", card->ext_csd.raw_optimal_read_size);
+MMC_DEV_ATTR(pre_eol_info, "%d\n", card->ext_csd.pre_eol_info);
+MMC_DEV_ATTR(device_life_time_est_typ_a, "%d\n",
+		card->ext_csd.dev_life_time_est_a);
+MMC_DEV_ATTR(device_life_time_est_typ_b, "%d\n",
+		card->ext_csd.dev_life_time_est_b);
+MMC_DEV_ATTR(vendor_proprietary_health_report,
+		"%08x%08x%08x%08x%08x%08x%08x%08x\n",
+		card->ext_csd.vendor_health_report[0],
+		card->ext_csd.vendor_health_report[1],
+		card->ext_csd.vendor_health_report[2],
+		card->ext_csd.vendor_health_report[3],
+		card->ext_csd.vendor_health_report[4],
+		card->ext_csd.vendor_health_report[5],
+		card->ext_csd.vendor_health_report[6],
+		card->ext_csd.vendor_health_report[7]);
 
 static struct attribute *mmc_std_attrs[] = {
 	&dev_attr_cid.attr,
@@ -707,6 +783,15 @@ static struct attribute *mmc_std_attrs[] = {
 	&dev_attr_enhanced_area_size.attr,
 	&dev_attr_raw_rpmb_size_mult.attr,
 	&dev_attr_rel_sectors.attr,
+	&dev_attr_firmware_version.attr,
+	&dev_attr_device_version.attr,
+	&dev_attr_optimal_trim_unit_size.attr,
+	&dev_attr_optimal_write_size.attr,
+	&dev_attr_optimal_read_size.attr,
+	&dev_attr_pre_eol_info.attr,
+	&dev_attr_device_life_time_est_typ_a.attr,
+	&dev_attr_device_life_time_est_typ_b.attr,
+	&dev_attr_vendor_proprietary_health_report.attr,
 	NULL,
 };
 
@@ -908,7 +993,12 @@ static int mmc_select_hs(struct mmc_card *card, u8 *ext_csd)
 	}
 
 	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+<<<<<<< HEAD
 				EXT_CSD_HS_TIMING, 1,
+=======
+				EXT_CSD_HS_TIMING,
+				EXT_CSD_HS_TIMING_HIGH_SPEED,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				card->ext_csd.generic_cmd6_time);
 
 	if (err && err != -EBADMSG)
@@ -1002,6 +1092,76 @@ out:
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * eMMC v4.5 added 4 driver strengths for HS200, matching those for UHS-I in
+ * the SD v3.0 specification.  Functionally, eMMC and SD driver types map as:
+ *
+ *   SD   eMMC   Impedance   Relative Drive
+ *   A    1      33 ohms     x1.5
+ *   B    0      50 ohms     x1    (default)
+ *   C    2      66 ohms     x0.75
+ *   D    3      100 ohms    x0.5
+ *
+ * eMMC v5.0 spec adds one additional type for which there is no corresponding
+ * SD type:
+ *
+ *   Type 4 - 40 ohms, x1.2
+ */
+static int mmc_select_driver_type(struct mmc_card *card)
+{
+	int host_drv_type = MMC_DRIVER_TYPE_0;
+	int card_drv_type = MMC_DRIVER_TYPE_0;
+	int drv_type;
+
+	/*
+	 * We reuse the SD-derived capability bits here.  If the host doesn't
+	 * support any of the Driver Types 1, 2 or 3, or there is no board
+	 * specific handler then default Driver Type 0 is used.
+	 */
+	if (!(card->host->caps & (MMC_CAP_DRIVER_TYPE_A | MMC_CAP_DRIVER_TYPE_C
+	    | MMC_CAP_DRIVER_TYPE_D)) &&
+	    !(card->host->caps2 & MMC_CAP2_DRIVER_TYPE_4))
+		return 0;
+
+	if (!card->host->ops->select_drive_strength)
+		return 0;
+
+	if (card->host->caps & MMC_CAP_DRIVER_TYPE_A)
+		host_drv_type |= MMC_DRIVER_TYPE_1;
+
+	if (card->host->caps & MMC_CAP_DRIVER_TYPE_C)
+		host_drv_type |= MMC_DRIVER_TYPE_2;
+
+	if (card->host->caps & MMC_CAP_DRIVER_TYPE_D)
+		host_drv_type |= MMC_DRIVER_TYPE_3;
+
+	if (card->host->caps2 & MMC_CAP2_DRIVER_TYPE_4)
+		host_drv_type |= MMC_DRIVER_TYPE_4;
+
+	card_drv_type |= card->ext_csd.raw_drive_strength &
+			 (MMC_DRIVER_TYPE_1 | MMC_DRIVER_TYPE_2 |
+			  MMC_DRIVER_TYPE_3 | MMC_DRIVER_TYPE_4);
+
+	/*
+	 * Card drive strength depends on the board design.  Let the host
+	 * driver decide what driver strength is best, based on all of the
+	 * constraints.
+	 */
+	mmc_host_clk_hold(card->host);
+	drv_type = card->host->ops->select_drive_strength(card->host,
+		host_drv_type, card_drv_type);
+	mmc_host_clk_release(card->host);
+
+	pr_debug("%s: %s: %d\n", mmc_hostname(card->host), __func__, drv_type);
+	/* We send the driver type as part of the HS_TIMING command. */
+	card->ext_csd.drv_type = drv_type;
+
+	return 0;
+}
+
+/*
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  * Select the desired buswidth and switch to HS200 mode
  * if bus width set without error
  */
@@ -1045,6 +1205,7 @@ static int mmc_select_hs200(struct mmc_card *card, u8 *ext_csd)
 			mmc_hostname(host));
 		goto out;
 	}
+<<<<<<< HEAD
 
 	if (host->ios.bus_width == MMC_BUS_WIDTH_1) {
 		pr_err("%s: failed to switch to wide bus\n",
@@ -1106,6 +1267,74 @@ static int mmc_select_hs400(struct mmc_card *card, u8 *ext_csd)
 		goto out;
 	}
 
+=======
+
+	if (host->ios.bus_width == MMC_BUS_WIDTH_1) {
+		pr_err("%s: failed to switch to wide bus\n",
+			mmc_hostname(host));
+		goto out;
+	}
+
+	mmc_select_driver_type(card);
+
+	/* switch to HS200 mode if bus width set successfully */
+	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+				EXT_CSD_HS_TIMING,
+				EXT_CSD_HS_TIMING_HS200 |
+				(card->ext_csd.drv_type << 4),
+				0);
+
+	if (err && err != -EBADMSG) {
+		pr_err("%s: HS200 switch failed\n",
+			mmc_hostname(host));
+		goto out;
+	}
+
+	/*
+	 * When HS200 activation is performed as part of HS400 selection
+	 * set the timing appropriately
+	 */
+	if (mmc_card_hs400(card))
+		mmc_set_timing(host, MMC_TIMING_MMC_HS400);
+	else
+		mmc_set_timing(host, MMC_TIMING_MMC_HS200);
+
+	mmc_set_clock(host, MMC_HS200_MAX_DTR);
+
+	if (host->ops->execute_tuning) {
+		mmc_host_clk_hold(host);
+		err = host->ops->execute_tuning(host,
+				MMC_SEND_TUNING_BLOCK_HS200);
+		mmc_host_clk_release(host);
+	}
+	if (err) {
+		pr_warning("%s: tuning execution failed\n",
+			   mmc_hostname(host));
+		goto out;
+	}
+	mmc_card_set_hs200(card);
+
+out:
+	if (err && err != -EOPNOTSUPP)
+		pr_warning("%s: Switch to HS200 mode failed (err:%d)\n",
+				mmc_hostname(host), err);
+	return err;
+}
+
+static int mmc_select_hs400(struct mmc_card *card, u8 *ext_csd)
+{
+	int err = 0;
+	struct mmc_host *host;
+
+	host = card->host;
+
+	if (!(host->caps2 & MMC_CAP2_HS400) ||
+		!(card->ext_csd.card_type & EXT_CSD_CARD_TYPE_HS400)) {
+		err = -EOPNOTSUPP;
+		goto out;
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/*
 	 * eMMC5.0 spec doesn't allow switching to HS400 mode from
 	 * HS200 mode directly. Hence follow these steps to switch
@@ -1154,6 +1383,7 @@ static int mmc_select_hs400(struct mmc_card *card, u8 *ext_csd)
 			mmc_hostname(host));
 		goto out;
 	}
+<<<<<<< HEAD
 
 	/* Switch to HS400 mode if bus width set successfully */
 	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
@@ -1193,6 +1423,50 @@ int mmc_set_clock_bus_speed(struct mmc_card *card, unsigned long freq)
 {
 	int err;
 
+=======
+
+	/* Switch to HS400 mode if bus width set successfully */
+	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+				EXT_CSD_HS_TIMING,
+				EXT_CSD_HS_TIMING_HS400 |
+				(card->ext_csd.drv_type << 4),
+				0);
+	if (err && err != -EBADMSG) {
+		pr_err("%s: Setting HS_TIMING to HS400 failed (err:%d)\n",
+			mmc_hostname(host), err);
+		goto out;
+	}
+
+	mmc_set_timing(host, MMC_TIMING_MMC_HS400);
+	mmc_set_clock(host, MMC_HS400_MAX_DTR);
+
+	if (host->ops->execute_tuning) {
+		mmc_host_clk_hold(host);
+		err = host->ops->execute_tuning(host,
+				MMC_SEND_TUNING_BLOCK_HS400);
+		mmc_host_clk_release(host);
+	}
+	if (err) {
+		pr_err("%s: tuning execution failed (err:%d)\n",
+			   mmc_hostname(host), err);
+		goto out;
+	}
+	mmc_card_set_hs400(card);
+
+out:
+	if (err && err != -EOPNOTSUPP) {
+		pr_warning("%s: Switch to HS400 mode failed (err:%d)\n",
+				mmc_hostname(host), err);
+		mmc_card_clr_hs400(card);
+	}
+	return err;
+}
+
+int mmc_set_clock_bus_speed(struct mmc_card *card, unsigned long freq)
+{
+	int err;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (freq < MMC_HS400_MAX_DTR) {
 		/*
 		 * Lower the clock and adjust the timing to be able
@@ -1200,6 +1474,7 @@ int mmc_set_clock_bus_speed(struct mmc_card *card, unsigned long freq)
 		 */
 		mmc_set_timing(card->host, MMC_TIMING_LEGACY);
 		mmc_set_clock(card->host, MMC_HIGH_26_MAX_DTR);
+<<<<<<< HEAD
 
 		err = mmc_select_hs(card, card->cached_ext_csd);
 	} else {
@@ -1276,12 +1551,97 @@ static int mmc_change_bus_speed(struct mmc_host *host, unsigned long *freq)
 				   host->clk_scaling.curr_freq);
 			mmc_set_clock(host, host->clk_scaling.curr_freq);
 		}
+=======
+
+		err = mmc_select_hs(card, card->cached_ext_csd);
+	} else {
+		err = mmc_select_hs400(card, card->cached_ext_csd);
+	}
+
+	return err;
+}
+
+/**
+ * mmc_change_bus_speed() - Change MMC card bus frequency at runtime
+ * @host: pointer to mmc host structure
+ * @freq: pointer to desired frequency to be set
+ *
+ * Change the MMC card bus frequency at runtime after the card is
+ * initialized. Callers are expected to make sure of the card's
+ * state (DATA/RCV/TRANSFER) beforing changing the frequency at runtime.
+ *
+ * If the frequency to change is greater than max. supported by card,
+ * *freq is changed to max. supported by card and if it is less than min.
+ * supported by host, *freq is changed to min. supported by host.
+ */
+static int mmc_change_bus_speed(struct mmc_host *host, unsigned long *freq)
+{
+	int err = 0;
+	struct mmc_card *card;
+
+	mmc_claim_host(host);
+	/*
+	 * Assign card pointer after claiming host to avoid race
+	 * conditions that may arise during removal of the card.
+	 */
+	card = host->card;
+
+	if (!card || !freq) {
+		err = -EINVAL;
+		goto out;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 out:
 	mmc_release_host(host);
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+	if (mmc_card_highspeed(card) || mmc_card_hs200(card)
+			|| mmc_card_ddr_mode(card)
+			|| mmc_card_hs400(card)) {
+		if (*freq > card->ext_csd.hs_max_dtr)
+			*freq = card->ext_csd.hs_max_dtr;
+	} else if (*freq > card->csd.max_dtr) {
+		*freq = card->csd.max_dtr;
+	}
+
+	if (*freq < host->f_min)
+		*freq = host->f_min;
+
+	if (mmc_card_hs400(card)) {
+		/* Tuning is actually done in here. */
+		err = mmc_set_clock_bus_speed(card, *freq);
+		goto out;
+	}
+
+	mmc_set_clock(host, (unsigned int) (*freq));
+
+	if (mmc_card_hs200(card) && card->host->ops->execute_tuning) {
+		/*
+		 * We try to probe host driver for tuning for any
+		 * frequency, it is host driver responsibility to
+		 * perform actual tuning only when required.
+		 */
+		mmc_host_clk_hold(card->host);
+		err = card->host->ops->execute_tuning(card->host,
+				MMC_SEND_TUNING_BLOCK_HS200);
+		mmc_host_clk_release(card->host);
+
+		if (err) {
+			pr_warn("%s: %s: HS200 tuning execution failed %d. Restoring to previous clock %lu\n",
+				   mmc_hostname(card->host), __func__, err,
+				   host->clk_scaling.curr_freq);
+			mmc_set_clock(host, host->clk_scaling.curr_freq);
+		}
+	}
+out:
+	mmc_release_host(host);
+	return err;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int mmc_reboot_notify(struct notifier_block *notify_block,
 		unsigned long event, void *unused)
 {
@@ -1339,6 +1699,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 	u32 cid[4];
 	u32 rocr;
 	u8 *ext_csd = NULL;
+	bool scan = (oldcard == NULL);
 
 	BUG_ON(!host);
 	WARN_ON(!host->claimed);
@@ -1390,6 +1751,15 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 	}
 
 	if (oldcard) {
+		if (oldcard->raw_cid[0] == 0 && oldcard->raw_cid[1] == 0 &&
+		    oldcard->raw_cid[2] == 0 && oldcard->raw_cid[3] == 0) {
+			scan = true;
+			pr_info("%s: updating card identification\n", mmc_hostname(host));
+			memcpy(oldcard->raw_cid, cid, sizeof(oldcard->raw_cid));
+			err = mmc_decode_cid(oldcard);
+			if (err)
+				goto err;
+		}
 		if (memcmp(cid, oldcard->raw_cid, sizeof(cid)) != 0) {
 			err = -ENOENT;
 			pr_err("%s: %s: CID memcmp failed %d\n",
@@ -1431,7 +1801,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		mmc_set_bus_mode(host, MMC_BUSMODE_PUSHPULL);
 	}
 
-	if (!oldcard) {
+	if (scan) {
 		/*
 		 * Fetch CSD from card.
 		 */
@@ -1468,7 +1838,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		}
 	}
 
-	if (!oldcard) {
+	if (scan) {
 		/*
 		 * Fetch and process extended CSD.
 		 */
@@ -1638,6 +2008,9 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		} else {
 			card->ext_csd.cache_ctrl = 1;
 		}
+	} else if (card->quirks & MMC_QUIRK_CACHE_DISABLE) {
+		pr_debug("%s: cache disabled\n", mmc_hostname(card->host));
+		card->ext_csd.cache_ctrl = 0;
 	}
 
 	/*

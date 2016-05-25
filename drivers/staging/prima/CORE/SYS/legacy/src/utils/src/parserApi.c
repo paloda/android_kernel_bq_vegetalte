@@ -605,9 +605,16 @@ PopulateDot11fHTCaps(tpAniSirGlobal           pMac,
        pDot11f->shortGI40MHz = 0;
     }
 
+<<<<<<< HEAD
     dot11fLog(pMac, LOG2, FL("SupportedChnlWidth: %d, mimoPS: %d, GF: %d, shortGI20:%d, shortGI40: %d, dsssCck: %d\n"),
                                             pDot11f->supportedChannelWidthSet, pDot11f->mimoPowerSave,  pDot11f->greenField,
                                             pDot11f->shortGI20MHz, pDot11f->shortGI40MHz, pDot11f->dsssCckMode40MHz);
+=======
+    limLog(pMac, LOG1, FL("SupportedChnlWidth: %d, mimoPS: %d, GF: %d,"
+                          "shortGI20:%d, shortGI40: %d, dsssCck: %d\n"),
+           pDot11f->supportedChannelWidthSet, pDot11f->mimoPowerSave,  pDot11f->greenField,
+           pDot11f->shortGI20MHz, pDot11f->shortGI40MHz, pDot11f->dsssCckMode40MHz);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
     CFG_GET_INT( nSirStatus, pMac, WNI_CFG_HT_AMPDU_PARAMS, nCfgValue );
@@ -619,7 +626,11 @@ PopulateDot11fHTCaps(tpAniSirGlobal           pMac,
     pDot11f->mpduDensity      = pHTParametersInfo->mpduDensity;
     pDot11f->reserved1        = pHTParametersInfo->reserved;
 
+<<<<<<< HEAD
     dot11fLog( pMac, LOG2, FL( "AMPDU Param: %x\n" ), nCfgValue);
+=======
+    limLog( pMac, LOG1, FL( "AMPDU Param: %x\n" ), nCfgValue);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
     CFG_GET_STR( nSirStatus, pMac, WNI_CFG_SUPPORTED_MCS_SET,
@@ -1632,6 +1643,10 @@ void PopulateDot11fWMMInfoStation(tpAniSirGlobal pMac, tDot11fIEWMMInfoStation *
 {
     tANI_U32  val = 0;
 
+<<<<<<< HEAD
+=======
+    limLog(pMac, LOG1, FL("populate WMM IE in Setup Request Frame"));
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     pInfo->version = SIR_MAC_OUI_VERSION_1;
     pInfo->acvo_uapsd = LIM_UAPSD_GET(ACVO, pMac->lim.gUapsdPerAcBitmask);
     pInfo->acvi_uapsd = LIM_UAPSD_GET(ACVI, pMac->lim.gUapsdPerAcBitmask);
@@ -1640,7 +1655,10 @@ void PopulateDot11fWMMInfoStation(tpAniSirGlobal pMac, tDot11fIEWMMInfoStation *
 
     if(wlan_cfgGetInt(pMac, WNI_CFG_MAX_SP_LENGTH, &val) != eSIR_SUCCESS) 
         PELOGE(limLog(pMac, LOGE, FL("could not retrieve Max SP Length \n"));)
+<<<<<<< HEAD
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     pInfo->max_sp_length = (tANI_U8)val;
     pInfo->present = 1;
 }
@@ -4881,7 +4899,11 @@ tSirRetStatus PopulateDot11fWscInProbeRes(tpAniSirGlobal pMac,
     else
     {
         pDot11f->Manufacturer.num_name = (tANI_U8) (cfgStrLen & 0x000000FF);
+<<<<<<< HEAD
         pDot11f->Manufacturer.name[cfgStrLen] = '\0';
+=======
+        pDot11f->Manufacturer.name[cfgStrLen - 1] = '\0';
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     pDot11f->ModelName.present = 1;
@@ -4897,7 +4919,11 @@ tSirRetStatus PopulateDot11fWscInProbeRes(tpAniSirGlobal pMac,
     else
     {
         pDot11f->ModelName.num_text = (tANI_U8) (cfgStrLen & 0x000000FF);
+<<<<<<< HEAD
         pDot11f->ModelName.text[cfgStrLen] = '\0';
+=======
+        pDot11f->ModelName.text[cfgStrLen - 1] = '\0';
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     pDot11f->ModelNumber.present = 1;
@@ -4913,7 +4939,11 @@ tSirRetStatus PopulateDot11fWscInProbeRes(tpAniSirGlobal pMac,
     else
     {
         pDot11f->ModelNumber.num_text = (tANI_U8) (cfgStrLen & 0x000000FF);
+<<<<<<< HEAD
         pDot11f->ModelNumber.text[cfgStrLen] = '\0';
+=======
+        pDot11f->ModelNumber.text[cfgStrLen - 1] = '\0';
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     pDot11f->SerialNumber.present = 1;
@@ -4929,7 +4959,11 @@ tSirRetStatus PopulateDot11fWscInProbeRes(tpAniSirGlobal pMac,
     else
     {
         pDot11f->SerialNumber.num_text = (tANI_U8) (cfgStrLen & 0x000000FF);
+<<<<<<< HEAD
         pDot11f->SerialNumber.text[cfgStrLen] = '\0';
+=======
+        pDot11f->SerialNumber.text[cfgStrLen - 1] = '\0';
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     pDot11f->PrimaryDeviceType.present = 1;
@@ -4973,7 +5007,11 @@ tSirRetStatus PopulateDot11fWscInProbeRes(tpAniSirGlobal pMac,
     else
     {
         pDot11f->DeviceName.num_text = (tANI_U8) (cfgStrLen & 0x000000FF);
+<<<<<<< HEAD
         pDot11f->DeviceName.text[cfgStrLen] = '\0';
+=======
+        pDot11f->DeviceName.text[cfgStrLen - 1] = '\0';
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     if (wlan_cfgGetInt(pMac,

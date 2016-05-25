@@ -13,6 +13,7 @@
 
 #include "zcomp_lz4.h"
 
+<<<<<<< HEAD
 static void *zcomp_lz4_create(gfp_t flags)
 {
 	void *ret;
@@ -23,6 +24,11 @@ static void *zcomp_lz4_create(gfp_t flags)
 				flags | __GFP_ZERO | __GFP_HIGHMEM,
 				PAGE_KERNEL);
 	return ret;
+=======
+static void *zcomp_lz4_create(void)
+{
+	return kzalloc(LZ4_MEM_COMPRESS, GFP_KERNEL);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static void zcomp_lz4_destroy(void *private)

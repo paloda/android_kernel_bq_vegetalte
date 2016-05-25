@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2014 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2015 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -60,7 +64,11 @@ hdd_adapter_t* hdd_wlan_create_ap_dev( hdd_context_t *pHddCtx, tSirMacAddr macAd
 
 VOS_STATUS hdd_register_hostapd(hdd_adapter_t *pAdapter, tANI_U8 rtnl_held);
 
+<<<<<<< HEAD
 VOS_STATUS hdd_unregister_hostapd(hdd_adapter_t *pAdapter);
+=======
+VOS_STATUS hdd_unregister_hostapd(hdd_adapter_t *pAdapter, tANI_U8 rtnl_held);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 eCsrAuthType 
 hdd_TranslateRSNToCsrAuthType( u_int8_t auth_suite[4]);

@@ -1,6 +1,9 @@
 # We can build either as part of a standalone Kernel build or part
 # of an Android build.  Determine which mechanism is being used
+<<<<<<< HEAD
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 ifeq ($(MODNAME),)
 	KERNEL_BUILD := 1
 else
@@ -633,6 +636,12 @@ endif
 # enable the MAC Address auto-generation feature
 CDEFINES += -DWLAN_AUTOGEN_MACADDR_FEATURE
 
+<<<<<<< HEAD
+=======
+# Moto read MACs from boot params instead of NV file
+CDEFINES += -DMOTO_UTAGS_MAC
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 ifeq ($(CONFIG_WLAN_FEATURE_11W),y)
 CDEFINES += -DWLAN_FEATURE_11W
 endif

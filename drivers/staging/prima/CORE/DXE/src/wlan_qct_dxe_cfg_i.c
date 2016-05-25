@@ -469,6 +469,15 @@ wpt_status dxeChannelDefaultConfig
       (WDTS_CHANNEL_TX_HIGH_PRI == channelEntry->channelType))
    {
       channelEntry->extraConfig.chan_mask |= WLANDXE_CH_CTRL_DIQ_MASK;
+<<<<<<< HEAD
+=======
+      if (wpalWcnssIsProntoHwVer3())
+      {
+         HDXE_MSG(eWLAN_MODULE_DAL_DATA, eWLAN_PAL_TRACE_LEVEL_ERROR,
+               "Using WQ 6 for TX Low/High PRI Channel");
+         channelEntry->channelConfig.refWQ = WLANDXE_PRONTO_TX_WQ;
+      }
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
    }
    /* RX Channel, Set SIQ bit, Clear DIQ bit since source is not WQ */
    else if((WDTS_CHANNEL_RX_LOW_PRI  == channelEntry->channelType) ||

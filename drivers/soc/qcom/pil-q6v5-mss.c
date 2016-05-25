@@ -36,6 +36,11 @@
 #include "peripheral-loader.h"
 #include "pil-q6v5.h"
 #include "pil-msa.h"
+<<<<<<< HEAD
+=======
+#include "mmi-unit-info.h"
+#include <soc/qcom/bootinfo.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define MAX_VDD_MSS_UV		1150000
 #define PROXY_TIMEOUT_MS	10000
@@ -44,10 +49,23 @@
 
 #define subsys_to_drv(d) container_of(d, struct modem_data, subsys_desc)
 
+<<<<<<< HEAD
 static void log_modem_sfr(void)
 {
 	u32 size;
 	char *smem_reason, reason[MAX_SSR_REASON_LEN];
+=======
+static char pil_ssr_reason[MAX_SSR_REASON_LEN];
+static char *ssr_reason = pil_ssr_reason;
+module_param(ssr_reason, charp, S_IRUGO);
+
+static void log_modem_sfr(void)
+{
+	u32 size;
+	char *smem_reason;
+
+	mmi_set_pureason(PU_REASON_MODEM_RESET);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	smem_reason = smem_get_entry_no_rlock(SMEM_SSR_REASON_MSS0, &size, 0,
 							SMEM_ANY_HOST_FLAG);
@@ -60,8 +78,13 @@ static void log_modem_sfr(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	strlcpy(reason, smem_reason, min(size, MAX_SSR_REASON_LEN));
 	pr_err("modem subsystem failure reason: %s.\n", reason);
+=======
+	strlcpy(pil_ssr_reason, smem_reason, min((size_t)size, sizeof(pil_ssr_reason)));
+	pr_err("modem subsystem failure reason: %s.\n", pil_ssr_reason);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	smem_reason[0] = '\0';
 	wmb();
@@ -181,7 +204,11 @@ static int modem_ramdump(int enable, const struct subsys_desc *subsys)
 	if (ret < 0)
 		pr_err("Unable to dump modem fw memory (rc = %d).\n", ret);
 
+<<<<<<< HEAD
 	ret = pil_mss_deinit_image(&drv->q6->desc);
+=======
+	ret = __pil_mss_deinit_image(&drv->q6->desc, false);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ret < 0)
 		pr_err("Unable to free up resources (rc = %d).\n", ret);
 
@@ -194,7 +221,16 @@ static irqreturn_t modem_wdog_bite_intr_handler(int irq, void *dev_id)
 	struct modem_data *drv = subsys_to_drv(dev_id);
 	if (drv->ignore_errors)
 		return IRQ_HANDLED;
+<<<<<<< HEAD
 	pr_err("Watchdog bite received from modem software!\n");
+=======
+
+	pr_err("Watchdog bite received from modem software!\n");
+	if (drv->subsys_desc.system_debug &&
+			!gpio_get_value(drv->subsys_desc.err_fatal_gpio))
+		panic("%s: System ramdump requested. Triggering device restart!\n",
+							__func__);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	subsys_set_crash_status(drv->subsys, true);
 	restart_modem(drv);
 	return IRQ_HANDLED;

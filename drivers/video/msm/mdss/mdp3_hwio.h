@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -65,6 +69,19 @@
 #define MDP3_REG_CGC_EN					0x0100
 #define MDP3_VBIF_REG_FORCE_EN				0x0004
 
+<<<<<<< HEAD
+=======
+/* QOS Remapper */
+#define MDP3_DMA_P_QOS_REMAPPER				0x90090
+#define MDP3_DMA_P_WATERMARK_0				0x90094
+#define MDP3_DMA_P_WATERMARK_1				0x90098
+#define MDP3_DMA_P_WATERMARK_2				0x9009C
+#define MDP3_PANIC_ROBUST_CTRL				0x900A0
+#define MDP3_PANIC_LUT0					0x900A4
+#define MDP3_PANIC_LUT1					0x900A8
+#define MDP3_ROBUST_LUT					0x900AC
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*danger safe*/
 #define MDP3_PANIC_ROBUST_CTRL				0x900A0
 
@@ -345,4 +362,9 @@ enum {
 #define MDP3_DMA_P_HIST_INTR_HIST_DONE_BIT		BIT(1)
 #define MDP3_PPP_DONE MDP3_INTR_DP0_ROI_DONE
 
+<<<<<<< HEAD
+=======
+#define MDP3_DMA_P_BUSY_BIT				BIT(6)
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif /* MDP3_HWIO_H */

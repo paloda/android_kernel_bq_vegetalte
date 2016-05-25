@@ -68,6 +68,11 @@
 #define MSMFB_OVERLAY_PREPARE		_IOWR(MSMFB_IOCTL_MAGIC, 169, \
 						struct mdp_overlay_list)
 #define MSMFB_LPM_ENABLE	_IOWR(MSMFB_IOCTL_MAGIC, 170, unsigned int)
+<<<<<<< HEAD
+=======
+#define MSMFB_REG_READ   _IOWR(MSMFB_IOCTL_MAGIC, 64, struct msmfb_reg_access)
+#define MSMFB_REG_WRITE  _IOW(MSMFB_IOCTL_MAGIC, 65, struct msmfb_reg_access)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define FB_TYPE_3D_PANEL 0x10101010
 #define MDP_IMGTYPE2_START 0x10000
@@ -775,6 +780,10 @@ enum {
 	mdp_lut_igc,
 	mdp_lut_pgc,
 	mdp_lut_hist,
+<<<<<<< HEAD
+=======
+	mdp_lut_rgb,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mdp_lut_max,
 };
 
@@ -795,6 +804,23 @@ struct mdp_pgc_lut_data {
 	struct mdp_ar_gc_lut_data *b_data;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * mdp_rgb_lut_data is used to provide parameters for configuring the
+ * generic RGB lut in case of gamma correction or other LUT updation usecases
+ */
+struct mdp_rgb_lut_data {
+	uint32_t flags;
+	uint32_t lut_type;
+	struct fb_cmap cmap;
+};
+
+enum {
+	mdp_rgb_lut_gc,
+	mdp_rgb_lut_hist,
+};
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct mdp_lut_cfg_data {
 	uint32_t lut_type;
@@ -802,6 +828,10 @@ struct mdp_lut_cfg_data {
 		struct mdp_igc_lut_data igc_lut_data;
 		struct mdp_pgc_lut_data pgc_lut_data;
 		struct mdp_hist_lut_data hist_lut_data;
+<<<<<<< HEAD
+=======
+		struct mdp_rgb_lut_data rgb_lut_data;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} data;
 };
 
@@ -1130,6 +1160,16 @@ struct msmfb_mixer_info_req {
 	struct mdp_mixer_info info[MAX_PIPE_PER_MIXER];
 };
 
+<<<<<<< HEAD
+=======
+struct msmfb_reg_access {
+	uint8_t address;
+	uint8_t use_hs_mode;
+	uint32_t buffer_size;
+	uint8_t __user *buffer;
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 enum {
 	DISPLAY_SUBSYSTEM_ID,
 	ROTATOR_SUBSYSTEM_ID,

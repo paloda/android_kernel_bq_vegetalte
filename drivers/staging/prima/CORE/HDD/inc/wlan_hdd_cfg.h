@@ -1411,6 +1411,7 @@ typedef enum
 #define CFG_ENABLE_BYPASS_11D_MAX                  ( 1 )
 #define CFG_ENABLE_BYPASS_11D_DEFAULT              ( 1 )
 
+<<<<<<< HEAD
 /*
  * gEnableDFSChnlScan
  * 0: disable scan on DFS channels
@@ -1421,6 +1422,11 @@ typedef enum
 #define CFG_ENABLE_DFS_CHNL_SCAN_NAME              "gEnableDFSChnlScan"
 #define CFG_ENABLE_DFS_CHNL_SCAN_MIN               ( 0 )
 #define CFG_ENABLE_DFS_CHNL_SCAN_MAX               ( 2 )
+=======
+#define CFG_ENABLE_DFS_CHNL_SCAN_NAME              "gEnableDFSChnlScan"
+#define CFG_ENABLE_DFS_CHNL_SCAN_MIN               ( 0 )
+#define CFG_ENABLE_DFS_CHNL_SCAN_MAX               ( 1 )
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define CFG_ENABLE_DFS_CHNL_SCAN_DEFAULT           ( 1 )
 
 #define CFG_ENABLE_DFS_PNO_CHNL_SCAN_NAME              "gEnableDFSPnoChnlScan"
@@ -2238,7 +2244,11 @@ This feature requires the dependent cfg.ini "gRoamPrefer5GHz" set to 1 */
 #define CFG_ROAMING_DFS_CHANNEL_NAME                "gAllowDFSChannelRoam"
 #define CFG_ROAMING_DFS_CHANNEL_MIN                 (0)
 #define CFG_ROAMING_DFS_CHANNEL_MAX                 (1)
+<<<<<<< HEAD
 #define CFG_ROAMING_DFS_CHANNEL_DEFAULT             (0)
+=======
+#define CFG_ROAMING_DFS_CHANNEL_DEFAULT             (1)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 #ifdef WLAN_LOGGING_SOCK_SVC_ENABLE
@@ -2428,12 +2438,15 @@ This feature requires the dependent cfg.ini "gRoamPrefer5GHz" set to 1 */
 #define CFG_P2P_LISTEN_DEFER_INTERVAL_MIN      ( 100 )
 #define CFG_P2P_LISTEN_DEFER_INTERVAL_MAX      ( 200 )
 #define CFG_P2P_LISTEN_DEFER_INTERVAL_DEFAULT  ( 100 )
+<<<<<<< HEAD
 
 #define CFG_TOGGLE_ARP_BDRATES_NAME       "gToggleArpBDRates"
 #define CFG_TOGGLE_ARP_BDRATES_MIN         0
 #define CFG_TOGGLE_ARP_BDRATES_MAX         1
 #define CFG_TOGGLE_ARP_BDRATES_DEFAULT     0
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*--------------------------------------------------------------------------- 
   Type declarations
   -------------------------------------------------------------------------*/ 
@@ -2927,7 +2940,10 @@ typedef struct
    v_U8_t                      btcEnableIndTimerVal;
    v_BOOL_t                    btcFastWlanConnPref;
    v_U16_t                     gP2PListenDeferInterval;
+<<<<<<< HEAD
    v_BOOL_t                    toggleArpBDRates;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 } hdd_config_t;
 /*--------------------------------------------------------------------------- 
   Function declarations and documenation

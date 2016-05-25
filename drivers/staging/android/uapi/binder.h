@@ -89,6 +89,14 @@ struct binder_version {
 	__s32       protocol_version;
 };
 
+<<<<<<< HEAD
+=======
+struct binder_get_peer {
+       pid_t   self;
+       pid_t   remote;
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* This is the current protocol version. */
 #ifdef BINDER_IPC_32BIT
 #define BINDER_CURRENT_PROTOCOL_VERSION 7
@@ -103,6 +111,10 @@ struct binder_version {
 #define	BINDER_SET_CONTEXT_MGR		_IOW('b', 7, __s32)
 #define	BINDER_THREAD_EXIT		_IOW('b', 8, __s32)
 #define BINDER_VERSION			_IOWR('b', 9, struct binder_version)
+<<<<<<< HEAD
+=======
+#define BINDER_GET_PEER_PID            _IOWR('b', 10, struct binder_get_peer)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /*
  * NOTE: Two special error codes you should check for when calling

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2011-2015 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2011-2014 The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -40,8 +44,13 @@
 
 #include "sirCommon.h"
 #include "sirTypes.h"
+<<<<<<< HEAD
 #include "wniCfg.h"
 
+=======
+#include "wniCfgSta.h"
+#include "wniCfgAp.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define CFG_MAX_NUM_STA      SIR_MAX_NUM_STA_IN_IBSS
 
 #define CFG_MAX_STATIC_STRING   70

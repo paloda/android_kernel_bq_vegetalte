@@ -788,7 +788,19 @@ static void msm_spi_set_mx_counts(struct msm_spi *dd, u32 n_words)
 static int msm_spi_bam_pipe_disconnect(struct msm_spi *dd,
 						struct msm_spi_bam_pipe  *pipe)
 {
+<<<<<<< HEAD
 	int ret = sps_disconnect(pipe->handle);
+=======
+	int ret = 0;
+	struct sps_connect config = pipe->config;
+	config.options |= SPS_O_POLL;
+	ret = sps_set_config(pipe->handle, &config);
+	if (ret) {
+		pr_err("sps_set_config() failed ret %d\n", ret);
+		return ret;
+	}
+	ret = sps_disconnect(pipe->handle);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ret) {
 		dev_dbg(dd->dev, "%s disconnect bam %s pipe failed\n",
 							__func__, pipe->name);
@@ -1672,7 +1684,11 @@ static void msm_spi_process_message(struct msm_spi *dd)
 	get_transfer_length(dd);
 	if (dd->qup_ver || (dd->multi_xfr && !dd->read_len && !dd->write_len)) {
 
+<<<<<<< HEAD
 		if (dd->qup_ver)
+=======
+		if (dd->pdata->force_cs && dd->qup_ver)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			write_force_cs(dd, 0);
 
 		/*
@@ -1691,15 +1707,25 @@ static void msm_spi_process_message(struct msm_spi *dd)
 				dd->read_len = dd->write_len = 0;
 				xfrs_grped = combine_transfers(dd);
 				dd->num_xfrs_grped = xfrs_grped;
+<<<<<<< HEAD
 				if (dd->qup_ver)
+=======
+				if (dd->pdata->force_cs && dd->qup_ver)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 					write_force_cs(dd, 1);
 			}
 
 			dd->cur_tx_transfer = dd->cur_transfer;
 			dd->cur_rx_transfer = dd->cur_transfer;
 			msm_spi_process_transfer(dd);
+<<<<<<< HEAD
 			if (dd->qup_ver && dd->cur_transfer->cs_change)
 				write_force_cs(dd, 0);
+=======
+			if (dd->pdata->force_cs && dd->qup_ver
+				&& dd->cur_transfer->cs_change)
+					write_force_cs(dd, 0);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			xfrs_grped--;
 		}
 	} else {
@@ -1722,7 +1748,11 @@ static void msm_spi_process_message(struct msm_spi *dd)
 		dd->num_xfrs_grped = 1;
 		msm_spi_process_transfer(dd);
 	}
+<<<<<<< HEAD
 	if (dd->qup_ver)
+=======
+	if (dd->pdata->force_cs && dd->qup_ver)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		write_force_cs(dd, 0);
 	return;
 error:
@@ -1839,6 +1869,7 @@ static int msm_spi_transfer_one_message(struct spi_master *master,
 	 * get local resources for each transfer to ensure we're in a good
 	 * state and not interfering with other EE's using this device
 	 */
+<<<<<<< HEAD
 	if (get_local_resources(dd)) {
 		mutex_unlock(&dd->core_lock);
 		return -EINVAL;
@@ -1850,6 +1881,21 @@ static int msm_spi_transfer_one_message(struct spi_master *master,
 				&dd->bam.prod.config);
 		msm_spi_bam_pipe_connect(dd, &dd->bam.cons,
 				&dd->bam.cons.config);
+=======
+	if (dd->pdata->is_shared) {
+		if (get_local_resources(dd)) {
+			mutex_unlock(&dd->core_lock);
+			return -EINVAL;
+		}
+
+		reset_core(dd);
+		if (dd->use_dma) {
+			msm_spi_bam_pipe_connect(dd, &dd->bam.prod,
+					&dd->bam.prod.config);
+			msm_spi_bam_pipe_connect(dd, &dd->bam.cons,
+					&dd->bam.cons.config);
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	if (dd->suspended || !msm_spi_is_valid_state(dd)) {
@@ -1876,11 +1922,21 @@ static int msm_spi_transfer_one_message(struct spi_master *master,
 	 * different context since we're running in the spi kthread here) to
 	 * prevent race conditions between us and any other EE's using this hw.
 	 */
+<<<<<<< HEAD
 	if (dd->use_dma) {
 		msm_spi_bam_pipe_disconnect(dd, &dd->bam.prod);
 		msm_spi_bam_pipe_disconnect(dd, &dd->bam.cons);
 	}
 	put_local_resources(dd);
+=======
+	if (dd->pdata->is_shared) {
+		if (dd->use_dma) {
+			msm_spi_bam_pipe_disconnect(dd, &dd->bam.prod);
+			msm_spi_bam_pipe_disconnect(dd, &dd->bam.cons);
+		}
+		put_local_resources(dd);
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mutex_unlock(&dd->core_lock);
 	if (dd->suspended)
 		wake_up_interruptible(&dd->continue_suspend);
@@ -1943,9 +1999,17 @@ static int msm_spi_setup(struct spi_device *spi)
 	dd = spi_master_get_devdata(spi->master);
 
 	pm_runtime_get_sync(dd->dev);
+<<<<<<< HEAD
 	rc = get_local_resources(dd);
 	if (rc)
 		goto no_resources;
+=======
+	if (dd->pdata->is_shared) {
+		rc = get_local_resources(dd);
+		if (rc)
+			goto no_resources;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 	mutex_lock(&dd->core_lock);
@@ -1983,7 +2047,12 @@ static int msm_spi_setup(struct spi_device *spi)
 
 err_setup_exit:
 	mutex_unlock(&dd->core_lock);
+<<<<<<< HEAD
 	put_local_resources(dd);
+=======
+	if (dd->pdata->is_shared)
+		put_local_resources(dd);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 no_resources:
 	pm_runtime_mark_last_busy(dd->dev);
 	pm_runtime_put_autosuspend(dd->dev);
@@ -2391,6 +2460,13 @@ struct msm_spi_platform_data *msm_spi_dt_to_pdata(
 			&dd->cs_gpios[3].gpio_num,       DT_OPT,  DT_GPIO, -1},
 		{"qcom,rt-priority",
 			&pdata->rt_priority,		 DT_OPT,  DT_BOOL,  0},
+<<<<<<< HEAD
+=======
+		{"qcom,shared",
+			&pdata->is_shared,		 DT_OPT,  DT_BOOL,  0},
+		{"qcom,force-cs",
+			&pdata->force_cs,		 DT_OPT,  DT_BOOL,  0},
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		{NULL,  NULL,                            0,       0,        0},
 		};
 
@@ -2567,6 +2643,13 @@ static int msm_spi_probe(struct platform_device *pdev)
 					__func__);
 			goto skip_dma_resources;
 		}
+<<<<<<< HEAD
+=======
+		msm_spi_bam_pipe_connect(dd, &dd->bam.prod,
+				&dd->bam.prod.config);
+		msm_spi_bam_pipe_connect(dd, &dd->bam.cons,
+				&dd->bam.cons.config);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		dd->use_dma = 1;
 	}
 
@@ -2764,6 +2847,12 @@ static int msm_spi_pm_suspend_runtime(struct device *device)
 	if (dd->pdata && !dd->pdata->active_only)
 		msm_spi_clk_path_unvote(dd);
 
+<<<<<<< HEAD
+=======
+	if (!dd->pdata->is_shared)
+		put_local_resources(dd);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 suspend_exit:
 	return 0;
 }
@@ -2784,9 +2873,26 @@ static int msm_spi_pm_resume_runtime(struct device *device)
 	if (!dd->suspended)
 		return 0;
 
+<<<<<<< HEAD
 	msm_spi_clk_path_init(dd);
 	if (!dd->pdata->active_only)
 		msm_spi_clk_path_vote(dd);
+=======
+	if (!dd->pdata->is_shared)
+		get_local_resources(dd);
+
+	msm_spi_clk_path_init(dd);
+	if (!dd->pdata->active_only)
+		msm_spi_clk_path_vote(dd);
+
+		if (!dd->pdata->is_shared && dd->use_dma) {
+			msm_spi_bam_pipe_connect(dd, &dd->bam.prod,
+				&dd->bam.prod.config);
+			msm_spi_bam_pipe_connect(dd, &dd->bam.cons,
+				&dd->bam.cons.config);
+		}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	dd->suspended = 0;
 
 resume_exit:

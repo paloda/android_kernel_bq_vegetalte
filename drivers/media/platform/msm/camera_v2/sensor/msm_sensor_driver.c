@@ -624,6 +624,267 @@ static void msm_sensor_fill_sensor_info(struct msm_sensor_ctrl_t *s_ctrl,
 	strlcpy(entity_name, s_ctrl->msm_sd.sd.entity.name, MAX_SENSOR_NAME);
 }
 
+<<<<<<< HEAD
+=======
+static int msm_sensor_read_eeprom(struct msm_sensor_ctrl_t *s_ctrl)
+{
+	int8_t eeprom_page_no = 0;
+	int32_t rc = 0;
+	uint16_t eeprom_slave_addr;
+	struct msm_camera_sensor_slave_info *camera_info;
+	struct msm_sensor_otp_cal_info_t *eeprom_cal_info;
+	struct otp_info_t *eeprom_data_info;
+	uint16_t cam_slave_addr =
+		s_ctrl->sensordata->slave_info->sensor_slave_addr;
+	int cam_addr_type = s_ctrl->sensor_i2c_client->addr_type;
+
+	camera_info = s_ctrl->sensordata->cam_slave_info;
+	if (!camera_info) {
+		pr_err("%s: camera slave info is null\n", __func__);
+		return -EAGAIN;
+	}
+
+	eeprom_cal_info = &camera_info->sensor_init_params.sensor_otp;
+	eeprom_data_info = &camera_info->sensor_otp;
+	if (!eeprom_cal_info || !eeprom_data_info) {
+		pr_err("%s: eeprom info is null\n", __func__);
+		return -EAGAIN;
+	} else if (!eeprom_cal_info->eeprom_enable ||
+		eeprom_cal_info->num_of_pages == 0) {
+		pr_err("%s: %s EEPROM disabled in sensor lib\n", __func__,
+			s_ctrl->sensordata->sensor_name);
+		return 0;
+	}
+
+	/* Read eeprom only once */
+	if (eeprom_data_info->otp_read) {
+		pr_debug("%s: eeprom block already read", __func__);
+		return 0;
+	}
+	pr_debug("%s sensor eeprom initialization block:\n"
+			" - page size: %d\n"
+			" - pages count: %d\n"
+			" - addr type: %d\n"
+			" - eeprom enable: %d\n"
+			" - eeprom slave address: 0%x\n"
+			" - eeprom mem address: 0%x\n",
+			s_ctrl->sensordata->sensor_name,
+			eeprom_cal_info->page_size,
+			eeprom_cal_info->num_of_pages,
+			eeprom_cal_info->addr_type,
+			eeprom_cal_info->eeprom_enable,
+			eeprom_cal_info->eeprom_slave_addr,
+			eeprom_cal_info->eeprom_mem_addr
+			);
+	/* Allocate eeprom memory */
+	eeprom_data_info->otp_info = kzalloc(eeprom_cal_info->page_size*
+					eeprom_cal_info->num_of_pages,
+					GFP_KERNEL);
+	if (eeprom_data_info->otp_info == NULL) {
+		pr_err("%s: Unable to allocate memory for eeprom!\n", __func__);
+		return -ENOMEM;
+	}
+
+	for (eeprom_page_no = 0; eeprom_page_no < eeprom_cal_info->num_of_pages;
+		eeprom_page_no++) {
+		eeprom_slave_addr = eeprom_cal_info->eeprom_slave_addr +
+			eeprom_page_no * 2;
+		s_ctrl->sensor_i2c_client->addr_type =
+			eeprom_cal_info->addr_type;
+		s_ctrl->sensordata->slave_info->sensor_slave_addr =
+			eeprom_slave_addr;
+		s_ctrl->sensor_i2c_client->cci_client->sid =
+			(eeprom_slave_addr >> 1);
+
+		/* read eeprom buffer */
+		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->
+			i2c_read_seq(s_ctrl->sensor_i2c_client,
+			eeprom_cal_info->eeprom_mem_addr,
+			(eeprom_data_info->otp_info) +
+			eeprom_page_no*eeprom_cal_info->page_size,
+			eeprom_cal_info->page_size);
+		if (rc < 0) {
+			pr_err("%s: Unable to read eeprom\n", __func__);
+			goto exit;
+		}
+
+	}
+exit:
+	/* Restore sensor defaults */
+	s_ctrl->sensordata->slave_info->sensor_slave_addr =
+		cam_slave_addr;
+	s_ctrl->sensor_i2c_client->cci_client->sid =
+		(cam_slave_addr >> 1);
+	s_ctrl->sensor_i2c_client->addr_type = cam_addr_type;
+
+	/* set read flag to read only once */
+	eeprom_data_info->otp_read = 1;
+
+	return rc;
+}
+
+static int msm_sensor_read_otp(struct msm_sensor_ctrl_t *s_ctrl)
+{
+	int8_t otp_page_no = 0;
+	int32_t rc = 0;
+	struct msm_camera_sensor_slave_info *camera_info;
+	struct msm_sensor_otp_cal_info_t *otp_cal_info;
+	struct otp_info_t *otp_data_info;
+
+	camera_info = s_ctrl->sensordata->cam_slave_info;
+	if (!camera_info) {
+		pr_err("%s: camera slave info is null\n", __func__);
+		return -EAGAIN;
+	}
+
+	otp_cal_info = &camera_info->sensor_init_params.sensor_otp;
+	otp_data_info = &camera_info->sensor_otp;
+	if (!otp_cal_info || !otp_data_info) {
+		pr_err("%s: otp info is null\n", __func__);
+		return -EAGAIN;
+	} else if (!otp_cal_info->enable || otp_cal_info->num_of_pages == 0) {
+		pr_err("%s: %s OTP disabled in sensor lib\n", __func__,
+			s_ctrl->sensordata->sensor_name);
+		return 0;
+	}
+
+	/* Read otp only once */
+	if (otp_data_info->otp_read) {
+		pr_debug("%s: OTP block already read", __func__);
+		return 0;
+	}
+	pr_debug("%s sensor OTP initialization block:\n"
+			" - page size: %d\n"
+			" - pages count: %d\n"
+			" - page register address: 0x%x\n"
+			" - first page base address: 0x%x\n"
+			" - control register address: 0x%x\n"
+			" - Initial mode setting: 0x%x\n"
+			" - read mode setting: 0x%x\n"
+			" - read mode disable: 0x%x\n"
+			" - reset register address: 0x%x\n"
+			" - stream on: 0x%x\n"
+			" - stream off: 0x%x\n"
+			" - data segment address: 0x%x\n"
+			" - data size: %d\n"
+			" - otp enable: %d\n"
+			" - %s endian\n",
+
+			s_ctrl->sensordata->sensor_name,
+
+			otp_cal_info->page_size,
+			otp_cal_info->num_of_pages,
+			otp_cal_info->page_reg_addr,
+			otp_cal_info->page_reg_base_addr,
+			otp_cal_info->ctrl_reg_addr,
+			otp_cal_info->ctrl_reg_initial_mode,
+			otp_cal_info->ctrl_reg_read_mode,
+			otp_cal_info->ctrl_reg_read_mode_disable,
+
+			otp_cal_info->reset_reg_addr,
+			otp_cal_info->reset_reg_stream_on,
+			otp_cal_info->reset_reg_stream_off,
+
+			otp_cal_info->data_seg_addr,
+			otp_cal_info->data_size,
+			otp_cal_info->enable,
+			otp_cal_info->big_endian ? "big" : "little"
+			);
+	/* Allocate OTP memory */
+	otp_data_info->otp_info = kzalloc(otp_cal_info->page_size*
+					otp_cal_info->num_of_pages,
+					GFP_KERNEL);
+	if (otp_data_info->otp_info == NULL) {
+		pr_err("%s: Unable to allocate memory for OTP!\n", __func__);
+		return -ENOMEM;
+	}
+
+	/* Disable Streaming */
+	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
+		s_ctrl->sensor_i2c_client,
+		otp_cal_info->reset_reg_addr,
+		otp_cal_info->reset_reg_stream_off,
+		otp_cal_info->data_size);
+	if (rc < 0)
+		pr_err("%s: Fail to stream off sensor\n", __func__);
+
+	for (otp_page_no = 0; otp_page_no < otp_cal_info->num_of_pages;
+		otp_page_no++) {
+		/* Make initial state */
+		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
+			s_ctrl->sensor_i2c_client,
+			otp_cal_info->ctrl_reg_addr,
+			otp_cal_info->ctrl_reg_initial_mode,
+			otp_cal_info->data_size);
+		if (rc < 0) {
+			pr_err("%s: Unable to set Initial state !\n", __func__);
+			break;
+		}
+
+		/* Set page number */
+		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
+			s_ctrl->sensor_i2c_client,
+			otp_cal_info->page_reg_addr,
+			otp_page_no,
+			otp_cal_info->data_size);
+		if (rc < 0) {
+			pr_err("%s: Unable to set otp page no: %d !\n",
+				__func__, otp_page_no);
+			break;
+		}
+
+		/* set read mode */
+		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
+			s_ctrl->sensor_i2c_client,
+			otp_cal_info->ctrl_reg_addr,
+			otp_cal_info->ctrl_reg_read_mode,
+			otp_cal_info->data_size);
+		if (rc < 0) {
+			pr_err("%s: Unable to set read mode !\n", __func__);
+			break;
+		}
+
+		/* Transfer page data from OTP to buffer */
+		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_read_seq(
+			s_ctrl->sensor_i2c_client,
+			otp_cal_info->data_seg_addr,
+			(otp_data_info->otp_info) +
+			otp_page_no*otp_cal_info->page_size,
+			otp_cal_info->page_size);
+		if (rc < 0) {
+			pr_err("%s: Fail to read OTP page data: otp_page_no: %d\n",
+				__func__, otp_page_no);
+			break;
+		}
+	}
+
+	/* Make initial state */
+	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
+		s_ctrl->sensor_i2c_client,
+		otp_cal_info->ctrl_reg_addr,
+		otp_cal_info->ctrl_reg_initial_mode,
+		otp_cal_info->data_size);
+	if (rc < 0)
+		pr_err("%s: Unable to set Initial state !\n", __func__);
+
+	/* Disable NVM controller */
+	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
+		s_ctrl->sensor_i2c_client,
+		otp_cal_info->ctrl_reg_addr,
+		otp_cal_info->ctrl_reg_read_mode_disable,
+		otp_cal_info->data_size);
+	if (rc < 0) {
+		pr_err("%s: Unable to disable NVM controller !\n",
+			__func__);
+	}
+
+	/* set otp read flag to read otp only once */
+	otp_data_info->otp_read = 1;
+
+	return 0;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* static function definition */
 int32_t msm_sensor_driver_probe(void *setting,
 	struct msm_sensor_info_t *probed_info, char *entity_name)
@@ -867,15 +1128,40 @@ int32_t msm_sensor_driver_probe(void *setting,
 		goto free_camera_info;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Save sensor info*/
+	s_ctrl->sensordata->cam_slave_info = slave_info;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* Power up and probe sensor */
 	rc = s_ctrl->func_tbl->sensor_power_up(s_ctrl);
 	if (rc < 0) {
 		pr_err("%s power up failed", slave_info->sensor_name);
+<<<<<<< HEAD
+=======
+		s_ctrl->sensordata->cam_slave_info = NULL;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		goto free_camera_info;
 	}
 
 	pr_err("%s probe succeeded", slave_info->sensor_name);
 
+<<<<<<< HEAD
+=======
+	if (slave_info->sensor_init_params.sensor_otp.enable) {
+		/* Read OTP */
+		rc = msm_sensor_read_otp(s_ctrl);
+		if (rc < 0)
+			pr_err("%s OTP read failed", slave_info->sensor_name);
+	} else if (slave_info->sensor_init_params.sensor_otp.eeprom_enable) {
+		/* read eeprom */
+		msm_sensor_read_eeprom(s_ctrl);
+		if (rc < 0)
+			pr_err("%s eeprom read failed",
+				slave_info->sensor_name);
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/*
 	  Set probe succeeded flag to 1 so that no other camera shall
 	 * probed on this slot
@@ -933,8 +1219,11 @@ int32_t msm_sensor_driver_probe(void *setting,
 	s_ctrl->sensordata->cam_slave_info = slave_info;
 
 	msm_sensor_fill_sensor_info(s_ctrl, probed_info, entity_name);
+<<<<<<< HEAD
 	msm_sensor_init_device_name();
 	msm_sensor_set_module_info(s_ctrl);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return rc;
 

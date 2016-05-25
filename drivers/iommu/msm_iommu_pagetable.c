@@ -26,6 +26,10 @@
 
 #define NUM_FL_PTE      4096
 #define NUM_SL_PTE      256
+<<<<<<< HEAD
+=======
+#define NUM_SL_PTE_MASK 0x1FF
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define GUARD_PTE       2
 #define NUM_TEX_CLASS   8
 
@@ -146,10 +150,17 @@ void msm_iommu_pagetable_free_tables(struct msm_iommu_pt *pt, unsigned long va,
 
 	for (i = 0; i < n_entries && fl_offset < NUM_FL_PTE; ++i) {
 		u32 *fl_pte_shadow = pt->fl_table_shadow + fl_offset;
+<<<<<<< HEAD
 		void *sl_table_va = __va(((*fl_pte_shadow) & ~0x1FF));
 		u32 sl_table = *fl_pte_shadow;
 
 		if (sl_table && !(sl_table & 0x1FF)) {
+=======
+		void *sl_table_va = __va(((*fl_pte_shadow) & ~NUM_SL_PTE_MASK));
+		u32 sl_table = *fl_pte_shadow;
+
+		if (sl_table && !(sl_table & NUM_SL_PTE_MASK)) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			free_pages((unsigned long) sl_table_va,
 				   get_order(SZ_4K));
 			*fl_pte_shadow = 0;
@@ -218,7 +229,11 @@ static u32 *make_second_level(struct msm_iommu_pt *pt, u32 *fl_pte,
 
 	*fl_pte = ((((int)__pa(sl)) & FL_BASE_MASK) | \
 			FL_TYPE_TABLE);
+<<<<<<< HEAD
 	*fl_pte_shadow = *fl_pte & ~0x1FF;
+=======
+	*fl_pte_shadow = *fl_pte & ~NUM_SL_PTE_MASK;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	clean_pte(fl_pte, fl_pte + 1, pt->redirect);
 fail:
@@ -461,17 +476,34 @@ int msm_iommu_pagetable_map_range(struct msm_iommu_pt *pt, unsigned int va,
 							chunk_size);
 
 			if (chunk_size == SZ_4K) {
+<<<<<<< HEAD
 				sl_4k(&sl_table[sl_offset], pa, pgprot4k);
+=======
+				ret = sl_4k(&sl_table[sl_offset], pa, pgprot4k);
+				if (ret)
+					goto fail;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				sl_offset++;
 				/* Increment map count */
 				(*fl_pte_shadow)++;
 			} else {
 				BUG_ON(sl_offset + 16 > NUM_SL_PTE);
+<<<<<<< HEAD
 				sl_64k(&sl_table[sl_offset], pa, pgprot64k);
+=======
+				ret = sl_64k(&sl_table[sl_offset], pa,
+					     pgprot64k);
+				if (ret)
+					goto fail;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				sl_offset += 16;
 				/* Increment map count */
 				*fl_pte_shadow += 16;
 			}
+<<<<<<< HEAD
+=======
+			BUG_ON((*fl_pte_shadow & NUM_SL_PTE_MASK) > NUM_SL_PTE);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 			offset += chunk_size;
 			chunk_offset += chunk_size;
@@ -508,6 +540,10 @@ void msm_iommu_pagetable_unmap_range(struct msm_iommu_pt *pt, unsigned int va,
 	u32 fl_offset;
 	u32 *sl_table;
 	u32 sl_start, sl_end;
+<<<<<<< HEAD
+=======
+	u32 *temp;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int used;
 
 	BUG_ON(len & (SZ_4K - 1));
@@ -528,6 +564,13 @@ void msm_iommu_pagetable_unmap_range(struct msm_iommu_pt *pt, unsigned int va,
 				sl_end = NUM_SL_PTE;
 			n_entries = sl_end - sl_start;
 
+<<<<<<< HEAD
+=======
+			for (temp = sl_table + sl_start;
+					temp < sl_table + sl_end; temp++)
+				BUG_ON(!*temp);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			memset(sl_table + sl_start, 0, n_entries * 4);
 			clean_pte(sl_table + sl_start, sl_table + sl_end,
 					pt->redirect);
@@ -535,11 +578,19 @@ void msm_iommu_pagetable_unmap_range(struct msm_iommu_pt *pt, unsigned int va,
 			offset += n_entries * SZ_4K;
 			va += n_entries * SZ_4K;
 
+<<<<<<< HEAD
 			BUG_ON((*fl_pte_shadow & 0x1FF) < n_entries);
 
 			/* Decrement map count */
 			*fl_pte_shadow -= n_entries;
 			used = *fl_pte_shadow & 0x1FF;
+=======
+			BUG_ON((*fl_pte_shadow & NUM_SL_PTE_MASK) < n_entries);
+
+			/* Decrement map count */
+			*fl_pte_shadow -= n_entries;
+			used = *fl_pte_shadow & NUM_SL_PTE_MASK;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 			if (!used) {
 				*fl_pte = 0;

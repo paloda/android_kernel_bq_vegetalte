@@ -88,6 +88,11 @@ int msm_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl);
 int msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl);
 
 int msm_sensor_check_id(struct msm_sensor_ctrl_t *s_ctrl);
+<<<<<<< HEAD
+=======
+int msm_actuator_check_reg_read(struct msm_sensor_ctrl_t *s_ctrl,
+	struct msm_sensor_actuator_info_t *actuator_info);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl);
 
@@ -118,8 +123,11 @@ long msm_sensor_subdev_fops_ioctl(struct file *file,
 	unsigned int cmd,
 	unsigned long arg);
 #endif
+<<<<<<< HEAD
 
 int32_t msm_sensor_init_device_name(void);
 void msm_sensor_set_module_info(struct msm_sensor_ctrl_t *s_ctrl);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif

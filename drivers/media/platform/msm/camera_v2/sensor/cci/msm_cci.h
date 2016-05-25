@@ -147,6 +147,10 @@ struct cci_device {
 	uint8_t cci_pinctrl_status;
 	struct regulator *reg_ptr;
 	uint32_t cycles_per_us;
+<<<<<<< HEAD
+=======
+	struct regulator *ioreg;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 enum msm_cci_i2c_cmd_type {

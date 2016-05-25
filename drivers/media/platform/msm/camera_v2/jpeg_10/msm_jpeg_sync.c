@@ -115,7 +115,11 @@ struct msm_jpeg_hw_cmds32 {
 #endif
 
 
+<<<<<<< HEAD
 inline void msm_jpeg_q_init(char const *name, struct msm_jpeg_q *q_p)
+=======
+static inline void msm_jpeg_q_init(char const *name, struct msm_jpeg_q *q_p)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	JPEG_DBG("%s:%d] %s\n", __func__, __LINE__, name);
 	q_p->name = name;
@@ -125,7 +129,11 @@ inline void msm_jpeg_q_init(char const *name, struct msm_jpeg_q *q_p)
 	q_p->unblck = 0;
 }
 
+<<<<<<< HEAD
 inline void *msm_jpeg_q_out(struct msm_jpeg_q *q_p)
+=======
+static inline void *msm_jpeg_q_out(struct msm_jpeg_q *q_p)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	unsigned long flags;
 	struct msm_jpeg_q_entry *q_entry_p = NULL;
@@ -151,7 +159,11 @@ inline void *msm_jpeg_q_out(struct msm_jpeg_q *q_p)
 	return data;
 }
 
+<<<<<<< HEAD
 inline int msm_jpeg_q_in(struct msm_jpeg_q *q_p, void *data)
+=======
+static inline int msm_jpeg_q_in(struct msm_jpeg_q *q_p, void *data)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	unsigned long flags;
 
@@ -173,7 +185,11 @@ inline int msm_jpeg_q_in(struct msm_jpeg_q *q_p, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 inline int msm_jpeg_q_in_buf(struct msm_jpeg_q *q_p,
+=======
+static inline int msm_jpeg_q_in_buf(struct msm_jpeg_q *q_p,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct msm_jpeg_core_buf *buf)
 {
 	struct msm_jpeg_core_buf *buf_p;
@@ -191,7 +207,11 @@ inline int msm_jpeg_q_in_buf(struct msm_jpeg_q *q_p,
 	return 0;
 }
 
+<<<<<<< HEAD
 inline int msm_jpeg_q_wait(struct msm_jpeg_q *q_p)
+=======
+static inline int msm_jpeg_q_wait(struct msm_jpeg_q *q_p)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	long tm = MAX_SCHEDULE_TIMEOUT; /* 500ms */
 	int rc;
@@ -216,14 +236,22 @@ inline int msm_jpeg_q_wait(struct msm_jpeg_q *q_p)
 	return rc;
 }
 
+<<<<<<< HEAD
 inline int msm_jpeg_q_wakeup(struct msm_jpeg_q *q_p)
+=======
+static inline int msm_jpeg_q_wakeup(struct msm_jpeg_q *q_p)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	JPEG_DBG("%s:%d] %s\n", __func__, __LINE__, q_p->name);
 	wake_up(&q_p->wait);
 	return 0;
 }
 
+<<<<<<< HEAD
 inline int msm_jpeg_q_unblock(struct msm_jpeg_q *q_p)
+=======
+static inline int msm_jpeg_q_unblock(struct msm_jpeg_q *q_p)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	JPEG_DBG("%s:%d] %s\n", __func__, __LINE__, q_p->name);
 	q_p->unblck = 1;
@@ -231,7 +259,11 @@ inline int msm_jpeg_q_unblock(struct msm_jpeg_q *q_p)
 	return 0;
 }
 
+<<<<<<< HEAD
 inline void msm_jpeg_outbuf_q_cleanup(struct msm_jpeg_device *pgmn_dev,
+=======
+static inline void msm_jpeg_outbuf_q_cleanup(struct msm_jpeg_device *pgmn_dev,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct msm_jpeg_q *q_p, int domain_num)
 {
 	struct msm_jpeg_core_buf *buf_p;
@@ -248,7 +280,11 @@ inline void msm_jpeg_outbuf_q_cleanup(struct msm_jpeg_device *pgmn_dev,
 	q_p->unblck = 0;
 }
 
+<<<<<<< HEAD
 inline void msm_jpeg_q_cleanup(struct msm_jpeg_q *q_p)
+=======
+static inline void msm_jpeg_q_cleanup(struct msm_jpeg_q *q_p)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	void *data;
 	JPEG_DBG("%s:%d] %s\n", __func__, __LINE__, q_p->name);

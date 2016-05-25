@@ -39,6 +39,10 @@ int mdss_pll_util_resource_init(struct platform_device *pdev,
 		goto clk_err;
 	}
 
+<<<<<<< HEAD
+=======
+	mutex_init(&pll_res->res_lock);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return rc;
 
 clk_err:
@@ -89,6 +93,11 @@ void mdss_pll_util_resource_deinit(struct platform_device *pdev,
 	msm_dss_put_clk(mp->clk_config, mp->num_clk);
 
 	msm_dss_config_vreg(&pdev->dev, mp->vreg_config, mp->num_vreg, 0);
+<<<<<<< HEAD
+=======
+
+	mutex_destroy(&pll_res->res_lock);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 void mdss_pll_util_resource_release(struct platform_device *pdev,

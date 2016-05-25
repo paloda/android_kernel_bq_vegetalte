@@ -15,6 +15,11 @@
 		compatible = "qcom,msm-tlmm-8939", "qcom,msm-tlmm-8916";
 		reg = <0x1000000 0x300000>;
 		interrupts = <0 208 0>;
+<<<<<<< HEAD
+=======
+		pinctrl-names = "default";
+		pinctrl-0 = <&uim1_default &uim2_default>;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		/*General purpose pins*/
 		gp: gp {
@@ -288,6 +293,31 @@
 			};
 		};
 
+<<<<<<< HEAD
+=======
+		uim1-det-pin {
+			qcom,pins = <&gp 60>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <0>;
+			label = "uim1-det-pin";
+			uim1_default: default {
+				drive-strength = <2>;
+				bias-disable = <0>; /* No PULL */
+			};
+		};
+
+		uim2-det-pin {
+			qcom,pins = <&gp 56>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <0>;
+			label = "uim2-det-pin";
+			uim2_default: default {
+				drive-strength = <2>;
+				bias-disable = <0>; /* No PULL */
+			};
+		};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		usb-id-pin {
 			qcom,pins = <&gp 110>;
 			qcom,num-grp-pins = <1>;

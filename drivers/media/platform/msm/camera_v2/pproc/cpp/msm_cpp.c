@@ -1308,16 +1308,27 @@ static int msm_cpp_notify_frame_done(struct cpp_device *cpp_dev,
 	if (frame_qcmd) {
 		processed_frame = frame_qcmd->command;
 		do_gettimeofday(&(processed_frame->out_time));
+<<<<<<< HEAD
 		kfree(frame_qcmd);
 		event_qcmd = kzalloc(sizeof(struct msm_queue_cmd), GFP_ATOMIC);
 		if (!event_qcmd) {
 			pr_err("Insufficient memory\n");
+=======
+		event_qcmd = kzalloc(sizeof(struct msm_queue_cmd), GFP_ATOMIC);
+		if (!event_qcmd) {
+			pr_err("Insufficient memory\n");
+			kfree(frame_qcmd);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return -ENOMEM;
 		}
 		atomic_set(&event_qcmd->on_heap, 1);
 		event_qcmd->command = processed_frame;
 		CPP_DBG("fid %d\n", processed_frame->frame_id);
 		msm_enqueue(&cpp_dev->eventData_q, &event_qcmd->list_eventdata);
+<<<<<<< HEAD
+=======
+		kfree(frame_qcmd);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		if (!processed_frame->output_buffer_info[0].processed_divert &&
 			!processed_frame->output_buffer_info[0].native_buff) {
@@ -1846,6 +1857,13 @@ static int msm_cpp_copy_from_ioctl_ptr(void *dst_ptr,
 	struct msm_camera_v4l2_ioctl_t *ioctl_ptr)
 {
 	int ret;
+<<<<<<< HEAD
+=======
+	if ((ioctl_ptr->ioctl_ptr == NULL) || (ioctl_ptr->len == 0)) {
+		pr_err("Wrong ioctl_ptr %p\n", ioctl_ptr);
+		return -EINVAL;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if ((ioctl_ptr->ioctl_ptr == NULL) || (ioctl_ptr->len == 0)) {
 		pr_err("%s: Wrong ioctl_ptr %p / len %zu\n", __func__,
@@ -1924,7 +1942,11 @@ long msm_cpp_subdev_ioctl(struct v4l2_subdev *sd,
 				cpp_dev->fw_name_bin = NULL;
 			}
 			if ((ioctl_ptr->len == 0) ||
+<<<<<<< HEAD
 				(ioctl_ptr->len > MSM_CPP_MAX_FW_NAME_LEN)) {
+=======
+				(ioctl_ptr->len >= MSM_CPP_MAX_FW_NAME_LEN)) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				pr_err("ioctl_ptr->len is 0\n");
 				mutex_unlock(&cpp_dev->mutex);
 				return -EINVAL;
@@ -1942,6 +1964,10 @@ long msm_cpp_subdev_ioctl(struct v4l2_subdev *sd,
 				kfree(cpp_dev->fw_name_bin);
 				cpp_dev->fw_name_bin = NULL;
 				mutex_unlock(&cpp_dev->mutex);
+<<<<<<< HEAD
+=======
+				kfree(cpp_dev->fw_name_bin);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 				return -EINVAL;
 			}
 			rc = (copy_from_user(cpp_dev->fw_name_bin,
@@ -2135,6 +2161,12 @@ long msm_cpp_subdev_ioctl(struct v4l2_subdev *sd,
 				process_frame,
 				sizeof(struct msm_cpp_frame_info_t))) {
 					mutex_unlock(&cpp_dev->mutex);
+<<<<<<< HEAD
+=======
+					kfree(process_frame->cpp_cmd_msg);
+					kfree(process_frame);
+					kfree(event_qcmd);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 					return -EINVAL;
 		}
 
@@ -2312,7 +2344,12 @@ long msm_cpp_subdev_ioctl(struct v4l2_subdev *sd,
 		break;
 	}
 	case VIDIOC_MSM_CPP_IOMMU_DETACH: {
+<<<<<<< HEAD
 		if (cpp_dev->iommu_state == CPP_IOMMU_STATE_ATTACHED) {
+=======
+		if ((cpp_dev->iommu_state == CPP_IOMMU_STATE_ATTACHED) &&
+			(cpp_dev->stream_cnt == 0)) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			iommu_detach_device(cpp_dev->domain,
 				cpp_dev->iommu_ctx);
 			cpp_dev->iommu_state = CPP_IOMMU_STATE_DETACHED;
@@ -2494,14 +2531,22 @@ static struct msm_cpp_frame_info_t *get_64bit_cpp_frame_from_compat(
 		(new_frame->msg_len > MSM_CPP_MAX_FRAME_LENGTH)) {
 		pr_err("%s:%d: Invalid frame len:%d\n", __func__,
 			__LINE__, new_frame->msg_len);
+<<<<<<< HEAD
 		goto strip_err;
+=======
+		goto frame_err;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	cpp_frame_msg = kzalloc(sizeof(uint32_t)*new_frame->msg_len,
 		GFP_KERNEL);
 	if (!cpp_frame_msg) {
 		pr_err("Insufficient memory\n");
+<<<<<<< HEAD
 		goto strip_err;
+=======
+		goto frame_err;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	rc = (copy_from_user(cpp_frame_msg,
@@ -2518,8 +2563,11 @@ static struct msm_cpp_frame_info_t *get_64bit_cpp_frame_from_compat(
 
 frame_msg_err:
 	kfree(cpp_frame_msg);
+<<<<<<< HEAD
 strip_err:
 	kfree(new_frame->strip_info);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 frame_err:
 	kfree(new_frame);
 no_mem:
@@ -2599,6 +2647,13 @@ static long msm_cpp_subdev_fops_compat_ioctl(struct file *file,
 	kp_ioctl.trans_code = up32_ioctl.trans_code;
 	/* Convert the 32 bit pointer to 64 bit pointer */
 	kp_ioctl.ioctl_ptr = compat_ptr(up32_ioctl.ioctl_ptr);
+<<<<<<< HEAD
+=======
+	if (!kp_ioctl.ioctl_ptr) {
+		pr_err("%s: Invalid ioctl pointer\n", __func__);
+		return -EINVAL;
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/*
 	 * Convert 32 bit IOCTL ID's to 64 bit IOCTL ID's

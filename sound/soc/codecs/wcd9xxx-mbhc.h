@@ -484,7 +484,11 @@ int wcd9xxx_mbhc_init(struct wcd9xxx_mbhc *mbhc, struct wcd9xxx_resmgr *resmgr,
 		      bool impedance_det_en);
 void wcd9xxx_mbhc_deinit(struct wcd9xxx_mbhc *mbhc);
 void *wcd9xxx_mbhc_cal_btn_det_mp(
+<<<<<<< HEAD
 			    const struct wcd9xxx_mbhc_btn_detect_cfg *btn_det,
+=======
+			    struct wcd9xxx_mbhc_btn_detect_cfg *btn_det,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			    const enum wcd9xxx_mbhc_btn_det_mem mem);
 int wcd9xxx_mbhc_get_impedance(struct wcd9xxx_mbhc *mbhc, uint32_t *zl,
 			       uint32_t *zr);

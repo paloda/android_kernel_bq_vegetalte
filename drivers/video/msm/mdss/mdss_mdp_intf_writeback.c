@@ -232,7 +232,11 @@ static int mdss_mdp_writeback_format_setup(struct mdss_mdp_writeback_ctx *ctx,
 	outsize = (ctx->dst_rect.h << 16) | ctx->dst_rect.w;
 
 	if (ctx->type == MDSS_MDP_WRITEBACK_TYPE_ROTATOR &&
+<<<<<<< HEAD
 			mdata->has_rot_dwnscale) {
+=======
+			mdata && mdata->has_rot_dwnscale) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		dnsc_factor = (ctx->dnsc_factor_h) | (ctx->dnsc_factor_w << 16);
 		mdp_wb_write(ctx, MDSS_MDP_REG_WB_ROTATOR_PIPE_DOWNSCALER,
 								dnsc_factor);

@@ -35,6 +35,10 @@
 #include "mdss_fb.h"
 #include "mdss_mdp.h"
 #include "mdss_mdp_rotator.h"
+<<<<<<< HEAD
+=======
+#include "mdss_timeout.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define VSYNC_PERIOD 16
 #define BORDERFILL_NDX	0x0BF000BF
@@ -1209,6 +1213,10 @@ int mdss_mdp_overlay_start(struct msm_fb_data_type *mfd)
 	if (mdss_mdp_ctl_is_power_on(ctl)) {
 		if (!mdp5_data->mdata->batfet)
 			mdss_mdp_batfet_ctrl(mdp5_data->mdata, true);
+<<<<<<< HEAD
+=======
+		mdss_mdp_splash_cleanup(mfd, true);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return 0;
 	} else if (mfd->panel_info->cont_splash_enabled) {
 		mutex_lock(&mdp5_data->list_lock);
@@ -1529,6 +1537,7 @@ int mdss_mdp_overlay_kickoff(struct msm_fb_data_type *mfd,
 
 	if (mfd->panel.type == WRITEBACK_PANEL) {
 		ATRACE_BEGIN("wb_kickoff");
+<<<<<<< HEAD
 		ret = mdss_mdp_wb_kickoff(mfd);
 		ATRACE_END("wb_kickoff");
 	} else if (!need_cleanup) {
@@ -1542,6 +1551,27 @@ int mdss_mdp_overlay_kickoff(struct msm_fb_data_type *mfd,
 		ATRACE_BEGIN("display_commit");
 		ret = mdss_mdp_display_commit(mdp5_data->ctl, NULL,
 			NULL);
+=======
+		if (!need_cleanup) {
+			commit_cb.commit_cb_fnc = mdss_mdp_commit_cb;
+			commit_cb.data = mfd;
+			ret = mdss_mdp_wb_kickoff(mfd, &commit_cb);
+		} else {
+			mdss_mdp_wb_kickoff(mfd, NULL);
+		}
+		ATRACE_END("wb_kickoff");
+	} else {
+		ATRACE_BEGIN("display_commit");
+		if (!need_cleanup) {
+			commit_cb.commit_cb_fnc = mdss_mdp_commit_cb;
+			commit_cb.data = mfd;
+			ret = mdss_mdp_display_commit(mdp5_data->ctl, NULL,
+				&commit_cb);
+		} else  {
+			ret = mdss_mdp_display_commit(mdp5_data->ctl, NULL,
+				NULL);
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ATRACE_END("display_commit");
 	}
 
@@ -2210,6 +2240,83 @@ static ssize_t dynamic_fps_sysfs_wta_dfps(struct device *dev,
 	return count;
 } /* dynamic_fps_sysfs_wta_dfps */
 
+<<<<<<< HEAD
+=======
+static ssize_t cabc_mode_show(struct device *dev,
+			struct device_attribute *attr, char *buf)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
+	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
+	struct mdss_panel_info *pinfo = NULL;
+	const char *name;
+
+	if (!ctl || !ctl->panel_data) {
+		pr_err("ctl or panel_data not available\n");
+		return -ENODEV;
+	}
+	pinfo = &ctl->panel_data->panel_info;
+
+	name = mdss_panel_map_cabc_name(pinfo->cabc_mode);
+	if (!name) {
+		pr_err("failure to map cabc name\n");
+		return -EINVAL;
+	}
+
+	return snprintf(buf, PAGE_SIZE, "%s\n", name);
+}
+
+static ssize_t cabc_mode_store(struct device *dev,
+			struct device_attribute *attr,
+			const char *buf, size_t count)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
+	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
+	int ret = -EINVAL;
+	int i, mode = -1;
+	const char *name;
+
+	if (!ctl) {
+		pr_err("ctl not available\n");
+		goto end;
+	}
+
+	for (i = CABC_UI_MODE; i < CABC_MODE_MAX_NUM; i++) {
+		name = mdss_panel_map_cabc_name(i);
+		if (!name || strncmp(name, buf, strlen(name)))
+			continue;
+		mode = i;
+		break;
+	}
+
+	if (mode == -1) {
+		pr_err("invalid mode value = %s\n", buf);
+		goto end;
+	}
+
+	mutex_lock(&ctl->offlock);
+	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_ON);
+	ret = mdss_mdp_ctl_intf_event(ctl, MDSS_EVENT_SET_CABC,
+					(void *)(unsigned long)mode);
+	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_OFF);
+	mutex_unlock(&ctl->offlock);
+end:
+	return ret ? ret : count;
+}
+
+static DEVICE_ATTR(cabc_mode, S_IWUSR | S_IWGRP | S_IRUSR | S_IRGRP,
+	cabc_mode_show, cabc_mode_store);
+
+static struct attribute *cabc_mode_attrs[] = {
+	&dev_attr_cabc_mode.attr,
+	NULL,
+};
+
+static struct attribute_group cabc_mode_attrs_group = {
+	.attrs = cabc_mode_attrs,
+};
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static DEVICE_ATTR(dynamic_fps, S_IRUGO | S_IWUSR, dynamic_fps_sysfs_rda_dfps,
 	dynamic_fps_sysfs_wta_dfps);
@@ -2222,6 +2329,243 @@ static struct attribute_group dynamic_fps_fs_attrs_group = {
 	.attrs = dynamic_fps_fs_attrs,
 };
 
+<<<<<<< HEAD
+=======
+static ssize_t frame_counter_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
+	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
+	struct mdss_mdp_mixer *mixer;
+	u32 reg;
+
+	if (!ctl) {
+		pr_warn("there is no ctl attached to fb\n");
+		return -ENODEV;
+	}
+
+	mixer = mdss_mdp_mixer_get(ctl, MDSS_MDP_MIXER_MUX_LEFT);
+	if (!mixer) {
+		pr_warn("there is no mixer\n");
+		return -ENODEV;
+	}
+
+	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_ON);
+	reg = mdss_mdp_pingpong_read(mixer->pingpong_base,
+				MDSS_MDP_REG_PP_INT_COUNT_VAL) >> 16;
+	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_OFF);
+	return snprintf(buf, PAGE_SIZE, "%d\n", reg);
+}
+
+static DEVICE_ATTR(frame_counter, S_IRUSR | S_IRGRP, frame_counter_show, NULL);
+
+static int te_status = -1;
+static ssize_t te_enable_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
+	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
+	struct mdss_mdp_pp_tear_check *te;
+
+	if (!ctl || !ctl->panel_data) {
+		pr_warn("%s: there is no ctl or panel_data\n", __func__);
+		return -ENODEV;
+	}
+
+	te = &ctl->panel_data->panel_info.te;
+	if (!te) {
+		pr_warn("%s: there is no te information\n", __func__);
+		return -ENODEV;
+	}
+
+	if (te_status < 0)
+		te_status = te->tear_check_en;
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", te_status);
+}
+
+static ssize_t te_enable_store(struct device *dev,
+			struct device_attribute *attr,
+			const char *buf, size_t count)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
+	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
+	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
+	struct mdss_mdp_mixer *mixer;
+	static int prev_height;
+
+	int enable;
+	int r = 0;
+	int i, mux;
+
+	if (!ctl || !mdp5_data) {
+		pr_warn("there is no ctl or mdp5_data attached to fb\n");
+		r = -ENODEV;
+		goto end;
+	}
+
+	if (mfd->panel_power_state == MDSS_PANEL_POWER_OFF) {
+		pr_warn("panel is not powered\n");
+		r = -EPERM;
+		goto end;
+	}
+
+	r = kstrtoint(buf, 0, &enable);
+	if ((r) || ((enable != 0) && (enable != 1))) {
+		pr_err("invalid TE enable value = %d\n",
+			enable);
+		r = -EINVAL;
+		goto end;
+	}
+
+	mutex_lock(&mdp5_data->ov_lock);
+	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_ON);
+
+	if (te_status == enable) {
+		pr_info("te_status is not changed. Do nothing\n");
+		goto locked_end;
+	}
+
+	for (i = 0; i < 2; i++) {
+		if (i == 0)
+			mux = MDSS_MDP_MIXER_MUX_LEFT;
+		else if (i == 1)
+			mux = MDSS_MDP_MIXER_MUX_RIGHT;
+
+		mixer = mdss_mdp_mixer_get(ctl, mux);
+		if (!mixer) {
+			pr_warn("There is no mixer for mux = %d\n", i);
+			continue;
+		}
+
+		/* The TE max height in MDP is being set to a max value of
+		 * 0xFFF0. Since this is such a large number, when TE is
+		 * disabled from the panel, we'll start to get constant timeout
+		 * errors and get 1 FPS.  To prevent this from happening, set
+		 * the height to display height * 2.  This will just cause our
+		 * FPS to drop to 30 FPS, and prevent timeout errors. */
+		if (!enable) {
+			prev_height =
+				mdss_mdp_pingpong_read(mixer->pingpong_base,
+				MDSS_MDP_REG_PP_SYNC_CONFIG_HEIGHT) & 0xFFFF;
+			mdss_mdp_pingpong_write(mixer->pingpong_base,
+				MDSS_MDP_REG_PP_SYNC_CONFIG_HEIGHT,
+				mfd->fbi->var.yres * 2);
+		} else if (enable && prev_height) {
+			mdss_mdp_pingpong_write(mixer->pingpong_base,
+				MDSS_MDP_REG_PP_SYNC_CONFIG_HEIGHT,
+				prev_height);
+		}
+
+		r = mdss_mdp_ctl_intf_event(ctl, MDSS_EVENT_ENABLE_TE,
+						(void *) (long int) enable);
+		if (r) {
+			pr_err("Failed sending TE command, r=%d\n", r);
+			r = -EFAULT;
+			goto locked_end;
+		} else
+			te_status = enable;
+	}
+locked_end:
+	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_OFF);
+	mutex_unlock(&mdp5_data->ov_lock);
+
+end:
+	return r ? r : count;
+}
+
+static DEVICE_ATTR(te_enable, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP,
+					te_enable_show, te_enable_store);
+
+static struct attribute *factory_te_attrs[] = {
+	&dev_attr_frame_counter.attr,
+	&dev_attr_te_enable.attr,
+	NULL,
+};
+static struct attribute_group factory_te_attrs_group = {
+	.attrs = factory_te_attrs,
+};
+
+static ssize_t hbm_show(struct device *dev,
+			struct device_attribute *attr, char *buf)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
+	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
+
+	if (!ctl) {
+		pr_warn("there is no ctl attached to fb\n");
+		return -ENODEV;
+	}
+
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+			ctl->panel_data->panel_info.hbm_state);
+}
+
+static ssize_t hbm_store(struct device *dev,
+			struct device_attribute *attr,
+			const char *buf, size_t count)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
+	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
+	int enable;
+	int r;
+
+	if (!ctl) {
+		pr_warn("there is no ctl attached to fb\n");
+		r = -ENODEV;
+		goto end;
+	}
+
+	r = kstrtoint(buf, 0, &enable);
+	if ((r) || ((enable != 0) && (enable != 1))) {
+		pr_err("invalid HBM value = %d\n",
+			enable);
+		r = -EINVAL;
+		goto end;
+	}
+
+	mutex_lock(&ctl->offlock);
+	if (!mdss_fb_is_power_on(mfd)) {
+		pr_warn("panel is not powered\n");
+		r = -EPERM;
+		goto unlock_end;
+	}
+
+	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_ON);
+	r = mdss_mdp_ctl_intf_event(ctl, MDSS_EVENT_ENABLE_HBM,
+				(void *)(unsigned long)enable);
+	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_OFF);
+	if (r) {
+		pr_err("Failed sending HBM command, r = %d\n", r);
+		r = -EFAULT;
+		goto unlock_end;
+	}
+	pr_debug("HBM state changed by sysfs, state = %d\n", enable);
+
+unlock_end:
+	mutex_unlock(&ctl->offlock);
+end:
+	return r ? r : count;
+}
+
+static DEVICE_ATTR(hbm, S_IWUSR | S_IWGRP | S_IRUSR | S_IRGRP,
+		hbm_show, hbm_store);
+
+static struct attribute *hbm_attrs[] = {
+	&dev_attr_hbm.attr,
+	NULL,
+};
+
+static struct attribute_group hbm_attrs_group = {
+	.attrs = hbm_attrs,
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static ssize_t mdss_mdp_vsync_show_event(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -2306,14 +2650,60 @@ static ssize_t mdss_mdp_ad_store(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t mdss_mdp_dyn_pu_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = fbi->par;
+	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
+	int ret, state;
+
+	state = (mdp5_data->dyn_pu_state >= 0) ? mdp5_data->dyn_pu_state : -1;
+
+	ret = scnprintf(buf, PAGE_SIZE, "%d", state);
+
+	return ret;
+}
+
+static ssize_t mdss_mdp_dyn_pu_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct fb_info *fbi = dev_get_drvdata(dev);
+	struct msm_fb_data_type *mfd = fbi->par;
+	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
+	int ret, dyn_pu;
+
+	ret = kstrtoint(buf, 10, &dyn_pu);
+	if (ret) {
+		pr_err("Invalid input for partial udpate: ret = %d\n", ret);
+		return ret;
+	}
+
+	mdp5_data->dyn_pu_state = dyn_pu;
+	sysfs_notify(&dev->kobj, NULL, "dyn_pu");
+
+	return count;
+}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static DEVICE_ATTR(vsync_event, S_IRUGO, mdss_mdp_vsync_show_event, NULL);
 static DEVICE_ATTR(ad, S_IRUGO | S_IWUSR | S_IWGRP, mdss_mdp_ad_show,
 	mdss_mdp_ad_store);
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(dyn_pu, S_IRUGO | S_IWUSR | S_IWGRP, mdss_mdp_dyn_pu_show,
+	mdss_mdp_dyn_pu_store);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static struct attribute *mdp_overlay_sysfs_attrs[] = {
 	&dev_attr_vsync_event.attr,
 	&dev_attr_ad.attr,
+<<<<<<< HEAD
+=======
+	&dev_attr_dyn_pu.attr,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	NULL,
 };
 
@@ -2832,6 +3222,7 @@ static int mdss_mdp_pp_ioctl(struct msm_fb_data_type *mfd,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	/* Support only PP init cfg op if partial update is enabled for allowing
 	 * overriding of partial update
 	*/
@@ -2841,6 +3232,8 @@ static int mdss_mdp_pp_ioctl(struct msm_fb_data_type *mfd,
 		return -EPERM;
 	}
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* Supprt only MDP register read/write and
 	exit_dcm in DCM state*/
 	if (mfd->dcm_state == DCM_ENTER &&
@@ -2957,11 +3350,14 @@ static int mdss_mdp_histo_ioctl(struct msm_fb_data_type *mfd, u32 cmd,
 	if (!mdata)
 		return -EPERM;
 
+<<<<<<< HEAD
 	if (mdata->pp_enable == MDP_PP_DISABLE) {
 		pr_err("Partial update feature is enabled\n");
 		return -EPERM;
 	}
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	switch (cmd) {
 	case MSMFB_HISTOGRAM_START:
 		if (mdss_fb_is_power_off(mfd))
@@ -3418,6 +3814,10 @@ static int mdss_mdp_overlay_ioctl_handler(struct msm_fb_data_type *mfd,
 	struct mdp_overlay *req = NULL;
 	int val, ret = -ENOSYS;
 	struct msmfb_metadata metadata;
+<<<<<<< HEAD
+=======
+	struct mdss_panel_data *pdata;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	switch (cmd) {
 	case MSMFB_MDP_PP:
@@ -3540,6 +3940,18 @@ static int mdss_mdp_overlay_ioctl_handler(struct msm_fb_data_type *mfd,
 	default:
 		if (mfd->panel.type == WRITEBACK_PANEL)
 			ret = mdss_mdp_wb_ioctl_handler(mfd, cmd, argp);
+<<<<<<< HEAD
+=======
+		else if (mfd->panel.type == MIPI_VIDEO_PANEL ||
+					mfd->panel.type == MIPI_CMD_PANEL) {
+			pdata = dev_get_platdata(&mfd->pdev->dev);
+			if (!pdata)
+				return -EFAULT;
+			mutex_lock(&mdp5_data->ov_lock);
+			ret = mdss_dsi_ioctl_handler(pdata, cmd, argp);
+			mutex_unlock(&mdp5_data->ov_lock);
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 
@@ -3785,6 +4197,36 @@ int mdss_panel_register_done(struct mdss_panel_data *pdata)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+void mdss_mdp5_dump_ctl(void *data)
+{
+	struct mdss_mdp_ctl *ctl = (struct mdss_mdp_ctl *)data;
+	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
+
+	u32 isr, mask;
+	isr = MDSS_REG_READ(mdata, MDSS_MDP_REG_INTR_STATUS);
+	mask = MDSS_REG_READ(mdata, MDSS_MDP_REG_INTR_EN);
+	MDSS_TIMEOUT_LOG("-------- MDP5 INTERRUPT DATA ---------\n");
+	MDSS_TIMEOUT_LOG("MDSS_MDP_REG_INTR_STATUS: 0x%08X\n", isr);
+	MDSS_TIMEOUT_LOG("MDSS_MDP_REG_INTR_EN: 0x%08X\n", mask);
+	MDSS_TIMEOUT_LOG("global irqs disabled: %d\n", irqs_disabled());
+	MDSS_TIMEOUT_LOG("------ MDP5 INTERRUPT DATA DONE ------\n");
+
+	MDSS_TIMEOUT_LOG("-------- MDP5 CTL DATA ---------\n");
+	MDSS_TIMEOUT_LOG("play_cnt=%u\n", ctl->play_cnt);
+	MDSS_TIMEOUT_LOG("vsync_cnt=%u\n", ctl->vsync_cnt);
+	MDSS_TIMEOUT_LOG("underrun_cnt=%u\n", ctl->underrun_cnt);
+	MDSS_TIMEOUT_LOG("------ MDP5 CTL DATA DONE ------\n");
+
+	if (ctl->ctx_dump_fnc) {
+		MDSS_TIMEOUT_LOG("-------- MDP5 CTX DATA ---------\n");
+		ctl->ctx_dump_fnc(ctl);
+		MDSS_TIMEOUT_LOG("------ MDP5 CTX DATA DONE ------\n");
+	}
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int __mdss_mdp_ctl_handoff(struct mdss_mdp_ctl *ctl,
 	struct mdss_data_type *mdata)
 {
@@ -4064,6 +4506,10 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	struct device *dev = mfd->fbi->dev;
 	struct msm_mdp_interface *mdp5_interface = &mfd->mdp;
 	struct mdss_overlay_private *mdp5_data = NULL;
+<<<<<<< HEAD
+=======
+	struct irq_info *mdss_irq;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int rc;
 
 	mdp5_data = kzalloc(sizeof(struct mdss_overlay_private), GFP_KERNEL);
@@ -4162,6 +4608,15 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (mfd->panel_info->dynamic_cabc_enabled) {
+		rc = sysfs_create_group(&dev->kobj, &cabc_mode_attrs_group);
+		if (rc)
+			pr_warn("Fail to create CABC sysfs.\n");
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (mfd->panel_info->mipi.dynamic_switch_enabled ||
 			mfd->panel_info->type == MIPI_CMD_PANEL) {
 		rc = __vsync_retire_setup(mfd);
@@ -4170,6 +4625,28 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 			goto init_fail;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	if (mfd->panel_info->type == MIPI_CMD_PANEL) {
+		rc = sysfs_create_group(&dev->kobj,
+					&factory_te_attrs_group);
+		if (rc) {
+			pr_err("Error factory te sysfs creation ret=%d\n", rc);
+			goto init_fail;
+		}
+	}
+
+	if (mfd->panel_info->hbm_feature_enabled) {
+		rc = sysfs_create_group(&dev->kobj,
+					&hbm_attrs_group);
+		if (rc) {
+			pr_err("Error for HBM sysfs creation ret = %d\n", rc);
+			goto init_fail;
+		}
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mfd->mdp_sync_pt_data.async_wait_fences = true;
 
 	pm_runtime_set_suspended(&mfd->pdev->dev);
@@ -4178,7 +4655,14 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 	kobject_uevent(&dev->kobj, KOBJ_ADD);
 	pr_debug("vsync kobject_uevent(KOBJ_ADD)\n");
 
+<<<<<<< HEAD
 	mdp5_data->cpu_pm_hdl = add_event_timer(NULL, (void *)mdp5_data);
+=======
+	mdss_irq = mdss_intr_line();
+
+	mdp5_data->cpu_pm_hdl = add_event_timer(mdss_irq->irq, NULL,
+							(void *)mdp5_data);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!mdp5_data->cpu_pm_hdl)
 		pr_warn("%s: unable to add event timer\n", __func__);
 
@@ -4196,6 +4680,12 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 			rc = 0;
 		}
 	}
+<<<<<<< HEAD
+=======
+	mdp5_data->dyn_pu_state = mfd->panel_info->partial_update_enabled;
+
+	mdss_timeout_init(mdss_mdp5_dump_ctl, mdp5_data->ctl);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (mdss_mdp_pp_overlay_init(mfd))
 		pr_warn("Failed to initialize pp overlay data.\n");

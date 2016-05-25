@@ -123,6 +123,10 @@ struct fs_struct;
 struct perf_event_context;
 struct blk_plug;
 
+#define VMACACHE_BITS 2
+#define VMACACHE_SIZE (1U << VMACACHE_BITS)
+#define VMACACHE_MASK (VMACACHE_SIZE - 1)
+
 /*
  * List of flags we want to share for kernel threads,
  * if only because they are not used by them anyway.
@@ -313,6 +317,19 @@ static inline void nohz_balance_enter_idle(int cpu) { }
 static inline void set_cpu_sd_state_idle(void) { }
 #endif
 
+/*
+ * Threads filter bitmask.
+ * Bit 0, for kthreads dump.
+ * Bit 1, for userspace threads dump.
+*/
+#define SHOW_KTHREADS   (1 << 0)
+#define SHOW_APP_THREADS        (1 << 1)
+
+/*
+ * Only dump TASK_* and SHOW_* tasks. (0, 3) for all tasks.
+ */
+extern void show_state_thread_filter(unsigned long state_filter,
+				unsigned long threads_filter);
 /*
  * Only dump TASK_* tasks. (0 for all tasks)
  */
@@ -689,6 +706,9 @@ struct signal_struct {
 	short oom_score_adj;		/* OOM kill score adjustment */
 	short oom_score_adj_min;	/* OOM kill score adjustment min value.
 					 * Only settable by CAP_SYS_RESOURCE. */
+#ifdef CONFIG_ANDROID_LMK_ADJ_RBTREE
+	struct rb_node adj_node;
+#endif
 
 	struct mutex cred_guard_mutex;	/* guard against foreign influences on
 					 * credential calculations
@@ -1218,6 +1238,9 @@ struct task_struct {
 #ifdef CONFIG_COMPAT_BRK
 	unsigned brk_randomized:1;
 #endif
+	/* per-thread vma caching */
+	u32 vmacache_seqnum;
+	struct vm_area_struct *vmacache[VMACACHE_SIZE];
 #if defined(SPLIT_RSS_COUNTING)
 	struct task_rss_stat	rss_stat;
 #endif
@@ -1235,12 +1258,11 @@ struct task_struct {
 				 * execve */
 	unsigned in_iowait:1;
 
-	/* task may not gain privileges */
-	unsigned no_new_privs:1;
-
 	/* Revert to default priority/policy when forking */
 	unsigned sched_reset_on_fork:1;
 	unsigned sched_contributes_to_load:1;
+
+	unsigned long atomic_flags; /* Flags needing atomic access. */
 
 	pid_t pid;
 	pid_t tgid;
@@ -1563,6 +1585,14 @@ static inline struct pid *task_tgid(struct task_struct *task)
 	return task->group_leader->pids[PIDTYPE_PID].pid;
 }
 
+#ifdef CONFIG_ANDROID_LMK_ADJ_RBTREE
+extern void add_2_adj_tree(struct task_struct *task);
+extern void delete_from_adj_tree(struct task_struct *task);
+#else
+static inline void add_2_adj_tree(struct task_struct *task) { }
+static inline void delete_from_adj_tree(struct task_struct *task) { }
+#endif
+
 /*
  * Without tasklist or rcu lock it is not safe to dereference
  * the result of task_pgrp/task_session even if task == current,
@@ -1823,6 +1853,19 @@ static inline void memalloc_noio_restore(unsigned int flags)
 	current->flags = (current->flags & ~PF_MEMALLOC_NOIO) | flags;
 }
 
+/* Per-process atomic flags. */
+#define PFA_NO_NEW_PRIVS 0x00000001	/* May not gain new privileges. */
+
+static inline bool task_no_new_privs(struct task_struct *p)
+{
+	return test_bit(PFA_NO_NEW_PRIVS, &p->atomic_flags);
+}
+
+static inline void task_set_no_new_privs(struct task_struct *p)
+{
+	set_bit(PFA_NO_NEW_PRIVS, &p->atomic_flags);
+}
+
 /*
  * task->jobctl flags
  */
@@ -1912,9 +1955,12 @@ sched_set_cpu_cstate(int cpu, int cstate, int wakeup_energy, int wakeup_latency)
 }
 #endif
 
+<<<<<<< HEAD
 extern int sched_set_wake_up_idle(struct task_struct *p, int wake_up_idle);
 extern u32 sched_get_wake_up_idle(struct task_struct *p);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_SCHED_HMP
 
 extern int sched_set_boost(int enable);

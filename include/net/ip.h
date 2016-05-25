@@ -153,7 +153,11 @@ struct ip_reply_arg {
 				/* -1 if not needed */ 
 	int	    bound_dev_if;
 	u8  	    tos;
+<<<<<<< HEAD
 	uid_t	    uid;
+=======
+	kuid_t	    uid;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 }; 
 
 #define IP_REPLY_ARG_NOSRCCHECK 1

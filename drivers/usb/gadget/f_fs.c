@@ -22,6 +22,7 @@
 #include <linux/pagemap.h>
 #include <linux/export.h>
 #include <linux/hid.h>
+#include <linux/freezer.h>
 #include <asm/unaligned.h>
 
 #include <linux/usb/composite.h>
@@ -242,6 +243,7 @@ struct ffs_data {
 	 * destroyed by ffs_epfiles_destroy().
 	 */
 	struct ffs_epfile		*epfiles;
+	unsigned short			eps_pending_free_count;
 };
 
 /* Reference counter handling */
@@ -813,7 +815,11 @@ first_try:
 			 * and wait for next epfile open to happen
 			 */
 			if (!atomic_read(&epfile->error)) {
+<<<<<<< HEAD
 				ret = wait_event_interruptible(epfile->wait,
+=======
+				ret = wait_event_freezable(epfile->wait,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 					(ep = epfile->ep));
 				if (ret < 0)
 					goto error;
@@ -824,15 +830,33 @@ first_try:
 			}
 		}
 
+<<<<<<< HEAD
 		buffer_len = !read ? len : round_up(len,
 						ep->ep->desc->wMaxPacketSize);
+=======
+		spin_lock_irq(&epfile->ffs->eps_lock);
+		/*
+		 * While we were acquiring lock endpoint got disabled
+		 * (disconnect) or changed (composition switch) ?
+		 */
+		if (epfile->ep == ep) {
+			buffer_len = !read ? len : round_up(len,
+						ep->ep->desc->wMaxPacketSize);
+		} else {
+			spin_unlock_irq(&epfile->ffs->eps_lock);
+			ret = -ENODEV;
+			goto error;
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		/* Do we halt? */
 		halt = !read == !epfile->in;
 		if (halt && epfile->isoc) {
+			spin_unlock_irq(&epfile->ffs->eps_lock);
 			ret = -EINVAL;
 			goto error;
 		}
+		spin_unlock_irq(&epfile->ffs->eps_lock);
 
 		/* Allocate & copy */
 		if (!halt && !data) {
@@ -1449,6 +1473,7 @@ static void ffs_data_reset(struct ffs_data *ffs)
 
 	ffs->strings_count = 0;
 	ffs->interfaces_count = 0;
+	ffs->eps_pending_free_count = ffs->eps_count;
 	ffs->eps_count = 0;
 
 	ffs->ev.count = 0;
@@ -1604,6 +1629,15 @@ static void ffs_func_free(struct ffs_function *func)
 
 	ENTER();
 
+	if (!count) {
+		if (!func->ffs->eps_pending_free_count) {
+			pr_err("%s - ffs eps already freed\n", __func__);
+			return;
+		}
+
+		count = func->ffs->eps_pending_free_count;
+	}
+
 	/* cleanup after autoconfig */
 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
 	do {
@@ -1613,6 +1647,7 @@ static void ffs_func_free(struct ffs_function *func)
 		ep->ep = NULL;
 		++ep;
 	} while (--count);
+	func->ffs->eps_pending_free_count = 0;
 	spin_unlock_irqrestore(&func->ffs->eps_lock, flags);
 
 	ffs_data_put(func->ffs);
@@ -1633,6 +1668,15 @@ static void ffs_func_eps_disable(struct ffs_function *func)
 	struct ffs_epfile *epfile = func->ffs->epfiles;
 	unsigned count            = func->ffs->eps_count;
 	unsigned long flags;
+
+	if (!count) {
+		if (!func->ffs->eps_pending_free_count) {
+			pr_err("%s - ffs eps already disabled\n", __func__);
+			return;
+		}
+
+		count = func->ffs->eps_pending_free_count;
+	}
 
 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
 	do {
@@ -1962,6 +2006,7 @@ static int __ffs_data_got_descs(struct ffs_data *ffs,
 			ret = hs_len;
 			goto error;
 		}
+<<<<<<< HEAD
 	} else {
 		hs_len = 0;
 	}
@@ -1976,6 +2021,22 @@ static int __ffs_data_got_descs(struct ffs_data *ffs,
 		data += hs_len + 8;
 		len  -= hs_len + 8;
 	} else {
+=======
+	} else {
+		hs_len = 0;
+	}
+
+	if ((len >= hs_len + 8)) {
+		/* Check SS_MAGIC for presence of ss_descs and get SS_COUNT */
+		ss_magic = get_unaligned_le32(data + hs_len);
+		if (ss_magic != FUNCTIONFS_SS_DESC_MAGIC)
+			goto einval;
+
+		ss_count = get_unaligned_le32(data + hs_len + 4);
+		data += hs_len + 8;
+		len  -= hs_len + 8;
+	} else {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		data += hs_len;
 		len  -= hs_len;
 	}
@@ -2428,6 +2489,7 @@ static int ffs_func_bind(struct usb_configuration *c,
 		hs_len = ffs_do_descs(ffs->hs_descs_count,
 				   data->raw_descs + fs_len,
 				   (sizeof(data->raw_descs)) - fs_len,
+<<<<<<< HEAD
 				   __ffs_func_bind_do_descs, func);
 		if (unlikely(hs_len < 0)) {
 			ret = hs_len;
@@ -2447,6 +2509,27 @@ static int ffs_func_bind(struct usb_configuration *c,
 			goto error;
 	}
 
+=======
+				   __ffs_func_bind_do_descs, func);
+		if (unlikely(hs_len < 0)) {
+			ret = hs_len;
+			goto error;
+		}
+	} else {
+		hs_len = 0;
+	}
+
+	if (likely(super)) {
+		func->function.ss_descriptors = data->ss_descs;
+		ret = ffs_do_descs(ffs->ss_descs_count,
+				   data->raw_descs + fs_len + hs_len,
+				   (sizeof(data->raw_descs)) - fs_len - hs_len,
+				   __ffs_func_bind_do_descs, func);
+		if (unlikely(ret < 0))
+			goto error;
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/*
 	 * Now handle interface numbers allocation and interface and

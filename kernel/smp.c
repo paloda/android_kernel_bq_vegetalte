@@ -12,6 +12,7 @@
 #include <linux/gfp.h>
 #include <linux/smp.h>
 #include <linux/cpu.h>
+#include <linux/of.h>
 
 #include "smpboot.h"
 
@@ -37,6 +38,28 @@ static bool have_boot_cpu_mask;
 static cpumask_var_t boot_cpu_mask;
 
 static DEFINE_PER_CPU_SHARED_ALIGNED(struct call_single_queue, call_single_queue);
+
+#ifdef CONFIG_LOCKUP_IPI_CALL_WDT
+/*
+ * csd_lock_waiting_flag : per cpu flag.
+ * it's only used to indicate whether it's in csd_lock_waiting().
+ * Because when csd_lock_waiting() is invoked, 1) preemption will
+ * always be disabled;  2) not in irq context, it's safe to set or
+ * clear the flag directly.
+ */
+DEFINE_PER_CPU(int, csd_lock_waiting_flag);
+static inline void set_csd_lock_waiting_flag(void)
+{
+	__get_cpu_var(csd_lock_waiting_flag) = 1;
+}
+static inline void clear_csd_lock_waiting_flag(void)
+{
+	__get_cpu_var(csd_lock_waiting_flag) = 0;
+}
+#else
+static inline void set_csd_lock_waiting_flag(void) { }
+static inline void clear_csd_lock_waiting_flag(void) { }
+#endif
 
 static int
 hotplug_cfd(struct notifier_block *nfb, unsigned long action, void *hcpu)
@@ -105,8 +128,10 @@ void __init call_function_init(void)
  */
 static void csd_lock_wait(struct call_single_data *csd)
 {
+	set_csd_lock_waiting_flag();
 	while (csd->flags & CSD_FLAG_LOCK)
 		cpu_relax();
+	clear_csd_lock_waiting_flag();
 }
 
 static void csd_lock(struct call_single_data *csd)
@@ -540,6 +565,32 @@ static int __init boot_cpus(char *str)
 
 early_param("boot_cpus", boot_cpus);
 
+<<<<<<< HEAD
+=======
+static int __init bareboard_boot_cpus(void)
+{
+	struct device_node *np;
+	bool bare_board;
+	const char *str;
+
+	np = of_find_node_by_path("/chosen");
+	bare_board = of_property_read_bool(np, "mmi,bare_board");
+	if (!bare_board)
+		return 0;
+
+	np = of_find_node_by_path("/bare_board_config");
+	if (!of_property_read_string(np, "boot_cpus", &str)) {
+		if (have_boot_cpu_mask)	{/* Allocated from boot_cpus() */
+			if (cpulist_parse(str, boot_cpu_mask) < 0) {
+				pr_warn("SMP: Incorrect boot_cpus cpumask\n");
+				return -EINVAL;
+			}
+		}
+	}
+	return 0;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* Setup number of possible processor ids */
 int nr_cpu_ids __read_mostly = NR_CPUS;
 EXPORT_SYMBOL(nr_cpu_ids);
@@ -571,6 +622,7 @@ void __init smp_init(void)
 	unsigned int cpu;
 
 	idle_threads_init();
+	bareboard_boot_cpus();
 
 	/* FIXME: This should be done in userspace --RR */
 	for_each_present_cpu(cpu) {

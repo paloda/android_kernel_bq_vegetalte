@@ -54,6 +54,10 @@
 #define AC3_OUTPUT_FRAME_SZ		1536
 #define EAC3_OUTPUT_FRAME_SZ		1536
 #define DSP_NUM_OUTPUT_FRAME_BUFFERED	2
+<<<<<<< HEAD
+=======
+#define FLAC_BLK_SIZE_LIMIT		65535
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /* decoder parameter length */
 #define DDP_DEC_MAX_NUM_PARAM		18
@@ -86,10 +90,22 @@ struct msm_compr_gapless_state {
 	int32_t stream_opened[MAX_NUMBER_OF_STREAMS];
 	uint32_t initial_samples_drop;
 	uint32_t trailing_samples_drop;
+<<<<<<< HEAD
+=======
+	uint32_t min_blk_size;
+	uint32_t max_blk_size;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	uint32_t gapless_transition;
 	bool use_dsp_gapless_mode;
 };
 
+<<<<<<< HEAD
+=======
+static unsigned int supported_sample_rates[] = {
+	8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000
+};
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct msm_compr_pdata {
 	atomic_t audio_ocmem_req;
 	struct snd_compr_stream *cstream[MSM_FRONTEND_DAI_MAX];
@@ -153,7 +169,10 @@ struct msm_compr_audio {
 
 	wait_queue_head_t eos_wait;
 	wait_queue_head_t drain_wait;
+<<<<<<< HEAD
 	wait_queue_head_t flush_wait;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	wait_queue_head_t close_wait;
 	wait_queue_head_t wait_for_stream_avail;
 
@@ -184,6 +203,10 @@ static int msm_compr_set_volume(struct snd_compr_stream *cstream,
 {
 	struct msm_compr_audio *prtd;
 	int rc = 0;
+<<<<<<< HEAD
+=======
+	uint32_t avg_vol;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pr_debug("%s: volume_l %d volume_r %d\n",
 		__func__, volume_l, volume_r);
@@ -192,12 +215,41 @@ static int msm_compr_set_volume(struct snd_compr_stream *cstream,
 		return -EPERM;
 	}
 	prtd = cstream->runtime->private_data;
+<<<<<<< HEAD
 	if (prtd && prtd->audio_client) {
 		if (prtd->compr_passthr != LEGACY_PCM) {
 			pr_debug("%s: No volume config for passthrough %d\n",
 				 __func__, prtd->compr_passthr);
 			return rc;
 		}
+=======
+
+	if (!prtd || !prtd->audio_client) {
+		pr_err("%s: invalid session prtd or no audio client", __func__);
+		return rc;
+	}
+
+	if (prtd->compr_passthr != LEGACY_PCM) {
+		pr_debug("%s: No volume config for passthrough %d\n",
+			 __func__, prtd->compr_passthr);
+		return rc;
+	}
+	if (prtd->num_channels > 2) {
+		/*
+		 * Currently the left and right gains are averaged an applied
+		 * to all channels. This might not be desirable. But currently,
+		 * there exists no API in userspace to send a list of gains for
+		 * each channel either. If such an API does become available,
+		 * the mixer control must be updated to accept more than 2
+		 * channel gains.
+		 *
+		 */
+		pr_debug("%s: call q6asm_set_volume for multichannel\n",
+			 __func__);
+		avg_vol = (volume_l + volume_r) / 2;
+		rc = q6asm_set_volume(prtd->audio_client, avg_vol);
+	} else {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_debug("%s: call q6asm_set_lrgain\n", __func__);
 		rc = q6asm_set_lrgain(prtd->audio_client, volume_l, volume_r);
 		if (rc < 0) {
@@ -215,6 +267,13 @@ static int msm_compr_set_volume(struct snd_compr_stream *cstream,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (rc < 0)
+		pr_err("%s: Send vol gain command failed rc=%d\n",
+		       __func__, rc);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return rc;
 }
 
@@ -332,7 +391,20 @@ static void compr_event_handler(uint32_t opcode,
 			       payload[3],
 			       payload[0],
 				prtd->byte_offset, prtd->copied_total, token);
+<<<<<<< HEAD
 			atomic_set(&prtd->start, 0);
+=======
+
+			if (atomic_read(&prtd->drain) && prtd->last_buffer) {
+				pr_debug("wake up on drain\n");
+				prtd->drain_ready = 1;
+				wake_up(&prtd->drain_wait);
+				atomic_set(&prtd->drain, 0);
+				prtd->last_buffer = 0;
+			} else {
+				atomic_set(&prtd->start, 0);
+			}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		} else {
 			pr_debug("ASM_DATA_EVENT_WRITE_DONE_V2 offset %d, length %d\n",
 				 prtd->byte_offset, token);
@@ -466,7 +538,10 @@ static void compr_event_handler(uint32_t opcode,
 			pr_debug("token 0x%x, stream id %d\n", token,
 				  STREAM_ID_FROM_TOKEN(token));
 			prtd->cmd_ack = 1;
+<<<<<<< HEAD
 			wake_up(&prtd->flush_wait);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			break;
 		case ASM_DATA_CMD_REMOVE_INITIAL_SILENCE:
 			pr_debug("%s: ASM_DATA_CMD_REMOVE_INITIAL_SILENCE:",
@@ -994,6 +1069,11 @@ static int msm_compr_open(struct snd_compr_stream *cstream)
 	prtd->partial_drain_delay = 0;
 	prtd->next_stream = 0;
 	memset(&prtd->gapless_state, 0, sizeof(struct msm_compr_gapless_state));
+<<<<<<< HEAD
+=======
+	prtd->gapless_state.min_blk_size = 65537;
+	prtd->gapless_state.max_blk_size = 65537;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/*
 	 * Update the use_dsp_gapless_mode from gapless struture with the value
 	 * part of platform data.
@@ -1014,7 +1094,10 @@ static int msm_compr_open(struct snd_compr_stream *cstream)
 
 	init_waitqueue_head(&prtd->eos_wait);
 	init_waitqueue_head(&prtd->drain_wait);
+<<<<<<< HEAD
 	init_waitqueue_head(&prtd->flush_wait);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	init_waitqueue_head(&prtd->close_wait);
 	init_waitqueue_head(&prtd->wait_for_stream_avail);
 
@@ -1150,6 +1233,7 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 	struct snd_compr_runtime *runtime = cstream->runtime;
 	struct msm_compr_audio *prtd = runtime->private_data;
 	int ret = 0, frame_sz = 0, delay_time_ms = 0;
+<<<<<<< HEAD
 
 	pr_debug("%s\n", __func__);
 
@@ -1199,6 +1283,19 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 	}
 
 	pr_debug("%s: sample_rate %d\n", __func__, prtd->sample_rate);
+=======
+	int i, num_rates;
+	bool is_format_gapless = false;
+
+	pr_debug("%s\n", __func__);
+
+	num_rates = sizeof(supported_sample_rates)/sizeof(unsigned int);
+	for (i = 0; i < num_rates; i++)
+		if (params->codec.sample_rate == supported_sample_rates[i])
+			break;
+	if (i == num_rates)
+		return -EINVAL;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	prtd->compr_passthr = prtd->codec_param.codec.compr_passthr;
 	pr_debug("%s: compr_passthr = %d", __func__, prtd->compr_passthr);
@@ -1217,6 +1314,10 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 	case SND_AUDIOCODEC_PCM: {
 		pr_debug("SND_AUDIOCODEC_PCM\n");
 		prtd->codec = FORMAT_LINEAR_PCM;
+<<<<<<< HEAD
+=======
+		is_format_gapless = true;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 
@@ -1224,6 +1325,10 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 		pr_debug("SND_AUDIOCODEC_MP3\n");
 		prtd->codec = FORMAT_MP3;
 		frame_sz = MP3_OUTPUT_FRAME_SZ;
+<<<<<<< HEAD
+=======
+		is_format_gapless = true;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 
@@ -1231,6 +1336,10 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 		pr_debug("SND_AUDIOCODEC_AAC\n");
 		prtd->codec = FORMAT_MPEG4_AAC;
 		frame_sz = AAC_OUTPUT_FRAME_SZ;
+<<<<<<< HEAD
+=======
+		is_format_gapless = true;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 
@@ -1238,6 +1347,10 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 		pr_debug("SND_AUDIOCODEC_AC3\n");
 		prtd->codec = FORMAT_AC3;
 		frame_sz = AC3_OUTPUT_FRAME_SZ;
+<<<<<<< HEAD
+=======
+		is_format_gapless = true;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 
@@ -1245,6 +1358,10 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 		pr_debug("SND_AUDIOCODEC_EAC3\n");
 		prtd->codec = FORMAT_EAC3;
 		frame_sz = EAC3_OUTPUT_FRAME_SZ;
+<<<<<<< HEAD
+=======
+		is_format_gapless = true;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 
@@ -1295,12 +1412,33 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	delay_time_ms = ((DSP_NUM_OUTPUT_FRAME_BUFFERED * frame_sz * 1000) /
 			prtd->sample_rate) + DSP_PP_BUFFERING_IN_MSEC;
 	delay_time_ms = delay_time_ms > PARTIAL_DRAIN_ACK_EARLY_BY_MSEC ?
 			delay_time_ms - PARTIAL_DRAIN_ACK_EARLY_BY_MSEC : 0;
 	prtd->partial_drain_delay = delay_time_ms;
 
+=======
+	if (!is_format_gapless) {
+		prtd->gapless_state.use_dsp_gapless_mode = false;
+	} else {
+		delay_time_ms =
+			((DSP_NUM_OUTPUT_FRAME_BUFFERED * frame_sz * 1000) /
+			prtd->sample_rate) + DSP_PP_BUFFERING_IN_MSEC;
+		delay_time_ms =
+			delay_time_ms > PARTIAL_DRAIN_ACK_EARLY_BY_MSEC ?
+			delay_time_ms - PARTIAL_DRAIN_ACK_EARLY_BY_MSEC : 0;
+	}
+	prtd->partial_drain_delay = delay_time_ms;
+
+	memcpy(&prtd->codec_param, params, sizeof(struct snd_compr_params));
+
+	/* ToDo: remove duplicates */
+	prtd->num_channels = prtd->codec_param.codec.ch_in;
+	prtd->sample_rate = prtd->codec_param.codec.sample_rate;
+	pr_debug("%s: sample_rate %d\n", __func__, prtd->sample_rate);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	ret = msm_compr_configure_dsp(cstream);
 
 	return ret;
@@ -1455,8 +1593,11 @@ static int msm_compr_trigger(struct snd_compr_stream *cstream, int cmd)
 			spin_unlock_irqrestore(&prtd->lock, flags);
 			q6asm_stream_cmd(
 				prtd->audio_client, CMD_FLUSH, stream_id);
+<<<<<<< HEAD
 			wait_event_timeout(prtd->flush_wait,
 					prtd->cmd_ack, 1 * HZ);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			spin_lock_irqsave(&prtd->lock, flags);
 		} else {
 			prtd->first_buffer = 0;
@@ -1602,6 +1743,11 @@ static int msm_compr_trigger(struct snd_compr_stream *cstream, int cmd)
 			prtd->first_buffer = 1;
 			prtd->last_buffer = 0;
 			prtd->gapless_state.gapless_transition = 1;
+<<<<<<< HEAD
+=======
+			prtd->gapless_state.min_blk_size = 65537;
+			prtd->gapless_state.max_blk_size = 65537;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 			prtd->marker_timestamp = 0;
 
 			/*
@@ -1689,8 +1835,11 @@ static int msm_compr_trigger(struct snd_compr_stream *cstream, int cmd)
 			pr_debug("%s:issue CMD_FLUSH ac->stream_id %d",
 					      __func__, ac->stream_id);
 			q6asm_stream_cmd(ac, CMD_FLUSH, ac->stream_id);
+<<<<<<< HEAD
 			wait_event_timeout(prtd->flush_wait,
 					   prtd->cmd_ack, 1 * HZ / 4);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 			q6asm_run_nowait(prtd->audio_client, 0, 0, 0);
 		}
@@ -1791,6 +1940,10 @@ static int msm_compr_pointer(struct snd_compr_stream *cstream,
 	uint64_t timestamp = 0;
 	int rc = 0, first_buffer;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	uint32_t gapless_transition;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pr_debug("%s\n", __func__);
 	memset(&tstamp, 0x0, sizeof(struct snd_compr_tstamp));
@@ -1809,13 +1962,25 @@ static int msm_compr_pointer(struct snd_compr_stream *cstream,
 		return -ENETRESET;
 	}
 
+<<<<<<< HEAD
+=======
+	gapless_transition = prtd->gapless_state.gapless_transition;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	spin_unlock_irqrestore(&prtd->lock, flags);
 
 	/*
 	 Query timestamp from DSP if some data is with it.
 	 This prevents timeouts.
 	*/
+<<<<<<< HEAD
 	if (!first_buffer) {
+=======
+	if (!first_buffer || gapless_transition) {
+		if (gapless_transition)
+			pr_debug("%s session time in gapless transition",
+				 __func__);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		rc = q6asm_get_session_time(prtd->audio_client, &timestamp);
 		if (rc < 0) {
 			pr_err("%s: Get Session Time return value =%lld\n",
@@ -1976,7 +2141,15 @@ static int msm_compr_get_codec_caps(struct snd_compr_stream *cstream,
 	case SND_AUDIOCODEC_MP3:
 		codec->num_descriptors = 2;
 		codec->descriptor[0].max_ch = 2;
+<<<<<<< HEAD
 		codec->descriptor[0].sample_rate = SNDRV_PCM_RATE_8000_48000;
+=======
+		memcpy(codec->descriptor[0].sample_rates,
+		       supported_sample_rates,
+		       sizeof(supported_sample_rates));
+		codec->descriptor[0].num_sample_rates =
+			sizeof(supported_sample_rates)/sizeof(unsigned int);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		codec->descriptor[0].bit_rate[0] = 320; /* 320kbps */
 		codec->descriptor[0].bit_rate[1] = 128;
 		codec->descriptor[0].num_bitrates = 2;
@@ -1987,7 +2160,15 @@ static int msm_compr_get_codec_caps(struct snd_compr_stream *cstream,
 	case SND_AUDIOCODEC_AAC:
 		codec->num_descriptors = 2;
 		codec->descriptor[1].max_ch = 2;
+<<<<<<< HEAD
 		codec->descriptor[1].sample_rate = SNDRV_PCM_RATE_8000_48000;
+=======
+		memcpy(codec->descriptor[1].sample_rates,
+		       supported_sample_rates,
+		       sizeof(supported_sample_rates));
+		codec->descriptor[1].num_sample_rates =
+			sizeof(supported_sample_rates)/sizeof(unsigned int);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		codec->descriptor[1].bit_rate[0] = 320; /* 320kbps */
 		codec->descriptor[1].bit_rate[1] = 128;
 		codec->descriptor[1].num_bitrates = 2;
@@ -2023,6 +2204,11 @@ static int msm_compr_set_metadata(struct snd_compr_stream *cstream,
 {
 	struct msm_compr_audio *prtd;
 	struct audio_client *ac;
+<<<<<<< HEAD
+=======
+	struct asm_flac_cfg flac_cfg;
+	int ret = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("%s\n", __func__);
 
 	if (!metadata || !cstream)
@@ -2046,8 +2232,50 @@ static int msm_compr_set_metadata(struct snd_compr_stream *cstream,
 	} else if (metadata->key == SNDRV_COMPRESS_ENCODER_DELAY) {
 		pr_debug("%s, got encoder delay %u", __func__, metadata->value[0]);
 		prtd->gapless_state.initial_samples_drop = metadata->value[0];
+<<<<<<< HEAD
 	}
 
+=======
+	} else if (metadata->key == SNDRV_COMPRESS_MIN_BLK_SIZE) {
+		pr_debug("%s, got min_blk_size %u",
+			__func__, metadata->value[0]);
+		prtd->gapless_state.min_blk_size = metadata->value[0];
+	} else if (metadata->key == SNDRV_COMPRESS_MAX_BLK_SIZE) {
+		pr_debug("%s, got max_blk_size %u",
+			__func__, metadata->value[0]);
+		prtd->gapless_state.max_blk_size = metadata->value[0];
+	}
+
+	if ((prtd->codec == FORMAT_FLAC) &&
+	    (prtd->gapless_state.min_blk_size >= 0) &&
+	    (prtd->gapless_state.min_blk_size <= FLAC_BLK_SIZE_LIMIT) &&
+	    (prtd->gapless_state.max_blk_size >= 0) &&
+	    (prtd->gapless_state.max_blk_size <= FLAC_BLK_SIZE_LIMIT)) {
+		pr_debug("%s: SND_AUDIOCODEC_FLAC\n", __func__);
+		memset(&flac_cfg, 0x0, sizeof(struct asm_flac_cfg));
+		flac_cfg.ch_cfg = prtd->num_channels;
+		flac_cfg.sample_rate = prtd->sample_rate;
+		flac_cfg.stream_info_present = 1;
+		flac_cfg.sample_size =
+			prtd->codec_param.codec.options.flac_dec.sample_size;
+		flac_cfg.min_blk_size =
+			prtd->gapless_state.min_blk_size;
+		flac_cfg.max_blk_size =
+			prtd->gapless_state.max_blk_size;
+		flac_cfg.max_frame_size =
+			prtd->codec_param.codec.options.flac_dec.max_frame_size;
+		flac_cfg.min_frame_size =
+			prtd->codec_param.codec.options.flac_dec.min_frame_size;
+		pr_debug("%s: min_blk_size %d max_blk_size %d\n",
+			__func__, flac_cfg.min_blk_size, flac_cfg.max_blk_size);
+
+		ret = q6asm_stream_media_format_block_flac(ac, &flac_cfg,
+								ac->stream_id);
+		if (ret < 0)
+			pr_err("%s: CMD Format block failed ret %d\n",
+				__func__, ret);
+	}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 
@@ -2445,7 +2673,11 @@ static int msm_compr_app_type_cfg_info(struct snd_kcontrol *kcontrol,
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 5;
 	uinfo->value.integer.min = 0;
+<<<<<<< HEAD
 	uinfo->value.integer.max = 0xFFFFFFFF;
+=======
+	uinfo->value.integer.max = 0x7FFFFFFF;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 

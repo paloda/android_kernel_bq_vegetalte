@@ -27,6 +27,10 @@
 #include "mdss_dsi.h"
 #include "mdss_panel.h"
 #include "mdss_debug.h"
+<<<<<<< HEAD
+=======
+#include "mdss_dropbox.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define VSYNC_PERIOD 17
 
@@ -107,7 +111,10 @@ void mdss_dsi_ctrl_init(struct device *ctrl_dev,
 	mutex_init(&ctrl->mutex);
 	mutex_init(&ctrl->cmd_mutex);
 	mutex_init(&ctrl->clk_lane_mutex);
+<<<<<<< HEAD
 	mutex_init(&ctrl->cmdlist_mutex);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mdss_dsi_buf_alloc(ctrl_dev, &ctrl->tx_buf, SZ_4K);
 	mdss_dsi_buf_alloc(ctrl_dev, &ctrl->rx_buf, SZ_4K);
 	mdss_dsi_buf_alloc(ctrl_dev, &ctrl->status_buf, SZ_4K);
@@ -356,7 +363,10 @@ void mdss_dsi_host_init(struct mdss_panel_data *pdata)
 	if (pinfo->data_lane0)
 		dsi_ctrl |= BIT(4);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	data = 0;
 	if (pinfo->te_sel)
 		data |= BIT(31);
@@ -429,6 +439,24 @@ void mdss_dsi_set_tx_power_mode(int mode, struct mdss_panel_data *pdata)
 	MIPI_OUTP((ctrl_pdata->ctrl_base) + 0x3c, data);
 }
 
+<<<<<<< HEAD
+=======
+int mdss_dsi_get_tx_power_mode(struct mdss_panel_data *pdata)
+{
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
+	u32 data;
+
+	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
+								panel_data);
+
+	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 1);
+	data = MIPI_INP((ctrl_pdata->ctrl_base) + 0x3c);
+	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
+
+	return !!(data & BIT(26));
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 void mdss_dsi_sw_reset(struct mdss_dsi_ctrl_pdata *ctrl, bool restore)
 {
 	u32 data0;
@@ -964,6 +992,11 @@ static int mdss_dsi_read_status(struct mdss_dsi_ctrl_pdata *ctrl)
 	cmdreq.cmds = ctrl->status_cmds.cmds;
 	cmdreq.cmds_cnt = ctrl->status_cmds.cmd_cnt;
 	cmdreq.flags = CMD_REQ_COMMIT | CMD_CLK_CTRL | CMD_REQ_RX;
+<<<<<<< HEAD
+=======
+	if (ctrl->status_cmds.link_state == DSI_HS_MODE)
+		cmdreq.flags |= CMD_REQ_HS_MODE;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	cmdreq.rlen = ctrl->status_cmds_rlen;
 	cmdreq.cb = NULL;
 	cmdreq.rbuf = ctrl->status_buf.data;
@@ -982,9 +1015,17 @@ static int mdss_dsi_read_status(struct mdss_dsi_ctrl_pdata *ctrl)
  * Return: positive value if the panel is in good state, negative value or
  * zero otherwise.
  */
+<<<<<<< HEAD
 int mdss_dsi_reg_status_check(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 {
 	int ret = 0;
+=======
+int mdss_dsi_reg_status_check(struct mdss_dsi_ctrl_pdata *ctrl_pdata,
+			u8 *reg_val)
+{
+	int ret = 0;
+	*reg_val = 0;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (ctrl_pdata == NULL) {
 		pr_err("%s: Invalid input data\n", __func__);
@@ -995,6 +1036,7 @@ int mdss_dsi_reg_status_check(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 
 	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 1);
 
+<<<<<<< HEAD
 	if (ctrl_pdata->status_cmds.link_state == DSI_HS_MODE)
 		mdss_dsi_set_tx_power_mode(0, &ctrl_pdata->panel_data);
 
@@ -1003,11 +1045,16 @@ int mdss_dsi_reg_status_check(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 	if (ctrl_pdata->status_cmds.link_state == DSI_HS_MODE)
 		mdss_dsi_set_tx_power_mode(1, &ctrl_pdata->panel_data);
 
+=======
+	ret = mdss_dsi_read_status(ctrl_pdata);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/*
 	 * mdss_dsi_read_status returns the number of bytes returned
 	 * by the panel. Success value is greater than zero and failure
 	 * case returns zero.
 	 */
+<<<<<<< HEAD
 	if (ret > 0) {
 		ret = ctrl_pdata->check_read_status(ctrl_pdata);
 	} else {
@@ -1017,10 +1064,49 @@ int mdss_dsi_reg_status_check(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
 	pr_debug("%s: check reg value done, value=0x%x, ret=%d\n",
 		    __func__, ctrl_pdata->status_buf.data[0], ret);
+=======
+	if (ret == ctrl_pdata->status_cmds_rlen) {
+		*reg_val = ctrl_pdata->status_buf.data[0];
+		ret = ctrl_pdata->check_read_status(ctrl_pdata);
+	} else {
+		pr_err("%s: Read status register returned error, ret = %d\n",
+			__func__, ret);
+		ret = 0;
+	}
+
+	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
+	pr_debug("%s: Read register done with ret: %d\n", __func__, ret);
 
 	return ret;
 }
 
+int mdss_dsi_reg_status_check_dropbox(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
+{
+	static bool dropbox_sent;
+	int ret;
+	u8 reg_val = 0;
+
+	ret = mdss_dsi_reg_status_check(ctrl_pdata, &reg_val);
+	if (ret < 1) {
+		/* This warning message includes the wrong function name on
+		   purpose due to external analytical tools */
+		pr_warn("mdss_panel_check_status: ESD detected pwr_mode =0x%x expected mask = 0x%x\n",
+			reg_val, ctrl_pdata->status_value);
+		if (!dropbox_sent) {
+			mdss_dropbox_report_event(MDSS_DROPBOX_MSG_ESD, 1);
+			dropbox_sent = true;
+		}
+	} else
+		dropbox_sent = false;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
+
+	return ret;
+}
+
+<<<<<<< HEAD
+=======
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static void mdss_dsi_mode_setup(struct mdss_panel_data *pdata)
 {
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
@@ -1028,9 +1114,16 @@ static void mdss_dsi_mode_setup(struct mdss_panel_data *pdata)
 	struct mipi_panel_info *mipi;
 	u32 clk_rate;
 	u32 hbp, hfp, vbp, vfp, hspw, vspw, width, height;
+<<<<<<< HEAD
 	u32 ystride, bpp, data, dst_bpp;
 	u32 dummy_xres = 0, dummy_yres = 0;
 	u32 hsync_period, vsync_period, reg = 0;
+=======
+	u32 ystride, bpp, dst_bpp;
+	u32 stream_ctrl, stream_total;
+	u32 dummy_xres = 0, dummy_yres = 0;
+	u32 hsync_period, vsync_period;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
@@ -1092,6 +1185,7 @@ static void mdss_dsi_mode_setup(struct mdss_panel_data *pdata)
 
 		ystride = width * bpp + 1;
 
+<<<<<<< HEAD
 		/* Enable frame transfer in burst mode */
 		if (ctrl_pdata->hw_rev >= MDSS_DSI_HW_REV_103) {
 			reg = MIPI_INP(ctrl_pdata->ctrl_base + 0x1b8);
@@ -1108,6 +1202,27 @@ static void mdss_dsi_mode_setup(struct mdss_panel_data *pdata)
 		data = height << 16 | width;
 		MIPI_OUTP((ctrl_pdata->ctrl_base) + 0x64, data);
 		MIPI_OUTP((ctrl_pdata->ctrl_base) + 0x5C, data);
+=======
+		if (pinfo->partial_update_enabled &&
+			mdss_dsi_is_panel_on(pdata) && pinfo->roi.w &&
+			pinfo->roi.h) {
+			stream_ctrl = (((pinfo->roi.w * bpp) + 1) << 16) |
+					(mipi->vc << 8) | DTYPE_DCS_LWRITE;
+			stream_total = pinfo->roi.h << 16 | pinfo->roi.w;
+		} else {
+			stream_ctrl = (ystride << 16) | (mipi->vc << 8) |
+					DTYPE_DCS_LWRITE;
+			stream_total = height << 16 | width;
+		}
+
+		/* DSI_COMMAND_MODE_MDP_STREAM_CTRL */
+		MIPI_OUTP((ctrl_pdata->ctrl_base) + 0x60, stream_ctrl);
+		MIPI_OUTP((ctrl_pdata->ctrl_base) + 0x58, stream_ctrl);
+
+		/* DSI_COMMAND_MODE_MDP_STREAM_TOTAL */
+		MIPI_OUTP((ctrl_pdata->ctrl_base) + 0x64, stream_total);
+		MIPI_OUTP((ctrl_pdata->ctrl_base) + 0x5C, stream_total);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 }
 
@@ -1437,6 +1552,17 @@ do_send:
 	while (!end) {
 		pr_debug("%s:  rlen=%d pkt_size=%d rx_byte=%d\n",
 				__func__, rlen, pkt_size, rx_byte);
+<<<<<<< HEAD
+=======
+		/*
+		 * Skip max_pkt_size dcs cmd if
+		 * its already been configured
+		 * for the requested pkt_size
+		 */
+		if (pkt_size == ctrl->cur_max_pkt_size)
+			goto skip_max_pkt_size;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		max_pktsize[0] = pkt_size;
 		mdss_dsi_buf_init(tp);
 		ret = mdss_dsi_cmd_dma_add(tp, &pkt_size_cmd);
@@ -1460,9 +1586,17 @@ do_send:
 			rp->read_cnt = 0;
 			goto end;
 		}
+<<<<<<< HEAD
 		pr_debug("%s: max_pkt_size=%d sent\n",
 					__func__, pkt_size);
 
+=======
+		ctrl->cur_max_pkt_size = pkt_size;
+		pr_debug("%s: max_pkt_size=%d sent\n",
+					__func__, pkt_size);
+
+skip_max_pkt_size:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		mdss_dsi_buf_init(tp);
 		ret = mdss_dsi_cmd_dma_add(tp, cmds);
 		if (!ret) {
@@ -2016,36 +2150,53 @@ int mdss_dsi_cmdlist_commit(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp)
 	struct mdss_rect *roi = NULL;
 	int ret = -EINVAL;
 	int rc = 0;
+<<<<<<< HEAD
 	bool cmd_mutex_acquired = false;
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (mdss_get_sd_client_cnt())
 		return -EPERM;
 
 	if (from_mdp) {	/* from mdp kickoff */
+<<<<<<< HEAD
 		if (!ctrl->burst_mode_enabled) {
 			mutex_lock(&ctrl->cmd_mutex);
 			cmd_mutex_acquired = true;
 		}
+=======
+		mutex_lock(&ctrl->cmd_mutex);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pinfo = &ctrl->panel_data.panel_info;
 		if (pinfo->partial_update_enabled)
 			roi = &pinfo->roi;
 	}
 
 	req = mdss_dsi_cmdlist_get(ctrl);
+<<<<<<< HEAD
 	if (req && from_mdp && ctrl->burst_mode_enabled) {
 		mutex_lock(&ctrl->cmd_mutex);
 		cmd_mutex_acquired = true;
 	}
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	MDSS_XLOG(ctrl->ndx, from_mdp, ctrl->mdp_busy, current->pid,
 							XLOG_FUNC_ENTRY);
 
+<<<<<<< HEAD
 	if (!ctrl->burst_mode_enabled || from_mdp) {
 		/* make sure dsi_cmd_mdp is idle when
 		 * burst mode is not enabled
 		*/
 		mdss_dsi_cmd_mdp_busy(ctrl);
 	}
+=======
+	if (req == NULL)
+		goto need_lock;
+	/* make sure dsi_cmd_mdp is idle */
+	mdss_dsi_cmd_mdp_busy(ctrl);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pr_debug("%s: ctrl=%d from_mdp=%d pid=%d\n", __func__,
 				ctrl->ndx, from_mdp, current->pid);
@@ -2071,10 +2222,13 @@ int mdss_dsi_cmdlist_commit(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp)
 			mdss_dsi_cmd_start_hs_clk_lane(ctrl);
 	}
 
+<<<<<<< HEAD
 
 	if (req == NULL)
 		goto need_lock;
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	MDSS_XLOG(ctrl->ndx, req->flags, req->cmds_cnt, from_mdp, current->pid);
 
 	/*
@@ -2087,7 +2241,11 @@ int mdss_dsi_cmdlist_commit(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp)
 		ctrl->mdss_util->bus_bandwidth_ctrl(1);
 
 	if (ctrl->mdss_util->bus_scale_set_quota)
+<<<<<<< HEAD
 		ctrl->mdss_util->bus_scale_set_quota(MDSS_DSI_RT, SZ_1M, SZ_1M);
+=======
+		ctrl->mdss_util->bus_scale_set_quota(MDSS_DSI_RT, 0, SZ_1M);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pr_debug("%s:  from_mdp=%d pid=%d\n", __func__, from_mdp, current->pid);
 	mdss_dsi_clk_ctrl(ctrl, DSI_ALL_CLKS, 1);
@@ -2104,9 +2262,15 @@ int mdss_dsi_cmdlist_commit(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp)
 	if (req->flags & CMD_REQ_HS_MODE)
 		mdss_dsi_set_tx_power_mode(0, &ctrl->panel_data);
 
+<<<<<<< HEAD
 	if (req->flags & CMD_REQ_RX)
 		ret = mdss_dsi_cmdlist_rx(ctrl, req);
 	else
+=======
+	if (req->flags & CMD_REQ_RX) {
+		ret = mdss_dsi_cmdlist_rx(ctrl, req);
+	} else
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ret = mdss_dsi_cmdlist_tx(ctrl, req);
 
 	if (req->flags & CMD_REQ_HS_MODE)
@@ -2136,8 +2300,13 @@ need_lock:
 		 */
 		if (!roi || (roi->w != 0 || roi->h != 0))
 			mdss_dsi_cmd_mdp_start(ctrl);
+<<<<<<< HEAD
 		if (cmd_mutex_acquired)
 			mutex_unlock(&ctrl->cmd_mutex);
+=======
+
+		mutex_unlock(&ctrl->cmd_mutex);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} else {	/* from dcs send */
 		if (ctrl->cmd_clk_ln_recovery_en &&
 				ctrl->panel_mode == DSI_CMD_MODE &&

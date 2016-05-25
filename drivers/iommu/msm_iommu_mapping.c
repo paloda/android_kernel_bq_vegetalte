@@ -428,6 +428,14 @@ static int __msm_map_iommu_common(
 
 	if (!iommu_meta) {
 		iommu_meta = msm_iommu_meta_create(dma_buf, table, size);
+<<<<<<< HEAD
+=======
+		if (IS_ERR(iommu_meta)) {
+			mutex_unlock(&msm_iommu_map_mutex);
+			ret = PTR_ERR(iommu_meta);
+			goto out;
+		}
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} else {
 		/*
 		 * Drop the dma_buf reference here. We took the reference
@@ -478,9 +486,14 @@ static int __msm_map_iommu_common(
 
 out_unlock:
 	mutex_unlock(&iommu_meta->lock);
+<<<<<<< HEAD
 out:
 
 	msm_iommu_meta_put(iommu_meta);
+=======
+	msm_iommu_meta_put(iommu_meta);
+out:
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return ret;
 
 }

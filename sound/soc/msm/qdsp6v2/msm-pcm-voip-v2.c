@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -208,7 +212,11 @@ static struct snd_pcm_hardware msm_pcm_hardware = {
 	.buffer_bytes_max =	sizeof(struct voip_buf_node) * VOIP_MAX_Q_LEN,
 	.period_bytes_min =	VOIP_MIN_VOC_PKT_SIZE,
 	.period_bytes_max =	VOIP_MAX_VOC_PKT_SIZE,
+<<<<<<< HEAD
 	.periods_min =		VOIP_MAX_Q_LEN,
+=======
+	.periods_min =		2,
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	.periods_max =		VOIP_MAX_Q_LEN,
 	.fifo_size =            0,
 };
@@ -494,7 +502,15 @@ static void voip_process_ul_pkt(uint8_t *voc_pkt,
 		pr_debug("%s: pkt_len =%d, frame.pktlen=%d, timestamp=%d\n",
 			 __func__, pkt_len, buf_node->frame.pktlen, timestamp);
 
+<<<<<<< HEAD
 		prtd->pcm_capture_irq_pos += prtd->pcm_capture_count;
+=======
+		if (prtd->mode == MODE_PCM)
+			prtd->pcm_capture_irq_pos += buf_node->frame.pktlen;
+		else
+			prtd->pcm_capture_irq_pos += prtd->pcm_capture_count;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		spin_unlock_irqrestore(&prtd->dsp_ul_lock, dsp_flags);
 		snd_pcm_period_elapsed(prtd->capture_substream);
 	} else {
@@ -656,7 +672,15 @@ static void voip_process_dl_pkt(uint8_t *voc_pkt, void *private_data)
 		pr_debug("%s: frame.pktlen=%d\n", __func__,
 			 buf_node->frame.pktlen);
 
+<<<<<<< HEAD
 		prtd->pcm_playback_irq_pos += prtd->pcm_count;
+=======
+		if (prtd->mode == MODE_PCM)
+			prtd->pcm_playback_irq_pos += buf_node->frame.pktlen;
+		else
+			prtd->pcm_playback_irq_pos += prtd->pcm_count;
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		spin_unlock_irqrestore(&prtd->dsp_lock, dsp_flags);
 		snd_pcm_period_elapsed(prtd->playback_substream);
 	} else {

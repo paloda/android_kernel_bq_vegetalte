@@ -70,4 +70,8 @@ obj-$(CONFIG_MSM_SMCMOD) += smcmod.o
 
 obj-$(CONFIG_ARCH_MSM8974) += msm_mpmctr.o
 
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_HAS_MACH_MEMUTILS) += memutils/
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 obj-$(CONFIG_PERFMAP) += perfmap.o

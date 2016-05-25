@@ -461,6 +461,15 @@ static int sco_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
 	if (!addr || addr->sa_family != AF_BLUETOOTH)
 		return -EINVAL;
 
+<<<<<<< HEAD
+	memset(&sa, 0, sizeof(sa));
+	len = min_t(unsigned int, sizeof(sa), alen);
+	memcpy(&sa, addr, len);
+=======
+	if (alen < sizeof(struct sockaddr_sco))
+		return -EINVAL;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
+
 	memset(&sa, 0, sizeof(sa));
 	len = min_t(unsigned int, sizeof(sa), alen);
 	memcpy(&sa, addr, len);

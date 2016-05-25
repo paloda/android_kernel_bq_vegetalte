@@ -624,6 +624,7 @@ VosMCThread
   complete_and_exit(&pSchedContext->McShutdown, 0);
 } /* VosMCThread() */
 
+<<<<<<< HEAD
 v_BOOL_t isWDresetInProgress(void)
 {
    VOS_TRACE(VOS_MODULE_ID_VOSS, VOS_TRACE_LEVEL_INFO,
@@ -638,6 +639,8 @@ v_BOOL_t isWDresetInProgress(void)
    }
 }
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 v_BOOL_t isSsrPanicOnFailure(void)
 {
     hdd_context_t *pHddCtx = NULL;

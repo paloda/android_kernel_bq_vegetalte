@@ -292,6 +292,10 @@ struct msm_fb_data_type {
 	int doze_mode;
 
 	int fb_mmap_type;
+<<<<<<< HEAD
+=======
+	struct led_trigger *boot_notification_led;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 static inline void mdss_fb_update_notify_update(struct msm_fb_data_type *mfd)
@@ -307,7 +311,11 @@ static inline void mdss_fb_update_notify_update(struct msm_fb_data_type *mfd)
 		if (mfd->no_update.timer.function)
 			del_timer(&(mfd->no_update.timer));
 
+<<<<<<< HEAD
 		mfd->no_update.timer.expires = jiffies + (2 * HZ);
+=======
+		mfd->no_update.timer.expires = jiffies + ((1 * HZ) / 10);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		add_timer(&mfd->no_update.timer);
 		mutex_unlock(&mfd->no_update.lock);
 	}

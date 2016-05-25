@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -23,7 +27,12 @@
 #include <linux/regulator/consumer.h>
 #include <linux/leds-qpnp-wled.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/pm_qos.h>
+=======
+#include <linux/uaccess.h>
+#include <linux/leds.h>
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #include "mdss.h"
 #include "mdss_panel.h"
@@ -31,6 +40,7 @@
 #include "mdss_debug.h"
 
 #define XO_CLK_RATE	19200000
+<<<<<<< HEAD
 #define DSI_DISABLE_PC_LATENCY 100
 #define DSI_ENABLE_PC_LATENCY PM_QOS_DEFAULT_VALUE
 static struct pm_qos_request mdss_dsi_pm_qos_request;
@@ -57,6 +67,20 @@ static void mdss_dsi_pm_qos_update_request(int val)
 static int mdss_dsi_pinctrl_set_state(struct mdss_dsi_ctrl_pdata *ctrl_pdata,
 					bool active);
 
+=======
+
+static int mdss_dsi_hndl_enable_te(struct mdss_dsi_ctrl_pdata *ctrl,
+				int enable)
+{
+	if (enable)
+		mdss_dsi_set_tear_on(ctrl);
+	else
+		mdss_dsi_set_tear_off(ctrl);
+
+	return 0;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int mdss_dsi_regulator_init(struct platform_device *pdev)
 {
 	int rc = 0;
@@ -194,9 +218,12 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 	 */
 	if (pdata->panel_info.cont_splash_enabled ||
 		!pdata->panel_info.mipi.lp11_init) {
+<<<<<<< HEAD
 		if (mdss_dsi_pinctrl_set_state(ctrl_pdata, true))
 			pr_debug("reset enable: pinctrl not enabled\n");
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ret = mdss_dsi_panel_reset(pdata, 1);
 		if (ret)
 			pr_err("%s: Panel reset failed. rc=%d\n",
@@ -286,6 +313,7 @@ static void mdss_dsi_put_dt_vreg_data(struct device *dev,
 	module_power->num_vreg = 0;
 }
 
+<<<<<<< HEAD
 static int mdss_dsi_get_dt_vreg_data(struct device *dev,
 	struct dss_module_power *mp, enum dsi_pm_type module)
 {
@@ -296,13 +324,30 @@ static int mdss_dsi_get_dt_vreg_data(struct device *dev,
 	struct device_node *supply_root_node = NULL;
 
 	if (!dev || !mp) {
+=======
+int mdss_dsi_get_dt_vreg_data(struct device *dev,
+			struct device_node *of_node,
+			struct dss_module_power *mp,
+			enum dsi_pm_type module)
+{
+	int i = 0, rc = 0;
+	u32 tmp = 0;
+	struct device_node *supply_node = NULL;
+	const char *pm_supply_name = NULL;
+	struct device_node *supply_root_node = NULL;
+
+	if (!dev || !mp || !of_node) {
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_err("%s: invalid input\n", __func__);
 		rc = -EINVAL;
 		return rc;
 	}
 
+<<<<<<< HEAD
 	of_node = dev->of_node;
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mp->num_vreg = 0;
 	pm_supply_name = __mdss_dsi_pm_supply_node_name(module);
 	supply_root_node = of_get_child_by_name(of_node, pm_supply_name);
@@ -491,10 +536,19 @@ static int mdss_dsi_off(struct mdss_panel_data *pdata, int power_state)
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&ctrl_pdata->mutex);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	panel_info = &ctrl_pdata->panel_data.panel_info;
 
 	pr_debug("%s+: ctrl=%p ndx=%d power_state=%d\n",
 		__func__, ctrl_pdata, ctrl_pdata->ndx, power_state);
+<<<<<<< HEAD
+=======
+	pr_info("%s+: ctrl=%p ndx=%d\n", __func__,
+		ctrl_pdata, ctrl_pdata->ndx);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (power_state == panel_info->panel_power_state) {
 		pr_debug("%s: No change in power state %d -> %d\n", __func__,
@@ -532,8 +586,16 @@ panel_power_ctrl:
 	    && (panel_info->new_fps != panel_info->mipi.frame_rate))
 		panel_info->mipi.frame_rate = panel_info->new_fps;
 
+<<<<<<< HEAD
 end:
 	pr_debug("%s-:\n", __func__);
+=======
+	/* Initialize Max Packet size for DCS reads */
+	ctrl_pdata->cur_max_pkt_size = 0;
+end:
+	mutex_unlock(&ctrl_pdata->mutex);
+	pr_info("%s-:\n", __func__);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return ret;
 }
@@ -583,6 +645,11 @@ int mdss_dsi_on(struct mdss_panel_data *pdata)
 	cur_power_state = pdata->panel_info.panel_power_state;
 	pr_debug("%s+: ctrl=%p ndx=%d cur_power_state=%d\n", __func__,
 		ctrl_pdata, ctrl_pdata->ndx, cur_power_state);
+<<<<<<< HEAD
+=======
+	pr_info("%s+: ctrl=%p ndx=%d\n",
+		__func__, ctrl_pdata, ctrl_pdata->ndx);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pinfo = &pdata->panel_info;
 	mipi = &pdata->panel_info.mipi;
@@ -632,8 +699,11 @@ int mdss_dsi_on(struct mdss_panel_data *pdata)
 	 * data lanes for LP11 init
 	 */
 	if (mipi->lp11_init) {
+<<<<<<< HEAD
 		if (mdss_dsi_pinctrl_set_state(ctrl_pdata, true))
 			pr_debug("reset enable: pinctrl not enabled\n");
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		mdss_dsi_panel_reset(pdata, 1);
 	}
 
@@ -653,11 +723,19 @@ int mdss_dsi_on(struct mdss_panel_data *pdata)
 		mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
 
 end:
+<<<<<<< HEAD
 	pr_debug("%s-:\n", __func__);
 	return 0;
 }
 
 static int mdss_dsi_pinctrl_set_state(
+=======
+	pr_info("%s-:\n", __func__);
+	return 0;
+}
+
+int mdss_dsi_pinctrl_set_state(
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata,
 	bool active)
 {
@@ -710,6 +788,46 @@ static int mdss_dsi_pinctrl_init(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int mdss_dsi_pre_unblank(struct mdss_panel_data *pdata)
+{
+	int ret = 0;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
+
+	if (pdata == NULL) {
+		pr_err("%s: Invalid input data\n", __func__);
+		return -EINVAL;
+	}
+
+	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
+				panel_data);
+
+	pr_debug("%s+: ctrl=%p ndx=%d cur_blank_state=%d\n", __func__,
+		ctrl_pdata, ctrl_pdata->ndx, pdata->panel_info.blank_state);
+
+	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 1);
+
+	if (pdata->panel_info.blank_state == MDSS_PANEL_BLANK_LOW_POWER) {
+		pr_debug("%s: panel always on\n", __func__);
+		goto end;
+	}
+
+	if (!(ctrl_pdata->ctrl_state & CTRL_STATE_PANEL_INIT) &&
+		!pdata->panel_info.dynamic_switch_pending) {
+		ret = ctrl_pdata->pre_on(pdata);
+		if (ret)
+			pr_err("%s: unable to pre-on the panel\n", __func__);
+	}
+
+end:
+	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
+	pr_debug("%s-:\n", __func__);
+
+	return ret;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int mdss_dsi_unblank(struct mdss_panel_data *pdata)
 {
 	int ret = 0;
@@ -728,8 +846,11 @@ static int mdss_dsi_unblank(struct mdss_panel_data *pdata)
 	pr_debug("%s+: ctrl=%p ndx=%d cur_blank_state=%d\n", __func__,
 		ctrl_pdata, ctrl_pdata->ndx, pdata->panel_info.blank_state);
 
+<<<<<<< HEAD
         mdss_dsi_pm_qos_update_request(DSI_DISABLE_PC_LATENCY);
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 1);
 
 	if (pdata->panel_info.blank_state == MDSS_PANEL_BLANK_LOW_POWER) {
@@ -760,7 +881,10 @@ static int mdss_dsi_unblank(struct mdss_panel_data *pdata)
 
 error:
 	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
+<<<<<<< HEAD
 	mdss_dsi_pm_qos_update_request(DSI_ENABLE_PC_LATENCY);
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("%s-:\n", __func__);
 
 	return ret;
@@ -1252,12 +1376,26 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 							pdata);
 		break;
 	case MDSS_EVENT_UNBLANK:
+<<<<<<< HEAD
 		mdss_dsi_get_hw_revision(ctrl_pdata);
 		if (ctrl_pdata->on_cmds.link_state == DSI_LP_MODE)
 			rc = mdss_dsi_unblank(pdata);
 		break;
 	case MDSS_EVENT_PANEL_ON:
 		ctrl_pdata->ctrl_state |= CTRL_STATE_MDP_ACTIVE;
+=======
+		if (ctrl_pdata->pre_on_cmds.cmd_cnt &&
+			ctrl_pdata->pre_on_cmds.link_state == DSI_LP_MODE)
+			rc = mdss_dsi_pre_unblank(pdata);
+		mdss_dsi_get_hw_revision(ctrl_pdata);
+		if (ctrl_pdata->on_cmds.link_state == DSI_LP_MODE)
+			rc |= mdss_dsi_unblank(pdata);
+		break;
+	case MDSS_EVENT_PANEL_ON:
+		ctrl_pdata->ctrl_state |= CTRL_STATE_MDP_ACTIVE;
+		if (ctrl_pdata->bl_on_defer)
+			ctrl_pdata->bl_on_defer(ctrl_pdata);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (ctrl_pdata->on_cmds.link_state == DSI_HS_MODE)
 			rc = mdss_dsi_unblank(pdata);
 		pdata->panel_info.esd_rdy = true;
@@ -1303,6 +1441,13 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 	case MDSS_EVENT_ENABLE_PARTIAL_ROI:
 		rc = mdss_dsi_ctl_partial_roi(pdata);
 		break;
+<<<<<<< HEAD
+=======
+	case MDSS_EVENT_ENABLE_TE:
+		rc = mdss_dsi_hndl_enable_te(ctrl_pdata,
+				(int) (unsigned long) arg);
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case MDSS_EVENT_DSI_STREAM_SIZE:
 		rc = mdss_dsi_set_stream_size(pdata);
 		break;
@@ -1314,6 +1459,19 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 		rc = mdss_dsi_register_recovery_handler(ctrl_pdata,
 			(struct mdss_intf_recovery *)arg);
 		break;
+<<<<<<< HEAD
+=======
+	case MDSS_EVENT_SET_CABC:
+		if (ctrl_pdata->set_cabc)
+			rc = ctrl_pdata->set_cabc(ctrl_pdata,
+					(int)(unsigned long)arg);
+		break;
+	case MDSS_EVENT_ENABLE_HBM:
+		if (ctrl_pdata->set_hbm)
+			rc = ctrl_pdata->set_hbm(ctrl_pdata,
+					(int)(unsigned long)arg);
+		break;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		pr_debug("%s: unhandled event=%d\n", __func__, event);
 		break;
@@ -1337,6 +1495,36 @@ static struct device_node *mdss_dsi_pref_prim_panel(
 	return dsi_pan_node;
 }
 
+<<<<<<< HEAD
+=======
+int mdss_dsi_ioctl_handler(struct mdss_panel_data *pdata, u32 cmd, void *arg)
+{
+	int rc = -ENOSYS;
+	struct msmfb_reg_access reg_access;
+
+	if (mdss_panel_is_power_off(pdata->panel_info.panel_power_state)) {
+		pr_err("%s: Panel is off\n", __func__);
+		return -EPERM;
+	}
+
+	switch (cmd) {
+	case MSMFB_REG_WRITE:
+	case MSMFB_REG_READ:
+		if (copy_from_user(&reg_access, arg, sizeof(reg_access)))
+			return -EFAULT;
+
+		rc = mdss_dsi_panel_ioctl_handler(pdata, cmd, arg);
+		break;
+	default:
+		pr_err("%s: unsupport ioctl =0x%x\n", __func__, cmd);
+		rc = -EFAULT;
+		break;
+	}
+
+	return rc;
+}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 /**
  * mdss_dsi_find_panel_of_node(): find device node of dsi panel
  * @pdev: platform_device of the dsi ctrl node
@@ -1502,9 +1690,16 @@ static int mdss_dsi_ctrl_probe(struct platform_device *pdev)
 		pr_warn("%s: failed to get pin resources\n", __func__);
 
 	/* Parse the regulator information */
+<<<<<<< HEAD
 	for (i = 0; i < DSI_MAX_PM; i++) {
 		rc = mdss_dsi_get_dt_vreg_data(&pdev->dev,
 			&ctrl_pdata->power_data[i], i);
+=======
+	for (i = 0; i < DSI_PANEL_PM; i++) {
+		rc = mdss_dsi_get_dt_vreg_data(&pdev->dev,
+					pdev->dev.of_node,
+					&ctrl_pdata->power_data[i], i);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (rc) {
 			DEV_ERR("%s: '%s' get_dt_vreg_data failed.rc=%d\n",
 				__func__, __mdss_dsi_pm_name(i), rc);
@@ -1527,6 +1722,17 @@ static int mdss_dsi_ctrl_probe(struct platform_device *pdev)
 		pr_warn("%s:%d:dsi specific cfg not present\n",
 			__func__, __LINE__);
 
+<<<<<<< HEAD
+=======
+	/* Parse panel config */
+	rc = mdss_panel_parse_panel_config_dt(ctrl_pdata);
+	if (rc) {
+		pr_err("%s: failed to parse panel config dt, rc = %d\n",
+								__func__, rc);
+		goto error_vreg;
+	}
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* find panel device node */
 	dsi_pan_node = mdss_dsi_find_panel_of_node(pdev, panel_cfg);
 	if (!dsi_pan_node) {
@@ -1536,7 +1742,12 @@ static int mdss_dsi_ctrl_probe(struct platform_device *pdev)
 
 	cmd_cfg_cont_splash = mdss_panel_get_boot_cfg() ? true : false;
 
+<<<<<<< HEAD
 	rc = mdss_dsi_panel_init(dsi_pan_node, ctrl_pdata, cmd_cfg_cont_splash);
+=======
+	rc = mdss_dsi_panel_init(&pdev->dev, dsi_pan_node,
+				ctrl_pdata, cmd_cfg_cont_splash);
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (rc) {
 		pr_err("%s: dsi panel init failed\n", __func__);
 		goto error_pan_node;
@@ -1563,16 +1774,24 @@ static int mdss_dsi_ctrl_probe(struct platform_device *pdev)
 		}
 		disable_irq(gpio_to_irq(ctrl_pdata->disp_te_gpio));
 	}
+<<<<<<< HEAD
         mdss_dsi_pm_qos_add_request();
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("%s: Dsi Ctrl->%d initialized\n", __func__, index);
 	return 0;
 
 error_pan_node:
 	mdss_dsi_unregister_bl_settings(ctrl_pdata);
 	of_node_put(dsi_pan_node);
+<<<<<<< HEAD
 	i--;
 error_vreg:
 	for (; i >= 0; i--)
+=======
+error_vreg:
+	for (i = DSI_MAX_PM - 1; i >= 0; i--)
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		mdss_dsi_put_dt_vreg_data(&pdev->dev,
 			&ctrl_pdata->power_data[i]);
 error_no_mem:
@@ -1592,8 +1811,11 @@ static int mdss_dsi_ctrl_remove(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	mdss_dsi_pm_qos_remove_request();
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	for (i = DSI_MAX_PM - 1; i >= 0; i--) {
 		if (msm_dss_config_vreg(&pdev->dev,
 				ctrl_pdata->power_data[i].vreg_config,
@@ -1752,6 +1974,12 @@ int dsi_panel_device_register(struct device_node *pan_node,
 	pinfo->mipi.dsi_phy_db.reg_ldo_mode = of_property_read_bool(
 		ctrl_pdev->dev.of_node, "qcom,regulator-ldo-mode");
 
+<<<<<<< HEAD
+=======
+	pinfo->mipi.dsi_phy_db.legacy_reg_prg = of_property_read_bool(
+		ctrl_pdev->dev.of_node, "qcom,regulator-legacy-program");
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	data = of_get_property(ctrl_pdev->dev.of_node,
 		"qcom,platform-regulator-settings", &len);
 	if ((!data) || (len != 7)) {
@@ -1890,7 +2118,11 @@ int dsi_panel_device_register(struct device_node *pan_node,
 
 	if (ctrl_pdata->status_mode == ESD_REG ||
 			ctrl_pdata->status_mode == ESD_REG_NT35596)
+<<<<<<< HEAD
 		ctrl_pdata->check_status = mdss_dsi_reg_status_check;
+=======
+		ctrl_pdata->check_status = mdss_dsi_reg_status_check_dropbox;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	else if (ctrl_pdata->status_mode == ESD_BTA)
 		ctrl_pdata->check_status = mdss_dsi_bta_status_check;
 
@@ -1953,7 +2185,12 @@ int dsi_panel_device_register(struct device_node *pan_node,
 			pr_err("%s: Panel power on failed\n", __func__);
 			return rc;
 		}
+<<<<<<< HEAD
 
+=======
+		if (ctrl_pdata->bklt_ctrl == BL_PWM)
+			ctrl_pdata->pwm_enabled = 1;
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pinfo->blank_state = MDSS_PANEL_BLANK_UNBLANK;
 		mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 1);
 		ctrl_pdata->ctrl_state |=

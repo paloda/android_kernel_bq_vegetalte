@@ -52,8 +52,13 @@ struct diag_mempool_t diag_mempools[NUM_MEMORY_POOLS] = {
 		.count = 0
 	},
 	{
+<<<<<<< HEAD
 		.id = POOL_TYPE_MUX_APPS,
 		.name = "POOL_MUX_APPS",
+=======
+		.id = POOL_TYPE_USB_APPS,
+		.name = "POOL_USB_APPS",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		.pool = NULL,
 		.itemsize = 0,
 		.poolsize = 0,
@@ -101,16 +106,26 @@ struct diag_mempool_t diag_mempools[NUM_MEMORY_POOLS] = {
 		.count = 0
 	},
 	{
+<<<<<<< HEAD
 		.id = POOL_TYPE_MDM_MUX,
 		.name = "POOL_MDM_MUX",
+=======
+		.id = POOL_TYPE_MDM_USB,
+		.name = "POOL_MDM_USB",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		.pool = NULL,
 		.itemsize = 0,
 		.poolsize = 0,
 		.count = 0
 	},
 	{
+<<<<<<< HEAD
 		.id = POOL_TYPE_MDM2_MUX,
 		.name = "POOL_MDM2_MUX",
+=======
+		.id = POOL_TYPE_MDM2_USB,
+		.name = "POOL_MDM2_USB",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		.pool = NULL,
 		.itemsize = 0,
 		.poolsize = 0,
@@ -133,8 +148,13 @@ struct diag_mempool_t diag_mempools[NUM_MEMORY_POOLS] = {
 		.count = 0
 	},
 	{
+<<<<<<< HEAD
 		.id = POOL_TYPE_QSC_MUX,
 		.name = "POOL_QSC_MUX",
+=======
+		.id = POOL_TYPE_QSC_USB,
+		.name = "POOL_QSC_USB",
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 		.pool = NULL,
 		.itemsize = 0,
 		.poolsize = 0,

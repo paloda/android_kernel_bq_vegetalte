@@ -57,7 +57,11 @@
 #include "limSession.h"
 #include "vos_nvitem.h"
 #ifdef WLAN_FEATURE_11W
+<<<<<<< HEAD
 #include "wniCfg.h"
+=======
+#include "wniCfgAp.h"
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 
 /* Static global used to mark situations where pMac->lim.gLimTriggerBackgroundScanDuringQuietBss is SET
@@ -1012,6 +1016,13 @@ limCleanupMlm(tpAniSirGlobal pMac)
         tx_timer_deactivate(&pMac->lim.limTimers.gLimPeriodicJoinProbeReqTimer);
         tx_timer_delete(&pMac->lim.limTimers.gLimPeriodicJoinProbeReqTimer);
 
+<<<<<<< HEAD
+=======
+        // Deactivate and delete Auth Retry timer.
+        tx_timer_deactivate(&pMac->lim.limTimers.gLimPeriodicAuthRetryTimer);
+        tx_timer_delete(&pMac->lim.limTimers.gLimPeriodicAuthRetryTimer);
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
         // Deactivate and delete Association failure timer.
         tx_timer_deactivate(&pMac->lim.limTimers.gLimAssocFailureTimer);
         tx_timer_delete(&pMac->lim.limTimers.gLimAssocFailureTimer);
@@ -2626,6 +2637,17 @@ void limProcessChannelSwitchTimeout(tpAniSirGlobal pMac)
             if ( isLimSessionOffChannel(pMac,
                 pMac->lim.limTimers.gLimChannelSwitchTimer.sessionId) )
             {
+<<<<<<< HEAD
+=======
+                if (limIsLinkSuspended(pMac))
+                {
+                    limLog(pMac, LOGE, FL("Link is already suspended for "
+                        "some other reason. Return here for sessionId:%d"),
+                        pMac->lim.limTimers.gLimChannelSwitchTimer.sessionId);
+                    return;
+                }
+
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
                 limSuspendLink(pMac,
                     eSIR_DONT_CHECK_LINK_TRAFFIC_BEFORE_SCAN,
                     limProcessChannelSwitchSuspendLink,
@@ -8377,7 +8399,10 @@ void limParseBeaconForTim(tpAniSirGlobal pMac,tANI_U8* pRxPacketInfo, tpPESessio
     }
     return;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 void limDecrementPendingMgmtCount (tpAniSirGlobal pMac)
 {
     if( pMac->sys.gSysBbtPendingMgmtCount )

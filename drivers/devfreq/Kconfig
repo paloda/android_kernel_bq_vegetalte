@@ -108,7 +108,11 @@ config DEVFREQ_GOV_MSM_GPUBW_MON
 
 config DEVFREQ_GOV_MSM_BW_HWMON
 	tristate "HW monitor based governor for device BW"
+<<<<<<< HEAD
 	depends on ARCH_MSM_KRAIT || MSM_BIMC_BWMON
+=======
+	depends on ARCH_MSM_KRAIT || ARCH_MSM_CORTEXMP || ARCH_MSM_BIMC_BWMON
+>>>>>>> ca57d1d... Merge in Linux 3.10.100
 	help
 	  HW monitor based governor for device to DDR bandwidth voting.
 

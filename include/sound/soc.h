@@ -246,6 +246,8 @@
 	.info = snd_soc_info_enum_ext, \
 	.get = xhandler_get, .put = xhandler_put, \
 	.private_value = (unsigned long)&xenum }
+#define SOC_VALUE_ENUM_EXT(xname, xenum, xhandler_get, xhandler_put) \
+	SOC_ENUM_EXT(xname, xenum, xhandler_get, xhandler_put)
 
 #define SND_SOC_BYTES(xname, xbase, xregs)		      \
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname,   \
@@ -261,6 +263,13 @@
 		((unsigned long)&(struct soc_bytes)           \
 		{.base = xbase, .num_regs = xregs,	      \
 		 .mask = xmask }) }
+
+#define SND_SOC_BYTES_EXT(xname, xcount, xhandler_get, xhandler_put) \
+{	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
+	.info = snd_soc_bytes_info_ext, \
+	.get = xhandler_get, .put = xhandler_put, \
+	.private_value = (unsigned long)&(struct soc_bytes_ext) \
+		{.max = xcount} }
 
 #define SOC_SINGLE_XR_SX(xname, xregbase, xregcount, xnbits, \
 		xmin, xmax, xinvert) \
@@ -548,6 +557,8 @@ int snd_soc_bytes_get(struct snd_kcontrol *kcontrol,
 		      struct snd_ctl_elem_value *ucontrol);
 int snd_soc_bytes_put(struct snd_kcontrol *kcontrol,
 		      struct snd_ctl_elem_value *ucontrol);
+int snd_soc_bytes_info_ext(struct snd_kcontrol *kcontrol,
+	struct snd_ctl_elem_info *ucontrol);
 int snd_soc_info_xr_sx(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_info *uinfo);
 int snd_soc_get_xr_sx(struct snd_kcontrol *kcontrol,
@@ -1135,6 +1146,10 @@ struct soc_bytes {
 	int base;
 	int num_regs;
 	u32 mask;
+};
+
+struct soc_bytes_ext {
+	int max;
 };
 
 /* multi register control */
