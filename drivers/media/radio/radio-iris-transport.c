@@ -4,7 +4,7 @@
  *  FM HCI_SMD ( FM HCI Shared Memory Driver) is Qualcomm's Shared memory driver
  *  for the HCI protocol. This file is based on drivers/bluetooth/hci_vhci.c
  *
- *  Copyright (c) 2000-2001, 2011-2012, 2014 The Linux Foundation.
+ *  Copyright (c) 2000-2001, 2011-2012, 2014-2015 The Linux Foundation.
  *  All rights reserved.
  *
  *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
@@ -194,6 +194,12 @@ static int radio_hci_smd_register_dev(struct radio_data *hsmd)
 
 static void radio_hci_smd_deregister(void)
 {
+	if (hs.hdev != NULL) {
+		radio_hci_unregister_dev(hs.hdev);
+		kfree(hs.hdev);
+		hs.hdev = NULL;
+	}
+
 	smd_close(hs.fm_channel);
 	hs.fm_channel = 0;
 }
