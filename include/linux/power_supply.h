@@ -172,6 +172,9 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_MANUFACTURER,
 	POWER_SUPPLY_PROP_SERIAL_NUMBER,
 	POWER_SUPPLY_PROP_BATTERY_TYPE,
+	POWER_SUPPLY_PROP_YL_CRTL_CHG_INTERFACE,
+
+
 };
 
 enum power_supply_type {
@@ -186,6 +189,8 @@ enum power_supply_type {
 	POWER_SUPPLY_TYPE_WIRELESS,	/* Accessory Charger Adapters */
 	POWER_SUPPLY_TYPE_BMS,		/* Battery Monitor System */
 	POWER_SUPPLY_TYPE_USB_PARALLEL,		/* USB Parallel Path */
+	POWER_SUPPLY_TYPE_YL_BATTERY,	/* yulong add for yl_adc_battery */
+	
 };
 
 union power_supply_propval {
