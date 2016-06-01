@@ -52,6 +52,9 @@ module_param(vote_threshold_up, uint, 0664);
 
 static ktime_t last_action;
 static bool little_cluster_enabled = true;
+static bool low_power_mode = false;
+static bool online_all = false;
+
 static unsigned int vote_up = 0;
 static unsigned int vote_down = 0;
 
@@ -218,6 +221,17 @@ static void cluster_plug_perform(void)
 
 static void __ref cluster_plug_work_fn(struct work_struct *work)
 {
+	if (online_all) {
+		int cpu;
+		for_each_present_cpu(cpu) {
+			if (!cpu_online(cpu))
+				cpu_up(cpu);
+		}
+		big_cluster_enabled = true;
+		little_cluster_enabled = true;
+		online_all = false;
+	}
+
 	if (active) {
 		if (low_power_mode) {
 			enable_little_cluster();
@@ -231,9 +245,6 @@ static void __ref cluster_plug_work_fn(struct work_struct *work)
 
 		cluster_plug_perform();
 		queue_clusterplug_work(sampling_time);
-	} else {
-		enable_big_cluster();
-		enable_little_cluster();
 	}
 }
 
@@ -256,6 +267,9 @@ static int __ref active_store(const char *buf,
 		flush_workqueue(clusterplug_wq);
 
 		active = (value != 0);
+
+		/* make the internal state match the actual state */
+		online_all = true;
 		queue_clusterplug_work(1);
 
 		mutex_unlock(&cluster_plug_parameters_mutex);
