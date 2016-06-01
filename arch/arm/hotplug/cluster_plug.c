@@ -25,13 +25,10 @@
 #define CLUSTER_PLUG_MAJOR_VERSION	2
 #define CLUSTER_PLUG_MINOR_VERSION	0
 
-#define DEF_LOAD_THRESH_DOWN		20
-#define DEF_LOAD_THRESH_UP		80
-#define DEF_SAMPLING_MS			50
-#define DEF_VOTE_THRESHOLD		3
-
+#define DEF_HYSTERESIS			(10)
+#define DEF_LOAD_THRESH			(70)
+#define DEF_SAMPLING_MS			(200)
 #define N_BIG_CPUS			4
-#define N_LITTLE_CPUS			4
 
 static struct delayed_work cluster_plug_work;
 static struct workqueue_struct *clusterplug_wq;
@@ -67,25 +64,26 @@ static bool is_big_cpu(unsigned int cpu)
 	return cpu < N_BIG_CPUS;
 }
 
-static bool is_little_cpu(unsigned int cpu)
+static unsigned int calculate_loaded_cpus(void)
 {
-	return !is_big_cpu(cpu);
-}
+	unsigned int cpu;
+	unsigned int loaded_cpus = 0;
+	struct cp_cpu_info *l_cp_info;
 
-static unsigned int get_delta_cpu_load_and_update(unsigned int cpu)
-{
-	u64 cur_wall_time, cur_idle_time;
-	unsigned int wall_time, idle_time;
-	struct cp_cpu_info *l_cp_info = &per_cpu(cp_info, cpu);
+	for_each_online_cpu(cpu) {
+		u64 cur_wall_time, cur_idle_time;
+		unsigned int wall_time, idle_time;
+		unsigned int cpu_load;
+		l_cp_info = &per_cpu(cp_info, cpu);
 
-	/* last parameter 0 means that IO wait is considered idle */
-	cur_idle_time = get_cpu_idle_time(cpu, &cur_wall_time, 0);
+		/* last parameter 0 means that IO wait is considered idle */
+		cur_idle_time = get_cpu_idle_time(cpu, &cur_wall_time, 0);
 
-	wall_time = (unsigned int)
-		(cur_wall_time - l_cp_info->prev_cpu_wall);
-	l_cp_info->prev_cpu_wall = cur_wall_time;
+		wall_time = (unsigned int)
+			(cur_wall_time - l_cp_info->prev_cpu_wall);
+		l_cp_info->prev_cpu_wall = cur_wall_time;
 
-	idle_time = (unsigned int)
+		idle_time = (unsigned int)
 		(cur_idle_time - l_cp_info->prev_cpu_idle);
 	l_cp_info->prev_cpu_idle = cur_idle_time;
 
@@ -150,7 +148,17 @@ static void disable_little_cluster(void)
 	unsigned int num_down = 0;
 
 	for_each_present_cpu(cpu) {
-		if (is_little_cpu(cpu) && cpu_online(cpu)) {
+		if (is_big_cpu(cpu) || enable_little) {
+			if (cpu_online(cpu)) continue;
+			if (powerhal_override && is_big_cpu(cpu)) continue;
+			ret = cpu_up(cpu);
+
+			/* PowerHAL may force big cores offline */
+			if (ret == -EPERM && is_big_cpu(cpu)) {
+				enable_little = true;
+				powerhal_override = true;
+			}
+		} else {
 			cpu_down(cpu);
 			num_down++;
 		}
@@ -163,17 +171,18 @@ static void disable_little_cluster(void)
 static void __ref cluster_plug_work_fn(struct work_struct *work)
 {
 	if (cluster_plug_active) {
-		unsigned int loaded_cpus = get_num_loaded_big_cpus();
-		unsigned int unloaded_cpus = get_num_unloaded_little_cpus();
-		ktime_t now = ktime_get();
+		online_cpus = num_online_cpus();
+		loaded_cpus = calculate_loaded_cpus();
+#ifdef DEBUG_CLUSTER_PLUG
+		pr_info("loaded_cpus: %u\n", loaded_cpus);
+#endif
 
-		pr_debug("cluster-plug: loaded: %u unloaded: %u votes %d / %d\n",
-			loaded_cpus, unloaded_cpus, vote_up, vote_down);
-
-		if (ktime_to_ms(ktime_sub(now, last_action)) > 5*sampling_time) {
-			pr_info("cluster_plug: ignoring old ts %lld\n",
-				ktime_to_ms(ktime_sub(now, last_action)));
-			vote_up = vote_down = 0;
+		if (loaded_cpus >= N_BIG_CPUS-1) {
+			cur_hysteresis = hysteresis;
+			if (online_cpus <= N_BIG_CPUS)
+				plug_clusters(true);
+		} else if (cur_hysteresis > 0) {
+			cur_hysteresis -= 1;
 		} else {
 			if (loaded_cpus >= N_BIG_CPUS-1)
 				vote_up++;
