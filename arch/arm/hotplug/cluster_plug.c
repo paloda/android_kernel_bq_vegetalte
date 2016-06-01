@@ -17,6 +17,7 @@
 #include <linux/workqueue.h>
 #include <linux/cpu.h>
 #include <linux/sched.h>
+#include <linux/mutex.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/input.h>
@@ -30,6 +31,7 @@
 #define DEF_SAMPLING_MS			(200)
 #define N_BIG_CPUS			4
 
+static DEFINE_MUTEX(cluster_plug_parameters_mutex);
 static struct delayed_work cluster_plug_work;
 static struct workqueue_struct *clusterplug_wq;
 
@@ -245,8 +247,15 @@ static int __ref active_store(const char *buf,
 
 	ret = kstrtoint(buf, 0, &value);
 	if (ret == 0) {
+		mutex_lock(&cluster_plug_parameters_mutex);
+
+		cancel_delayed_work(&cluster_plug_work);
+		flush_workqueue(clusterplug_wq);
+
 		active = (value != 0);
 		queue_clusterplug_work(1);
+
+		mutex_unlock(&cluster_plug_parameters_mutex);
 	}
 
 	return ret;
@@ -272,8 +281,25 @@ static int __ref low_power_mode_store(const char *buf,
 
 	ret = kstrtoint(buf, 0, &value);
 	if (ret == 0) {
+		mutex_lock(&cluster_plug_parameters_mutex);
+
+		cancel_delayed_work(&cluster_plug_work);
+		flush_workqueue(clusterplug_wq);
+
 		low_power_mode = (value != 0);
 		queue_clusterplug_work(1);
+
+		mutex_unlock(&cluster_plug_parameters_mutex);
+	}
+
+	return ret;
+}
+
+static const struct kernel_param_ops param_ops_low_power_mode = {
+	.set = low_power_mode_store,
+	.get = low_power_mode_show
+};
+
 }
 
 int __init cluster_plug_init(void)
