@@ -1740,15 +1740,13 @@ unsigned int power_cost_at_freq(int cpu, unsigned int freq)
 /*
  * Return the cost of running task p on CPU cpu. This function
  * currently assumes that task p is the only task which will run on
- * the CPU. */
-static unsigned int power_cost(u64 task_load, int cpu)
+ * the CPU.
+ */
+static inline unsigned int __power_cost(u64 task_load, int cpu)
 {
 	unsigned int task_freq, cur_freq;
 	struct rq * rq = cpu_rq(cpu);
 	u64 demand;
-
-	if (!sched_enable_power_aware)
-		return rq->max_possible_capacity;
 
 	/* calculate % of max freq needed */
 	demand = task_load * 100;
@@ -1812,8 +1810,9 @@ static int best_small_task_cpu(struct task_struct *p, int sync)
 	if (sync && cpu_rq(cpu)->nr_running == 1)
 		return cpu;
 
-	tload = scale_load_to_cpu(task_load(p), cpu);
-	cluster_cost = power_cost(tload, cpu);
+	cluster_cost = power_cost_task(p, cpu);
+
+	cpumask_copy(&fb_search_cpus, &search_cpus);
 
 	/*
 	 * 1. Least-loaded CPU in the same cluster which is not in a low
@@ -1830,29 +1829,30 @@ static int best_small_task_cpu(struct task_struct *p, int sync)
 	 */
 	for_each_cpu(i, &search_cpus) {
 		struct rq *rq = cpu_rq(i);
-		cstate = rq->cstate;
-		cpu_load = cpu_load_sync(i, sync);
-		tload = scale_load_to_cpu(task_load(p), i);
 
 		trace_sched_cpu_load(rq, idle_cpu(i),
-				     mostly_idle_cpu_sync(i, cpu_load, sync),
-				     power_cost(tload, i));
+			  mostly_idle_cpu_sync(i, cpu_load_sync(i, sync), sync),
+			  power_cost_task(p, i));
 
-		if (power_cost(tload, i) == cluster_cost) {
+		if (power_cost_task(p, i) == cluster_cost) {
+			cstate = rq->cstate;
 			/* This CPU is within the same cluster as the waker. */
 			if (cstate) {
 				if (cstate < best_lpm_sibling_cstate) {
 					best_lpm_sibling_cpu = i;
 					best_lpm_sibling_cstate = cstate;
 				}
-				continue;
-			}
-			if (cpu_load < best_nonlpm_sibling_load &&
-			    !spill_threshold_crossed(tload, cpu_load, rq)) {
-				best_nonlpm_sibling_cpu = i;
-				best_nonlpm_sibling_load = cpu_load;
-			}
-			continue;
+			} else if (idle_cpu(i)) {
+				return i;
+			} else {
+				cpu_load = cpu_load_sync(i, sync);
+				if (cpu_load < best_nonlpm_sibling_load &&
+				    !spill_threshold_crossed(
+					    scale_load_to_cpu(task_load(p), i),
+					    cpu_load, rq)) {
+					best_nonlpm_sibling_cpu = i;
+					best_nonlpm_sibling_load = cpu_load;
+				}
 			}
 			cpumask_clear_cpu(i, &fb_search_cpus);
 		} else {
@@ -1874,14 +1874,16 @@ static int best_small_task_cpu(struct task_struct *p, int sync)
 				best_lpm_nonsibling_cpu = i;
 				best_lpm_nonsibling_cstate = cstate;
 			}
-			continue;
-		}
-		if (cpu_load < best_nonlpm_nonsibling_load &&
-		    !spill_threshold_crossed(tload, cpu_load, rq)) {
-			best_nonlpm_nonsibling_cpu = i;
-			best_nonlpm_nonsibling_load = cpu_load;
-		}
-	}
+		} else if (idle_cpu(i)) {
+			return i;
+		} else {
+			cpu_load = cpu_load_sync(i, sync);
+			tload = scale_load_to_cpu(task_load(p), cpu);
+			if (cpu_load < best_nonlpm_nonsibling_load &&
+			    !spill_threshold_crossed(tload, cpu_load, rq)) {
+				best_nonlpm_nonsibling_cpu = i;
+				best_nonlpm_nonsibling_load = cpu_load;
+			}
 		}
 	}
 
