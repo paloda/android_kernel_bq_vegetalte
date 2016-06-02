@@ -1903,9 +1903,7 @@ static int best_small_task_cpu(struct task_struct *p, int sync)
 
 static int skip_freq_domain(struct rq *task_rq, struct rq * rq, int reason)
 {
-	struct rq *rq = cpu_rq(cpu);
-	struct rq *task_rq = task_rq(p);
-	int skip;
+        int skip;
 
         if (!reason)
                 return 0;
@@ -1920,8 +1918,7 @@ static int skip_freq_domain(struct rq *task_rq, struct rq * rq, int reason)
 		break;
 
 	default:
-		skip = (rq == task_rq);
-		break;
+		return 0;
 	}
 
         return skip;
@@ -1978,7 +1975,7 @@ static int select_packing_target(struct task_struct *p, int best_cpu)
 static int select_best_cpu(struct task_struct *p, int target, int reason,
 			   int sync)
 {
-	int i, best_cpu = -1, fallback_idle_cpu = -1, min_cstate_cpu = -1;
+	int i, j, best_cpu = -1, fallback_idle_cpu = -1, min_cstate_cpu = -1;
 	int cpu_cost, min_cost = INT_MAX;
 	int min_idle_cost = INT_MAX, min_busy_cost = INT_MAX;
 	u64 tload, cpu_load;
@@ -2019,27 +2016,29 @@ static int select_best_cpu(struct task_struct *p, int target, int reason,
 			continue;
 		}
 
-	/* Todo : Optimize this loop */
-	for_each_cpu_and(i, tsk_cpus_allowed(p), cpu_online_mask) {
-		if (skip_cpu(p, i, reason))
+		if (skip_cpu(trq, rq, i, reason))
 			continue;
-
-		tload = scale_load_to_cpu(task_load(p), i);
-		cpu_load = cpu_load_sync(i, sync);
-		trace_sched_cpu_load(cpu_rq(i), idle_cpu(i),
-				     mostly_idle_cpu_sync(i, cpu_load, sync),
-				     power_cost(tload, i));
 
 		/*
 		 * The least-loaded mostly-idle CPU where the task
 		 * won't fit is our fallback if we can't find a CPU
 		 * where the task will fit.
 		 */
+		tload = scale_load_to_cpu(task_load(p), i);
+		trace_sched_cpu_load(cpu_rq(i), idle_cpu(i),
+				     mostly_idle_cpu_sync(i,
+							 cpu_load_sync(i, sync),
+							 sync),
+				     power_cost(tload, i));
 		if (!task_load_will_fit(p, tload, i)) {
-			if (mostly_idle_cpu_sync(i, cpu_load, sync)) {
-				if (cpu_load < min_fallback_load) {
-					min_fallback_load = cpu_load;
-					fallback_idle_cpu = i;
+			for_each_cpu_and(j, &search_cpus,
+						&rq->freq_domain_cpumask) {
+				cpu_load = cpu_load_sync(j, sync);
+				if (mostly_idle_cpu_sync(j, cpu_load, sync)) {
+					if (cpu_load < min_fallback_load) {
+						min_fallback_load = cpu_load;
+						fallback_idle_cpu = j;
+					}
 				}
 			}
 			cpumask_andnot(&search_cpus, &search_cpus,
@@ -2047,6 +2046,7 @@ static int select_best_cpu(struct task_struct *p, int target, int reason,
 			continue;
 		}
 
+		cpu_load = cpu_load_sync(i, sync);
 		if (!eligible_cpu(tload, cpu_load, i, sync))
 			continue;
 
@@ -8108,3 +8108,4 @@ __init void init_sched_fair_class(void)
 #endif /* SMP */
 
 }
+
