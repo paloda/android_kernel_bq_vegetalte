@@ -192,8 +192,7 @@ static struct work_struct bcl_hotplug_work;
 static DEFINE_MUTEX(bcl_hotplug_mutex);
 static bool bcl_hotplug_enabled;
 
-#ifdef CONFIG_SMP
-static void __ref bcl_handle_hotplug(struct work_struct *work)
+/*static void __ref bcl_handle_hotplug(void)
 {
 	int ret = 0, _cpu = 0;
 	uint32_t prev_hotplug_request = 0;
@@ -238,14 +237,7 @@ static void __ref bcl_handle_hotplug(struct work_struct *work)
 handle_hotplug_exit:
 	mutex_unlock(&bcl_hotplug_mutex);
 	return;
-}
-#else
-static void __ref bcl_handle_hotplug(struct work_struct *work)
-{
-	return;
-}
-#endif
-
+}*/
 static int __ref bcl_cpu_ctrl_callback(struct notifier_block *nfb,
 	unsigned long action, void *hcpu)
 {
@@ -414,10 +406,18 @@ static void bcl_iavail_work(struct work_struct *work)
 			struct bcl_context, bcl_iavail_work.work);
 
 	if (gbcl->bcl_mode == BCL_DEVICE_ENABLED) {
-		bcl_calculate_iavail_trigger();
-		/* restart the delay work for caculating imax */
-		schedule_delayed_work(&bcl->bcl_iavail_work,
-			msecs_to_jiffies(bcl->bcl_poll_interval_msec));
+		bcl->btm_mode = BCL_VPH_MONITOR_MODE;
+		update_cpu_freq();
+		//bcl_handle_hotplug();
+		bcl_get_battery_voltage(&vbatt);
+		pr_debug("vbat is %d\n", vbatt);
+		if (bcl_vph_state == BCL_LOW_THRESHOLD) {
+			if (vbatt <= gbcl->btm_vph_low_thresh) {
+				/*relay the notification to charger ic driver*/
+				if (bcl->btm_charger_ic_low_thresh ==
+					gbcl->btm_vph_adc_param.low_thr) {
+					bcl_hit_shutdown_voltage = true;
+				} else
 	}
 }
 
