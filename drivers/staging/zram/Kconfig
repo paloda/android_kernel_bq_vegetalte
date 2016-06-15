@@ -14,12 +14,12 @@ config ZRAM
 	  disks and maybe many more.
 
 	  See zram.txt for more information.
-	  Project home: <https://compcache.googlecode.com/>
 
-config ZRAM_DEBUG
-	bool "Compressed RAM block device debug support"
+config ZRAM_LZ4_COMPRESS
+	bool "Enable LZ4 algorithm support"
 	depends on ZRAM
+	select LZ4_COMPRESS
+	select LZ4_DECOMPRESS
 	default n
 	help
-	  This option adds additional debugging code to the compressed
-	  RAM block device driver.
+	  This option enables LZ4 compression algorithm support. Compression
