@@ -145,10 +145,6 @@ static bool migrate_one_irq(struct irq_desc *desc)
 {
 	struct irq_data *d = irq_desc_get_irq_data(desc);
 	const struct cpumask *affinity = d->affinity;
-<<<<<<< HEAD
-=======
-	bool ret = false;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/*
 	 * If this is a per-CPU interrupt, or the affinity does not
@@ -159,13 +155,6 @@ static bool migrate_one_irq(struct irq_desc *desc)
 
 	if (cpumask_any_and(affinity, cpu_online_mask) >= nr_cpu_ids)
 		affinity = cpu_online_mask;
-<<<<<<< HEAD
-=======
-		ret = true;
-	}
-
-	irq_set_affinity_locked(d, affinity, 0);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return irq_set_affinity_locked(d, affinity, 0) == 0;
 }

@@ -506,6 +506,9 @@ static int snd_compress_check_input(struct snd_compr_params *params)
 	if (params->codec.ch_in == 0 || params->codec.ch_out == 0)
 		return -EINVAL;
 
+	if (!(params->codec.sample_rate & SNDRV_PCM_RATE_8000_192000))
+		return -EINVAL;
+
 	return 0;
 }
 
@@ -759,42 +762,12 @@ static int snd_compr_partial_drain(struct snd_compr_stream *stream)
 	return retval;
 }
 
-<<<<<<< HEAD
 static int snd_compress_simple_ioctls(struct file *file,
 				struct snd_compr_stream *stream,
 				unsigned int cmd, unsigned long arg)
 {
 	int retval = -ENOTTY;
 
-=======
-static int snd_compr_set_next_track_param(struct snd_compr_stream *stream,
-		unsigned long arg)
-{
-	union snd_codec_options codec_options;
-	int retval;
-
-	/* set next track params when stream is running or has been setup */
-	if (stream->runtime->state != SNDRV_PCM_STATE_SETUP &&
-			stream->runtime->state != SNDRV_PCM_STATE_RUNNING)
-		return -EPERM;
-
-	if (copy_from_user(&codec_options, (void __user *)arg,
-				sizeof(codec_options)))
-		return -EFAULT;
-
-	retval = stream->ops->set_next_track_param(stream, &codec_options);
-	if (retval != 0)
-		return retval;
-	return 0;
-}
-
-static int snd_compress_simple_ioctls(struct file *file,
-				struct snd_compr_stream *stream,
-				unsigned int cmd, unsigned long arg)
-{
-	int retval = -ENOTTY;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	switch (_IOC_NR(cmd)) {
 	case _IOC_NR(SNDRV_COMPRESS_IOCTL_VERSION):
 		retval = put_user(SNDRV_COMPRESS_VERSION,
@@ -805,17 +778,9 @@ static int snd_compress_simple_ioctls(struct file *file,
 		retval = snd_compr_get_caps(stream, arg);
 		break;
 
-<<<<<<< HEAD
 	case _IOC_NR(SNDRV_COMPRESS_GET_CODEC_CAPS):
 		retval = snd_compr_get_codec_caps(stream, arg);
 		break;
-=======
-#ifndef COMPR_CODEC_CAPS_OVERFLOW
-	case _IOC_NR(SNDRV_COMPRESS_GET_CODEC_CAPS):
-		retval = snd_compr_get_codec_caps(stream, arg);
-		break;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 	case _IOC_NR(SNDRV_COMPRESS_TSTAMP):
@@ -893,13 +858,6 @@ static long snd_compr_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 		retval = snd_compr_next_track(stream);
 		break;
 
-<<<<<<< HEAD
-=======
-	case _IOC_NR(SNDRV_COMPRESS_SET_NEXT_TRACK_PARAM):
-		retval = snd_compr_set_next_track_param(stream, arg);
-		break;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		mutex_unlock(&stream->device->lock);
 		return snd_compress_simple_ioctls(f, stream, cmd, arg);

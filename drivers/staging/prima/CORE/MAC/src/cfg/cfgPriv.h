@@ -50,11 +50,7 @@
 #include <cfgApi.h>
 #include "cfgDef.h"
 
-<<<<<<< HEAD
     #include <wniCfg.h>
-=======
-    #include <wniCfgSta.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /*--------------------------------------------------------------------*/
 /* CFG miscellaneous definition                                       */

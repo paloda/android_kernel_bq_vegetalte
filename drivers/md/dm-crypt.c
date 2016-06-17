@@ -1655,11 +1655,7 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	cc->crypt_queue = alloc_workqueue("kcryptd",
 					  WQ_CPU_INTENSIVE | WQ_MEM_RECLAIM |
-<<<<<<< HEAD
 					  WQ_UNBOUND, num_possible_cpus() * 2);
-=======
-					  WQ_UNBOUND, num_online_cpus());
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!cc->crypt_queue) {
 		ti->error = "Couldn't create kcryptd queue";
 		goto bad;

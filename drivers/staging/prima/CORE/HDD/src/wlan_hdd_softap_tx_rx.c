@@ -49,10 +49,6 @@
 #include <linux/etherdevice.h>
 //#include <vos_list.h>
 #include <vos_types.h>
-<<<<<<< HEAD
-=======
-#include <vos_sched.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <aniGlobal.h>
 #include <halTypes.h>
 #include <net/ieee80211_radiotap.h>
@@ -639,22 +635,14 @@ xmit_end:
 }
 
 /**============================================================================
-<<<<<<< HEAD
   @brief hdd_softap_tx_timeout() - Function called by OS if there is any
-=======
-  @brief __hdd_softap_tx_timeout() - Function called by OS if there is any
->>>>>>> ca57d1d... Merge in Linux 3.10.100
   timeout during transmission. Since HDD simply enqueues packet
   and returns control to OS right away, this would never be invoked
 
   @param dev : [in] pointer to Libra network device
   @return    : None
   ===========================================================================*/
-<<<<<<< HEAD
 void hdd_softap_tx_timeout(struct net_device *dev)
-=======
-void __hdd_softap_tx_timeout(struct net_device *dev)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
    hdd_adapter_t *pAdapter =  WLAN_HDD_GET_PRIV_PTR(dev);
    struct netdev_queue *txq;
@@ -725,50 +713,21 @@ void __hdd_softap_tx_timeout(struct net_device *dev)
 
 } 
 
-<<<<<<< HEAD
 
 /**============================================================================
   @brief hdd_softap_stats() - Function registered with the Linux OS for 
-=======
-void hdd_softap_tx_timeout(struct net_device *dev)
-{
-   vos_ssr_protect(__func__);
-   __hdd_softap_tx_timeout(dev);
-   vos_ssr_unprotect(__func__);
-   return;
-}
-
-/**============================================================================
-  @brief __hdd_softap_stats() - Function registered with the Linux OS for
->>>>>>> ca57d1d... Merge in Linux 3.10.100
   device TX/RX statistic
 
   @param dev      : [in] pointer to Libra network device
   
   @return         : pointer to net_device_stats structure
   ===========================================================================*/
-<<<<<<< HEAD
 struct net_device_stats* hdd_softap_stats(struct net_device *dev)
-=======
-struct net_device_stats* __hdd_softap_stats(struct net_device *dev)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
    hdd_adapter_t* priv = netdev_priv(dev);
    return &priv->stats;
 }
 
-<<<<<<< HEAD
-=======
-struct net_device_stats* hdd_softap_stats(struct net_device *dev)
-{
-   struct net_device_stats *priv_stats;
-   vos_ssr_protect(__func__);
-   priv_stats = __hdd_softap_stats(dev);
-   vos_ssr_unprotect(__func__);
-
-   return priv_stats;
-}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /**============================================================================
   @brief hdd_softap_init_tx_rx() - Init function to initialize Tx/RX

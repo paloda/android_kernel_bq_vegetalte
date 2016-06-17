@@ -45,10 +45,6 @@
 #include <linux/of_platform.h>
 #include <linux/dma-mapping.h>
 #include <linux/efi.h>
-<<<<<<< HEAD
-=======
-#include <linux/personality.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #include <asm/fixmap.h>
 #include <asm/cputype.h>
@@ -64,13 +60,6 @@
 #include <asm/memblock.h>
 #include <asm/psci.h>
 #include <asm/efi.h>
-<<<<<<< HEAD
-=======
-
-#include <soc/qcom/bootinfo.h>
-
-void __attribute__((weak)) mach_cpuinfo_show(struct seq_file *m, void *v);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 unsigned int processor_id;
 EXPORT_SYMBOL(processor_id);
@@ -98,10 +87,7 @@ unsigned int compat_elf_hwcap __read_mostly = COMPAT_ELF_HWCAP_DEFAULT;
 unsigned int compat_elf_hwcap2 __read_mostly;
 #endif
 
-<<<<<<< HEAD
 static const char *cpu_name;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static const char *machine_name;
 phys_addr_t __fdt_pointer __initdata;
 
@@ -224,7 +210,6 @@ static void __init smp_build_mpidr_hash(void)
 
 static void __init setup_processor(void)
 {
-<<<<<<< HEAD
 	struct cpu_info *cpu_info;
 	u64 features, block;
 	u32 cwg;
@@ -305,91 +290,8 @@ static void __init setup_processor(void)
 		case 0:
 			break;
 		}
-=======
-	/*
-	 * clear __my_cpu_offset on boot CPU to avoid hang caused by
-	 * using percpu variable early, for example, lockdep will
-	 * access percpu variable inside lock_release
-	 */
-	set_my_cpu_offset(0);
-}
-
-bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
-{
-	return phys_id == cpu_logical_map(cpu);
-}
-
-struct mpidr_hash mpidr_hash;
-#ifdef CONFIG_SMP
-/**
- * smp_build_mpidr_hash - Pre-compute shifts required at each affinity
- *			  level in order to build a linear index from an
- *			  MPIDR value. Resulting algorithm is a collision
- *			  free hash carried out through shifting and ORing
- */
-static void __init smp_build_mpidr_hash(void)
-{
-	u32 i, affinity, fs[4], bits[4], ls;
-	u64 mask = 0;
-	/*
-	 * Pre-scan the list of MPIDRS and filter out bits that do
-	 * not contribute to affinity levels, ie they never toggle.
-	 */
-	for_each_possible_cpu(i)
-		mask |= (cpu_logical_map(i) ^ cpu_logical_map(0));
-	pr_debug("mask of set bits %#llx\n", mask);
-	/*
-	 * Find and stash the last and first bit set at all affinity levels to
-	 * check how many bits are required to represent them.
-	 */
-	for (i = 0; i < 4; i++) {
-		affinity = MPIDR_AFFINITY_LEVEL(mask, i);
-		/*
-		 * Find the MSB bit and LSB bits position
-		 * to determine how many bits are required
-		 * to express the affinity level.
-		 */
-		ls = fls(affinity);
-		fs[i] = affinity ? ffs(affinity) - 1 : 0;
-		bits[i] = ls - fs[i];
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
-	/*
-	 * An index can be created from the MPIDR_EL1 by isolating the
-	 * significant bits at each affinity level and by shifting
-	 * them in order to compress the 32 bits values space to a
-	 * compressed set of values. This is equivalent to hashing
-	 * the MPIDR_EL1 through shifting and ORing. It is a collision free
-	 * hash though not minimal since some levels might contain a number
-	 * of CPUs that is not an exact power of 2 and their bit
-	 * representation might contain holes, eg MPIDR_EL1[7:0] = {0x2, 0x80}.
-	 */
-	mpidr_hash.shift_aff[0] = MPIDR_LEVEL_SHIFT(0) + fs[0];
-	mpidr_hash.shift_aff[1] = MPIDR_LEVEL_SHIFT(1) + fs[1] - bits[0];
-	mpidr_hash.shift_aff[2] = MPIDR_LEVEL_SHIFT(2) + fs[2] -
-						(bits[1] + bits[0]);
-	mpidr_hash.shift_aff[3] = MPIDR_LEVEL_SHIFT(3) +
-				  fs[3] - (bits[2] + bits[1] + bits[0]);
-	mpidr_hash.mask = mask;
-	mpidr_hash.bits = bits[3] + bits[2] + bits[1] + bits[0];
-	pr_debug("MPIDR hash: aff0[%u] aff1[%u] aff2[%u] aff3[%u] mask[%#llx] bits[%u]\n",
-		mpidr_hash.shift_aff[0],
-		mpidr_hash.shift_aff[1],
-		mpidr_hash.shift_aff[2],
-		mpidr_hash.shift_aff[3],
-		mpidr_hash.mask,
-		mpidr_hash.bits);
-	/*
-	 * 4x is an arbitrary value used to warn on a hash table much bigger
-	 * than expected on most systems.
-	 */
-	if (mpidr_hash_size() > 4 * num_possible_cpus())
-		pr_warn("Large number of MPIDR hash buckets detected\n");
-	__flush_dcache_area(&mpidr_hash, sizeof(struct mpidr_hash));
-}
-#endif
 
-<<<<<<< HEAD
 	block = (features >> 8) & 0xf;
 	if (block && !(block & 0x8))
 		compat_elf_hwcap2 |= COMPAT_HWCAP2_SHA1;
@@ -404,8 +306,6 @@ static void __init smp_build_mpidr_hash(void)
 #endif
 }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static void __init setup_machine_fdt(phys_addr_t dt_phys)
 {
 	if (!dt_phys || !early_init_dt_scan(phys_to_virt(dt_phys))) {
@@ -565,12 +465,9 @@ static const char *hwcap_str[] = {
 static int c_show(struct seq_file *m, void *v)
 {
 	int i;
-<<<<<<< HEAD
 
 	seq_printf(m, "Processor\t: %s rev %d (%s)\n",
 		   cpu_name, read_cpuid_id() & 15, ELF_PLATFORM);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	for_each_present_cpu(i) {
 		/*
@@ -609,16 +506,6 @@ static int c_show(struct seq_file *m, void *v)
 		seq_printf(m, "Hardware\t: %s\n", machine_name);
 	else
 		seq_printf(m, "Hardware\t: %s\n", arch_read_hardware_id());
-<<<<<<< HEAD
-=======
-
-	seq_printf(m, "Revision\t: %04x\n", system_rev);
-	seq_printf(m, "Serial\t\t: %08x%08x\n",
-		 system_serial_high, system_serial_low);
-
-	if (mach_cpuinfo_show)
-		mach_cpuinfo_show(m, v);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return 0;
 }

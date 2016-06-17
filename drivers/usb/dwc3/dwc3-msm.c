@@ -1414,11 +1414,7 @@ static void dwc3_chg_detect_work(struct work_struct *w)
 			dwc3_msm_write_readback(mdwc->base,
 					CHARGING_DET_CTRL_REG, 0x1F, 0x10);
 			if (mdwc->ext_chg_opened) {
-<<<<<<< HEAD
 				init_completion(&mdwc->ext_chg_wait);
-=======
-				complete(&mdwc->ext_chg_wait);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 				mdwc->ext_chg_active = true;
 			}
 		}
@@ -2301,11 +2297,6 @@ static int dwc3_msm_power_set_property_usb(struct power_supply *psy,
 			break;
 		default:
 			mdwc->charger.chg_type = DWC3_INVALID_CHARGER;
-<<<<<<< HEAD
-=======
-			/* Default power supply type to USB */
-			psy->type = POWER_SUPPLY_TYPE_USB;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			break;
 		}
 

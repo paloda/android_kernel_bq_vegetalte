@@ -38,11 +38,7 @@
  */
 #include "palTypes.h"
 #include "aniGlobal.h"
-<<<<<<< HEAD
 #include "wniCfg.h"
-=======
-#include "wniCfgSta.h"
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "sirApi.h"
 #include "cfgApi.h"
 
@@ -58,12 +54,6 @@
 #include "limAdmitControl.h"
 #include "palApi.h"
 #include "limSessionUtils.h"
-<<<<<<< HEAD
-=======
-#ifdef WLAN_FEATURE_11W
-#include "wniCfgAp.h"
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 #include "vos_types.h"
@@ -1295,15 +1285,9 @@ if (limPopulateMatchingRateSet(pMac,
                              (tSirResultCodes) eSIR_MAC_UNSPEC_FAILURE_STATUS, psessionEntry);
         goto error;
     }
-<<<<<<< HEAD
     if (WNI_CFG_PMF_SA_QUERY_RETRY_INTERVAL_STAMIN > retryInterval)
     {
         retryInterval = WNI_CFG_PMF_SA_QUERY_RETRY_INTERVAL_STADEF;
-=======
-    if (WNI_CFG_PMF_SA_QUERY_RETRY_INTERVAL_APMIN > retryInterval)
-    {
-        retryInterval = WNI_CFG_PMF_SA_QUERY_RETRY_INTERVAL_APDEF;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
     if (tx_timer_create(&pStaDs->pmfSaQueryTimer, "PMF SA Query timer",
                         limPmfSaQueryTimerHandler, timerId.value,

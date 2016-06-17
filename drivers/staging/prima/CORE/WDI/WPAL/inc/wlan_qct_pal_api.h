@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright (c) 2012-2013 The Linux Foundation. All rights reserved.
-=======
- * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -333,19 +329,6 @@ void wpalWlanReload(void);
 void wpalWcnssResetIntr(void);
 
 /*---------------------------------------------------------------------------
-<<<<<<< HEAD
-=======
-    wpalWcnssIsProntoHwVer3 -  Check for Pronto ver3 HW
-
-    Param:
-       None
-    Return:
-       TRUE if Ponto Hw Ver 3
-       Therefore use WQ6 instead of WQ23 for TX Low/High Priority Channel
----------------------------------------------------------------------------*/
-int wpalWcnssIsProntoHwVer3(void);
-/*---------------------------------------------------------------------------
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     wpalFwDumpReq -  Trigger the dump commands to Firmware
 
     Param:
@@ -374,22 +357,14 @@ void wpalFwDumpReq(wpt_uint32 cmd, wpt_uint32 arg1, wpt_uint32 arg2,
 void wpalDevicePanic(void);
 
 /*---------------------------------------------------------------------------
-<<<<<<< HEAD
     wpalIsWDresetInProgress -  calls vos API isWDresetInProgress()
-=======
-    wpalIslogPInProgress -  calls vos API vos_is_logp_in_progress()
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     Param:
        NONE
     Return:
        STATUS
 --------------------------------------------------------------------------*/
-<<<<<<< HEAD
 int  wpalIsWDresetInProgress(void);
-=======
-int  wpalIslogPInProgress(void);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /*---------------------------------------------------------------------------
     wpalIsSsrPanicOnFailure -  calls vos API isSsrPanicOnFailure()

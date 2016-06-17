@@ -64,7 +64,15 @@ sctp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 static void sctp_nat_csum(struct sk_buff *skb, sctp_sctphdr_t *sctph,
 			  unsigned int sctphoff)
 {
-	sctph->checksum = sctp_compute_cksum(skb, sctphoff);
+	__u32 crc32;
+	struct sk_buff *iter;
+
+	crc32 = sctp_start_cksum((__u8 *)sctph, skb_headlen(skb) - sctphoff);
+	skb_walk_frags(skb, iter)
+		crc32 = sctp_update_cksum((u8 *) iter->data,
+					  skb_headlen(iter), crc32);
+	sctph->checksum = sctp_end_cksum(crc32);
+
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
 }
 
@@ -141,7 +149,10 @@ sctp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp)
 {
 	unsigned int sctphoff;
 	struct sctphdr *sh, _sctph;
-	__le32 cmp, val;
+	struct sk_buff *iter;
+	__le32 cmp;
+	__le32 val;
+	__u32 tmp;
 
 #ifdef CONFIG_IP_VS_IPV6
 	if (af == AF_INET6)
@@ -155,7 +166,13 @@ sctp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp)
 		return 0;
 
 	cmp = sh->checksum;
-	val = sctp_compute_cksum(skb, sctphoff);
+
+	tmp = sctp_start_cksum((__u8 *) sh, skb_headlen(skb));
+	skb_walk_frags(skb, iter)
+		tmp = sctp_update_cksum((__u8 *) iter->data,
+					skb_headlen(iter), tmp);
+
+	val = sctp_end_cksum(tmp);
 
 	if (val != cmp) {
 		/* CRC failure, dump it. */

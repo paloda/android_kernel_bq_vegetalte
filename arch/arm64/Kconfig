@@ -29,10 +29,6 @@ config ARM64
 	select GENERIC_STRNLEN_USER
 	select GENERIC_TIME_VSYSCALL
 	select HARDIRQS_SW_RESEND
-<<<<<<< HEAD
-=======
-	select HAVE_ARCH_BITREVERSE
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	select HAVE_ARCH_JUMP_LABEL
 	select HAVE_ARCH_KGDB
 	select HAVE_ARCH_TRACEHOOK
@@ -241,17 +237,6 @@ config ARCH_MSM8992
 	  Enable kernel support for the MSM8992 chipset. If you don't
 	  know what this is, you can safely say 'N' here.
 
-<<<<<<< HEAD
-=======
-config MMI_DEVICE_DTBS
-	depends on ARCH_MSM
-	default n
-	bool "Motorola Mobility Device DTBs"
-	help
-	  Only include Motorola device specific DTBs to limit the number that
-	  get built during kernel compilation.
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 config ARCH_XGENE
 	bool "AppliedMicro X-Gene SOC Family"
 	help

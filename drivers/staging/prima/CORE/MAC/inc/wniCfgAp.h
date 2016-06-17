@@ -24,10 +24,7 @@
  * under proprietary terms before Copyright ownership was assigned
  * to the Linux Foundation.
  */
-<<<<<<< HEAD
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*
  * DO NOT EDIT - This file is generated automatically
  */
@@ -1451,19 +1448,11 @@
 
 #define WNI_CFG_BLOCK_ACK_ENABLED_STAMIN    0
 #define WNI_CFG_BLOCK_ACK_ENABLED_STAMAX    3
-<<<<<<< HEAD
 #define WNI_CFG_BLOCK_ACK_ENABLED_STADEF    2
 
 #define WNI_CFG_BLOCK_ACK_ENABLED_APMIN    0
 #define WNI_CFG_BLOCK_ACK_ENABLED_APMAX    3
 #define WNI_CFG_BLOCK_ACK_ENABLED_APDEF    2
-=======
-#define WNI_CFG_BLOCK_ACK_ENABLED_STADEF    0
-
-#define WNI_CFG_BLOCK_ACK_ENABLED_APMIN    0
-#define WNI_CFG_BLOCK_ACK_ENABLED_APMAX    3
-#define WNI_CFG_BLOCK_ACK_ENABLED_APDEF    0
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define WNI_CFG_BLOCK_ACK_ENABLED_DELAYED    0
 #define WNI_CFG_BLOCK_ACK_ENABLED_IMMEDIATE    1

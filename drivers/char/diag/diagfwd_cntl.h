@@ -132,16 +132,6 @@ struct diag_ctrl_msg_mask {
 	/* Copy msg mask here */
 } __packed;
 
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_DIAG_EXTENSION
-struct diag_ctrl_msg_diag_flush {
-	uint32_t ctrl_pkt_id;
-	uint32_t ctrl_pkt_data_len;
-} __packed;
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct diag_ctrl_feature_mask {
 	uint32_t ctrl_pkt_id;
 	uint32_t ctrl_pkt_data_len;
@@ -264,9 +254,5 @@ int diag_send_buffering_tx_mode_pkt(struct diag_smd_info *smd_info,
 int diag_send_buffering_wm_values(struct diag_smd_info *smd_info,
 				  struct diag_buffering_mode_t *params);
 void diag_cntl_stm_notify(struct diag_smd_info *smd_info, int action);
-<<<<<<< HEAD
-=======
-int diag_compute_real_time(int idx);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #endif

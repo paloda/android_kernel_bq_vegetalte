@@ -915,10 +915,6 @@ struct dwc3 {
 	unsigned                irq_completion_time[MAX_INTR_STATS];
 	unsigned                irq_event_count[MAX_INTR_STATS];
 	unsigned                irq_dbg_index;
-<<<<<<< HEAD
-=======
-	int                     charge_enabled; /* unconditional charging */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 /* -------------------------------------------------------------------------- */

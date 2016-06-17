@@ -249,16 +249,9 @@ void csrNeighborRoamFreeRoamableBSSList(tpAniSirGlobal pMac, tDblLinkList *pList
     return;
 }
 
-<<<<<<< HEAD
 static void csrNeighborRoamTriggerHandoff(tpAniSirGlobal pMac, 
                                           tpCsrNeighborRoamControlInfo pNeighborRoamInfo)
 {
-=======
-static eHalStatus csrNeighborRoamTriggerHandoff(tpAniSirGlobal pMac,
-                                          tpCsrNeighborRoamControlInfo pNeighborRoamInfo)
-{
-    eHalStatus status = eHAL_STATUS_SUCCESS;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef WLAN_FEATURE_VOWIFI_11R
     if ((pNeighborRoamInfo->is11rAssoc)
 #ifdef WLAN_FEATURE_ROAM_SCAN_OFFLOAD
@@ -269,11 +262,7 @@ static eHalStatus csrNeighborRoamTriggerHandoff(tpAniSirGlobal pMac,
         if ((eCSR_NEIGHBOR_ROAM_STATE_REPORT_SCAN == pNeighborRoamInfo->neighborRoamState) ||
             (eSME_ROAM_TRIGGER_FAST_ROAM == pNeighborRoamInfo->cfgRoamEn))
         {
-<<<<<<< HEAD
             csrNeighborRoamIssuePreauthReq(pMac);
-=======
-            status = csrNeighborRoamIssuePreauthReq(pMac);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
             pNeighborRoamInfo->cfgRoamEn = eSME_ROAM_TRIGGER_NONE;
             vos_mem_set(&pNeighborRoamInfo->cfgRoambssId[0],
                         sizeof(pNeighborRoamInfo->cfgRoambssId),
@@ -300,11 +289,7 @@ static eHalStatus csrNeighborRoamTriggerHandoff(tpAniSirGlobal pMac,
         {
             if (eCSR_NEIGHBOR_ROAM_STATE_REPORT_SCAN == pNeighborRoamInfo->neighborRoamState)
             {
-<<<<<<< HEAD
                 csrNeighborRoamIssuePreauthReq(pMac);
-=======
-                status = csrNeighborRoamIssuePreauthReq(pMac);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
             }
             else
             {
@@ -325,11 +310,7 @@ static eHalStatus csrNeighborRoamTriggerHandoff(tpAniSirGlobal pMac,
 #endif
                 )
                 {
-<<<<<<< HEAD
                     csrNeighborRoamIssuePreauthReq(pMac);
-=======
-                    status = csrNeighborRoamIssuePreauthReq(pMac);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
                     pNeighborRoamInfo->cfgRoamEn = eSME_ROAM_TRIGGER_NONE;
                     vos_mem_set(&pNeighborRoamInfo->cfgRoambssId[0],
                                 sizeof(pNeighborRoamInfo->cfgRoambssId),
@@ -359,10 +340,6 @@ static eHalStatus csrNeighborRoamTriggerHandoff(tpAniSirGlobal pMac,
                            pNeighborRoamInfo->neighborRoamState));
                 }
             }
-<<<<<<< HEAD
-=======
-    return status;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 VOS_STATUS csrNeighborRoamUpdateFastRoamingEnabled(tpAniSirGlobal pMac, const v_BOOL_t fastRoamEnabled)
@@ -1241,13 +1218,7 @@ eHalStatus csrNeighborRoamPreauthRspHandler(tpAniSirGlobal pMac, tSirRetStatus l
           else if(pNeighborRoamInfo->isForcedInitialRoamTo5GH)
           {
              pNeighborRoamInfo->isForcedInitialRoamTo5GH = 0;
-<<<<<<< HEAD
              csrRoamOffloadScan(pMac, ROAM_SCAN_OFFLOAD_START, REASON_NO_CAND_FOUND_OR_NOT_ROAMING_NOW);
-=======
-             smsLog(pMac, LOGE, FL("Forced 5G roaming preauth got failed"
-                    "send RSO START cmd to fwr."));
-             csrRoamOffloadScan(pMac,ROAM_SCAN_OFFLOAD_START,REASON_CONNECT);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
           }
           else
           {
@@ -1556,11 +1527,7 @@ static tANI_BOOLEAN csrNeighborRoamProcessScanResults(tpAniSirGlobal pMac,
 #ifdef WLAN_FEATURE_ROAM_SCAN_OFFLOAD
        && !csrRoamIsRoamOffloadScanEnabled(pMac)
 #endif
-<<<<<<< HEAD
        && ((eSME_ROAM_TRIGGER_SCAN != pNeighborRoamInfo->cfgRoamEn) ||
-=======
-       && ((eSME_ROAM_TRIGGER_SCAN != pNeighborRoamInfo->cfgRoamEn) &&
->>>>>>> ca57d1d... Merge in Linux 3.10.100
            (eSME_ROAM_TRIGGER_FAST_ROAM != pNeighborRoamInfo->cfgRoamEn)))
        {
                /*
@@ -2136,18 +2103,7 @@ static eHalStatus csrNeighborRoamProcessScanComplete (tpAniSirGlobal pMac)
                 }
 #endif
 
-<<<<<<< HEAD
                 csrNeighborRoamTriggerHandoff(pMac, pNeighborRoamInfo);
-=======
-                hstatus = csrNeighborRoamTriggerHandoff(pMac,pNeighborRoamInfo);
-                if(eHAL_STATUS_SUCCESS != hstatus)
-                {
-                    smsLog(pMac, LOGE,
-                           FL("csrNeighborRoamTriggerHandoff fail status = %d"),
-                           hstatus);
-                    return eHAL_STATUS_FAILURE;
-                }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
                 return eHAL_STATUS_SUCCESS;
             }
 
@@ -2193,16 +2149,6 @@ static eHalStatus csrNeighborRoamProcessScanComplete (tpAniSirGlobal pMac)
                             "tempVal = %u, roamNow = %d uOsRequestedHandoff = %d",
                             tempVal, roamNow, pNeighborRoamInfo->uOsRequestedHandoff);
                 }
-<<<<<<< HEAD
-=======
-                else if (pNeighborRoamInfo->isForcedInitialRoamTo5GH)
-                {
-                    VOS_TRACE( VOS_MODULE_ID_SME, VOS_TRACE_LEVEL_INFO,
-                              "No 5G candidate found tempVal=%u, roamNow=%d",
-                               tempVal, roamNow);
-                    return eHAL_STATUS_FAILURE;
-                }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
                 else
                 {
                     if (pNeighborRoamInfo->uOsRequestedHandoff)
@@ -2211,15 +2157,11 @@ static eHalStatus csrNeighborRoamProcessScanComplete (tpAniSirGlobal pMac)
                             REASON_NO_CAND_FOUND_OR_NOT_ROAMING_NOW);
                         pNeighborRoamInfo->uOsRequestedHandoff = 0;
                     }
-<<<<<<< HEAD
                     else if (pNeighborRoamInfo->isForcedInitialRoamTo5GH)
                     {
                         smsLog(pMac, LOGE, FL("Forced roam to 5G No candidate found, starting fw offload scan again, status = %d"), hstatus);
                         csrNeighborRoamStartLfrScan(pMac, REASON_INITIAL_FORCED_ROAM_TO_5G);
                     }
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
                     else
                     {
                         /* There is no candidate or We are not roaming Now.
@@ -2427,52 +2369,28 @@ static eHalStatus csrNeighborRoamForceRoamTo5GhScanCb(tHalHandle halHandle,
 
     pMac->roam.neighborRoamInfo.scanRspPending = eANI_BOOLEAN_FALSE;
 
-<<<<<<< HEAD
     /* This can happen when we receive a UP event from TL in any of the scan states. Silently ignore it */
     if (eCSR_NEIGHBOR_ROAM_STATE_CONNECTED == pNeighborRoamInfo->neighborRoamState)
     {
         smsLog(pMac, LOGE, FL("Received in CONNECTED state. Must be because a UP event from TL after issuing scan request. Ignore it"));
-=======
-    if (eCSR_NEIGHBOR_ROAM_STATE_CFG_CHAN_LIST_SCAN != pNeighborRoamInfo->neighborRoamState)
-    {
-        smsLog(pMac, LOGE, FL("Received in neighborRoamState %d . Ignore it"),
-                pNeighborRoamInfo->neighborRoamState);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
         hstatus = eHAL_STATUS_FAILURE;
         goto end;
     }
 
-<<<<<<< HEAD
     if (eCSR_NEIGHBOR_ROAM_STATE_INIT == pNeighborRoamInfo->neighborRoamState)
     {
         smsLog(pMac, LOGE, FL("Received in INIT state. Must have disconnected. Ignore it"));
         hstatus = eHAL_STATUS_FAILURE;
         goto end;
     }
-=======
-    //keep track of forced 5G scan & roam is due to Forced initial roam to 5GHz
-    pNeighborRoamInfo->isForcedInitialRoamTo5GH = 1;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     NEIGHBOR_ROAM_DEBUG(pMac, LOGW, "%s: process scan results", __func__);
     hstatus = csrNeighborRoamProcessScanComplete(pMac);
 
     if (eHAL_STATUS_SUCCESS != hstatus)
     {
-<<<<<<< HEAD
         smsLog(pMac, LOGE, FL("Force Roam To 5GhScanCb failed with status %d"), hstatus);
         goto end;
-=======
-        smsLog(pMac, LOGE, FL("Force Roam To 5GhScanCb failed with status %d"),
-        hstatus);
-        pNeighborRoamInfo->isForcedInitialRoamTo5GH = 0;
-        /*
-         * Send RSO start because in case 5G roaming host have
-         * not enabled at initial connection
-         */
-        csrRoamOffloadScan(pMac, ROAM_SCAN_OFFLOAD_START, REASON_CONNECT);
-        CSR_NEIGHBOR_ROAM_STATE_TRANSITION(eCSR_NEIGHBOR_ROAM_STATE_CONNECTED);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     if (NULL != pContext)
@@ -2482,11 +2400,8 @@ static eHalStatus csrNeighborRoamForceRoamTo5GhScanCb(tHalHandle halHandle,
 end:
     if (NULL != pContext)
         vos_mem_free(pContext);
-<<<<<<< HEAD
     if (hstatus != eHAL_STATUS_SUCCESS)
           csrNeighborRoamStartLfrScan(pMac, REASON_INITIAL_FORCED_ROAM_TO_5G);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return hstatus;
 }
 #endif
@@ -2832,10 +2747,7 @@ eHalStatus csrNeighborRoamScanForInitialForced5GRoaming(tpAniSirGlobal pMac, tAN
     {
         smsLog(pMac, LOGE, FL("Forced intial roam to 5Gh request failed: Status = %d"), status);
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return status;
 }
 #endif
@@ -3131,7 +3043,6 @@ void csrForcedInitialRoamTo5GHTimerCallback(void *context)
         return;
     }
 
-<<<<<<< HEAD
     //keep track this scan & roam is due to Forced initial roam to 5GHz
     pNeighborRoamInfo->isForcedInitialRoamTo5GH = 1;
 
@@ -3155,27 +3066,6 @@ void csrForcedInitialRoamTo5GHTimerCallback(void *context)
          //restart scan offload to firmware
          csrNeighborRoamStartLfrScan(pMac, REASON_INITIAL_FORCED_ROAM_TO_5G);
     }
-=======
-    pNeighborRoamInfo->scanRequestTimeStamp = (tANI_TIMESTAMP)palGetTickCount(pMac->hHdd);
-    /*
-     * We are about to start a fresh scan cycle for all valid channles for 5Ghz
-     * purge non-P2P results from the past for 5Ghz band
-     */
-    csrScanFlushSelectiveResultForBand(pMac, VOS_FALSE, SIR_BAND_5_GHZ);
-    status = csrNeighborRoamScanForInitialForced5GRoaming(
-                 pMac, pNeighborRoamInfo->csrSessionId);
-    if(status != eHAL_STATUS_SUCCESS)
-    {
-        smsLog(pMac, LOGE,
-               FL("csrNeighborRoamScanForInitialForced5GRoaming failed status=%d"), status);
-        //Send RSO start because in case 5G roaming host have not enabled at initial connection
-        csrRoamOffloadScan(pMac, ROAM_SCAN_OFFLOAD_START, REASON_CONNECT);
-        return;
-    }
-
-    /* Transition to CFG_CHAN_LIST_SCAN */
-    CSR_NEIGHBOR_ROAM_STATE_TRANSITION(eCSR_NEIGHBOR_ROAM_STATE_CFG_CHAN_LIST_SCAN);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 #if defined WLAN_FEATURE_VOWIFI_11R && defined WLAN_FEATURE_VOWIFI
@@ -3913,7 +3803,6 @@ VOS_STATUS csrNeighborRoamTransitToCFGChanScan(tpAniSirGlobal pMac)
             vos_mem_copy(currChannelListInfo->ChannelList,
                   scanChannelList, outputNumOfChannels * sizeof(tANI_U8));
         } 
-<<<<<<< HEAD
         else if(pNeighborRoamInfo->isForcedInitialRoamTo5GH)
         {
             NEIGHBOR_ROAM_DEBUG(pMac, LOG1, "Forced roam to 5G cfg chain list");
@@ -3932,10 +3821,6 @@ VOS_STATUS csrNeighborRoamTransitToCFGChanScan(tpAniSirGlobal pMac)
 
             return VOS_STATUS_SUCCESS;
         }
-=======
-
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef FEATURE_WLAN_LFR
         else if ((pNeighborRoamInfo->uScanMode == DEFAULT_SCAN) &&
                  (abs(pNeighborRoamInfo->lookupDOWNRssi) >
@@ -4736,23 +4621,6 @@ eHalStatus csrNeighborRoamIndicateConnect(tpAniSirGlobal pMac, tANI_U8 sessionId
                  {
                      pNeighborRoamInfo->uOsRequestedHandoff = 0;
                      pNeighborRoamInfo->isForcedInitialRoamTo5GH = 0;
-<<<<<<< HEAD
-=======
-                     if(pNeighborRoamInfo->cfgParams.neighborInitialForcedRoamTo5GhEnable &&
-                       (GetRFBand(pNeighborRoamInfo->currAPoperationChannel) ==
-                        SIR_BAND_2_4_GHZ))
-                     {
-                         /*
-                          * Keep 5G and Fwr roaming mutually exclusive so do not
-                          * send RSO start Note we have to send RSO start in all
-                          * errro case.
-                          */
-                         smsLog(pMac, LOG1,
-                                FL("Do not send RSO start"
-                                   "because 5G force roaming is enabled"));
-                         break;
-                     }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
                      csrRoamOffloadScan(pMac, ROAM_SCAN_OFFLOAD_START, REASON_CONNECT);
                  }
               } else {

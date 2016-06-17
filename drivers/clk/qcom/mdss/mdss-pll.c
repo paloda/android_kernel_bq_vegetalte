@@ -45,10 +45,6 @@ int mdss_pll_resource_enable(struct mdss_pll_resources *pll_res, bool enable)
 		return rc;
 	}
 
-<<<<<<< HEAD
-=======
-	mutex_lock(&pll_res->res_lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (enable) {
 		if (pll_res->resource_ref_cnt == 0)
 			changed++;
@@ -71,10 +67,6 @@ int mdss_pll_resource_enable(struct mdss_pll_resources *pll_res, bool enable)
 			pll_res->resource_enable = enable;
 	}
 
-<<<<<<< HEAD
-=======
-	mutex_unlock(&pll_res->res_lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return rc;
 }
 

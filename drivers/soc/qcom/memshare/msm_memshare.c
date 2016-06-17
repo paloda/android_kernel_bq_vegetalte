@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -218,11 +214,7 @@ static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 
 	switch (code) {
 
-<<<<<<< HEAD
 	case SUBSYS_AFTER_SHUTDOWN:
-=======
-	case SUBSYS_AFTER_POWERUP:
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_err("memshare: Modem Restart has happened\n");
 		free_mem_clients(DHMS_MEM_PROC_MPSS_V01);
 		break;
@@ -308,17 +300,6 @@ static int handle_alloc_generic_req(void *req_h, void *req)
 			alloc_req->client_id, alloc_req->proc_id);
 	client_id = check_client(alloc_req->client_id, alloc_req->proc_id,
 								CHECK);
-<<<<<<< HEAD
-=======
-
-	if (client_id >= MAX_CLIENTS) {
-		pr_err("memshare: %s client not found, requested client: %d, proc_id: %d\n",
-			__func__, alloc_req->client_id,
-			alloc_req->proc_id);
-		return -EINVAL;
-	}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!memblock[client_id].alloted) {
 		rc = memshare_alloc(memsh_drv->dev, alloc_req->num_bytes,
 					&memblock[client_id]);

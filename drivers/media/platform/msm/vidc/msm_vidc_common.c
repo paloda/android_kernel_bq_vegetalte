@@ -173,12 +173,7 @@ static int msm_comm_get_inst_load(struct msm_vidc_inst *inst,
 	}
 
 	if (is_non_realtime_session(inst) &&
-<<<<<<< HEAD
 		(quirks & LOAD_CALC_IGNORE_NON_REALTIME_LOAD))
-=======
-		(quirks & LOAD_CALC_IGNORE_NON_REALTIME_LOAD) &&
-		inst->prop.fps)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		load = msm_comm_get_mbs_per_sec(inst) / inst->prop.fps;
 	return load;
 }
@@ -2222,11 +2217,6 @@ static void handle_thermal_event(struct msm_vidc_core *core)
 			inst->state < MSM_VIDC_CLOSE_DONE) {
 			dprintk(VIDC_WARN, "%s: abort inst %p\n",
 				__func__, inst);
-<<<<<<< HEAD
-=======
-
-			change_inst_state(inst, MSM_VIDC_CORE_INVALID);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			rc = msm_comm_session_abort(inst);
 			if (rc) {
 				dprintk(VIDC_ERR,
@@ -2234,10 +2224,7 @@ static void handle_thermal_event(struct msm_vidc_core *core)
 					__func__, rc);
 				goto err_sess_abort;
 			}
-<<<<<<< HEAD
 			change_inst_state(inst, MSM_VIDC_CORE_INVALID);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			dprintk(VIDC_WARN,
 				"%s Send sys error for inst %p\n",
 				__func__, inst);
@@ -2582,15 +2569,6 @@ static int msm_vidc_load_resources(int flipped_state,
 		return -EBUSY;
 	}
 
-<<<<<<< HEAD
-=======
-	if (!is_thermal_permissible(core)) {
-		dprintk(VIDC_WARN,
-			"Thermal level critical, stop the session!\n");
-		return -ENOTSUPP;
-	}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	hdev = core->device;
 	if (IS_ALREADY_IN_STATE(flipped_state, MSM_VIDC_LOAD_RESOURCES)) {
 		dprintk(VIDC_INFO, "inst: %p is already in state: %d\n",
@@ -4569,15 +4547,12 @@ int msm_vidc_check_session_supported(struct msm_vidc_inst *inst)
 		return rc;
 	}
 
-<<<<<<< HEAD
 	if (!is_thermal_permissible(core)) {
 		dprintk(VIDC_WARN,
 			"Thermal level critical, stop all active sessions!\n");
 		return -ENOTSUPP;
 	}
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!rc && inst->capability.capability_set) {
 		if (inst->prop.width[CAPTURE_PORT] < capability->width.min ||
 			inst->prop.height[CAPTURE_PORT] <

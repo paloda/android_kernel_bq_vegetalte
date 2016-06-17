@@ -123,11 +123,6 @@ void mmc_fixup_device(struct mmc_card *card, const struct mmc_fixup *table)
 			      sizeof(card->cid.prod_name))) &&
 		    (f->ext_csd_rev == EXT_CSD_REV_ANY ||
 		     f->ext_csd_rev == card->ext_csd.rev) &&
-<<<<<<< HEAD
-=======
-		    (f->ext_csd_fw_ver == EXT_CSD_FW_VER_ANY ||
-		     f->ext_csd_fw_ver == card->ext_csd.firmware_version) &&
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		    (f->cis_vendor == card->cis.vendor ||
 		     f->cis_vendor == (u16) SDIO_ANY_ID) &&
 		    (f->cis_device == card->cis.device ||

@@ -14,11 +14,6 @@
 
 #include <sound/soc.h>
 
-<<<<<<< HEAD
-=======
-struct param_outband;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_DTS_SRS_TM
 
 union srs_trumedia_params_u {
@@ -26,27 +21,16 @@ union srs_trumedia_params_u {
 	__u16 raw_params[1];
 };
 
-<<<<<<< HEAD
 struct param_outband;
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 void msm_dts_srs_tm_ion_memmap(struct param_outband *po_);
 void msm_dts_srs_tm_init(int port_id, int copp_idx);
 void msm_dts_srs_tm_deinit(int port_id);
 void msm_dts_srs_tm_add_controls(struct snd_soc_platform *platform);
 #else
-<<<<<<< HEAD
 void msm_dts_srs_tm_init(int port_id, int copp_idx) { }
 void msm_dts_srs_tm_deinit(int port_id) { }
 void msm_dts_srs_tm_add_controls(struct snd_soc_platform *platform) { }
-=======
-static inline void msm_dts_srs_tm_ion_memmap(struct param_outband *po_) { }
-static inline void msm_dts_srs_tm_init(int port_id, int copp_idx) { }
-static inline void msm_dts_srs_tm_deinit(int port_id) { }
-static inline void msm_dts_srs_tm_add_controls(
-					struct snd_soc_platform *platform) { }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #endif
 

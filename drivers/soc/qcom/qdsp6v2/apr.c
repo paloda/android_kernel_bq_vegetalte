@@ -34,10 +34,6 @@
 #include <linux/qdsp6v2/apr.h>
 #include <linux/qdsp6v2/apr_tal.h>
 #include <linux/qdsp6v2/dsp_debug.h>
-<<<<<<< HEAD
-=======
-#include <linux/ratelimit.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define SCM_Q6_NMI_CMD 0x1
 
@@ -272,33 +268,19 @@ int apr_send_pkt(void *handle, uint32_t *buf)
 	uint16_t client_id;
 	uint16_t w_len;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
-	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (!handle || !buf) {
 		pr_err("APR: Wrong parameters\n");
 		return -EINVAL;
 	}
 	if (svc->need_reset) {
-<<<<<<< HEAD
 		pr_err("apr: send_pkt service need reset\n");
-=======
-		if (__ratelimit(&rl))
-			pr_err("apr: send_pkt service need reset\n");
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return -ENETRESET;
 	}
 
 	if ((svc->dest_id == APR_DEST_QDSP6) &&
 	    (apr_get_q6_state() != APR_SUBSYS_LOADED)) {
-<<<<<<< HEAD
 		pr_err("%s: Still dsp is not Up\n", __func__);
-=======
-		if (__ratelimit(&rl))
-			pr_err("%s: Still dsp is not Up\n", __func__);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return -ENETRESET;
 	} else if ((svc->dest_id == APR_DEST_MODEM) &&
 		   (apr_get_modem_state() == APR_SUBSYS_DOWN)) {
@@ -343,10 +325,6 @@ struct apr_svc *apr_register(char *dest, char *svc_name, apr_fn svc_fn,
 	int temp_port = 0;
 	struct apr_svc *svc = NULL;
 	int rc = 0;
-<<<<<<< HEAD
-=======
-	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (!dest || !svc_name || !svc_fn)
 		return NULL;
@@ -367,12 +345,7 @@ struct apr_svc *apr_register(char *dest, char *svc_name, apr_fn svc_fn,
 
 	if (dest_id == APR_DEST_QDSP6) {
 		if (apr_get_q6_state() != APR_SUBSYS_LOADED) {
-<<<<<<< HEAD
 			pr_err("%s: adsp not up\n", __func__);
-=======
-			if (__ratelimit(&rl))
-				pr_err("%s: adsp not up\n", __func__);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return NULL;
 		}
 		pr_debug("%s: adsp Up\n", __func__);
@@ -776,19 +749,11 @@ static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 	switch (code) {
 	case SUBSYS_BEFORE_SHUTDOWN:
 		pr_debug("M-Notify: Shutdown started\n");
-<<<<<<< HEAD
 		apr_set_modem_state(APR_SUBSYS_DOWN);
 		dispatch_event(code, APR_DEST_MODEM);
 		break;
 	case SUBSYS_AFTER_SHUTDOWN:
 		pr_debug("M-Notify: Shutdown Completed\n");
-=======
-		break;
-	case SUBSYS_AFTER_SHUTDOWN:
-		pr_debug("M-Notify: Shutdown Completed\n");
-		apr_set_modem_state(APR_SUBSYS_DOWN);
-		dispatch_event(code, APR_DEST_MODEM);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	case SUBSYS_BEFORE_POWERUP:
 		pr_debug("M-notify: Bootup started\n");
@@ -879,12 +844,6 @@ static int __init apr_init(void)
 {
 	int i, j, k;
 
-<<<<<<< HEAD
-=======
-	init_waitqueue_head(&dsp_wait);
-	init_waitqueue_head(&modem_wait);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	for (i = 0; i < APR_DEST_MAX; i++)
 		for (j = 0; j < APR_CLIENT_MAX; j++) {
 			mutex_init(&client[i][j].m_lock);
@@ -907,11 +866,8 @@ device_initcall(apr_init);
 static int __init apr_late_init(void)
 {
 	int ret = 0;
-<<<<<<< HEAD
 	init_waitqueue_head(&dsp_wait);
 	init_waitqueue_head(&modem_wait);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	subsys_notif_register(&mnb, &lnb);
 	return ret;
 }

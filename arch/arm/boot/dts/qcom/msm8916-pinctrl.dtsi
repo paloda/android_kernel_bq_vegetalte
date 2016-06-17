@@ -205,11 +205,7 @@
 			label = "sdc1-clk";
 			sdc1_clk_on: clk_on {
 				bias-disable; /* NO pull */
-<<<<<<< HEAD
 				drive-strength = <16>; /* 16 MA */
-=======
-				drive-strength = <8>; /* 8 MA */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			};
 			sdc1_clk_off: clk_off {
 				bias-disable; /* NO pull */
@@ -223,11 +219,7 @@
 			label = "sdc1-cmd";
 			sdc1_cmd_on: cmd_on {
 				bias-pull-up; /* pull up */
-<<<<<<< HEAD
 				drive-strength = <10>; /* 10 MA */
-=======
-				drive-strength = <8>; /* 8 MA */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			};
 			sdc1_cmd_off: cmd_off {
 				bias-pull-up; /* pull up */
@@ -241,11 +233,7 @@
 			label = "sdc1-data";
 			sdc1_data_on: data_on {
 				bias-pull-up; /* pull up */
-<<<<<<< HEAD
 				drive-strength = <10>; /* 10 MA */
-=======
-				drive-strength = <8>; /* 8 MA */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			};
 			sdc1_data_off: data_off {
 				bias-pull-up; /* pull up */
@@ -259,11 +247,7 @@
 			label = "sdc2-clk";
 			sdc2_clk_on: clk_on {
 				bias-disable; /* NO pull */
-<<<<<<< HEAD
 				drive-strength = <16>; /* 16 MA */
-=======
-				drive-strength = <12>; /* 12 MA */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			};
 			sdc2_clk_off: clk_off {
 				bias-disable; /* NO pull */
@@ -277,11 +261,7 @@
 			label = "sdc2-cmd";
 			sdc2_cmd_on: cmd_on {
 				bias-pull-up; /* pull up */
-<<<<<<< HEAD
 				drive-strength = <10>; /* 10 MA */
-=======
-				drive-strength = <6>; /* 6 MA */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			};
 			sdc2_cmd_off: cmd_off {
 				bias-pull-up; /* pull up */
@@ -295,11 +275,7 @@
 			label = "sdc2-data";
 			sdc2_data_on: data_on {
 				bias-pull-up; /* pull up */
-<<<<<<< HEAD
 				drive-strength = <10>; /* 10 MA */
-=======
-				drive-strength = <6>; /* 6 MA */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			};
 			sdc2_data_off: data_off {
 				bias-pull-up; /* pull up */
@@ -308,11 +284,7 @@
 		};
 
 		usb-id-pin {
-<<<<<<< HEAD
 			qcom,pins = <&gp 111>;
-=======
-			qcom,pins = <&gp 110>;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			qcom,num-grp-pins = <1>;
 			qcom,pin-func = <0>;
 			label = "usb-id-pin";
@@ -410,7 +382,6 @@
 			};
 		};
 
-<<<<<<< HEAD
                 pmx_i2c_1 {
 			/* CLK, DATA */
 			qcom,pins = <&gp 3>, <&gp 2>;
@@ -447,8 +418,6 @@
 			};
 		};
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pmx_i2c_5 {
 			/* CLK, DATA */
 			qcom,pins = <&gp 19>, <&gp 18>;

@@ -199,25 +199,6 @@ static int32_t msm_flash_i2c_init(
 			compat_ptr(power_setting_array32->power_down_setting);
 		flash_ctrl->power_setting_array.power_setting =
 			compat_ptr(power_setting_array32->power_setting);
-<<<<<<< HEAD
-=======
-		/* Validate power_up array size and power_down array size */
-		if ((!flash_ctrl->power_setting_array.size) ||
-			(flash_ctrl->power_setting_array.size >
-			MAX_POWER_CONFIG) ||
-			(!flash_ctrl->power_setting_array.size_down) ||
-			(flash_ctrl->power_setting_array.size_down >
-			MAX_POWER_CONFIG)) {
-
-			pr_err("failed: invalid size %d, size_down %d",
-				flash_ctrl->power_setting_array.size,
-				flash_ctrl->power_setting_array.size_down);
-			kfree(power_setting_array32);
-			power_setting_array32 = NULL;
-			return -EINVAL;
-		}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		memcpy(&flash_ctrl->power_setting_array.power_down_setting_a,
 			&power_setting_array32->power_down_setting_a,
 			sizeof(power_setting_array32->power_down_setting_a));
@@ -302,22 +283,10 @@ static int32_t msm_flash_gpio_init(
 			if (i < flash_ctrl->flash_num_sources)
 				flash_ctrl->torch_trigger[i] =
 					flash_ctrl->flash_trigger[i];
-<<<<<<< HEAD
 			else
 				flash_ctrl->torch_trigger[i] =
 					flash_ctrl->flash_trigger[
 					flash_ctrl->flash_num_sources - 1];
-=======
-			else {
-				// hack I don't fully understand to get rid of array index warning
-				struct led_trigger *temp;
-				int index = (int)flash_ctrl->flash_num_sources - 1;
-				if (index > MAX_LED_TRIGGERS) index = MAX_LED_TRIGGERS - 1;
-				if (index < 0) index = 0;
-				temp = flash_ctrl->flash_trigger[index];
-				flash_ctrl->torch_trigger[i] = temp;
-			}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		}
 	}
 

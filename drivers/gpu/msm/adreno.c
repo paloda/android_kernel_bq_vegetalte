@@ -1126,21 +1126,11 @@ static int adreno_init(struct kgsl_device *device)
 	adreno_ft_regs_num = (ARRAY_SIZE(adreno_ft_regs_default) +
 				   gpudev->ft_perf_counters_count*2);
 
-<<<<<<< HEAD
 	adreno_ft_regs = kzalloc(adreno_ft_regs_num, GFP_KERNEL);
 	if (!adreno_ft_regs)
 		return -ENOMEM;
 
 	adreno_ft_regs_val = kzalloc(adreno_ft_regs_num, GFP_KERNEL);
-=======
-	adreno_ft_regs = kzalloc(adreno_ft_regs_num * sizeof(unsigned int),
-						GFP_KERNEL);
-	if (!adreno_ft_regs)
-		return -ENOMEM;
-
-	adreno_ft_regs_val = kzalloc(adreno_ft_regs_num * sizeof(unsigned int),
-						GFP_KERNEL);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!adreno_ft_regs_val)
 		return -ENOMEM;
 
@@ -2307,11 +2297,7 @@ static int adreno_setproperty(struct kgsl_device_private *dev_priv,
  *
  * Returns true if interrupts are pending from device else 0.
  */
-<<<<<<< HEAD
 inline unsigned int adreno_irq_pending(struct adreno_device *adreno_dev)
-=======
-static inline unsigned int adreno_irq_pending(struct adreno_device *adreno_dev)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
 	unsigned int status;

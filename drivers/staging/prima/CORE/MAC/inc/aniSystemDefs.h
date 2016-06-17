@@ -159,11 +159,7 @@ typedef struct sSirRSNie
 typedef struct sSirAddie
 {
     tANI_U16       length;
-<<<<<<< HEAD
     tANI_U8        addIEdata[SIR_MAC_MAX_ADD_IE_LENGTH+2];
-=======
-    tANI_U8        addIEdata[SIR_MAC_MAX_IE_LENGTH+2];
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 } tSirAddie, *tpSirAddie;
 
 #ifdef FEATURE_WLAN_ESE

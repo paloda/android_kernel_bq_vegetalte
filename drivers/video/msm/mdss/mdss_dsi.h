@@ -197,10 +197,6 @@ enum dsi_pm_type {
 #define DSI_DYNAMIC_REFRESH_PIPE_DELAY2		0x208
 #define DSI_DYNAMIC_REFRESH_PLL_DELAY		0x20C
 
-<<<<<<< HEAD
-=======
-extern struct led_trigger *bl_led_trigger;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 extern struct device dsi_dev;
 extern u32 dsi_irq;
 extern struct mdss_dsi_ctrl_pdata *ctrl_list[];
@@ -246,10 +242,7 @@ struct dsi_clk_desc {
 	u32 pre_div_func;
 };
 
-<<<<<<< HEAD
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct dsi_panel_cmds {
 	char *buf;
 	int blen;
@@ -264,16 +257,6 @@ struct dsi_kickoff_action {
 	void *data;
 };
 
-<<<<<<< HEAD
-=======
-struct mdss_panel_config {
-	bool esd_enable;
-	bool bare_board;
-	char panel_name[32];
-	u64 panel_ver;
-};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct dsi_drv_cm_data {
 	struct regulator *vdd_vreg;
 	struct regulator *vdd_io_vreg;
@@ -317,10 +300,6 @@ enum {
 
 struct mdss_dsi_ctrl_pdata {
 	int ndx;	/* panel_num */
-<<<<<<< HEAD
-=======
-	int (*pre_on)(struct mdss_panel_data *pdata);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int (*on) (struct mdss_panel_data *pdata);
 	int (*off) (struct mdss_panel_data *pdata);
 	int (*low_power_config) (struct mdss_panel_data *pdata, int enable);
@@ -329,15 +308,7 @@ struct mdss_dsi_ctrl_pdata {
 	int (*check_read_status) (struct mdss_dsi_ctrl_pdata *pdata);
 	int (*cmdlist_commit)(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp);
 	void (*switch_mode) (struct mdss_panel_data *pdata, int mode);
-<<<<<<< HEAD
 	struct mdss_panel_data panel_data;
-=======
-	void (*bl_on_defer)(struct mdss_dsi_ctrl_pdata *ctrl);
-	int (*set_cabc)(struct mdss_dsi_ctrl_pdata *ctrl, int mode);
-	int (*set_hbm)(struct mdss_dsi_ctrl_pdata *ctrl, int state);
-	struct mdss_panel_data panel_data;
-	struct mdss_panel_config panel_config;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned char *ctrl_base;
 	u32 hw_rev;
 	struct dss_io_data ctrl_io;
@@ -396,10 +367,6 @@ struct mdss_dsi_ctrl_pdata {
 	struct mdss_hw *dsi_hw;
 	struct mdss_intf_recovery *recovery;
 
-<<<<<<< HEAD
-=======
-	struct dsi_panel_cmds pre_on_cmds;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct dsi_panel_cmds on_cmds;
 	struct dsi_panel_cmds off_cmds;
 	struct dsi_panel_cmds status_cmds;
@@ -410,15 +377,6 @@ struct mdss_dsi_ctrl_pdata {
 	struct dsi_panel_cmds video2cmd;
 	struct dsi_panel_cmds cmd2video;
 
-<<<<<<< HEAD
-=======
-	struct dsi_panel_cmds hbm_on_cmds;
-	struct dsi_panel_cmds hbm_off_cmds;
-	struct dsi_panel_cmds cabc_ui_cmds;
-	struct dsi_panel_cmds cabc_mv_cmds;
-	struct dsi_panel_cmds cabc_dis_cmds;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct dcs_cmd_list cmdlist;
 	struct completion dma_comp;
 	struct completion mdp_comp;
@@ -430,10 +388,7 @@ struct mdss_dsi_ctrl_pdata {
 	int mdp_busy;
 	struct mutex mutex;
 	struct mutex cmd_mutex;
-<<<<<<< HEAD
 	struct mutex cmdlist_mutex;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct mutex clk_lane_mutex;
 
 	u32 ulps_clamp_ctrl_off;
@@ -442,19 +397,12 @@ struct mdss_dsi_ctrl_pdata {
 	bool core_power;
 	bool mmss_clamp;
 	bool timing_db_mode;
-<<<<<<< HEAD
 	bool burst_mode_enabled;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	struct dsi_buf tx_buf;
 	struct dsi_buf rx_buf;
 	struct dsi_buf status_buf;
 	int status_mode;
-<<<<<<< HEAD
-=======
-	int cur_max_pkt_size;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	struct dsi_pinctrl_res pin_res;
 
@@ -504,10 +452,6 @@ irqreturn_t hw_vsync_handler(int irq, void *data);
 void mdss_dsi_irq_handler_config(struct mdss_dsi_ctrl_pdata *ctrl_pdata);
 
 void mdss_dsi_set_tx_power_mode(int mode, struct mdss_panel_data *pdata);
-<<<<<<< HEAD
-=======
-int mdss_dsi_get_tx_power_mode(struct mdss_panel_data *pdata);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 int mdss_dsi_clk_div_config(struct mdss_panel_info *panel_info,
 			    int frame_rate);
 int mdss_dsi_clk_init(struct platform_device *pdev,
@@ -536,24 +480,14 @@ void mdss_dsi_en_wait4dynamic_done(struct mdss_dsi_ctrl_pdata *ctrl);
 int mdss_dsi_cmdlist_commit(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp);
 void mdss_dsi_cmdlist_kickoff(int intf);
 int mdss_dsi_bta_status_check(struct mdss_dsi_ctrl_pdata *ctrl);
-<<<<<<< HEAD
 int mdss_dsi_reg_status_check(struct mdss_dsi_ctrl_pdata *ctrl);
-=======
-int mdss_dsi_reg_status_check(struct mdss_dsi_ctrl_pdata *ctrl, u8 *reg_val);
-int mdss_dsi_reg_status_check_dropbox(struct mdss_dsi_ctrl_pdata *ctrl);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 bool __mdss_dsi_clk_enabled(struct mdss_dsi_ctrl_pdata *ctrl, u8 clk_type);
 void mdss_dsi_ctrl_setup(struct mdss_dsi_ctrl_pdata *ctrl);
 void mdss_dsi_dln0_phy_err(struct mdss_dsi_ctrl_pdata *ctrl);
 void mdss_dsi_lp_cd_rx(struct mdss_dsi_ctrl_pdata *ctrl);
 void mdss_dsi_get_hw_revision(struct mdss_dsi_ctrl_pdata *ctrl);
 
-<<<<<<< HEAD
 int mdss_dsi_panel_init(struct device_node *node,
-=======
-int mdss_dsi_panel_init(struct device *dev,
-		struct device_node *node,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		struct mdss_dsi_ctrl_pdata *ctrl_pdata,
 		bool cmd_cfg_cont_splash);
 int mdss_panel_get_dst_fmt(u32 bpp, char mipi_mode, u32 pixel_packing,
@@ -583,20 +517,6 @@ static inline const char *__mdss_dsi_pm_supply_node_name(
 	default:		return "???";
 	}
 }
-<<<<<<< HEAD
-=======
-int mdss_dsi_get_dt_vreg_data(struct device *dev,
-			struct device_node *of_node,
-			struct dss_module_power *mp,
-			enum dsi_pm_type module);
-
-int mdss_panel_parse_panel_config_dt(struct mdss_dsi_ctrl_pdata *ctrl_pdata);
-int mdss_dsi_panel_ioctl_handler(struct mdss_panel_data *pdata,
-							u32 cmd, void *arg);
-
-int mdss_dsi_pinctrl_set_state(struct mdss_dsi_ctrl_pdata *ctrl_pdata,
-	bool active);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static inline bool mdss_dsi_split_display_enabled(void)
 {

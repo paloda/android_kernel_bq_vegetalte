@@ -3507,31 +3507,14 @@ static inline void venus_hfi_disable_unprepare_clks(
 		return;
 	}
 
-<<<<<<< HEAD
-=======
-	/*
-	* Make the clock state variable as unprepared before actually
-	* unpreparing clocks. This will make sure that when we check
-	* the state, we have the right clock state. We are not taking
-	* any action based unprepare failures. So it is safe to do
-	* before the call. This is also in sync with prepare_enable
-	* state update.
-	*/
-
-	device->clk_state = DISABLED_UNPREPARED;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	venus_hfi_for_each_clock(device, cl) {
 		usleep(100);
 		dprintk(VIDC_DBG, "Clock: %s disable and unprepare\n",
 				cl->name);
 		clk_disable_unprepare(cl->clk);
 	}
-<<<<<<< HEAD
 
 	device->clk_state = DISABLED_UNPREPARED;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static inline int venus_hfi_prepare_enable_clks(struct venus_hfi_device *device)
@@ -4038,10 +4021,6 @@ static int venus_hfi_load_fw(void *dev)
 
 		if (IS_ERR_OR_NULL(device->resources.fw.cookie)) {
 			dprintk(VIDC_ERR, "Failed to download firmware\n");
-<<<<<<< HEAD
-=======
-			device->resources.fw.cookie = NULL;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			rc = -ENOMEM;
 			goto fail_load_fw;
 		}

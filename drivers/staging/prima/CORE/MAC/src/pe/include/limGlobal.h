@@ -45,11 +45,7 @@
 #include "sirMacPropExts.h"
 #include "sirCommon.h"
 #include "sirDebug.h"
-<<<<<<< HEAD
 #include "wniCfg.h"
-=======
-#include "wniCfgSta.h"
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "csrApi.h"
 #include "sapApi.h"
 #include "dot11f.h"

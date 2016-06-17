@@ -5,11 +5,7 @@
 
 #define KVERSION 0x1
 
-<<<<<<< HEAD
 #define MAX_POWER_CONFIG      14
-=======
-#define MAX_POWER_CONFIG      12
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define GPIO_OUT_LOW          (0 << 1)
 #define GPIO_OUT_HIGH         (1 << 1)
 #define CSI_EMBED_DATA        0x12
@@ -24,26 +20,15 @@
 #define CSI_DECODE_DPCM_10_8_10 5
 #define MAX_CID                 16
 #define I2C_SEQ_REG_DATA_MAX    256
-<<<<<<< HEAD
 #define MSM_V4L2_PIX_FMT_META v4l2_fourcc('M', 'E', 'T', 'A') /* META */
 
 #define MAX_ACTUATOR_REG_TBL_SIZE 8
-=======
-#define I2C_REG_DATA_MAX       (8*1024)
-#define MSM_V4L2_PIX_FMT_META v4l2_fourcc('M', 'E', 'T', 'A') /* META */
-
-#define MAX_ACTUATOR_REG_TBL_SIZE 15
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define MAX_ACTUATOR_REGION       5
 #define NUM_ACTUATOR_DIR          2
 #define MAX_ACTUATOR_SCENARIO     8
 #define MAX_ACT_MOD_NAME_SIZE     32
 #define MAX_ACT_NAME_SIZE         32
-<<<<<<< HEAD
 #define MAX_ACTUATOR_INIT_SET     12
-=======
-#define MAX_ACTUATOR_INIT_SET     120
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define MAX_I2C_REG_SET           12
 
 #define MAX_NAME_SIZE             32
@@ -152,30 +137,11 @@ enum camerab_mode_t {
 enum sensor_stats_type {
 	YRGB,
 	YYYY,
-<<<<<<< HEAD
 };
 
 enum msm_actuator_data_type {
 	MSM_ACTUATOR_BYTE_DATA = 1,
 	MSM_ACTUATOR_WORD_DATA,
-=======
-	PDAF,
-};
-
-/* Need to keep this table aligned with
- * enum msm_camera_i2c_data_type
- */
-enum msm_actuator_data_type {
-	MSM_ACTUATOR_BYTE_DATA = 1,
-	MSM_ACTUATOR_WORD_DATA,
-	MSM_ACTUATOR_DWORD_DATA,
-	MSM_ACTUATOR_SET_BYTE_MASK,
-	MSM_ACTUATOR_UNSET_BYTE_MASK,
-	MSM_ACTUATOR_SET_WORD_MASK,
-	MSM_ACTUATOR_UNSET_WORD_MASK,
-	MSM_ACTUATOR_SET_BYTE_WRITE_MASK_DATA,
-	MSM_ACTUATOR_DATA_TYPE_MAX,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 enum msm_actuator_addr_type {
@@ -186,7 +152,6 @@ enum msm_actuator_addr_type {
 enum msm_actuator_write_type {
 	MSM_ACTUATOR_WRITE_HW_DAMP,
 	MSM_ACTUATOR_WRITE_DAC,
-<<<<<<< HEAD
 	MSM_ACTUATOR_WRITE_DAC_DW9800,
 	MSM_ACTUATOR_WRITE_DAC_DW9761,
 	// add for AK7345
@@ -195,33 +160,17 @@ enum msm_actuator_write_type {
 	MSM_ACTUATOR_WRITE_DAC_OLQBA22,
 	// add for dw9800w
 	MSM_ACTUATOR_WRITE_DAC_DW9800W,	
-=======
-	MSM_ACTUATOR_WRITE,
-	MSM_ACTUATOR_WRITE_DIR_REG,
-	MSM_ACTUATOR_POLL,
-	MSM_ACTUATOR_READ_WRITE,
-	MSM_ACTUATOR_WRITE_REG,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 enum msm_actuator_i2c_operation {
 	MSM_ACT_WRITE = 0,
 	MSM_ACT_POLL,
-<<<<<<< HEAD
-=======
-	MSM_ACT_READ_SET,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 enum actuator_type {
 	ACTUATOR_VCM,
 	ACTUATOR_PIEZO,
 	ACTUATOR_HVCM,
-<<<<<<< HEAD
-=======
-	ACTUATOR_BIVCM,
-	ACTUATOR_MOT_HVCM,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 enum msm_flash_driver_type {
@@ -262,44 +211,6 @@ struct msm_sensor_power_setting_array {
 	uint16_t size_down;
 };
 
-<<<<<<< HEAD
-=======
-struct otp_info_t {
-	uint8_t *otp_info;
-	uint8_t otp_read;
-};
-
-struct msm_sensor_otp_cal_info_t {
-	uint8_t enable;
-	uint16_t page_size;
-	uint16_t num_of_pages;
-	uint16_t page_reg_addr;
-	uint16_t page_reg_base_addr;
-
-	uint16_t ctrl_reg_addr;
-	uint16_t ctrl_reg_initial_mode;
-	uint16_t ctrl_reg_read_mode;
-	uint16_t ctrl_reg_read_mode_disable;
-	uint16_t reset_reg_addr;
-	uint16_t reset_reg_stream_on;
-	uint16_t reset_reg_stream_off;
-
-	uint16_t data_seg_addr;
-	enum msm_camera_i2c_data_type data_size;
-	uint8_t big_endian;
-	enum msm_camera_i2c_reg_addr_type addr_type;
-	uint16_t eeprom_enable;
-	uint16_t eeprom_slave_addr;
-	uint16_t eeprom_mem_addr;
-};
-
-struct msm_sensor_actuator_info_t {
-	uint8_t enable;
-	uint16_t slave_addr;
-	uint16_t clk_reg_addr;
-};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct msm_sensor_init_params {
 	/* mask of modes supported: 2D, 3D */
 	int                 modes_supported;
@@ -307,13 +218,6 @@ struct msm_sensor_init_params {
 	enum camb_position_t position;
 	/* sensor mount angle */
 	uint32_t            sensor_mount_angle;
-<<<<<<< HEAD
-=======
-	struct msm_sensor_otp_cal_info_t sensor_otp;
-#ifdef CONFIG_MSM_CHECK_CAMERA_ACTUATOR
-	struct msm_sensor_actuator_info_t actuator_info;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct msm_sensor_id_info_t {
@@ -336,13 +240,6 @@ struct msm_camera_sensor_slave_info {
 	uint8_t  is_init_params_valid;
 	struct msm_sensor_init_params sensor_init_params;
 	uint8_t is_flash_supported;
-<<<<<<< HEAD
-=======
-	struct otp_info_t sensor_otp;
-#ifdef CONFIG_MSM_CHECK_CAMERA_ACTUATOR
-	struct msm_sensor_actuator_info_t actuator_info;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	enum msm_sensor_output_format_t output_format;
 };
 
@@ -409,13 +306,6 @@ struct msm_actuator_reg_params_t {
 	uint16_t reg_addr;
 	uint16_t hw_shift;
 	uint16_t data_shift;
-<<<<<<< HEAD
-=======
-	uint16_t data_type;
-	uint16_t addr_type;
-	uint16_t reg_data;
-	uint16_t delay;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct damping_params_t {
@@ -441,10 +331,6 @@ struct reg_settings_t {
 	enum msm_actuator_data_type data_type;
 	enum msm_actuator_i2c_operation i2c_operation;
 	uint32_t delay;
-<<<<<<< HEAD
-=======
-	uint16_t eeprom_offset;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct msm_camera_i2c_reg_setting_array {

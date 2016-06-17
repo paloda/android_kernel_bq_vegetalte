@@ -3259,8 +3259,7 @@ static int snd_soc_dai_link_event(struct snd_soc_dapm_widget *w,
 		ret = -ENOMEM;
 		goto out;
 	}
-	/*BODGE - FORCE format to be correct for TFA9890*/
-	snd_mask_set(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT), 2);
+	snd_mask_set(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT), fmt);
 
 	hw_param_interval(params, SNDRV_PCM_HW_PARAM_RATE)->min =
 		config->rate_min;

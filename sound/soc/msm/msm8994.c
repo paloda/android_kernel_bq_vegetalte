@@ -34,12 +34,6 @@
 #include "qdsp6v2/msm-pcm-routing-v2.h"
 #include "../codecs/wcd9xxx-common.h"
 #include "../codecs/wcd9330.h"
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-#include "../codecs/florida.h"
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define DRV_NAME "msm8994-asoc-snd"
 
@@ -2619,10 +2613,6 @@ static struct snd_soc_dai_link msm8994_common_dai_links[] = {
 		 /* this dainlink has playback support */
 		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA16,
 	},
-<<<<<<< HEAD
-=======
-#if 0
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* CPE LSM direct dai-link */
 	{
 		.name = "CPE Listen service",
@@ -2637,10 +2627,6 @@ static struct snd_soc_dai_link msm8994_common_dai_links[] = {
 		.codec_dai_name = "tomtom_mad1",
 		.codec_name = "tomtom_codec",
 	},
-<<<<<<< HEAD
-=======
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* End of FE DAI LINK */
 	/* Backend FM DAI Links */
 	{
@@ -2759,18 +2745,8 @@ static struct snd_soc_dai_link msm8994_common_dai_links[] = {
 		.stream_name = "Slimbus Playback",
 		.cpu_dai_name = "msm-dai-q6-dev.16384",
 		.platform_name = "msm-pcm-routing",
-<<<<<<< HEAD
 		.codec_name = "tomtom_codec",
 		.codec_dai_name = "tomtom_rx1",
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-		.codec_name = "florida-codec",
-		.codec_dai_name = "florida-aif1",
-#else
-		.codec_name = "tomtom_codec",
-		.codec_dai_name = "tomtom_rx1",
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		.no_pcm = 1,
 		.be_id = MSM_BACKEND_DAI_SLIMBUS_0_RX,
 		.init = &msm_audrx_init,

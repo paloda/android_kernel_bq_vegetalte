@@ -37,11 +37,7 @@
  *
  */
 
-<<<<<<< HEAD
 #include "wniCfg.h"
-=======
-#include "wniCfgSta.h"
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "aniGlobal.h"
 #include "cfgApi.h"
 #include "schApi.h"
@@ -86,15 +82,9 @@ limProcessBeaconFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo,tpPESession ps
     pHdr = WDA_GET_RX_MAC_HEADER(pRxPacketInfo);
 
 
-<<<<<<< HEAD
     PELOG2(limLog(pMac, LOG2, FL("Received Beacon frame with length=%d from "),
            WDA_GET_RX_MPDU_LEN(pRxPacketInfo));
     limPrintMacAddr(pMac, pHdr->sa, LOG2);)
-=======
-    limLog(pMac, LOG2, FL("Received Beacon frame with length=%d from "),
-           WDA_GET_RX_MPDU_LEN(pRxPacketInfo));
-    limPrintMacAddr(pMac, pHdr->sa, LOG2);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     if (!pMac->fScanOffload)
     {

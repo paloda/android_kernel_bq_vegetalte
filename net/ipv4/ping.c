@@ -215,11 +215,6 @@ static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
 					     &ipv6_hdr(skb)->daddr))
 				continue;
 #endif
-<<<<<<< HEAD
-=======
-		} else {
-			continue;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		}
 
 		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
@@ -259,9 +254,6 @@ int ping_init_sock(struct sock *sk)
 	int i, j, count;
 	kgid_t low, high;
 	int ret = 0;
-
-	if (sk->sk_family == AF_INET6)
-		inet6_sk(sk)->ipv6only = 1;
 
 	inet_get_ping_group_range_net(net, &low, &high);
 	if (gid_lte(low, group) && gid_lte(group, high))
@@ -309,14 +301,6 @@ int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
 		if (addr_len < sizeof(*addr))
 			return -EINVAL;
 
-<<<<<<< HEAD
-=======
-		if (addr->sin_family != AF_INET &&
-		    !(addr->sin_family == AF_UNSPEC &&
-		      addr->sin_addr.s_addr == htonl(INADDR_ANY)))
-			return -EAFNOSUPPORT;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
 			 sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
 
@@ -324,7 +308,6 @@ int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
 
 		if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
 			chk_addr_ret = RTN_LOCAL;
-<<<<<<< HEAD
 
 		if ((sysctl_ip_nonlocal_bind == 0 &&
 		    isk->freebind == 0 && isk->transparent == 0 &&
@@ -392,78 +375,6 @@ void ping_set_saddr(struct sock *sk, struct sockaddr *saddr)
 	}
 }
 
-=======
-
-		if ((sysctl_ip_nonlocal_bind == 0 &&
-		    isk->freebind == 0 && isk->transparent == 0 &&
-		     chk_addr_ret != RTN_LOCAL) ||
-		    chk_addr_ret == RTN_MULTICAST ||
-		    chk_addr_ret == RTN_BROADCAST)
-			return -EADDRNOTAVAIL;
-
-#if IS_ENABLED(CONFIG_IPV6)
-	} else if (sk->sk_family == AF_INET6) {
-		struct sockaddr_in6 *addr = (struct sockaddr_in6 *) uaddr;
-		int addr_type, scoped, has_addr;
-		struct net_device *dev = NULL;
-
-		if (addr_len < sizeof(*addr))
-			return -EINVAL;
-
-		if (addr->sin6_family != AF_INET6)
-			return -EAFNOSUPPORT;
-
-		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI6c,port=%d)\n",
-			 sk, addr->sin6_addr.s6_addr, ntohs(addr->sin6_port));
-
-		addr_type = ipv6_addr_type(&addr->sin6_addr);
-		scoped = __ipv6_addr_needs_scope_id(addr_type);
-		if ((addr_type != IPV6_ADDR_ANY &&
-		     !(addr_type & IPV6_ADDR_UNICAST)) ||
-		    (scoped && !addr->sin6_scope_id))
-			return -EINVAL;
-
-		rcu_read_lock();
-		if (addr->sin6_scope_id) {
-			dev = dev_get_by_index_rcu(net, addr->sin6_scope_id);
-			if (!dev) {
-				rcu_read_unlock();
-				return -ENODEV;
-			}
-		}
-		has_addr = pingv6_ops.ipv6_chk_addr(net, &addr->sin6_addr, dev,
-						    scoped);
-		rcu_read_unlock();
-
-		if (!(isk->freebind || isk->transparent || has_addr ||
-		      addr_type == IPV6_ADDR_ANY))
-			return -EADDRNOTAVAIL;
-
-		if (scoped)
-			sk->sk_bound_dev_if = addr->sin6_scope_id;
-#endif
-	} else {
-		return -EAFNOSUPPORT;
-	}
-	return 0;
-}
-
-void ping_set_saddr(struct sock *sk, struct sockaddr *saddr)
-{
-	if (saddr->sa_family == AF_INET) {
-		struct inet_sock *isk = inet_sk(sk);
-		struct sockaddr_in *addr = (struct sockaddr_in *) saddr;
-		isk->inet_rcv_saddr = isk->inet_saddr = addr->sin_addr.s_addr;
-#if IS_ENABLED(CONFIG_IPV6)
-	} else if (saddr->sa_family == AF_INET6) {
-		struct sockaddr_in6 *addr = (struct sockaddr_in6 *) saddr;
-		struct ipv6_pinfo *np = inet6_sk(sk);
-		np->rcv_saddr = np->saddr = addr->sin6_addr;
-#endif
-	}
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 void ping_clear_saddr(struct sock *sk, int dif)
 {
 	sk->sk_bound_dev_if = dif;
@@ -796,7 +707,7 @@ int ping_v4_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		if (msg->msg_namelen < sizeof(*usin))
 			return -EINVAL;
 		if (usin->sin_family != AF_INET)
-			return -EAFNOSUPPORT;
+			return -EINVAL;
 		daddr = usin->sin_addr.s_addr;
 		/* no remote port */
 	} else {
@@ -983,7 +894,6 @@ int ping_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 
 		if (isk->cmsg_flags)
 			ip_cmsg_recv(msg, skb);
-<<<<<<< HEAD
 
 #if IS_ENABLED(CONFIG_IPV6)
 	} else if (family == AF_INET6) {
@@ -991,15 +901,6 @@ int ping_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		struct ipv6hdr *ip6 = ipv6_hdr(skb);
 		sin6 = (struct sockaddr_in6 *) msg->msg_name;
 
-=======
-
-#if IS_ENABLED(CONFIG_IPV6)
-	} else if (family == AF_INET6) {
-		struct ipv6_pinfo *np = inet6_sk(sk);
-		struct ipv6hdr *ip6 = ipv6_hdr(skb);
-		sin6 = (struct sockaddr_in6 *) msg->msg_name;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (sin6) {
 			sin6->sin6_family = AF_INET6;
 			sin6->sin6_port = 0;

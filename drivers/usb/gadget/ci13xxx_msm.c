@@ -173,26 +173,6 @@ static void ci13xxx_msm_reset(void)
 	}
 }
 
-<<<<<<< HEAD
-=======
-static void ci13xxx_msm_mark_err_event(void)
-{
-	struct ci13xxx *udc = _udc;
-	struct msm_otg *otg;
-
-	if (udc == NULL)
-		return;
-
-	if (udc->transceiver == NULL)
-		return;
-
-	otg = container_of(udc->transceiver, struct msm_otg, phy);
-
-	/* This will trigger hardware reset before next connection */
-	otg->err_event_seen = true;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static void ci13xxx_msm_notify_event(struct ci13xxx *udc, unsigned event)
 {
 	struct device *dev = udc->gadget.dev.parent;
@@ -219,13 +199,6 @@ static void ci13xxx_msm_notify_event(struct ci13xxx *udc, unsigned event)
 		dev_info(dev, "CI13XXX_CONTROLLER_RESUME_EVENT received\n");
 		ci13xxx_msm_resume();
 		break;
-<<<<<<< HEAD
-=======
-	case CI13XXX_CONTROLLER_ERROR_EVENT:
-		dev_info(dev, "CI13XXX_CONTROLLER_ERROR_EVENT received\n");
-		ci13xxx_msm_mark_err_event();
-		break;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	default:
 		dev_dbg(dev, "unknown ci13xxx_udc event\n");

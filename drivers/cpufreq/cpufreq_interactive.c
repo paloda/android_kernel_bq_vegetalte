@@ -117,10 +117,6 @@ struct cpufreq_interactive_tunables {
 	int boostpulse_duration_val;
 	/* End time of boost pulse in ktime converted to usecs */
 	u64 boostpulse_endtime;
-<<<<<<< HEAD
-=======
-	bool boosted;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/*
 	 * Max additional time to wait in idle, beyond timer_rate, at speeds
 	 * above minimum before wakeup to reduce speed, or -1 if unnecessary.
@@ -404,10 +400,7 @@ static void cpufreq_interactive_timer(unsigned long data)
 	unsigned int loadadjfreq;
 	unsigned int index;
 	unsigned long flags;
-<<<<<<< HEAD
 	bool boosted;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct cpufreq_govinfo int_info;
 
 	if (!down_read_trylock(&pcpu->enable_sem))
@@ -457,15 +450,9 @@ static void cpufreq_interactive_timer(unsigned long data)
 
 	spin_lock_irqsave(&pcpu->target_freq_lock, flags);
 	cpu_load = loadadjfreq / pcpu->policy->cur;
-<<<<<<< HEAD
 	boosted = tunables->boost_val || now < tunables->boostpulse_endtime;
 
 	if (cpu_load >= tunables->go_hispeed_load || boosted) {
-=======
-	tunables->boosted = tunables->boost_val || now < tunables->boostpulse_endtime;
-
-	if (cpu_load >= tunables->go_hispeed_load || tunables->boosted) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (pcpu->policy->cur < tunables->hispeed_freq) {
 			new_freq = tunables->hispeed_freq;
 		} else {
@@ -533,11 +520,7 @@ static void cpufreq_interactive_timer(unsigned long data)
 	 * (or the indefinite boost is turned off).
 	 */
 
-<<<<<<< HEAD
 	if (!boosted || new_freq > tunables->hispeed_freq) {
-=======
-	if (!tunables->boosted || new_freq > tunables->hispeed_freq) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pcpu->floor_freq = new_freq;
 		pcpu->floor_validate_time = now;
 	}
@@ -682,11 +665,7 @@ static int cpufreq_interactive_speedchange_task(void *data)
 			unsigned int j;
 			unsigned int max_freq = 0;
 			struct cpufreq_interactive_cpuinfo *pjcpu;
-<<<<<<< HEAD
 			u64 hvt;
-=======
-			u64 hvt = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 			pcpu = &per_cpu(cpuinfo, cpu);
 			if (!down_read_trylock(&pcpu->enable_sem))
@@ -727,33 +706,19 @@ static int cpufreq_interactive_speedchange_task(void *data)
 	return 0;
 }
 
-<<<<<<< HEAD
 static void cpufreq_interactive_boost(void)
-=======
-static void cpufreq_interactive_boost(struct cpufreq_interactive_tunables *tunables)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	int i;
 	int anyboost = 0;
 	unsigned long flags[2];
 	struct cpufreq_interactive_cpuinfo *pcpu;
-<<<<<<< HEAD
 	struct cpufreq_interactive_tunables *tunables;
-=======
-
-	tunables->boosted = true;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	spin_lock_irqsave(&speedchange_cpumask_lock, flags[0]);
 
 	for_each_online_cpu(i) {
 		pcpu = &per_cpu(cpuinfo, i);
-<<<<<<< HEAD
 		tunables = pcpu->policy->governor_data;
-=======
-		if (tunables != pcpu->policy->governor_data)
-			continue;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		spin_lock_irqsave(&pcpu->target_freq_lock, flags[1]);
 		if (pcpu->target_freq < tunables->hispeed_freq) {
@@ -1144,12 +1109,7 @@ static ssize_t store_boost(struct cpufreq_interactive_tunables *tunables,
 
 	if (tunables->boost_val) {
 		trace_cpufreq_interactive_boost("on");
-<<<<<<< HEAD
 		cpufreq_interactive_boost();
-=======
-		if (!tunables->boosted)
-			cpufreq_interactive_boost(tunables);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} else {
 		tunables->boostpulse_endtime = ktime_to_us(ktime_get());
 		trace_cpufreq_interactive_unboost("off");
@@ -1171,12 +1131,7 @@ static ssize_t store_boostpulse(struct cpufreq_interactive_tunables *tunables,
 	tunables->boostpulse_endtime = ktime_to_us(ktime_get()) +
 		tunables->boostpulse_duration_val;
 	trace_cpufreq_interactive_boost("pulse");
-<<<<<<< HEAD
 	cpufreq_interactive_boost();
-=======
-	if (!tunables->boosted)
-		cpufreq_interactive_boost(tunables);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return count;
 }
 
@@ -1634,30 +1589,20 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 
 		tunables->usage_count = 1;
 		policy->governor_data = tunables;
-<<<<<<< HEAD
 		if (!have_governor_per_policy()) {
 			WARN_ON(cpufreq_get_global_kobject());
 			common_tunables = tunables;
 		}
-=======
-		if (!have_governor_per_policy())
-			common_tunables = tunables;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		rc = sysfs_create_group(get_governor_parent_kobj(policy),
 				get_sysfs_attr());
 		if (rc) {
 			kfree(tunables);
 			policy->governor_data = NULL;
-<<<<<<< HEAD
 			if (!have_governor_per_policy()) {
 				common_tunables = NULL;
 				cpufreq_put_global_kobject();
 			}
-=======
-			if (!have_governor_per_policy())
-				common_tunables = NULL;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return rc;
 		}
 
@@ -1682,11 +1627,8 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 
 			sysfs_remove_group(get_governor_parent_kobj(policy),
 					get_sysfs_attr());
-<<<<<<< HEAD
 			if (!have_governor_per_policy())
 				cpufreq_put_global_kobject();
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			common_tunables = NULL;
 		}
 

@@ -21,7 +21,6 @@ obj-$(CONFIG_HTC_I2CPLD)	+= htc-i2cpld.o
 
 obj-$(CONFIG_MFD_DAVINCI_VOICECODEC)	+= davinci_voicecodec.o
 obj-$(CONFIG_MFD_DM355EVM_MSP)	+= dm355evm_msp.o
-obj-$(CONFIG_MFD_TI_LMU)	+= ti-lmu.o ti-lmu-effect.o
 obj-$(CONFIG_MFD_TI_SSP)	+= ti-ssp.o
 obj-$(CONFIG_MFD_TI_AM335X_TSCADC)	+= ti_am335x_tscadc.o
 
@@ -41,14 +40,8 @@ obj-$(CONFIG_MFD_ARIZONA_SPI)	+= arizona-spi.o
 ifneq ($(CONFIG_MFD_WM5102),n)
 obj-$(CONFIG_MFD_ARIZONA)	+= wm5102-tables.o
 endif
-ifneq ($(CONFIG_MFD_FLORIDA),n)
-obj-$(CONFIG_MFD_ARIZONA)	+= florida-tables.o
-endif
-ifneq ($(CONFIG_MFD_WM8997),n)
-obj-$(CONFIG_MFD_ARIZONA)	+= wm8997-tables.o
-endif
-ifneq ($(CONFIG_MFD_WM8998),n)
-obj-$(CONFIG_MFD_WM8998)	+= wm8998-tables.o
+ifneq ($(CONFIG_MFD_WM5110),n)
+obj-$(CONFIG_MFD_ARIZONA)	+= wm5110-tables.o
 endif
 obj-$(CONFIG_MFD_WM8400)	+= wm8400-core.o
 wm831x-objs			:= wm831x-core.o wm831x-irq.o wm831x-otp.o

@@ -12,9 +12,6 @@
  *	and the like.
  */
 BLOCKING_NOTIFIER_HEAD(reboot_notifier_list);
-#ifdef CONFIG_POWER_OFF_BATTERY_LOG
-BLOCKING_NOTIFIER_HEAD(fs_notifier_list);
-#endif
 
 /*
  *	Notifier chain core routines.  The exported routines below

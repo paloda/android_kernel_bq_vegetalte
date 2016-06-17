@@ -415,10 +415,6 @@ struct diagchar_dev {
 	uint8_t mask_centralization[NUM_SMD_CONTROL_CHANNELS];
 	uint8_t peripheral_buffering_support[NUM_SMD_CONTROL_CHANNELS];
 	struct diag_buffering_mode_t buffering_mode[NUM_SMD_CONTROL_CHANNELS];
-<<<<<<< HEAD
-=======
-	uint8_t buffering_flag[NUM_SMD_CONTROL_CHANNELS];
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct mutex mode_lock;
 	unsigned char *apps_rsp_buf;
 	unsigned char *user_space_data_buf;
@@ -477,12 +473,6 @@ struct diagchar_dev {
 	unsigned char *cb_buf;
 	int cb_buf_len;
 #endif
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_DIAG_EXTENSION
-	struct list_head addon_list;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 extern struct diagchar_dev *driver;

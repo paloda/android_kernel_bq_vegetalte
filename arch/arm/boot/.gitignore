@@ -4,12 +4,4 @@ xipImage
 bootpImage
 uImage
 *.dtb
-<<<<<<< HEAD
 zImage-dtb
-=======
-zImage-dtb
-dt.img
-boot.img
-squid_kernel.zip
-initramfs.cpio*
->>>>>>> ca57d1d... Merge in Linux 3.10.100

@@ -548,21 +548,12 @@ static int ion_system_contig_heap_allocate(struct ion_heap *heap,
 	page = alloc_pages(low_order_gfp_flags | __GFP_ZERO, order);
 	if (!page)
 		return -ENOMEM;
-<<<<<<< HEAD
-=======
-	mod_zone_page_state(page_zone(page), NR_ION_PAGES, 1 << order);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	split_page(page, order);
 
 	len = PAGE_ALIGN(len);
 	for (i = len >> PAGE_SHIFT; i < (1 << order); i++)
 		__free_page(page + i);
-<<<<<<< HEAD
-=======
-	mod_zone_page_state(page_zone(page), NR_ION_PAGES,
-		(len >> PAGE_SHIFT) - (1 << order));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	table = kzalloc(sizeof(struct sg_table), GFP_KERNEL);
 	if (!table) {
@@ -585,11 +576,6 @@ static int ion_system_contig_heap_allocate(struct ion_heap *heap,
 out:
 	for (i = 0; i < len >> PAGE_SHIFT; i++)
 		__free_page(page + i);
-<<<<<<< HEAD
-=======
-	mod_zone_page_state(page_zone(page), NR_ION_PAGES,
-			-(len >> PAGE_SHIFT));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	kfree(table);
 	return ret;
 }
@@ -603,10 +589,6 @@ void ion_system_contig_heap_free(struct ion_buffer *buffer)
 
 	for (i = 0; i < pages; i++)
 		__free_page(page + i);
-<<<<<<< HEAD
-=======
-	mod_zone_page_state(page_zone(page), NR_ION_PAGES, -pages);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	sg_free_table(table);
 	kfree(table);
 }

@@ -177,7 +177,6 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  you to get a full dynamic cpu frequency capable system by simply
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
-<<<<<<< HEAD
 config CPU_FREQ_DEFAULT_GOV_WHEATLEY
 	bool "wheatley"
 	select CPU_FREQ_GOV_WHEATLEY
@@ -242,14 +241,6 @@ config CPU_FREQ_DEFAULT_GOV_SMARTMAX
 	select CPU_FREQ_GOV_SMARTMAX
 	help
 	  Use the CPUFreq governor 'smartmax' as default
-=======
-
-config CPU_FREQ_DEFAULT_GOV_LIONFISH
-	bool "lionfish"
-	select CPU_FREQ_GOV_LIONFISH
-	help
-	  Use the CPUFreq governor 'lionfish' as default.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 endchoice
 
@@ -308,7 +299,6 @@ config CPU_FREQ_GOV_ONDEMAND
 
 	  If in doubt, say N.
 
-<<<<<<< HEAD
 config CPU_FREQ_GOV_ELEMENTALX
 	tristate "'elementalx' cpufreq policy governor"
 	select CPU_FREQ_TABLE
@@ -322,8 +312,6 @@ config CPU_FREQ_GOV_ELEMENTALX
 
 	  If in doubt, say N.
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 config CPU_FREQ_GOV_INTERACTIVE
 	tristate "'interactive' cpufreq policy governor"
 	help
@@ -341,7 +329,6 @@ config CPU_FREQ_GOV_INTERACTIVE
 
 	  If in doubt, say N.
 
-<<<<<<< HEAD
 config CPU_FREQ_GOV_BIOSHOCK
 	tristate "'bioshock' cpufreq bioshock"
 	depends on CPU_FREQ
@@ -451,8 +438,6 @@ config CPU_FREQ_GOV_WAVE
         help
           'wave' great governor
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
 	depends on CPU_FREQ
@@ -477,7 +462,6 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 	  If in doubt, say N.
 
-<<<<<<< HEAD
 config CPU_FREQ_GOV_INTELLIACTIVE
 	tristate "'intelliactive' cpufreq governor"
 	depends on CPU_FREQ
@@ -519,44 +503,6 @@ config CPU_FREQ_GOV_ZZMOOVE
 config CPU_FREQ_GOV_IMPULSE
 	tristate "'impulse' cpufreq policy governor"
 	depends on CPU_FREQ
-=======
-config CPU_FREQ_GOV_LIONFISH
-	tristate "'lionfish' governor"
-	depends on CPU_FREQ
-	help
-	  'lionfish' - this is an improved version of the conservative governor
-	  that is optimized for smartphones. To avoid lag, it quickly jumps
-	  to an intermediate frequency when high load is encountered at low
-	  frequencies. If very high load is encountered above this intermediate
-	  frequency, it jumps to a high frequency. For moderate loads, it
-	  votes to increase, decrease, or maintain frequencies at each sampling
-	  interval. When enough votes are gathered to raise or lower the
-	  frequency, the frequency is changed. This mechanism reduces jitter
-	  compared to the conservative governor. Lionfish uses proportional
-	  ramping to more quickly reach suitable frequencies compared to the
-	  conservative governor. By default, Lionfish also reduces frequencies
-	  more aggressively than the conservative governor when loads are reduced.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called cpufreq_lionfish.
-
-	  If in doubt, say N.
-
-config CPU_BOOST
-	tristate "Event base short term CPU freq boost"
-	depends on CPU_FREQ
-	help
-	  This driver boosts the frequency of one or more CPUs based on
-	  various events that might occur in the system. As of now, the
-	  events it reacts to are:
-	  - Migration of important threads from one CPU to another.
-
-	  If in doubt, say N.
-
-config GENERIC_CPUFREQ_CPU0
-	tristate "Generic CPU0 cpufreq driver"
-	depends on HAVE_CLK && REGULATOR && PM_OPP && OF
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	help
     'impulse' - This driver adds a dynamic cpufreq policy governor
     designed for optimized balance between power and performance.

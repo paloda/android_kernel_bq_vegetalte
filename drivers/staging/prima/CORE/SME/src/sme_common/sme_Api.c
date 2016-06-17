@@ -826,12 +826,6 @@ sme_process_cmd:
                     status = pmcPrepareCommand( pMac, pmcCommand, pv, size, &pPmcCmd );
                     if( HAL_STATUS_SUCCESS( status ) && pPmcCmd )
                     {
-<<<<<<< HEAD
-=======
-                        /* Set the time out to 30 sec */
-                        pMac->sme.smeCmdActiveList.cmdTimeoutDuration =
-                                          CSR_ACTIVE_LIST_CMD_TIMEOUT_VALUE;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
                         //Force this command to wake up the chip
                         csrLLInsertHead( &pMac->sme.smeCmdActiveList, &pPmcCmd->Link, LL_ACCESS_NOLOCK );
                         csrLLUnlock( &pMac->sme.smeCmdActiveList );
@@ -858,22 +852,6 @@ sme_process_cmd:
                 {
                     // we can reuse the pCommand
 
-<<<<<<< HEAD
-=======
-                    /* For roam command set timeout to 30 * 2 sec.
-                     * There are cases where we try to connect to different
-                     * APs with same SSID one by one until sucessfully conneted
-                     * and thus roam command might take more time if connection
-                     * is rejected by too many APs.
-                     */
-                    if ((eSmeCommandRoam == pCommand->command) &&
-                        (eCsrHddIssued == pCommand->u.roamCmd.roamReason))
-                        pMac->sme.smeCmdActiveList.cmdTimeoutDuration =
-                                         CSR_ACTIVE_LIST_CMD_TIMEOUT_VALUE * 2;
-                    else
-                        pMac->sme.smeCmdActiveList.cmdTimeoutDuration =
-                                             CSR_ACTIVE_LIST_CMD_TIMEOUT_VALUE;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
                     // Insert the command onto the ActiveList...
                     csrLLInsertHead( &pMac->sme.smeCmdActiveList, &pCommand->Link, LL_ACCESS_NOLOCK );
 
@@ -1988,31 +1966,6 @@ eHalStatus sme_getBcnMissRate(tHalHandle hHal, tANI_U8 sessionId, void *callback
     return eHAL_STATUS_FAILURE;
 }
 
-<<<<<<< HEAD
-=======
-eHalStatus sme_EncryptMsgResponseHandler(tHalHandle hHal,
-                                      tpSirEncryptedDataRspParams pEncRspParams)
-{
-   tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
-
-   if (NULL == pMac)
-   {
-       VOS_TRACE(VOS_MODULE_ID_SME, VOS_TRACE_LEVEL_FATAL,
-           "%s: pMac is null", __func__);
-       return eHAL_STATUS_FAILURE;
-   }
-   if (pMac->sme.pEncMsgInfoParams.pEncMsgCbk == NULL)
-   {
-       VOS_TRACE(VOS_MODULE_ID_SME, VOS_TRACE_LEVEL_ERROR,
-           "%s: HDD callback is null", __func__);
-       return eHAL_STATUS_FAILURE;
-   }
-   pMac->sme.pEncMsgInfoParams.pEncMsgCbk(pMac->sme.pEncMsgInfoParams.pUserData,
-                                        &pEncRspParams->encryptedDataRsp);
-   return eHAL_STATUS_SUCCESS;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*--------------------------------------------------------------------------
 
   \brief sme_ProcessMsg() - The main message processor for SME.
@@ -2426,24 +2379,6 @@ eHalStatus sme_ProcessMsg(tHalHandle hHal, vos_msg_t* pMsg)
                 break;
 #endif /* FEATURE_WLAN_CH_AVOID */
 
-<<<<<<< HEAD
-=======
-          case eWNI_SME_ENCRYPT_MSG_RSP:
-              if (pMsg->bodyptr)
-              {
-                  sme_EncryptMsgResponseHandler(pMac, pMsg->bodyptr);
-                  vos_mem_free(pMsg->bodyptr);
-              }
-              else
-              {
-                  smsLog(pMac, LOGE,
-                         "Empty rsp message for (eWNI_SME_ENCRYPT_MSG_RSP),"
-                         " nothing to process");
-              }
-              break ;
-
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
           default:
 
              if ( ( pMsg->type >= eWNI_SME_MSG_TYPES_BEGIN )
@@ -2868,7 +2803,6 @@ eHalStatus sme_FilterScanResults(tHalHandle hHal, tANI_U8 sessionId)
    return (status);
 }
 
-<<<<<<< HEAD
  /*
  * ---------------------------------------------------------------------------
  *  \fn sme_FilterScanDFSResults
@@ -2892,8 +2826,6 @@ eHalStatus sme_FilterScanDFSResults(tHalHandle hHal)
    return (status);
 }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 eHalStatus sme_ScanFlushP2PResult(tHalHandle hHal, tANI_U8 sessionId)
 {
         eHalStatus status = eHAL_STATUS_FAILURE;
@@ -4746,7 +4678,6 @@ eHalStatus sme_RoamSetKey(tHalHandle hHal, tANI_U8 sessionId, tCsrRoamSetKey *pS
       smsLog(pMac, LOGE, FL("Invalid key length %d"), pSetKey->keyLength);
       return eHAL_STATUS_FAILURE;
    }
-<<<<<<< HEAD
    /*Once Setkey is done, we can go in BMPS*/
    if(pSetKey->keyLength)
    {
@@ -4754,8 +4685,6 @@ eHalStatus sme_RoamSetKey(tHalHandle hHal, tANI_U8 sessionId, tCsrRoamSetKey *pS
      smsLog(pMac, LOG1, FL("Reset remainInPowerActiveTillDHCP"
                            " to allow BMPS"));
    }
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
    status = sme_AcquireGlobalLock( &pMac->sme );
    if ( HAL_STATUS_SUCCESS( status ) )
@@ -5017,49 +4946,6 @@ eHalStatus sme_GetStatistics(tHalHandle hHal, eCsrStatsRequesterType requesterId
 
 }
 
-<<<<<<< HEAD
-=======
-eHalStatus sme_GetFwStats(tHalHandle hHal, tANI_U32 stats, void *data,
-                                                        void *callback)
-{
-   tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
-   vos_msg_t msg;
-   tSirFWStatsGetReq *pGetFWStatsReq;
-
-   smsLog(pMac, LOG1, FL(" ENTER stats = %d "),stats);
-
-   if ( eHAL_STATUS_SUCCESS ==  sme_AcquireGlobalLock( &pMac->sme ))
-   {
-       pGetFWStatsReq = (tSirFWStatsGetReq *)vos_mem_malloc(sizeof(tSirFWStatsGetReq));
-       if ( NULL == pGetFWStatsReq)
-       {
-          smsLog(pMac, LOGE, FL("Not able to allocate memory for "
-               "WDA_FW_STATS_GET_REQ"));
-          sme_ReleaseGlobalLock( &pMac->sme );
-          return eHAL_STATUS_FAILURE;
-       }
-       pGetFWStatsReq->stats = stats;
-       pGetFWStatsReq->callback = (tSirFWStatsCallback)callback;
-       pGetFWStatsReq->data = data;
-
-       msg.type = WDA_FW_STATS_GET_REQ;
-       msg.reserved = 0;
-       msg.bodyptr = pGetFWStatsReq;
-       if(VOS_STATUS_SUCCESS != vos_mq_post_message(VOS_MQ_ID_WDA, &msg))
-       {
-            smsLog(pMac, LOGE,
-              FL("Not able to post WDA_FW_STATS_GET_REQ message to HAL"));
-            vos_mem_free(pGetFWStatsReq);
-            sme_ReleaseGlobalLock( &pMac->sme );
-            return eHAL_STATUS_FAILURE;
-       }
-       sme_ReleaseGlobalLock( &pMac->sme );
-       return eHAL_STATUS_SUCCESS;
-   }
-   return eHAL_STATUS_FAILURE;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* ---------------------------------------------------------------------------
     \fn smeGetTLSTAState
     \helper function to get the TL STA State whenever the function is called.
@@ -6717,20 +6603,11 @@ eHalStatus sme_sendBTAmpEvent(tHalHandle hHal, tSmeBtAmpEvent btAmpEvent)
     \param  hHal - The handle returned by macOpen.
     \param  bssid -  Pointer to the BSSID to roam to.
     \param  fastRoamTrig - Trigger to Scan or roam
-<<<<<<< HEAD
-=======
-    \param  channel - channel number on which fastroam is requested
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     \return eHalStatus
   ---------------------------------------------------------------------------*/
 eHalStatus smeIssueFastRoamNeighborAPEvent (tHalHandle hHal,
                                             tANI_U8 *bssid,
-<<<<<<< HEAD
                                             tSmeFastRoamTrigger fastRoamTrig)
-=======
-                                            tSmeFastRoamTrigger fastRoamTrig,
-                                            tANI_U8 channel)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
     tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
     tpCsrNeighborRoamControlInfo  pNeighborRoamInfo = &pMac->roam.neighborRoamInfo;
@@ -6749,22 +6626,9 @@ eHalStatus smeIssueFastRoamNeighborAPEvent (tHalHandle hHal,
             pNeighborRoamInfo->cfgRoamEn = eSME_ROAM_TRIGGER_SCAN;
             vos_mem_copy((void *)(&pNeighborRoamInfo->cfgRoambssId),
                        (void *)bssid, sizeof(tSirMacAddr));
-<<<<<<< HEAD
             smsLog(pMac, LOG1, "Calling Roam Look Up down Event BSSID "
                    MAC_ADDRESS_STR, MAC_ADDR_ARRAY(pNeighborRoamInfo->cfgRoambssId));
 
-=======
-            smsLog(pMac, LOG1, "Calling Roam Look Up down Event BSSID"
-                   MAC_ADDRESS_STR, MAC_ADDR_ARRAY(pNeighborRoamInfo->cfgRoambssId));
-            /*
-             * As FastReassoc is based on assumption that roamable AP should be
-             * present into the occupied channel list.We shd  add i/p channel
-             * in occupied channel list if roamable-ap(BSSID in fastreassoc cmd)
-             * aged out prior to connection and there is no scan from aged out
-             * to till connection indication.
-            */
-            csrAddChannelToOccupiedChannelList(pMac, channel);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
             vosStatus = csrNeighborRoamTransitToCFGChanScan(pMac);
             if (VOS_STATUS_SUCCESS != vosStatus)
             {
@@ -7629,7 +7493,6 @@ eHalStatus sme_GetCfgValidChannels(tHalHandle hHal, tANI_U8 *aValidChannels, tAN
     return (status);
 }
 
-<<<<<<< HEAD
 eHalStatus sme_SetCfgScanControlList(tHalHandle hHal, tANI_U8 *countryCode, tCsrChannel *pChannelList)
 {
     eHalStatus status = eHAL_STATUS_SUCCESS;
@@ -7644,8 +7507,6 @@ eHalStatus sme_SetCfgScanControlList(tHalHandle hHal, tANI_U8 *countryCode, tCsr
 
     return (status);
 }
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /* ---------------------------------------------------------------------------
 
@@ -7733,7 +7594,6 @@ eHalStatus sme_HandleChangeCountryCode(tpAniSirGlobal pMac,  void *pMsgBuf)
    static uNvTables nvTables;
    pMsg = (tAniChangeCountryCodeReq *)pMsgBuf;
 
-<<<<<<< HEAD
     if (pMac->scan.fcc_constraint)
     {
        pMac->scan.fcc_constraint = false;
@@ -7747,8 +7607,6 @@ eHalStatus sme_HandleChangeCountryCode(tpAniSirGlobal pMac,  void *pMsgBuf)
        }
    }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
    /* if the reset Supplicant country code command is triggered, enable 11D, reset the NV country code and return */
    if( VOS_TRUE == vos_mem_compare(pMsg->countryCode, SME_INVALID_COUNTRY_CODE, 2) )
@@ -7852,14 +7710,6 @@ eHalStatus sme_HandleChangeCountryCode(tpAniSirGlobal pMac,  void *pMsgBuf)
    {
        //if 11d has priority, clear currentCountryBssid & countryCode11d to get
        //set again if we find AP with 11d info during scan
-<<<<<<< HEAD
-=======
-       status = csrSetRegulatoryDomain(pMac, domainIdIoctl, NULL);
-       if (status != eHAL_STATUS_SUCCESS)
-       {
-           smsLog( pMac, LOGE, FL("fail to set regId.status : %d"), status);
-       }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
        if (!pMac->roam.configParam.fSupplicantCountryCodeHasPriority)
        {
            smsLog( pMac, LOGW, FL("Clearing currentCountryBssid, countryCode11d"));
@@ -7930,13 +7780,6 @@ eHalStatus sme_HandleChangeCountryCodeByUser(tpAniSirGlobal pMac,
         is11dCountry = VOS_TRUE;
     }
 
-<<<<<<< HEAD
-=======
-   smsLog( pMac, LOG1, FL("pMsg->countryCode : %c%c,"
-                "pMac->scan.countryCode11d : %c%c\n"),
-                pMsg->countryCode[0], pMsg->countryCode[1],
-                pMac->scan.countryCode11d[0], pMac->scan.countryCode11d[1]);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     /* Set the country code given by userspace when 11dOriginal is FALSE
      * when 11doriginal is True,is11dCountry =0 and
      * fSupplicantCountryCodeHasPriority = 0, then revert the country code,
@@ -7958,39 +7801,17 @@ eHalStatus sme_HandleChangeCountryCodeByUser(tpAniSirGlobal pMac,
             return eHAL_STATUS_FAILURE;
         }
     }
-<<<<<<< HEAD
     pMac->roam.configParam.fEnforceCountryCode = eANI_BOOLEAN_FALSE;
     /* if Supplicant country code has priority, disable 11d */
     if (!is11dCountry && pMac->roam.configParam.fSupplicantCountryCodeHasPriority)
-=======
-    /* if Supplicant country code has priority, disable 11d */
-    if ((!is11dCountry) &&
-         (pMac->roam.configParam.fSupplicantCountryCodeHasPriority) &&
-        (!pMac->roam.configParam.fEnforceCountryCode))
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     {
         pMac->roam.configParam.Is11dSupportEnabled = eANI_BOOLEAN_FALSE;
         smsLog( pMac, LOG1, FL(" 11d is being  disabled"));
     }
 
-<<<<<<< HEAD
     vos_mem_copy(pMac->scan.countryCodeCurrent, pMsg->countryCode,
                   WNI_CFG_COUNTRY_CODE_LEN);
 
-=======
-    pMac->roam.configParam.fEnforceCountryCode = eANI_BOOLEAN_FALSE;
-    vos_mem_copy(pMac->scan.countryCodeCurrent, pMsg->countryCode,
-                  WNI_CFG_COUNTRY_CODE_LEN);
-    vos_mem_copy(pMac->scan.countryCode11d, pMsg->countryCode,
-                  WNI_CFG_COUNTRY_CODE_LEN);
-
-
-    status = csrSetRegulatoryDomain(pMac, reg_domain_id, NULL);
-    if (status != eHAL_STATUS_SUCCESS)
-    {
-        smsLog( pMac, LOGE, FL("fail to set regId.status : %d"), status);
-    }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     status = WDA_SetRegDomain(pMac, reg_domain_id, eSIR_TRUE);
 
     if (VOS_FALSE == is11dCountry )
@@ -8090,14 +7911,6 @@ eHalStatus sme_HandleChangeCountryCodeByCore(tpAniSirGlobal pMac, tAniGenericCha
     }
     else
     {
-<<<<<<< HEAD
-=======
-        status = csrSetRegulatoryDomain(pMac, REGDOMAIN_WORLD, NULL);
-        if (status != eHAL_STATUS_SUCCESS)
-        {
-            smsLog( pMac, LOGE, FL("fail to set regId.status : %d"), status);
-        }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
         status = csrInitGetChannels(pMac);
         if ( status != eHAL_STATUS_SUCCESS )
         {
@@ -10514,7 +10327,6 @@ eHalStatus sme_UpdateDfsSetting(tHalHandle hHal, tANI_U8 fUpdateEnableDFSChnlSca
     tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
 
     smsLog(pMac, LOG2, FL("enter"));
-<<<<<<< HEAD
 
     if (pMac->fActiveScanOnDFSChannels)
     {
@@ -10523,8 +10335,6 @@ eHalStatus sme_UpdateDfsSetting(tHalHandle hHal, tANI_U8 fUpdateEnableDFSChnlSca
         return (status);
     }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     status = sme_AcquireGlobalLock( &pMac->sme );
     if ( HAL_STATUS_SUCCESS( status ) )
     {
@@ -10536,7 +10346,6 @@ eHalStatus sme_UpdateDfsSetting(tHalHandle hHal, tANI_U8 fUpdateEnableDFSChnlSca
     return (status);
 }
 
-<<<<<<< HEAD
 /* ---------------------------------------------------------------------------
     \fn sme_UpdateDFSRoamMode
     \brief  Update DFS roam scan mode
@@ -10667,8 +10476,6 @@ eHalStatus sme_HandleDFSChanScan(tHalHandle hHal)
     return status ;
 }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*
  * SME API to enable/disable WLAN driver initiated SSR
  */
@@ -11197,26 +11004,6 @@ eHalStatus sme_StopBatchScanInd
 
 #endif
 
-<<<<<<< HEAD
-=======
-void activeListCmdTimeoutHandle(void *userData)
-{
-    /* Return if no cmd pending in active list as
-     * in this case we should not be here.
-     */
-    if ((NULL == userData) ||
-        (0 == csrLLCount(&((tpAniSirGlobal) userData)->sme.smeCmdActiveList)))
-        return;
-    VOS_TRACE(VOS_MODULE_ID_SME, VOS_TRACE_LEVEL_ERROR,
-        "%s: Active List command timeout Cmd List Count %d", __func__,
-        csrLLCount(&((tpAniSirGlobal) userData)->sme.smeCmdActiveList) );
-    smeGetCommandQStatus((tHalHandle) userData);
-
-    if (!(vos_isLoadUnloadInProgress() ||
-        vos_is_logp_in_progress(VOS_MODULE_ID_SME, NULL)))
-       VOS_BUG(0);
-}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #ifdef FEATURE_WLAN_CH_AVOID
 /* ---------------------------------------------------------------------------
@@ -11254,7 +11041,6 @@ eHalStatus sme_AddChAvoidCallback
 }
 #endif /* FEATURE_WLAN_CH_AVOID */
 
-<<<<<<< HEAD
 void activeListCmdTimeoutHandle(void *userData)
 {
     if (NULL == userData)
@@ -11265,8 +11051,6 @@ void activeListCmdTimeoutHandle(void *userData)
     smeGetCommandQStatus((tHalHandle) userData);
 }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef WLAN_FEATURE_LINK_LAYER_STATS
 
 /* ---------------------------------------------------------------------------
@@ -12124,58 +11908,9 @@ void sme_disable_dfs_channel(tHalHandle hHal, bool disbale_dfs)
     pMac->scan.fEnableDFSChnlScan = !disbale_dfs;
     csrDisableDfsChannel(pMac);
 
-<<<<<<< HEAD
     VOS_TRACE(VOS_MODULE_ID_SME, VOS_TRACE_LEVEL_INFO,
               "%s: Modified fEnableDFSChnlScan: %d", __func__,
                                pMac->scan.fEnableDFSChnlScan);
-=======
-}
-
-/* ---------------------------------------------------------------------------
-    \fn sme_Encryptmsgsend
-    \brief  SME API to issue encrypt message request
-    \param  hHal
-    \param  pCmd: Data to be encrypted
-    \- return eHalStatus
-    -------------------------------------------------------------------------*/
-eHalStatus sme_Encryptmsgsend (tHalHandle hHal,
-                               u8 *pCmd,
-                               int length,
-                               pEncryptMsgRSPCb encMsgCbk)
-{
-    eHalStatus status    = eHAL_STATUS_SUCCESS;
-    VOS_STATUS vosStatus = VOS_STATUS_SUCCESS;
-    tpAniSirGlobal pMac  = PMAC_STRUCT(hHal);
-    vos_msg_t vosMessage;
-    u8 *pEncryptMsg;
-
-    pEncryptMsg = vos_mem_malloc(length);
-    if ( !pEncryptMsg)
-    {
-        VOS_TRACE(VOS_MODULE_ID_SME, VOS_TRACE_LEVEL_ERROR,
-                "%s: Not able to allocate memory for "
-                "SIR_HAL_ENCRYPT_MSG_REQ",
-                __func__);
-        return eHAL_STATUS_FAILURE;
-    }
-
-    vos_mem_copy(pEncryptMsg, pCmd, length);
-
-    if (eHAL_STATUS_SUCCESS == (status = sme_AcquireGlobalLock(&pMac->sme))) {
-
-        pMac->sme.pEncMsgInfoParams.pEncMsgCbk = encMsgCbk;
-        pMac->sme.pEncMsgInfoParams.pUserData = hHal;
-        /* Serialize the req through MC thread */
-        vosMessage.bodyptr = pEncryptMsg;
-        vosMessage.type    = SIR_HAL_ENCRYPT_MSG_REQ;
-        vosStatus = vos_mq_post_message(VOS_MQ_ID_WDA, &vosMessage);
-        if (!VOS_IS_STATUS_SUCCESS(vosStatus))
-           status = eHAL_STATUS_FAILURE;
-
-        sme_ReleaseGlobalLock(&pMac->sme);
-    }
-    return(status);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 /* ---------------------------------------------------------------------------
@@ -12212,7 +11947,6 @@ eHalStatus sme_RegisterBtCoexTDLSCallback
 }
 
 /* ---------------------------------------------------------------------------
-<<<<<<< HEAD
 
     \fn smeNeighborRoamIsHandoffInProgress
 
@@ -12234,37 +11968,6 @@ void sme_SetDefDot11Mode(tHalHandle hHal)
     csrSetDefaultDot11Mode(pMac);
 }
 
-=======
-    \fn smeNeighborMiddleOfRoaming
-
-    \brief This function is a wrapper to call csrNeighborMiddleOfRoaming
-
-    \param hHal - The handle returned by macOpen.
-
-    \return eANI_BOOLEAN_TRUE if reassoc in progress,
-            eANI_BOOLEAN_FALSE otherwise
----------------------------------------------------------------------------*/
-
-tANI_BOOLEAN smeNeighborMiddleOfRoaming(tHalHandle hHal)
-{
-    return (csrNeighborMiddleOfRoaming(PMAC_STRUCT(hHal)));
-}
-
-tANI_BOOLEAN sme_IsCoexScoIndicationSet(tHalHandle hHal)
-{
-   eHalStatus status = eHAL_STATUS_FAILURE;
-   tANI_BOOLEAN valid = FALSE;
-   tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
-
-   status = sme_AcquireGlobalLock( &pMac->sme );
-   if ( HAL_STATUS_SUCCESS( status ) )
-   {
-      valid = pMac->isCoexScoIndSet;
-   }
-   sme_ReleaseGlobalLock( &pMac->sme );
-   return (valid);
-}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 eHalStatus sme_SetMiracastVendorConfig(tHalHandle hHal,
     tANI_U32 iniNumBuffAdvert , tANI_U32 set_value)
 {
@@ -12340,7 +12043,6 @@ eHalStatus sme_SetMiracastVendorConfig(tHalHandle hHal,
     return eHAL_STATUS_SUCCESS;
 }
 
-<<<<<<< HEAD
 /* ---------------------------------------------------------------------------
     \fn sme_SetRtsCtsHtVht
     \brief  API to to enable/disable RTS/CTS for different modes.
@@ -12410,11 +12112,3 @@ tANI_BOOLEAN sme_handleSetFccChannel(tHalHandle hHal, tANI_U8 fcc_constraint)
 
     return status;
 }
-=======
-void sme_SetDefDot11Mode(tHalHandle hHal)
-{
-    tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
-    csrSetDefaultDot11Mode(pMac);
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100

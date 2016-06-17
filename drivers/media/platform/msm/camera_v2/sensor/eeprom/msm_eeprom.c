@@ -17,10 +17,7 @@
 #include "msm_sd.h"
 #include "msm_cci.h"
 #include "msm_eeprom.h"
-<<<<<<< HEAD
 #include "hi545.h"
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
@@ -29,14 +26,11 @@ DEFINE_MSM_MUTEX(msm_eeprom_mutex);
 #ifdef CONFIG_COMPAT
 static struct v4l2_file_operations msm_eeprom_v4l2_subdev_fops;
 #endif
-<<<<<<< HEAD
 
 uint8_t g_imx214_otp_module_id = 0;
 
 uint8_t g_otp_driver_ic_id = 0;	// add by gpg to diff truly module for L870x
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /**
   * msm_eeprom_verify_sum - verify crc32 checksum
   * @mem:	data buffer
@@ -271,7 +265,6 @@ static const struct v4l2_subdev_internal_ops msm_eeprom_internal_ops = {
 	.open = msm_eeprom_open,
 	.close = msm_eeprom_close,
 };
-<<<<<<< HEAD
 
 static int custom_hynix_define_otp_read(struct msm_eeprom_ctrl_t *e_ctrl,
 			      struct msm_eeprom_memory_block_t *block)
@@ -347,8 +340,6 @@ static int custom_hynix_define_otp_read(struct msm_eeprom_ctrl_t *e_ctrl,
 			
 }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /**
   * read_eeprom_memory() - read map data into buffer
   * @e_ctrl:	eeprom control struct
@@ -1025,15 +1016,12 @@ static int eeprom_config_read_cal_data32(struct msm_eeprom_ctrl_t *e_ctrl,
 	rc = copy_to_user(ptr_dest, e_ctrl->cal_data.mapdata,
 		cdata.cfg.read_data.num_bytes);
 
-<<<<<<< HEAD
 	/* should only be called once.  free kernel resource */
 //	if (!rc) {
 //		kfree(e_ctrl->cal_data.mapdata);
 //		kfree(e_ctrl->cal_data.map);
 //		memset(&e_ctrl->cal_data, 0, sizeof(e_ctrl->cal_data));
 //	}
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return rc;
 }
 
@@ -1106,7 +1094,6 @@ static long msm_eeprom_subdev_fops_ioctl32(struct file *file, unsigned int cmd,
 
 #endif
 
-<<<<<<< HEAD
 static int imx214_set_otp_module_id(struct msm_eeprom_ctrl_t *e_ctrl)
 {
 
@@ -1146,8 +1133,6 @@ static int imx214_set_otp_module_id(struct msm_eeprom_ctrl_t *e_ctrl)
 
 }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int msm_eeprom_platform_probe(struct platform_device *pdev)
 {
 	int rc = 0;
@@ -1270,7 +1255,6 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 		pr_err("failed rc %d\n", rc);
 		goto memdata_free;
 	}
-<<<<<<< HEAD
 	if(strcmp(eb_info->eeprom_name,"hynix_hi545")==0)
 	{
 		rc = custom_hynix_define_otp_read(e_ctrl, &e_ctrl->cal_data);				
@@ -1279,9 +1263,6 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	{
 	rc = read_eeprom_memory(e_ctrl, &e_ctrl->cal_data);
 	}
-=======
-	rc = read_eeprom_memory(e_ctrl, &e_ctrl->cal_data);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (rc < 0) {
 		pr_err("%s read_eeprom_memory failed\n", __func__);
 		goto power_down;
@@ -1289,7 +1270,6 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	for (j = 0; j < e_ctrl->cal_data.num_data; j++)
 		CDBG("memory_data[%d] = 0x%X\n", j,
 			e_ctrl->cal_data.mapdata[j]);
-<<<<<<< HEAD
 	if( (eb_info->eeprom_name != NULL) 
 		&& (   (strcmp(eb_info->eeprom_name, "truly_cm9886qr") == 0)
 		) )
@@ -1301,8 +1281,6 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	{
 		CDBG("there is no need special process\n");
 	}
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	e_ctrl->is_supported |= msm_eeprom_match_crc(&e_ctrl->cal_data);
 

@@ -954,14 +954,6 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 
 	if (data_pad >= ubi->leb_size / 2) {
 		ubi_err(ubi->ubi_num, "bad data_pad");
-<<<<<<< HEAD
-=======
-		goto bad;
-	}
-
-	if (data_size > ubi->leb_size) {
-		ubi_err("bad data_size");
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		goto bad;
 	}
 

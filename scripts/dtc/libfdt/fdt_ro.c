@@ -444,7 +444,7 @@ int fdt_supernode_atdepth_offset(const void *fdt, int nodeoffset,
 
 int fdt_node_depth(const void *fdt, int nodeoffset)
 {
-	int nodedepth = 0;
+	int nodedepth;
 	int err;
 
 	err = fdt_supernode_atdepth_offset(fdt, nodeoffset, 0, &nodedepth);

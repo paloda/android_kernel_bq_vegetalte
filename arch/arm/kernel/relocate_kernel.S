@@ -2,11 +2,6 @@
  * relocate_kernel.S - put the kernel image in place to boot
  */
 
-<<<<<<< HEAD
-=======
-#include <linux/linkage.h>
-#include <asm/assembler.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <asm/kexec.h>
 
 	.globl relocate_new_kernel
@@ -62,7 +57,7 @@ relocate_new_kernel:
 	mov r0,#0
 	ldr r1,kexec_mach_type
 	ldr r2,kexec_boot_atags
- ARM(	ret lr	)
+ ARM(	mov pc, lr	)
  THUMB(	bx lr		)
 
 	.align

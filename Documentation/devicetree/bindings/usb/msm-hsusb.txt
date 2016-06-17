@@ -78,11 +78,6 @@ Optional properties :
 	    2 - Host
 - qcom,hsusb-otg-phy-init-seq: PHY configuration sequence. val, reg pairs
   terminate with -1
-<<<<<<< HEAD
-=======
-- qcom,hsusb-otg-phy-init-seq: PHY configuration sequence in Factory.
-  val, reg pairs terminate with -1
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 - qcom,hsusb-otg-power-budget: VBUS power budget in mA
   0 will be treated as 500mA
 - qcom,hsusb-otg-pclk-src-name: The source of pclk
@@ -161,15 +156,6 @@ Optional properties :
 	regulator unlike vddcx/vddmx. PHY can keep D+ pull-up and D+/D-
 	pull-down resistors during peripheral and host bus suspend without
 	any re-work.
-<<<<<<< HEAD
-=======
-- mpp-id-routing: If present, id is routed through an MPP that can be reconfigured to
-        measure ID Voltage.
-- mpp-id-amux-chan: If present, this is the AMUX chan when id-mpp is Analog Input
-- mpp-id-pull: If present, this is the pull value when id-mpp is Digital Input
-- mpp-id-vin: If present, this is the voltage level when id-mpp is Digital Input
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 Example HSUSB OTG controller device node :
 	usb@f9690000 {

@@ -553,7 +553,6 @@ WDI_FillTxBd
         }
 #endif
 
-<<<<<<< HEAD
         if(ucTxFlag & WDI_USE_BD_RATE_1_MASK)
         {
             pBd->bdRate = WDI_BDRATE_BCDATA_FRAME;
@@ -566,12 +565,6 @@ WDI_FillTxBd
         {
             pBd->bdRate = WDI_BDRATE_CTRL_FRAME;
         }
-=======
-        if(ucTxFlag & WDI_USE_BD_RATE_MASK)
-        {
-            pBd->bdRate = WDI_BDRATE_BCDATA_FRAME;
-        }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         pBd->rmf    = WDI_RMF_DISABLED;     
 

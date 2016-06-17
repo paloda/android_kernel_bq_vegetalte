@@ -18,7 +18,3 @@ obj-$(CONFIG_MSMB_CAMERA) += ispif/
 obj-$(CONFIG_MSMB_JPEG) += jpeg_10/
 obj-$(CONFIG_MSMB_CAMERA) += msm_buf_mgr/
 obj-$(CONFIG_MSM_FD) += fd/
-<<<<<<< HEAD
-=======
-obj-$(CONFIG_MSMB_CAMERA) += cci_intf.o
->>>>>>> ca57d1d... Merge in Linux 3.10.100

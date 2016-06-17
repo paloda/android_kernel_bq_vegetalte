@@ -642,23 +642,10 @@ static void msm_vfe32_reg_update(
 static long msm_vfe32_reset_hardware(struct vfe_device *vfe_dev,
 	uint32_t first_start, uint32_t blocking)
 {
-<<<<<<< HEAD
 	init_completion(&vfe_dev->reset_complete);
 	msm_camera_io_w_mb(0x3FF, vfe_dev->vfe_base + 0x4);
 	return wait_for_completion_timeout(
 	   &vfe_dev->reset_complete, msecs_to_jiffies(50));
-=======
-	long rc = 0;
-	if (blocking) {
-		init_completion(&vfe_dev->reset_complete);
-		msm_camera_io_w_mb(0x3FF, vfe_dev->vfe_base + 0x4);
-		rc = wait_for_completion_timeout(
-			&vfe_dev->reset_complete, msecs_to_jiffies(50));
-	} else {
-		msm_camera_io_w_mb(0x3FF, vfe_dev->vfe_base + 0x4);
-	}
-	return rc;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static void msm_vfe32_axi_reload_wm(

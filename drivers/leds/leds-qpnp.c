@@ -250,11 +250,6 @@
 #define NUM_KPDBL_LEDS			4
 #define KPDBL_MASTER_BIT_INDEX		0
 
-<<<<<<< HEAD
-=======
-#define ATC_LED_CTRL(base)		(base + 0x4D)
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /**
  * enum qpnp_leds - QPNP supported led ids
  * @QPNP_ID_WLED - White led backlight
@@ -269,10 +264,6 @@ enum qpnp_leds {
 	QPNP_ID_LED_MPP,
 	QPNP_ID_KPDBL,
 	QPNP_ID_LED_GPIO,
-<<<<<<< HEAD
-=======
-	QPNP_ID_ATC,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	QPNP_ID_MAX,
 };
 
@@ -869,22 +860,6 @@ static int qpnp_wled_set(struct qpnp_led_data *led)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
-static int qpnp_atc_set(struct qpnp_led_data *led)
-{
-	int rc;
-	u8 val;
-	val = (led->cdev.brightness) ? 1 : 0;
-	rc = spmi_ext_register_writel(led->spmi_dev->ctrl,
-		led->spmi_dev->sid, ATC_LED_CTRL(led->base), &val, 1);
-	if (rc)
-		dev_err(&led->spmi_dev->dev,
-			"ATC LED set failed(%d)\n", rc);
-	return rc;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int qpnp_mpp_set(struct qpnp_led_data *led)
 {
 	int rc;
@@ -1853,12 +1828,6 @@ static void __qpnp_led_work(struct qpnp_led_data *led,
 		mutex_lock(&led->lock);
 
 	switch (led->id) {
-<<<<<<< HEAD
-=======
-	case QPNP_ID_ATC:
-		qpnp_atc_set(led);
-		break;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case QPNP_ID_WLED:
 		rc = qpnp_wled_set(led);
 		if (rc < 0)
@@ -1923,12 +1892,6 @@ static void qpnp_led_work(struct work_struct *work)
 static int qpnp_led_set_max_brightness(struct qpnp_led_data *led)
 {
 	switch (led->id) {
-<<<<<<< HEAD
-=======
-	case QPNP_ID_ATC:
-		/* Do nothing. Needed to have valid id check */
-		break;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case QPNP_ID_WLED:
 		led->cdev.max_brightness = WLED_MAX_LEVEL;
 		break;
@@ -3062,12 +3025,6 @@ static int qpnp_led_initialize(struct qpnp_led_data *led)
 	int rc = 0;
 
 	switch (led->id) {
-<<<<<<< HEAD
-=======
-	case QPNP_ID_ATC:
-		/* Do nothing. Needed to have valid id check */
-		break;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	case QPNP_ID_WLED:
 		rc = qpnp_wled_init(led);
 		if (rc)
@@ -4015,11 +3972,6 @@ static int qpnp_leds_probe(struct spmi_device *spmi)
 						"Unable to read gpio config data\n");
 				goto fail_id_check;
 			}
-<<<<<<< HEAD
-=======
-		} else if (strncmp(led_label, "atc", sizeof("atc")) == 0) {
-			/* Do nothing. Needed to have valid id check */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		} else if (strncmp(led_label, "kpdbl", sizeof("kpdbl")) == 0) {
 			bitmap_zero(kpdbl_leds_in_use, NUM_KPDBL_LEDS);
 			is_kpdbl_master_turn_on = false;

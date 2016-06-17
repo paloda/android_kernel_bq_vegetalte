@@ -35,7 +35,6 @@ struct atc_led_data {
 	u32			addr;
 };
 
-<<<<<<< HEAD
 static ssize_t led_blink_show(struct device *dev,
 		struct device_attribute *attr, char *buf);
 
@@ -53,8 +52,6 @@ static struct attribute_group blink_dev_attr_group = {
 	.attrs = blink_dev_attrs,
 };
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int
 spmi_masked_write(struct atc_led_data *led, u16 addr, u8 mask, u8 val)
 {
@@ -149,7 +146,6 @@ static int atc_leds_probe(struct spmi_device *spmi)
 	}
 
 	dev_set_drvdata(&spmi->dev, led);
-<<<<<<< HEAD
 
 	rc = sysfs_create_group(&led->cdev.dev->kobj, &blink_dev_attr_group);
 	if (rc < 0) {
@@ -157,8 +153,6 @@ static int atc_leds_probe(struct spmi_device *spmi)
 			"couldn't register LED blinking attribute sysfs file\n");
 	}
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 
@@ -172,7 +166,6 @@ static int atc_leds_remove(struct spmi_device *spmi)
 	return 0;
 }
 
-<<<<<<< HEAD
 static ssize_t led_blink_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -204,8 +197,6 @@ static ssize_t led_blink_store(struct device *dev,
 	return size;
 }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_OF
 static struct of_device_id spmi_match_table[] = {
 	{ .compatible = "qcom,leds-atc",},

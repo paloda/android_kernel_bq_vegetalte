@@ -22,13 +22,10 @@
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 
 static struct v4l2_file_operations msm_sensor_v4l2_subdev_fops;
-<<<<<<< HEAD
 
 extern uint8_t g_imx214_otp_module_id;
 extern uint8_t g_otp_driver_ic_id;
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static void msm_sensor_adjust_mclk(struct msm_camera_power_ctrl_t *ctrl)
 {
 	int idx;
@@ -293,16 +290,6 @@ static int32_t msm_sensor_get_dt_data(struct device_node *of_node,
 		rc = -ENOMEM;
 		goto FREE_ACTUATOR_INFO;
 	}
-<<<<<<< HEAD
-=======
-	if (0 > of_property_read_u32(of_node, "qcom,i2c_freq_mode",
-		&sensordata->slave_info->sensor_i2c_freq_mode)) {
-		CDBG("%s:%d Default i2c_freq_mode\n", __func__, __LINE__);
-		sensordata->slave_info->sensor_i2c_freq_mode = 0;
-	}
-	CDBG("%s:%d qcom,i2c_freq_mode %d\n", __func__,__LINE__,
-		sensordata->slave_info->sensor_i2c_freq_mode);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	rc = of_property_read_u32_array(of_node, "qcom,slave-id",
 		id_info, 3);
@@ -454,21 +441,12 @@ int msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 
 int msm_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 {
-<<<<<<< HEAD
 	int rc;
-=======
-	int rc, act_status = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct msm_camera_power_ctrl_t *power_info;
 	struct msm_camera_i2c_client *sensor_i2c_client;
 	struct msm_camera_slave_info *slave_info;
 	const char *sensor_name;
 	uint32_t retry = 0;
-<<<<<<< HEAD
-=======
-	struct msm_sensor_actuator_info_t *actuator_info;
-	struct msm_camera_sensor_slave_info *camera_info;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (!s_ctrl) {
 		pr_err("%s:%d failed: %p\n",
@@ -492,23 +470,7 @@ int msm_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 	if (s_ctrl->set_mclk_23880000)
 		msm_sensor_adjust_mclk(power_info);
 
-<<<<<<< HEAD
 	for (retry = 0; retry < 3; retry++) {
-=======
-#ifdef CONFIG_MSM_CHECK_CAMERA_ACTUATOR
-	camera_info = s_ctrl->sensordata->cam_slave_info;
-	if (!camera_info)
-		pr_err("%s: camera slave info is null\n",
-			__func__);
-	else
-		actuator_info = &camera_info->sensor_init_params.
-				actuator_info;
-#else
-	actuator_info = NULL;
-#endif
-
-	for (retry = 0; retry < 7; retry++) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		rc = msm_camera_power_up(power_info, s_ctrl->sensor_device_type,
 			sensor_i2c_client);
 		if (rc < 0)
@@ -520,28 +482,6 @@ int msm_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 			msleep(20);
 			continue;
 		} else {
-<<<<<<< HEAD
-=======
-			if (camera_info && actuator_info &&
-				actuator_info->enable) {
-				act_status =
-					msm_actuator_check_reg_read(s_ctrl,
-						actuator_info);
-				/* actuator retry should be n-1 to avoid
-				 * sensor power down on actuator failure
-				 * in n'th retry */
-				if (act_status < 0 && retry < 6) {
-					pr_err("%s: act_status: %d, retry: %d\n",
-						__func__, act_status, retry+1);
-					msm_camera_power_down(power_info,
-						s_ctrl->sensor_device_type,
-						sensor_i2c_client);
-					msleep(100);
-					continue;
-				}
-				break;
-			}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			break;
 		}
 	}
@@ -549,55 +489,6 @@ int msm_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
-int msm_actuator_check_reg_read(struct msm_sensor_ctrl_t *s_ctrl,
-	struct msm_sensor_actuator_info_t *actuator_info)
-{
-	int32_t rc = 0;
-	uint16_t actuator_reg;
-	uint16_t actuator_slave_addr;
-	uint16_t cam_slave_addr =
-		s_ctrl->sensordata->slave_info->sensor_slave_addr;
-	int cam_addr_type = s_ctrl->sensor_i2c_client->addr_type;
-
-	pr_debug("%s Actuator Information:\n"
-		" - enable: 0x%x\n"
-		" - slave address: 0x%x\n"
-		" - mem address: 0x%x\n",
-		s_ctrl->sensordata->sensor_name,
-		actuator_info->enable,
-		actuator_info->slave_addr,
-		actuator_info->clk_reg_addr);
-
-	actuator_slave_addr = actuator_info->slave_addr;
-	s_ctrl->sensordata->slave_info->sensor_slave_addr =
-		actuator_slave_addr;
-	s_ctrl->sensor_i2c_client->cci_client->sid =
-		(actuator_slave_addr >> 1);
-
-	/* read actuator clk reg */
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->
-		i2c_read(s_ctrl->sensor_i2c_client,
-			actuator_info->clk_reg_addr,
-			&actuator_reg,
-			MSM_CAMERA_I2C_BYTE_ADDR);
-	if (rc < 0) {
-		pr_err("%s: Unable to read actuator\n", __func__);
-		goto exit;
-	}
-exit:
-	/* Restore sensor defaults */
-	s_ctrl->sensordata->slave_info->sensor_slave_addr =
-		cam_slave_addr;
-	s_ctrl->sensor_i2c_client->cci_client->sid =
-		(cam_slave_addr >> 1);
-	s_ctrl->sensor_i2c_client->addr_type = cam_addr_type;
-
-	return rc;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	int rc = 0;
@@ -804,12 +695,7 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 		conf_array.reg_setting = compat_ptr(conf_array32.reg_setting);
 		conf_array.qup_i2c_batch = conf_array32.qup_i2c_batch;
 
-<<<<<<< HEAD
 		if (!conf_array.size) {
-=======
-		if (!conf_array.size ||
-			conf_array.size > I2C_REG_DATA_MAX) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
@@ -842,22 +728,10 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 	}
 	case CFG_SLAVE_READ_I2C: {
 		struct msm_camera_i2c_read_config read_config;
-<<<<<<< HEAD
 		uint16_t local_data = 0;
 		uint16_t orig_slave_addr = 0, read_slave_addr = 0;
 		if (copy_from_user(&read_config,
 			(void *)compat_ptr(cdata->cfg.setting),
-=======
-		struct msm_camera_i2c_read_config *read_config_ptr = NULL;
-		uint16_t local_data = 0;
-		uint16_t orig_slave_addr = 0, read_slave_addr = 0;
-
-		read_config_ptr =
-			(struct msm_camera_i2c_read_config *)
-			compat_ptr(cdata->cfg.setting);
-
-		if (copy_from_user(&read_config, read_config_ptr,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			sizeof(struct msm_camera_i2c_read_config))) {
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
@@ -894,16 +768,12 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 			pr_err("%s:%d: i2c_read failed\n", __func__, __LINE__);
 			break;
 		}
-<<<<<<< HEAD
 		if (copy_to_user(&read_config.data,
 			(void *)&local_data, sizeof(uint16_t))) {
 			pr_err("%s:%d copy failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
 		}
-=======
-		read_config_ptr->data = local_data;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 	case CFG_WRITE_I2C_SEQ_ARRAY: {
@@ -931,20 +801,11 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 		conf_array.size = conf_array32.size;
 		conf_array.reg_setting = compat_ptr(conf_array32.reg_setting);
 
-<<<<<<< HEAD
 		if (!conf_array.size) {
-=======
-		if (!conf_array.size ||
-			conf_array.size > I2C_SEQ_REG_DATA_MAX) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
 		}
-<<<<<<< HEAD
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		reg_setting = kzalloc(conf_array.size *
 			(sizeof(struct msm_camera_i2c_seq_reg_array)),
 			GFP_KERNEL);
@@ -1067,40 +928,6 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 		break;
 	}
 
-<<<<<<< HEAD
-=======
-	case CFG_GET_MODULE_INFO: {
-		struct msm_camera_sensor_slave_info *sensor_slave_info;
-		struct otp_info_t *sensor_otp;
-		uint32_t otp_data_size;
-		uint8_t *otp_data;
-
-		sensor_slave_info = s_ctrl->sensordata->cam_slave_info;
-		if (!sensor_slave_info) {
-			pr_err("%s: camera slave info is not defined",
-				__func__);
-			rc = -EFAULT;
-			break;
-		}
-
-		sensor_otp = &sensor_slave_info->sensor_otp;
-		otp_data_size =
-			(sensor_slave_info->sensor_init_params.
-			sensor_otp.page_size) * (sensor_slave_info->
-			sensor_init_params.sensor_otp.num_of_pages);
-
-		otp_data = (uint8_t *)compat_ptr(cdata->cfg.otp_info);
-
-		if (copy_to_user((void __user *)otp_data,
-			(uint8_t *)sensor_otp->otp_info, otp_data_size)) {
-			pr_err("%s: error copying otp buffer to user\n",
-				__func__);
-			rc = -EFAULT;
-			break;
-		}
-		break;
-	}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		rc = -EFAULT;
 		break;
@@ -1188,12 +1015,7 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 			break;
 		}
 
-<<<<<<< HEAD
 		if (!conf_array.size) {
-=======
-		if (!conf_array.size ||
-			conf_array.size > I2C_REG_DATA_MAX) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
@@ -1223,20 +1045,10 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 	}
 	case CFG_SLAVE_READ_I2C: {
 		struct msm_camera_i2c_read_config read_config;
-<<<<<<< HEAD
 		uint16_t local_data = 0;
 		uint16_t orig_slave_addr = 0, read_slave_addr = 0;
 		if (copy_from_user(&read_config,
 			(void *)cdata->cfg.setting,
-=======
-		struct msm_camera_i2c_read_config *read_config_ptr = NULL;
-		uint16_t local_data = 0;
-		uint16_t orig_slave_addr = 0, read_slave_addr = 0;
-
-		read_config_ptr =
-			(struct msm_camera_i2c_read_config *)cdata->cfg.setting;
-		if (copy_from_user(&read_config, read_config_ptr,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			sizeof(struct msm_camera_i2c_read_config))) {
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
@@ -1273,16 +1085,12 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 			pr_err("%s:%d: i2c_read failed\n", __func__, __LINE__);
 			break;
 		}
-<<<<<<< HEAD
 		if (copy_to_user(&read_config.data,
 			(void *)&local_data, sizeof(uint16_t))) {
 			pr_err("%s:%d copy failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
 		}
-=======
-		read_config_ptr->data = local_data;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	}
 	case CFG_SLAVE_WRITE_I2C_ARRAY: {
@@ -1303,20 +1111,11 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 			write_config.slave_addr,
 			write_config.conf_array.size);
 
-<<<<<<< HEAD
 		if (!write_config.conf_array.size) {
-=======
-		if (!write_config.conf_array.size ||
-			write_config.conf_array.size > I2C_SEQ_REG_DATA_MAX) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
 		}
-<<<<<<< HEAD
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		reg_setting = kzalloc(write_config.conf_array.size *
 			(sizeof(struct msm_camera_i2c_reg_array)), GFP_KERNEL);
 		if (!reg_setting) {
@@ -1390,20 +1189,11 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 			break;
 		}
 
-<<<<<<< HEAD
 		if (!conf_array.size) {
-=======
-		if (!conf_array.size ||
-			conf_array.size > I2C_SEQ_REG_DATA_MAX) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
 		}
-<<<<<<< HEAD
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		reg_setting = kzalloc(conf_array.size *
 			(sizeof(struct msm_camera_i2c_seq_reg_array)),
 			GFP_KERNEL);
@@ -1520,38 +1310,6 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 		}
 		break;
 	}
-<<<<<<< HEAD
-=======
-	case CFG_GET_MODULE_INFO: {
-		struct msm_camera_sensor_slave_info *sensor_slave_info;
-		struct otp_info_t *sensor_otp;
-		uint32_t otp_data_size;
-
-		sensor_slave_info = s_ctrl->sensordata->cam_slave_info;
-		if (!sensor_slave_info) {
-			pr_err("%s: camera slave info is not defined",
-				__func__);
-			rc = -EFAULT;
-			break;
-		}
-
-		sensor_otp = &sensor_slave_info->sensor_otp;
-		otp_data_size =
-			(sensor_slave_info->sensor_init_params.
-			sensor_otp.page_size) * (sensor_slave_info->
-			sensor_init_params.sensor_otp.num_of_pages);
-
-		if (copy_to_user((void *)cdata->cfg.sensor_otp.otp_info,
-			(uint8_t *)sensor_otp->otp_info,
-			otp_data_size)) {
-			pr_err("%s: error copying otp buffer to user\n",
-				__func__);
-			rc = -EFAULT;
-			break;
-		}
-		break;
-	}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		rc = -EFAULT;
 		break;
@@ -1570,7 +1328,6 @@ int msm_sensor_check_id(struct msm_sensor_ctrl_t *s_ctrl)
 		rc = s_ctrl->func_tbl->sensor_match_id(s_ctrl);
 	else
 		rc = msm_sensor_match_id(s_ctrl);
-<<<<<<< HEAD
 
 	if( (rc == 0) 
 		&& (s_ctrl->sensordata->sensor_name != NULL) 
@@ -1591,8 +1348,6 @@ int msm_sensor_check_id(struct msm_sensor_ctrl_t *s_ctrl)
 		}
 	}
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (rc < 0)
 		pr_err("%s:%d match id failed rc %d\n", __func__, __LINE__, rc);
 	return rc;
@@ -1670,7 +1425,6 @@ static struct msm_camera_i2c_fn_t msm_sensor_qup_func_tbl = {
 	.i2c_write_conf_tbl = msm_camera_qup_i2c_write_conf_tbl,
 };
 
-<<<<<<< HEAD
 /* add sensor info for *#87#
    by wangqin 20130924
    begin
@@ -1738,8 +1492,6 @@ int32_t msm_sensor_init_device_name(void)
    end
 */
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 int32_t msm_sensor_platform_probe(struct platform_device *pdev,
 				  const void *data)
 {
@@ -1775,11 +1527,6 @@ int32_t msm_sensor_platform_probe(struct platform_device *pdev,
 		s_ctrl->sensordata->slave_info->sensor_slave_addr >> 1;
 	cci_client->retries = 3;
 	cci_client->id_map = 0;
-<<<<<<< HEAD
-=======
-	cci_client->i2c_freq_mode =
-		s_ctrl->sensordata->slave_info->sensor_i2c_freq_mode;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!s_ctrl->func_tbl)
 		s_ctrl->func_tbl = &msm_sensor_func_tbl;
 	if (!s_ctrl->sensor_i2c_client->i2c_func_tbl)
@@ -1841,12 +1588,8 @@ int32_t msm_sensor_platform_probe(struct platform_device *pdev,
 		&msm_sensor_v4l2_subdev_fops;
 
 	CDBG("%s:%d\n", __func__, __LINE__);
-<<<<<<< HEAD
 	msm_sensor_init_device_name();
 	msm_sensor_set_module_info(s_ctrl);
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	s_ctrl->func_tbl->sensor_power_down(s_ctrl);
 	CDBG("%s:%d\n", __func__, __LINE__);
 	return rc;

@@ -697,7 +697,6 @@ void dxeRxThreadChannelDebugHandler
 
 /*==========================================================================
   @  Function Name 
-<<<<<<< HEAD
       dxeRXHealthMonitor
 
   @  Description 
@@ -996,8 +995,6 @@ void dxeHealthMonitorTimeout
 
 /*==========================================================================
   @  Function Name 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
       dxeCtrlBlkAlloc
 
   @  Description 
@@ -3848,10 +3845,7 @@ static wpt_status dxeTXCompFrame
                               channelEntry->channelType,
                               eWLAN_PAL_TRUE);
       channelEntry->hitLowResource = eWLAN_PAL_FALSE;
-<<<<<<< HEAD
       wpalTimerStop(&channelEntry->healthMonitorTimer);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
    }
 
    status = wpalMutexRelease(&channelEntry->dxeChannelLock);
@@ -4641,7 +4635,6 @@ void *WLANDXE_Open
          return NULL;
       }
 
-<<<<<<< HEAD
       status = wpalTimerInit(&currentChannel->healthMonitorTimer,
                     dxeHealthMonitorTimeout,
                     (void *)currentChannel);
@@ -4665,8 +4658,6 @@ void *WLANDXE_Open
       currentChannel->healthMonitorMsg->callback = dxeTXHealthMonitor;
       currentChannel->healthMonitorMsg->pContext = (void *)currentChannel;
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
       HDXE_MSG(eWLAN_MODULE_DAL_DATA, eWLAN_PAL_TRACE_LEVEL_WARN,
                "WLANDXE_Open Channel %s Open Success", channelType[idx]);
    }
@@ -5090,11 +5081,8 @@ wpt_status WLANDXE_TxFrame
          dxeNotifySmsm(eWLAN_PAL_FALSE, eWLAN_PAL_TRUE);
          dxeNotifySmsm(eWLAN_PAL_TRUE, eWLAN_PAL_FALSE);
       }
-<<<<<<< HEAD
       wpalTimerStart(&currentChannel->healthMonitorTimer,
                      T_WLANDXE_PERIODIC_HEALTH_M_TIME);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
    }
    status = wpalMutexRelease(&currentChannel->dxeChannelLock);
    if(eWLAN_PAL_STATUS_SUCCESS != status)
@@ -5157,11 +5145,8 @@ WLANDXE_CompleteTX
                              WDTS_CHANNEL_TX_LOW_PRI,
                              eWLAN_PAL_FALSE);
       inLowRes = channelCb->hitLowResource = eWLAN_PAL_TRUE;
-<<<<<<< HEAD
       wpalTimerStart(&channelCb->healthMonitorTimer,
                      T_WLANDXE_PERIODIC_HEALTH_M_TIME);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
   }
 
@@ -5200,11 +5185,8 @@ WLANDXE_CompleteTX
                              WDTS_CHANNEL_TX_LOW_PRI,
                              eWLAN_PAL_FALSE);
         channelCb->hitLowResource = eWLAN_PAL_TRUE;
-<<<<<<< HEAD
         wpalTimerStart(&channelCb->healthMonitorTimer,
                        T_WLANDXE_PERIODIC_HEALTH_M_TIME);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
       }
     }
   }
@@ -5250,14 +5232,11 @@ wpt_status WLANDXE_Stop
    dxeCtxt = (WLANDXE_CtrlBlkType *)pDXEContext;
    for(idx = 0; idx < WDTS_CHANNEL_MAX; idx++)
    {
-<<<<<<< HEAD
       if(VOS_TIMER_STATE_RUNNING == wpalTimerGetCurStatus(&dxeCtxt->dxeChannel[idx].healthMonitorTimer))
       {
          wpalTimerStop(&dxeCtxt->dxeChannel[idx].healthMonitorTimer);
       }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
       status = dxeChannelStop(dxeCtxt, &dxeCtxt->dxeChannel[idx]);
       if(eWLAN_PAL_STATUS_SUCCESS != status)
       {
@@ -5334,14 +5313,11 @@ wpt_status WLANDXE_Close
    for(idx = 0; idx < WDTS_CHANNEL_MAX; idx++)
    {
       wpalMutexDelete(&dxeCtxt->dxeChannel[idx].dxeChannelLock);
-<<<<<<< HEAD
       wpalTimerDelete(&dxeCtxt->dxeChannel[idx].healthMonitorTimer);
       if(NULL != dxeCtxt->dxeChannel[idx].healthMonitorMsg)
       {
          wpalMemoryFree(dxeCtxt->dxeChannel[idx].healthMonitorMsg);
       }
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
       dxeChannelClose(dxeCtxt, &dxeCtxt->dxeChannel[idx]);
 #ifdef WLANDXE_TEST_CHANNEL_ENABLE
       channel    = &dxeCtxt->dxeChannel[idx];
@@ -5876,7 +5852,6 @@ void WLANDXE_ChannelDebug
       }
    }
 
-<<<<<<< HEAD
    if(debugFlags & WPAL_DEBUG_START_HEALTH_TIMER)
    {
       HDXE_MSG(eWLAN_MODULE_DAL_DATA, eWLAN_PAL_TRACE_LEVEL_ERROR,
@@ -5885,7 +5860,5 @@ void WLANDXE_ChannelDebug
       wpalTimerStart(&tempDxeCtrlBlk->dxeChannel[WDTS_CHANNEL_TX_LOW_PRI].healthMonitorTimer,
                      T_WLANDXE_PERIODIC_HEALTH_M_TIME);
    }
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
    return;
 }

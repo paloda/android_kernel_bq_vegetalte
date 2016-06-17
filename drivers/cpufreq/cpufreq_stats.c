@@ -13,13 +13,10 @@
 #include <linux/cpufreq.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
 #include <linux/sort.h>
 #include <linux/err.h>
 #include <linux/of.h>
 #include <linux/sched.h>
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <asm/cputime.h>
 
 static spinlock_t cpufreq_stats_lock;
@@ -313,7 +310,6 @@ static void cpufreq_stats_free_table(unsigned int cpu)
 
 	if (cpufreq_frequency_get_table(policy->cpu))
 		__cpufreq_stats_free_table(policy);
-<<<<<<< HEAD
 
 	cpufreq_cpu_put(policy);
 }
@@ -360,14 +356,6 @@ static void cpufreq_powerstats_free(void)
 
 static int __cpufreq_stats_create_table(struct cpufreq_policy *policy,
 		struct cpufreq_frequency_table *table, int count)
-=======
-
-	cpufreq_cpu_put(policy);
-}
-
-static int __cpufreq_stats_create_table(struct cpufreq_policy *policy,
-		struct cpufreq_frequency_table *table)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	unsigned int i, j, ret = 0;
 	struct cpufreq_stats *stat;
@@ -428,26 +416,6 @@ error_out:
 	kfree(stat);
 	per_cpu(cpufreq_stats_table, cpu) = NULL;
 	return ret;
-}
-
-static void cpufreq_stats_create_table(unsigned int cpu)
-{
-	struct cpufreq_policy *policy;
-	struct cpufreq_frequency_table *table;
-
-	/*
-	 * "likely(!policy)" because normally cpufreq_stats will be registered
-	 * before cpufreq driver
-	 */
-	policy = cpufreq_cpu_get(cpu);
-	if (likely(!policy))
-		return;
-
-	table = cpufreq_frequency_get_table(policy->cpu);
-	if (likely(table))
-		__cpufreq_stats_create_table(policy, table);
-
-	cpufreq_cpu_put(policy);
 }
 
 static void cpufreq_stats_update_policy_cpu(struct cpufreq_policy *policy)
@@ -606,11 +574,7 @@ static void cpufreq_allstats_create(unsigned int cpu,
 static int cpufreq_stat_notifier_policy(struct notifier_block *nb,
 		unsigned long val, void *data)
 {
-<<<<<<< HEAD
 	int ret = 0, count = 0, i;
-=======
-	int ret = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct cpufreq_policy *policy = data;
 	struct cpufreq_frequency_table *table;
 	unsigned int cpu = policy->cpu;
@@ -624,7 +588,6 @@ static int cpufreq_stat_notifier_policy(struct notifier_block *nb,
 	if (!table)
 		return 0;
 
-<<<<<<< HEAD
 	for (i = 0; table[i].frequency != CPUFREQ_TABLE_END; i++) {
 		unsigned int freq = table[i].frequency;
 
@@ -641,15 +604,10 @@ static int cpufreq_stat_notifier_policy(struct notifier_block *nb,
 
 	if (val == CPUFREQ_CREATE_POLICY)
 		ret = __cpufreq_stats_create_table(policy, table, count);
-=======
-	if (val == CPUFREQ_CREATE_POLICY)
-		ret = __cpufreq_stats_create_table(policy, table);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	else if (val == CPUFREQ_REMOVE_POLICY)
 		__cpufreq_stats_free_table(policy);
 
 	return ret;
-<<<<<<< HEAD
 }
 
 static void cpufreq_stats_create_table(unsigned int cpu)
@@ -684,8 +642,6 @@ static void cpufreq_stats_create_table(unsigned int cpu)
 		__cpufreq_stats_create_table(policy, table, count);
 	}
 	cpufreq_cpu_put(policy);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static int cpufreq_stat_notifier_trans(struct notifier_block *nb,
@@ -777,11 +733,8 @@ static void __exit cpufreq_stats_exit(void)
 			CPUFREQ_TRANSITION_NOTIFIER);
 	for_each_online_cpu(cpu)
 		cpufreq_stats_free_table(cpu);
-<<<<<<< HEAD
 	cpufreq_allstats_free();
 	cpufreq_powerstats_free();
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 MODULE_AUTHOR("Zou Nan hai <nanhai.zou@intel.com>");
 MODULE_DESCRIPTION("'cpufreq_stats' - A driver to export cpufreq stats "

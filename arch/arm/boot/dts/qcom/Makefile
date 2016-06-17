@@ -39,11 +39,6 @@ dtb-$(CONFIG_ARCH_MSM8909) += msm8909-sim.dtb \
 	msm8909-1gb-qrd-skua.dtb \
 	msm8909-1gb-cdp.dtb \
 	msm8909-1gb-mtp.dtb
-<<<<<<< HEAD
-=======
-# Do not include QC default DTBs if not needed
-ifneq ($(CONFIG_MMI_DEVICE_DTBS),y)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 dtb-$(CONFIG_ARCH_MSM8916) += msm8916-sim.dtb \
 	msm8916-rumi.dtb \
 	msm8916-cdp.dtb \
@@ -93,11 +88,6 @@ dtb-$(CONFIG_ARCH_MSM8916) += msm8916-sim.dtb \
 	msm8929-mtp-jdi-smb1360.dtb \
 	msm8929-mtp-wcd9306-smb1360.dtb \
 	msm8929-cdp-jdi.dtb
-<<<<<<< HEAD
-=======
-endif # CONFIG_MMI_DEVICE_DTBS
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 dtb-$(CONFIG_ARCH_MSM8226) += msm8226-sim.dtb \
 	msm8226-fluid.dtb \
 	msm8226-v1-cdp.dtb \
@@ -231,61 +221,6 @@ dtb-$(CONFIG_ARCH_MSM8994) += msm8994-v1-sim.dtb \
 dtb-$(CONFIG_ARCH_MSM8992) += msm8992-sim.dtb \
 	msm8992-rumi.dtb
 
-<<<<<<< HEAD
-=======
-ifeq ($(CONFIG_MMI_SURNIA_DTB),y)
-# Motorola 8916 Devices
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-styx-p0.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-styx-p1.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p1a.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p1b.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p1ad.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p1bd.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p2a.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p2ad.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p2b.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p2bd.dtb
-dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p3.dtb
-dtb-$(CONFIG_ARCH_MSM8916) += msm8916-surnia-p3d.dtb
-endif
-
-ifeq ($(CONFIG_MMI_OSPREY_DTB),y)
-# Osprey
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p0.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p1a.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p1ad.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p1b.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p1bd.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p2a.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p2ad.dtb
-dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p2b.dtb
-dtb-$(CONFIG_ARCH_MSM8916) += msm8916-osprey-p2bd.dtb
-endif
-
-ifeq ($(CONFIG_MMI_LUX_DTB),y)
-# Motorola 8939 Devices
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8939-lux-p0.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8939-lux-p1.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8939-lux-p1b.dtb
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8939-lux-p1c.dtb
-dtb-$(CONFIG_ARCH_MSM8916) += msm8939-lux-p2a.dtb
-dtb-$(CONFIG_ARCH_MSM8916) += msm8939-lux-p2c.dtb
-endif
-
-ifeq ($(CONFIG_MMI_MERLIN_DTB),y)
-# Merlin
-#dtb-$(CONFIG_ARCH_MSM8916) += msm8939-merlin-p0.dtb
-dtb-$(CONFIG_ARCH_MSM8916) += msm8939-merlin-p1.dtb
-dtb-$(CONFIG_ARCH_MSM8916) += msm8939-merlin-p1v3.dtb
-endif
-
-ifeq ($(CONFIG_MMI_DEVICE_DTBS),y)
-# Add 1k of padding to the DTBs to allow for environment variables
-# to be runtime added by the bootloader (i.e. /chosen properties)
-DTC_FLAGS := -p 1024
-endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 DTB_NAMES := $(subst $\",,$(CONFIG_BUILD_ARM_APPENDED_DTB_IMAGE_NAMES))
 ifneq ($(DTB_NAMES),)
 DTB_LIST := $(addsuffix .dtb,$(DTB_NAMES))

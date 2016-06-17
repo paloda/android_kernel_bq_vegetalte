@@ -183,13 +183,10 @@ static int msm_csiphy_lane_config(struct csiphy_device *csiphy_dev,
 		msm_camera_io_w(csiphy_params->settle_cnt,
 			csiphybase + csiphy_dev->ctrl_reg->csiphy_reg.
 			mipi_csiphy_lnn_cfg3_addr + 0x40*j);
-<<<<<<< HEAD
 		// add for hynix	
 		msm_camera_io_w(0x0b,
 			csiphybase + csiphy_dev->ctrl_reg->csiphy_reg.
 			mipi_csiphy_lnn_cfg4_addr + 0x40*j);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		msm_camera_io_w(csiphy_dev->ctrl_reg->csiphy_reg.
 			mipi_csiphy_interrupt_mask_val, csiphybase +
 			csiphy_dev->ctrl_reg->csiphy_reg.
@@ -253,11 +250,7 @@ static irqreturn_t msm_csiphy_irq(int irq_num, void *data)
 			csiphy_dev->base +
 			csiphy_dev->ctrl_reg->csiphy_reg.
 			mipi_csiphy_interrupt_clear0_addr + 0x4*i);
-<<<<<<< HEAD
 		pr_err("%s MIPI_CSIPHY%d_INTERRUPT_STATUS%d = 0x%x\n",
-=======
-		CDBG("%s MIPI_CSIPHY%d_INTERRUPT_STATUS%d = 0x%x\n",
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			 __func__, csiphy_dev->pdev->id, i, irq);
 		msm_camera_io_w(0x1, csiphy_dev->base +
 			csiphy_dev->ctrl_reg->

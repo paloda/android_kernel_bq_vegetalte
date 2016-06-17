@@ -890,16 +890,6 @@ config USB_ANDROID_RNDIS_DWORD_ALIGNED
 	help
 		Provides dword aligned for DMA controller.
 
-<<<<<<< HEAD
-=======
-config USB_ANDROID_USBNET
-	boolean "Android gadget usbnet function"
-	depends on USB_ANDROID
-	#default y
-	help
-	  Provides usbnet function for android gadget driver.
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 if TTY
 
 config USB_CDC_COMPOSITE

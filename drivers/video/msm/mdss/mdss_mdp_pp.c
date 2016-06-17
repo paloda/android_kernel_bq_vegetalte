@@ -453,11 +453,7 @@ static inline void mdss_mdp_pp_get_dcm_state(struct mdss_mdp_pipe *pipe,
 		*dcm_state = pipe->mixer_left->ctl->mfd->dcm_state;
 }
 
-<<<<<<< HEAD
 inline int linear_map(int in, int *out, int in_max, int out_max)
-=======
-static inline int linear_map(int in, int *out, int in_max, int out_max)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	if (in < 0 || !out || in_max <= 0 || out_max <= 0)
 		return -EINVAL;
@@ -4606,11 +4602,7 @@ int mdss_mdp_ad_input(struct msm_fb_data_type *mfd,
 	mutex_lock(&ad->lock);
 	if ((!PP_AD_STATE_IS_INITCFG(ad->state) &&
 			!PP_AD_STS_IS_DIRTY(ad->sts)) &&
-<<<<<<< HEAD
 			!input->mode == MDSS_AD_MODE_CALIB) {
-=======
-			input->mode != MDSS_AD_MODE_CALIB) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_warn("AD not initialized or configured.\n");
 		ret = -EPERM;
 		goto error;

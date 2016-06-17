@@ -830,7 +830,6 @@ config SENSORS_BMI058
 	 If you say yes here, you get support for Bosch Sensortec's
 	 sensor driver of BMI058.
 
-<<<<<<< HEAD
 config SENSORS_BMM050
 	tristate "BMM050 Magnetic Sensor Driver"
 	depends on I2C
@@ -854,7 +853,5 @@ config SENSORS_BMG_FIFO
 config FTS_GESTURE
 	bool "FT5x06 doble tap"
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 endif
 

@@ -1340,10 +1340,6 @@ static void smd_state_change(struct smd_channel *ch,
 			ch->half_ch->set_tail(ch->recv, 0);
 			ch->half_ch->set_head(ch->send, 0);
 			ch->half_ch->set_fBLOCKREADINTR(ch->send, 0);
-<<<<<<< HEAD
-=======
-			ch->current_packet = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			ch_set_state(ch, SMD_SS_OPENING);
 		}
 		break;
@@ -1360,10 +1356,7 @@ static void smd_state_change(struct smd_channel *ch,
 	case SMD_SS_CLOSED:
 		if (ch->half_ch->get_state(ch->send) == SMD_SS_OPENED) {
 			ch_set_state(ch, SMD_SS_CLOSING);
-<<<<<<< HEAD
 			ch->current_packet = 0;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			ch->pending_pkt_sz = 0;
 			ch->notify(ch->priv, SMD_EVENT_CLOSE);
 		}
@@ -1974,19 +1967,6 @@ int smd_named_open_on_edge(const char *name, uint32_t edge,
 			return -ENODEV;
 	}
 
-<<<<<<< HEAD
-=======
-	if (ch->half_ch->get_fSTATE(ch->send)) {
-		/* remote side hasn't acknowledged our last state transition */
-		SMD_INFO("%s: ch %d valid, waiting for remote to ack state\n",
-				__func__, ch->n);
-		msleep(250);
-		if (ch->half_ch->get_fSTATE(ch->send))
-			SMD_INFO("%s: ch %d - no remote ack, continuing\n",
-					__func__, ch->n);
-	}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (notify == 0)
 		notify = do_nothing_notify;
 

@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
-=======
- * Copyright (c) 2012-2013 The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -42,11 +38,7 @@
  */
 
 #include "wniApi.h"
-<<<<<<< HEAD
 #include "wniCfg.h"
-=======
-#include "wniCfgSta.h"
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "aniGlobal.h"
 #include "schApi.h"
 #include "utilsApi.h"
@@ -150,17 +142,10 @@ limProcessProbeRspFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo,tpPESession 
     pHdr = WDA_GET_RX_MAC_HEADER(pRxPacketInfo);
 
 
-<<<<<<< HEAD
    PELOG2(limLog(pMac, LOG2,
              FL("Received Probe Response frame with length=%d from "),
              WDA_GET_RX_MPDU_LEN(pRxPacketInfo));
     limPrintMacAddr(pMac, pHdr->sa, LOG2);)
-=======
-   limLog(pMac, LOG2,
-             FL("Received Probe Response frame with length=%d from "),
-             WDA_GET_RX_MPDU_LEN(pRxPacketInfo));
-    limPrintMacAddr(pMac, pHdr->sa, LOG2);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
    if (!pMac->fScanOffload)
    {

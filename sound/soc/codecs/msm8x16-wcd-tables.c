@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -299,10 +295,7 @@ const u8 msm8x16_wcd_reg_readonly[MSM8X16_WCD_CACHE_SIZE] = {
 		[MSM8X16_WCD_A_ANALOG_MASTER_BIAS_CTL] = 1,
 		[MSM8X16_WCD_A_ANALOG_CURRENT_LIMIT] = 1,
 		[MSM8X16_WCD_A_DIGITAL_CDC_DIG_CLK_CTL] = 1,
-<<<<<<< HEAD
 		[MSM8X16_WCD_A_ANALOG_MBHC_DET_CTL_1] = 1,
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 const u8 msm8x16_wcd_reset_reg_defaults[MSM8X16_WCD_CACHE_SIZE] = {
 		[MSM8X16_WCD_A_DIGITAL_REVISION1] =

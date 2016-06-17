@@ -82,13 +82,6 @@ enum {
 };
 
 enum {
-	POWER_SUPPLY_CHARGE_RATE_NONE = 0,
-	POWER_SUPPLY_CHARGE_RATE_NORMAL,
-	POWER_SUPPLY_CHARGE_RATE_WEAK,
-	POWER_SUPPLY_CHARGE_RATE_TURBO,
-};
-
-enum {
 	POWER_SUPPLY_SCOPE_UNKNOWN = 0,
 	POWER_SUPPLY_SCOPE_SYSTEM,
 	POWER_SUPPLY_SCOPE_DEVICE,
@@ -128,7 +121,6 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_CHARGE_EMPTY,
 	POWER_SUPPLY_PROP_CHARGE_NOW,
 	POWER_SUPPLY_PROP_CHARGE_AVG,
-	POWER_SUPPLY_PROP_CHARGE_RATE,
 	POWER_SUPPLY_PROP_CHARGE_COUNTER,
 	POWER_SUPPLY_PROP_CHARGE_COUNTER_SHADOW,
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT,
@@ -157,7 +149,6 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_TEMP_AMBIENT,
 	POWER_SUPPLY_PROP_TEMP_AMBIENT_ALERT_MIN,
 	POWER_SUPPLY_PROP_TEMP_AMBIENT_ALERT_MAX,
-	POWER_SUPPLY_PROP_TEMP_HOTSPOT,
 	POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW,
 	POWER_SUPPLY_PROP_TIME_TO_EMPTY_AVG,
 	POWER_SUPPLY_PROP_TIME_TO_FULL_NOW,
@@ -165,27 +156,15 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_TYPE, /* use power_supply.type instead */
 	POWER_SUPPLY_PROP_SCOPE,
 	POWER_SUPPLY_PROP_SYSTEM_TEMP_LEVEL,
-<<<<<<< HEAD
-=======
-	POWER_SUPPLY_PROP_NUM_SYSTEM_TEMP_LEVELS,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	POWER_SUPPLY_PROP_RESISTANCE,
 	POWER_SUPPLY_PROP_RESISTANCE_CAPACITIVE,
 	/* unit is in ohms due to ID being typically in kohm range */
 	POWER_SUPPLY_PROP_RESISTANCE_ID,
-<<<<<<< HEAD
-=======
-	POWER_SUPPLY_PROP_TAPER_REACHED,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* Local extensions */
 	POWER_SUPPLY_PROP_USB_HC,
 	POWER_SUPPLY_PROP_USB_OTG,
 	POWER_SUPPLY_PROP_CHARGE_ENABLED,
 	POWER_SUPPLY_PROP_FLASH_CURRENT_MAX,
-<<<<<<< HEAD
-=======
-	POWER_SUPPLY_PROP_ALLOW_DETECTION,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* Local extensions of type int64_t */
 	POWER_SUPPLY_PROP_CHARGE_COUNTER_EXT,
 	/* Properties of type `const char *' */
@@ -207,10 +186,6 @@ enum power_supply_type {
 	POWER_SUPPLY_TYPE_WIRELESS,	/* Accessory Charger Adapters */
 	POWER_SUPPLY_TYPE_BMS,		/* Battery Monitor System */
 	POWER_SUPPLY_TYPE_USB_PARALLEL,		/* USB Parallel Path */
-<<<<<<< HEAD
-=======
-	POWER_SUPPLY_TYPE_BCL,		/* Battery Current Limit */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 union power_supply_propval {
@@ -309,11 +284,6 @@ extern int power_supply_set_supply_type(struct power_supply *psy,
 extern int power_supply_set_hi_power_state(struct power_supply *psy, int value);
 extern int power_supply_set_low_power_state(struct power_supply *psy,
 							int value);
-<<<<<<< HEAD
-=======
-extern int power_supply_set_allow_detection(struct power_supply *psy,
-							int value);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 extern int power_supply_is_system_supplied(void);
 extern int power_supply_register(struct device *parent,
 				 struct power_supply *psy);
@@ -359,12 +329,6 @@ static inline int power_supply_set_hi_power_state(struct power_supply *psy,
 static inline int power_supply_set_low_power_state(struct power_supply *psy,
 							int value)
 							{ return -ENOSYS; }
-<<<<<<< HEAD
-=======
-static inline int power_supply_set_allow_detection(struct power_supply *psy,
-							int value)
-							{ return -ENOSYS; }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static inline int power_supply_is_system_supplied(void) { return -ENOSYS; }
 static inline int power_supply_register(struct device *parent,
 					struct power_supply *psy)

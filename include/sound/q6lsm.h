@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright (c) 2013-2014, Linux Foundation. All rights reserved.
-=======
- * Copyright (c) 2013-2015, Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,14 +21,11 @@
 
 #define MAX_NUM_CONFIDENCE 20
 
-<<<<<<< HEAD
 enum lsm_snd_model_in_use {
 	SND_MODEL_IN_USE_V1 = 1,
 	SND_MODEL_IN_USE_V2 = 2,
 };
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 typedef void (*lsm_app_cb)(uint32_t opcode, uint32_t token,
 		       uint32_t *payload, void *priv);
 
@@ -69,10 +62,7 @@ struct lsm_lab_hw_params {
 };
 
 struct lsm_client {
-<<<<<<< HEAD
 	enum lsm_snd_model_in_use snd_model_ver_inuse;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int		session;
 	lsm_app_cb	cb;
 	atomic_t	cmd_state;
@@ -82,16 +72,10 @@ struct lsm_client {
 	struct mutex    cmd_lock;
 	struct lsm_sound_model sound_model;
 	wait_queue_head_t cmd_wait;
-<<<<<<< HEAD
 	uint16_t	mode;
 	uint16_t	connect_to_port;
 	uint16_t	user_sensitivity;
 	uint16_t	kw_sensitivity;
-=======
-	uint32_t	cmd_err_code;
-	uint16_t	mode;
-	uint16_t	connect_to_port;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	uint8_t		num_confidence_levels;
 	uint8_t		*confidence_levels;
 	bool		started;
@@ -133,7 +117,6 @@ struct lsm_param_connect_to_port {
 	uint16_t	reserved;
 } __packed;
 
-<<<<<<< HEAD
 struct lsm_param_kw_detect_sensitivity {
 	struct lsm_param_payload_common common;
 	uint32_t	minor_version;
@@ -166,25 +149,10 @@ struct lsm_params_payload {
 
 struct lsm_cmd_set_params {
 	struct apr_hdr  hdr;
-=======
-
-/*
- * This param cannot be sent in this format.
- * The actual number of confidence level values
- * need to appended to this param payload.
- */
-struct lsm_param_min_confidence_levels {
-	struct lsm_param_payload_common common;
-	uint8_t		num_confidence_levels;
-} __packed;
-
-struct lsm_set_params_hdr {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	uint32_t	data_payload_size;
 	uint32_t	data_payload_addr_lsw;
 	uint32_t	data_payload_addr_msw;
 	uint32_t	mem_map_handle;
-<<<<<<< HEAD
 	struct lsm_params_payload payload;
 } __packed;
 
@@ -209,26 +177,6 @@ struct lsm_cmd_set_params_v2 {
 	uint32_t	data_payload_addr_msw;
 	uint32_t	mem_map_handle;
 	struct lsm_params_payload_v2	payload;
-=======
-} __packed;
-
-struct lsm_cmd_set_params {
-	struct apr_hdr  msg_hdr;
-	struct lsm_set_params_hdr param_hdr;
-} __packed;
-
-struct lsm_cmd_set_params_conf {
-	struct apr_hdr  msg_hdr;
-	struct lsm_set_params_hdr params_hdr;
-	struct lsm_param_min_confidence_levels	conf_payload;
-} __packed;
-
-struct lsm_cmd_set_opmode_connectport {
-	struct apr_hdr  msg_hdr;
-	struct lsm_set_params_hdr params_hdr;
-	struct lsm_param_connect_to_port	connect_to_port;
-	struct lsm_param_op_mode		op_mode;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 } __packed;
 
 
@@ -247,16 +195,11 @@ struct lsm_lab_enable {
 } __packed;
 
 struct lsm_params_lab_enable {
-<<<<<<< HEAD
 	struct apr_hdr  hdr;
 	uint32_t	data_payload_size;
 	uint32_t	data_payload_addr_lsw;
 	uint32_t	data_payload_addr_msw;
 	uint32_t	mem_map_handle;
-=======
-	struct apr_hdr msg_hdr;
-	struct lsm_set_params_hdr params_hdr;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct lsm_lab_enable lab_enable;
 } __packed;
 
@@ -268,16 +211,11 @@ struct lsm_lab_config {
 
 
 struct lsm_params_lab_config {
-<<<<<<< HEAD
 	struct apr_hdr  hdr;
 	uint32_t	data_payload_size;
 	uint32_t	data_payload_addr_lsw;
 	uint32_t	data_payload_addr_msw;
 	uint32_t	mem_map_handle;
-=======
-	struct apr_hdr  msg_hdr;
-	struct lsm_set_params_hdr params_hdr;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct lsm_lab_config lab_config;
 } __packed;
 
@@ -317,11 +255,8 @@ int q6lsm_set_data(struct lsm_client *client,
 		   enum lsm_detection_mode mode,
 		   bool detectfailure);
 int q6lsm_deregister_sound_model(struct lsm_client *client);
-<<<<<<< HEAD
 int q6lsm_set_kw_sensitivity_level(struct lsm_client *client,
 				u16 minkeyword, u16 minuser);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 void set_lsm_port(int);
 int get_lsm_port(void);
 int q6lsm_lab_control(struct lsm_client *client, u32 enable);

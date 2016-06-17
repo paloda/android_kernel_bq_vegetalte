@@ -135,7 +135,8 @@ int perf_output_begin(struct perf_output_handle *handle,
 {
 	struct ring_buffer *rb;
 	unsigned long tail, offset, head;
-	int have_lost, page_shift;
+	int have_lost;
+	struct perf_sample_data sample_data;
 	struct {
 		struct perf_event_header header;
 		u64			 id;
@@ -150,62 +151,57 @@ int perf_output_begin(struct perf_output_handle *handle,
 		event = event->parent;
 
 	rb = rcu_dereference(event->rb);
-	if (unlikely(!rb))
+	if (!rb)
 		goto out;
 
-	if (unlikely(!rb->nr_pages))
-		goto out;
+	handle->rb	= rb;
+	handle->event	= event;
 
-	handle->rb    = rb;
-	handle->event = event;
+	if (!rb->nr_pages)
+		goto out;
 
 	have_lost = local_read(&rb->lost);
-	if (unlikely(have_lost)) {
-		size += sizeof(lost_event);
-		if (event->attr.sample_id_all)
-			size += event->id_header_size;
+	if (have_lost) {
+		lost_event.header.size = sizeof(lost_event);
+		perf_event_header__init_id(&lost_event.header, &sample_data,
+					   event);
+		size += lost_event.header.size;
 	}
 
 	perf_output_get_handle(handle);
 
 	do {
+		/*
+		 * Userspace could choose to issue a mb() before updating the
+		 * tail pointer. So that all reads will be completed before the
+		 * write is issued.
+		 *
+		 * See perf_output_put_handle().
+		 */
 		tail = ACCESS_ONCE(rb->user_page->data_tail);
+		smp_mb();
 		offset = head = local_read(&rb->head);
 		head += size;
 		if (unlikely(!perf_output_space(rb, tail, offset, head)))
 			goto fail;
 	} while (local_cmpxchg(&rb->head, offset, head) != offset);
 
-	/*
-	 * Separate the userpage->tail read from the data stores below.
-	 * Matches the MB userspace SHOULD issue after reading the data
-	 * and before storing the new tail position.
-	 *
-	 * See perf_output_put_handle().
-	 */
-	smp_mb();
-
-	if (unlikely(head - local_read(&rb->wakeup) > rb->watermark))
+	if (head - local_read(&rb->wakeup) > rb->watermark)
 		local_add(rb->watermark, &rb->wakeup);
 
-	page_shift = PAGE_SHIFT + page_order(rb);
+	handle->page = offset >> (PAGE_SHIFT + page_order(rb));
+	handle->page &= rb->nr_pages - 1;
+	handle->size = offset & ((PAGE_SIZE << page_order(rb)) - 1);
+	handle->addr = rb->data_pages[handle->page];
+	handle->addr += handle->size;
+	handle->size = (PAGE_SIZE << page_order(rb)) - handle->size;
 
-	handle->page = (offset >> page_shift) & (rb->nr_pages - 1);
-	offset &= (1UL << page_shift) - 1;
-	handle->addr = rb->data_pages[handle->page] + offset;
-	handle->size = (1UL << page_shift) - offset;
-
-	if (unlikely(have_lost)) {
-		struct perf_sample_data sample_data;
-
-		lost_event.header.size = sizeof(lost_event);
+	if (have_lost) {
 		lost_event.header.type = PERF_RECORD_LOST;
 		lost_event.header.misc = 0;
 		lost_event.id          = event->id;
 		lost_event.lost        = local_xchg(&rb->lost, 0);
 
-		perf_event_header__init_id(&lost_event.header,
-					   &sample_data, event);
 		perf_output_put(handle, lost_event);
 		perf_event__output_id_sample(event, handle, &sample_data);
 	}

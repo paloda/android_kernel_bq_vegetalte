@@ -386,10 +386,7 @@ eCsrCfgDot11Mode csrGetCfgDot11ModeFromCsrPhyMode(tCsrRoamProfile *pProfile, eCs
 tANI_U32 csrTranslateToWNICfgDot11Mode(tpAniSirGlobal pMac, eCsrCfgDot11Mode csrDot11Mode);
 void csrSaveChannelPowerForBand( tpAniSirGlobal pMac, tANI_BOOLEAN fPopulate5GBand );
 void csrApplyChannelPowerCountryInfo( tpAniSirGlobal pMac, tCsrChannel *pChannelList, tANI_U8 *countryCode, tANI_BOOLEAN updateRiva);
-<<<<<<< HEAD
 void csrUpdateFCCChannelList(tpAniSirGlobal pMac);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 void csrApplyPower2Current( tpAniSirGlobal pMac );
 void csrAssignRssiForCategory(tpAniSirGlobal pMac, tANI_S8 bestApRssi, tANI_U8 catOffset);
 tANI_BOOLEAN csrIsMacAddressZero( tpAniSirGlobal pMac, tCsrBssid *pMacAddr );
@@ -479,18 +476,6 @@ eHalStatus csrScanBGScanAbort(tpAniSirGlobal);
   -------------------------------------------------------------------------------*/
 eHalStatus csrScanGetResult(tpAniSirGlobal, tCsrScanResultFilter *pFilter, tScanResultHandle *phResult);
 
-<<<<<<< HEAD
-=======
-#ifdef FEATURE_WLAN_LFR
-/* ---------------------------------------------------------------------------
-    \fn csrAddChannelToOccupiedChannelList
-    \brief Add channel no given by fast reassoc cmd into occ chn list
-    \param channel - channel no passed by fast reassoc cmd
-    \return void
-  -------------------------------------------------------------------------------*/
-void csrAddChannelToOccupiedChannelList(tpAniSirGlobal pMac, tANI_U8 channel);
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* ---------------------------------------------------------------------------
     \fn csrScanFlushResult
     \brief Clear scan results.
@@ -505,7 +490,6 @@ eHalStatus csrScanFlushResult(tpAniSirGlobal);
  */
 eHalStatus csrScanFilterResults(tpAniSirGlobal pMac);
 
-<<<<<<< HEAD
 /* ---------------------------------------------------------------------------
  *  \fn csrScanFilterDFSResults
  *  \brief Filter BSSIDs on DFS channels from the scan results.
@@ -514,8 +498,6 @@ eHalStatus csrScanFilterResults(tpAniSirGlobal pMac);
  */
 eHalStatus csrScanFilterDFSResults(tpAniSirGlobal pMac);
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 eHalStatus csrScanFlushSelectiveResult(tpAniSirGlobal, v_BOOL_t flushP2P);
 
 eHalStatus csrScanFlushSelectiveResultForBand(tpAniSirGlobal, v_BOOL_t flushP2P, tSirRFBand band);

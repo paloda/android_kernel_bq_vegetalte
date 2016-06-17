@@ -1,29 +1,14 @@
 /*
-<<<<<<< HEAD
  *  stk3x1x.c - Linux kernel modules for sensortek stk301x, stk321x, stk331x 
  *  , and stk3410 proximity/ambient light sensor
  *
  *  Copyright (C) 2012~2014 Lex Hsieh / sensortek <lex_hsieh@sensortek.com.tw>
-=======
- *  stk3x1x.c - Linux kernel modules for sensortek stk301x, stk321x and stk331x
- *  proximity/ambient light sensor
- *
- *  Copyright (c) 2013, The Linux Foundation. All Rights Reserved.
- *  Copyright (C) 2012 Lex Hsieh / sensortek <lex_hsieh@sitronix.com.tw> or
- *   <lex_hsieh@sensortek.com.tw>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
-<<<<<<< HEAD
-=======
- *  Linux Foundation chooses to take subject only to the GPLv2 license
- *  terms, and distributes only under these terms.
- *
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -42,10 +27,6 @@
 #include <linux/kdev_t.h>
 #include <linux/fs.h>
 #include <linux/input.h>
-<<<<<<< HEAD
-=======
-#include <linux/sensors.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <linux/workqueue.h>
 #include <linux/irq.h>
 #include <linux/delay.h>
@@ -55,35 +36,20 @@
 #include <linux/wakelock.h>
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
-<<<<<<< HEAD
 #include   <linux/fs.h>   
 #include  <asm/uaccess.h> 
-=======
-#include <linux/fs.h>
-#include <linux/uaccess.h>
-#include <linux/regulator/consumer.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_OF
 #include <linux/of_gpio.h>
 #endif
 #ifdef CONFIG_HAS_EARLYSUSPEND
-<<<<<<< HEAD
 //#include <linux/earlysuspend.h>
 #endif
 
 #define DRIVER_VERSION  "3.8.0"
-=======
-#include <linux/earlysuspend.h>
-#endif
-#include "linux/stk3x1x.h"
-
-#define DRIVER_VERSION  "3.4.4ts"
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /* Driver Settings */
 #define CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD
 #ifdef CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD
-<<<<<<< HEAD
 #define STK_ALS_CHANGE_THD	10	/* The threshold to trigger ALS interrupt, unit: lux */	
 #endif	/* #ifdef CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD */
 #define STK_INT_PS_MODE			1	/* 1, 2, or 3	*/
@@ -122,20 +88,6 @@ uint32_t als_value[16] = {0,10, 40,  65, 90,  145, 225, 300, 550, 930, 1250, 170
 #define STK_ALSCTRL_REG 			0x02
 #define STK_LEDCTRL_REG 			0x03
 #define STK_INT_REG 				0x04
-=======
-#define STK_ALS_CHANGE_THD	20	/* The threshold to trigger ALS interrupt, unit: lux */
-#endif	/* #ifdef CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD */
-#define STK_INT_PS_MODE			1	/* 1, 2, or 3	*/
-#define STK_POLL_PS
-#define STK_POLL_ALS		/* ALS interrupt is valid only when STK_PS_INT_MODE = 1	or 4*/
-
-/* Define Register Map */
-#define STK_STATE_REG 			0x00
-#define STK_PSCTRL_REG 			0x01
-#define STK_ALSCTRL_REG 		0x02
-#define STK_LEDCTRL_REG 		0x03
-#define STK_INT_REG 			0x04
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define STK_WAIT_REG 			0x05
 #define STK_THDH1_PS_REG 		0x06
 #define STK_THDH2_PS_REG 		0x07
@@ -158,28 +110,17 @@ uint32_t als_value[16] = {0,10, 40,  65, 90,  145, 225, 300, 550, 930, 1250, 170
 #define STK_RSRVD_REG 			0x3F
 #define STK_SW_RESET_REG		0x80
 
-<<<<<<< HEAD
 #define STK_GSCTRL_REG			0x1A
 #define STK_FLAG2_REG			0x1C
 
 /* Define state reg */
 #define STK_STATE_EN_IRS_SHIFT  	7
 #define STK_STATE_EN_AK_SHIFT  	6
-=======
-
-/* Define state reg */
-#define STK_STATE_EN_IRS_SHIFT  	7
-#define STK_STATE_EN_AK_SHIFT  		6
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define STK_STATE_EN_ASO_SHIFT  	5
 #define STK_STATE_EN_IRO_SHIFT  	4
 #define STK_STATE_EN_WAIT_SHIFT  	2
 #define STK_STATE_EN_ALS_SHIFT  	1
-<<<<<<< HEAD
 #define STK_STATE_EN_PS_SHIFT  	0
-=======
-#define STK_STATE_EN_PS_SHIFT  		0
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define STK_STATE_EN_IRS_MASK	0x80
 #define STK_STATE_EN_AK_MASK	0x40
@@ -192,46 +133,27 @@ uint32_t als_value[16] = {0,10, 40,  65, 90,  145, 225, 300, 550, 930, 1250, 170
 /* Define PS ctrl reg */
 #define STK_PS_PRS_SHIFT  		6
 #define STK_PS_GAIN_SHIFT  		4
-<<<<<<< HEAD
 #define STK_PS_IT_SHIFT  			0
 
 #define STK_PS_PRS_MASK			0xC0
 #define STK_PS_GAIN_MASK			0x30
-=======
-#define STK_PS_IT_SHIFT  		0
-
-#define STK_PS_PRS_MASK			0xC0
-#define STK_PS_GAIN_MASK		0x30
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define STK_PS_IT_MASK			0x0F
 
 /* Define ALS ctrl reg */
 #define STK_ALS_PRS_SHIFT  		6
-<<<<<<< HEAD
 #define STK_ALS_GAIN_SHIFT  		4
 #define STK_ALS_IT_SHIFT  			0
-=======
-#define STK_ALS_GAIN_SHIFT  	4
-#define STK_ALS_IT_SHIFT  		0
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define STK_ALS_PRS_MASK		0xC0
 #define STK_ALS_GAIN_MASK		0x30
 #define STK_ALS_IT_MASK			0x0F
-<<<<<<< HEAD
 	
 /* Define LED ctrl reg */
 #define STK_LED_IRDR_SHIFT  		6
-=======
-
-/* Define LED ctrl reg */
-#define STK_LED_IRDR_SHIFT  	6
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define STK_LED_DT_SHIFT  		0
 
 #define STK_LED_IRDR_MASK		0xC0
 #define STK_LED_DT_MASK			0x3F
-<<<<<<< HEAD
 	
 /* Define interrupt reg */
 #define STK_INT_CTRL_SHIFT  		7
@@ -242,18 +164,6 @@ uint32_t als_value[16] = {0,10, 40,  65, 90,  145, 225, 300, 550, 930, 1250, 170
 #define STK_INT_CTRL_MASK		0x80
 #define STK_INT_OUI_MASK			0x10
 #define STK_INT_ALS_MASK			0x08
-=======
-
-/* Define interrupt reg */
-#define STK_INT_CTRL_SHIFT  	7
-#define STK_INT_OUI_SHIFT  		4
-#define STK_INT_ALS_SHIFT  		3
-#define STK_INT_PS_SHIFT  		0
-
-#define STK_INT_CTRL_MASK		0x80
-#define STK_INT_OUI_MASK		0x10
-#define STK_INT_ALS_MASK		0x08
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define STK_INT_PS_MASK			0x07
 
 #define STK_INT_ALS				0x08
@@ -263,21 +173,14 @@ uint32_t als_value[16] = {0,10, 40,  65, 90,  145, 225, 300, 550, 930, 1250, 170
 #define STK_FLG_PSDR_SHIFT  		6
 #define STK_FLG_ALSINT_SHIFT  		5
 #define STK_FLG_PSINT_SHIFT  		4
-<<<<<<< HEAD
 #define STK_FLG_OUI_SHIFT  		2
 #define STK_FLG_IR_RDY_SHIFT  		1
 #define STK_FLG_NF_SHIFT  		0
-=======
-#define STK_FLG_OUI_SHIFT  			2
-#define STK_FLG_IR_RDY_SHIFT  		1
-#define STK_FLG_NF_SHIFT  			0
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define STK_FLG_ALSDR_MASK		0x80
 #define STK_FLG_PSDR_MASK		0x40
 #define STK_FLG_ALSINT_MASK		0x20
 #define STK_FLG_PSINT_MASK		0x10
-<<<<<<< HEAD
 #define STK_FLG_OUI_MASK			0x04
 #define STK_FLG_IR_RDY_MASK		0x02
 #define STK_FLG_NF_MASK			0x01
@@ -322,27 +225,6 @@ uint32_t als_value[16] = {0,10, 40,  65, 90,  145, 225, 300, 550, 930, 1250, 170
 #endif
 
 #ifdef QUALCOMM_PLATFORM
-=======
-#define STK_FLG_OUI_MASK		0x04
-#define STK_FLG_IR_RDY_MASK		0x02
-#define STK_FLG_NF_MASK			0x01
-
-/* misc define */
-#define MIN_ALS_POLL_DELAY_NS	110000000
-
-#define DEVICE_NAME		"stk_ps"
-#define ALS_NAME		"stk3x1x-ls"
-#define PS_NAME "proximity"
-
-/* POWER SUPPLY VOLTAGE RANGE */
-#define STK3X1X_VDD_MIN_UV	2000000
-#define STK3X1X_VDD_MAX_UV	3300000
-#define STK3X1X_VIO_MIN_UV	1750000
-#define STK3X1X_VIO_MAX_UV	1950000
-
-#define STK_FIR_LEN 16
-#define MAX_FIR_LEN 32
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static struct sensors_classdev sensors_light_cdev = {
 	.name = "stk3x1x-light",
@@ -379,7 +261,6 @@ static struct sensors_classdev sensors_proximity_cdev = {
 	.sensors_enable = NULL,
 	.sensors_poll_delay = NULL,
 };
-<<<<<<< HEAD
 #endif
 
 #ifdef SPREADTRUM_PLATFORM
@@ -435,20 +316,10 @@ union stk_ges_operation stk_ges_op[10] =
 	{.ops={0, 0, 0, 0}}
 };
 #endif
-=======
-
-struct data_filter {
-	u16 raw[MAX_FIR_LEN];
-	int sum;
-	int number;
-	int idx;
-};
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct stk3x1x_data {
 	struct i2c_client *client;
 	struct stk3x1x_platform_data *pdata;
-<<<<<<< HEAD
 #ifdef QUALCOMM_PLATFORM
 	struct sensors_classdev als_cdev;
 	struct sensors_classdev ps_cdev;
@@ -476,27 +347,10 @@ struct stk3x1x_data {
 	uint16_t ps_high_thd_boot;
 	uint16_t ps_low_thd_boot;
 #endif	
-=======
-	struct sensors_classdev als_cdev;
-	struct sensors_classdev ps_cdev;
-#if (!defined(STK_POLL_PS) || !defined(STK_POLL_ALS))
-    int32_t irq;
-    struct work_struct stk_work;
-	struct workqueue_struct *stk_wq;
-#endif
-	int		int_pin;
-	uint8_t wait_reg;
-#ifdef CONFIG_HAS_EARLYSUSPEND
-	struct early_suspend stk_early_suspend;
-#endif
-	uint16_t ps_thd_h;
-	uint16_t ps_thd_l;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	struct mutex io_lock;
 	struct input_dev *ps_input_dev;
 	int32_t ps_distance_last;
 	bool ps_enabled;
-<<<<<<< HEAD
 	bool re_enable_ps;
 	struct wake_lock ps_wakelock;	
 #ifdef STK_POLL_PS		
@@ -559,32 +413,6 @@ struct stk3x1x_data {
 	#endif
 
 	bool use_fir;
-=======
-	struct wake_lock ps_wakelock;
-	struct work_struct stk_ps_work;
-	struct workqueue_struct *stk_ps_wq;
-#ifdef STK_POLL_PS
-	struct wake_lock ps_nosuspend_wl;
-#endif
-	struct input_dev *als_input_dev;
-	int32_t als_lux_last;
-	uint32_t als_transmittance;
-	bool als_enabled;
-	struct hrtimer als_timer;
-	struct hrtimer ps_timer;
-	ktime_t als_poll_delay;
-	ktime_t ps_poll_delay;
-#ifdef STK_POLL_ALS
-    struct work_struct stk_als_work;
-	struct workqueue_struct *stk_als_wq;
-#endif
-	struct regulator *vdd;
-	struct regulator *vio;
-	bool power_enabled;
-	bool use_fir;
-	struct data_filter      fir;
-	atomic_t                firlength;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 #if( !defined(CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD))
@@ -604,23 +432,16 @@ static uint32_t lux_threshold_table[] =
 
 #define LUX_THD_TABLE_SIZE (sizeof(lux_threshold_table)/sizeof(uint32_t)+1)
 static uint16_t code_threshold_table[LUX_THD_TABLE_SIZE+1];
-<<<<<<< HEAD
 #endif 	
 #ifdef  REPORT_AS_MTK
 static int stk3x1x_get_als_value(struct stk3x1x_data *ps_data, uint16_t als);
 #endif
 static int32_t stk3x1x_enable_ps(struct stk3x1x_data *ps_data, uint8_t enable, uint8_t validate_reg);
-=======
-#endif
-
-static int32_t stk3x1x_enable_ps(struct stk3x1x_data *ps_data, uint8_t enable);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int32_t stk3x1x_enable_als(struct stk3x1x_data *ps_data, uint8_t enable);
 static int32_t stk3x1x_set_ps_thd_l(struct stk3x1x_data *ps_data, uint16_t thd_l);
 static int32_t stk3x1x_set_ps_thd_h(struct stk3x1x_data *ps_data, uint16_t thd_h);
 static int32_t stk3x1x_set_als_thd_l(struct stk3x1x_data *ps_data, uint16_t thd_l);
 static int32_t stk3x1x_set_als_thd_h(struct stk3x1x_data *ps_data, uint16_t thd_h);
-<<<<<<< HEAD
 static int32_t stk3x1x_get_ir_reading(struct stk3x1x_data *ps_data);
 #ifdef STK_TUNE0
 static int stk_ps_tune_zero_func_fae(struct stk3x1x_data *ps_data);
@@ -737,24 +558,11 @@ uint32_t stk_alscode2lux(struct stk3x1x_data *ps_data, uint32_t alscode)
 {
 	alscode += ((alscode<<7)+(alscode<<3)+(alscode>>1));   
     alscode<<=3; 
-=======
-static int stk3x1x_device_ctl(struct stk3x1x_data *ps_data, bool enable);
-//static int32_t stk3x1x_set_ps_aoffset(struct stk3x1x_data *ps_data, uint16_t offset);
-
-inline uint32_t stk_alscode2lux(struct stk3x1x_data *ps_data, uint32_t alscode)
-{
-	alscode += ((alscode<<7)+(alscode<<3)+(alscode>>1));
-    alscode<<=3;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     alscode/=ps_data->als_transmittance;
 	return alscode;
 }
 
-<<<<<<< HEAD
 uint32_t stk_lux2alscode(struct stk3x1x_data *ps_data, uint32_t lux)
-=======
-inline uint32_t stk_lux2alscode(struct stk3x1x_data *ps_data, uint32_t lux)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
     lux*=ps_data->als_transmittance;
     lux/=1100;
@@ -770,7 +578,6 @@ static void stk_init_code_threshold_table(struct stk3x1x_data *ps_data)
     uint32_t alscode;
 
     code_threshold_table[0] = 0;
-<<<<<<< HEAD
 #ifdef STK_DEBUG_PRINTF	
     printk(KERN_INFO "alscode[0]=%d\n",0);
 #endif	
@@ -782,19 +589,6 @@ static void stk_init_code_threshold_table(struct stk3x1x_data *ps_data)
     }
     code_threshold_table[i] = 0xffff;
     printk(KERN_INFO "alscode[%d]=%d\n",i,alscode);
-=======
-#ifdef STK_DEBUG_PRINTF
-    printk(KERN_INFO "alscode[0]=%d\n",0);
-#endif
-    for (i=1,j=0;i<LUX_THD_TABLE_SIZE;i++,j++)
-    {
-        alscode = stk_lux2alscode(ps_data, lux_threshold_table[j]);
-		dev_dbg(&ps_data->client->dev, "alscode[%d]=%d\n", i, alscode);
-        code_threshold_table[i] = (uint16_t)(alscode);
-    }
-    code_threshold_table[i] = 0xffff;
-	dev_dbg(&ps_data->client->dev, "alscode[%d]=%d\n", i, alscode);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static uint32_t stk_get_lux_interval_index(uint16_t alscode)
@@ -810,11 +604,7 @@ static uint32_t stk_get_lux_interval_index(uint16_t alscode)
     return LUX_THD_TABLE_SIZE;
 }
 #else
-<<<<<<< HEAD
 void stk_als_set_new_thd(struct stk3x1x_data *ps_data, uint16_t alscode)
-=======
-inline void stk_als_set_new_thd(struct stk3x1x_data *ps_data, uint16_t alscode)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
     int32_t high_thd,low_thd;
     high_thd = alscode + stk_lux2alscode(ps_data, STK_ALS_CHANGE_THD);
@@ -829,7 +619,6 @@ inline void stk_als_set_new_thd(struct stk3x1x_data *ps_data, uint16_t alscode)
 #endif // CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD
 
 
-<<<<<<< HEAD
 static void stk3x1x_proc_plat_data(struct stk3x1x_data *ps_data, struct stk3x1x_platform_data *plat_data)
 {
 	uint8_t w_reg;
@@ -883,84 +672,34 @@ static int32_t stk3x1x_init_all_reg(struct stk3x1x_data *ps_data)
 	int32_t ret;
 	
     ret = stk3x1x_i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, ps_data->state_reg);
-=======
-static int32_t stk3x1x_init_all_reg(struct stk3x1x_data *ps_data, struct stk3x1x_platform_data *plat_data)
-{
-	int32_t ret;
-	uint8_t w_reg;
-
-	w_reg = plat_data->state_reg;
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, w_reg);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (ret < 0)
     {
         printk(KERN_ERR "%s: write i2c error\n", __func__);
         return ret;
-<<<<<<< HEAD
     }		
     ret = stk3x1x_i2c_smbus_write_byte_data(ps_data->client, STK_PSCTRL_REG, ps_data->psctrl_reg);
-=======
-    }
-
-	ps_data->ps_thd_h = plat_data->ps_thd_h;
-	ps_data->ps_thd_l = plat_data->ps_thd_l;
-
-	w_reg = plat_data->psctrl_reg;
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_PSCTRL_REG, w_reg);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (ret < 0)
     {
         printk(KERN_ERR "%s: write i2c error\n", __func__);
         return ret;
-<<<<<<< HEAD
     }	
     ret = stk3x1x_i2c_smbus_write_byte_data(ps_data->client, STK_ALSCTRL_REG, ps_data->alsctrl_reg);
-=======
-    }
-	w_reg = plat_data->alsctrl_reg;
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_ALSCTRL_REG, w_reg);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (ret < 0)
     {
         printk(KERN_ERR "%s: write i2c error\n", __func__);
         return ret;
-<<<<<<< HEAD
     }		
     ret = stk3x1x_i2c_smbus_write_byte_data(ps_data->client, STK_LEDCTRL_REG, ps_data->ledctrl_reg);
-=======
-    }
-	w_reg = plat_data->ledctrl_reg;
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_LEDCTRL_REG, w_reg);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (ret < 0)
     {
         printk(KERN_ERR "%s: write i2c error\n", __func__);
         return ret;
-<<<<<<< HEAD
     }	
     ret = stk3x1x_i2c_smbus_write_byte_data(ps_data->client, STK_WAIT_REG, ps_data->wait_reg);
-=======
-    }
-	ps_data->wait_reg = plat_data->wait_reg;
-
-	if(ps_data->wait_reg < 2)
-	{
-		printk(KERN_WARNING "%s: wait_reg should be larger than 2, force to write 2\n", __func__);
-		ps_data->wait_reg = 2;
-	}
-	else if (ps_data->wait_reg > 0xFF)
-	{
-		printk(KERN_WARNING "%s: wait_reg should be less than 0xFF, force to write 0xFF\n", __func__);
-		ps_data->wait_reg = 0xFF;
-	}
-	w_reg = plat_data->wait_reg;
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_WAIT_REG, w_reg);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (ret < 0)
     {
         printk(KERN_ERR "%s: write i2c error\n", __func__);
         return ret;
-<<<<<<< HEAD
     }	
 #ifdef STK_TUNE0	
 	ps_data->psa = 0x0;
@@ -972,28 +711,10 @@ static int32_t stk3x1x_init_all_reg(struct stk3x1x_data *ps_data, struct stk3x1x
 //#endif	
 
     ret = stk3x1x_i2c_smbus_write_byte_data(ps_data->client, STK_INT_REG, ps_data->int_reg);
-=======
-    }
-	stk3x1x_set_ps_thd_h(ps_data, ps_data->ps_thd_h);
-	stk3x1x_set_ps_thd_l(ps_data, ps_data->ps_thd_l);
-
-	w_reg = 0;
-#ifndef STK_POLL_PS
-	w_reg |= STK_INT_PS_MODE;
-#else
-	w_reg |= 0x01;
-#endif
-
-#if (!defined(STK_POLL_ALS) && (STK_INT_PS_MODE != 0x02) && (STK_INT_PS_MODE != 0x03))
-	w_reg |= STK_INT_ALS;
-#endif
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_INT_REG, w_reg);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (ret < 0)
 	{
 		printk(KERN_ERR "%s: write i2c error\n", __func__);
 		return ret;
-<<<<<<< HEAD
 	}		
 	
 	/*
@@ -1044,39 +765,6 @@ static int32_t stk3x1x_check_pid(struct stk3x1x_data *ps_data)
 		printk(KERN_ERR "%s: invalid PID(%#x)\n", __func__, value[0]);	
 		return -1;
 	}
-=======
-	}
-
-	ret = i2c_smbus_write_byte_data(ps_data->client, 0x87, 0x60);
-	if (ret < 0) {
-		dev_err(&ps_data->client->dev,
-			"%s: write i2c error\n", __func__);
-		return ret;
-	}
-	return 0;
-}
-
-static int32_t stk3x1x_check_pid(struct stk3x1x_data *ps_data)
-{
-	int32_t err1, err2;
-
-	err1 = i2c_smbus_read_byte_data(ps_data->client,STK_PDT_ID_REG);
-	if (err1 < 0)
-	{
-		printk(KERN_ERR "%s: read i2c error, err=%d\n", __func__, err1);
-		return err1;
-	}
-
-    err2 = i2c_smbus_read_byte_data(ps_data->client,STK_RSRVD_REG);
-    if (err2 < 0)
-    {
-        printk(KERN_ERR "%s: read i2c error, err=%d\n", __func__, err2);
-        return -1;
-    }
-	if(err2 == 0xC0)
-		printk(KERN_INFO "%s: RID=0xC0!!!!!!!!!!!!!\n", __func__);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return 0;
 }
 
@@ -1085,54 +773,34 @@ static int32_t stk3x1x_software_reset(struct stk3x1x_data *ps_data)
 {
     int32_t r;
     uint8_t w_reg;
-<<<<<<< HEAD
 	
     w_reg = 0x7F;
     r = stk3x1x_i2c_smbus_write_byte_data(ps_data->client,STK_WAIT_REG,w_reg);
-=======
-
-    w_reg = 0x7F;
-    r = i2c_smbus_write_byte_data(ps_data->client,STK_WAIT_REG,w_reg);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (r<0)
     {
         printk(KERN_ERR "%s: software reset: write i2c error, ret=%d\n", __func__, r);
         return r;
     }
-<<<<<<< HEAD
     r = stk3x1x_i2c_smbus_read_byte_data(ps_data->client,STK_WAIT_REG);
-=======
-    r = i2c_smbus_read_byte_data(ps_data->client,STK_WAIT_REG);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (w_reg != r)
     {
         printk(KERN_ERR "%s: software reset: read-back value is not the same\n", __func__);
         return -1;
     }
-<<<<<<< HEAD
 	
     r = stk3x1x_i2c_smbus_write_byte_data(ps_data->client,STK_SW_RESET_REG,0);
-=======
-
-    r = i2c_smbus_write_byte_data(ps_data->client,STK_SW_RESET_REG,0);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (r<0)
     {
         printk(KERN_ERR "%s: software reset: read error after reset\n", __func__);
         return r;
     }
-<<<<<<< HEAD
 	usleep_range(1000, 5000);
-=======
-    msleep(1);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return 0;
 }
 
 
 static int32_t stk3x1x_set_als_thd_l(struct stk3x1x_data *ps_data, uint16_t thd_l)
 {
-<<<<<<< HEAD
 	unsigned char val[2];
 	int ret;
 	val[0] = (thd_l & 0xFF00) >> 8;
@@ -1152,28 +820,10 @@ static int32_t stk3x1x_set_als_thd_h(struct stk3x1x_data *ps_data, uint16_t thd_
 	if(ret < 0)
 		printk(KERN_ERR "%s: fail, ret=%d\n", __func__, ret);	
 	return ret;	
-=======
-    uint8_t temp;
-    uint8_t* pSrc = (uint8_t*)&thd_l;
-    temp = *pSrc;
-    *pSrc = *(pSrc+1);
-    *(pSrc+1) = temp;
-    return i2c_smbus_write_word_data(ps_data->client,STK_THDL1_ALS_REG,thd_l);
-}
-static int32_t stk3x1x_set_als_thd_h(struct stk3x1x_data *ps_data, uint16_t thd_h)
-{
-	uint8_t temp;
-    uint8_t* pSrc = (uint8_t*)&thd_h;
-    temp = *pSrc;
-    *pSrc = *(pSrc+1);
-    *(pSrc+1) = temp;
-    return i2c_smbus_write_word_data(ps_data->client,STK_THDH1_ALS_REG,thd_h);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static int32_t stk3x1x_set_ps_thd_l(struct stk3x1x_data *ps_data, uint16_t thd_l)
 {
-<<<<<<< HEAD
 	unsigned char val[2];
 	int ret;
 	val[0] = (thd_l & 0xFF00) >> 8;
@@ -1533,128 +1183,10 @@ static int32_t stk3x1x_enable_ps(struct stk3x1x_data *ps_data, uint8_t enable, u
 	int32_t near_far_state;		
 
 #ifdef STK_QUALCOMM_POWER_CTRL		
-=======
-    uint8_t temp;
-    uint8_t* pSrc = (uint8_t*)&thd_l;
-
-    temp = *pSrc;
-    *pSrc = *(pSrc+1);
-    *(pSrc+1) = temp;
-    ps_data->ps_thd_l = thd_l;
-	return i2c_smbus_write_word_data(ps_data->client,STK_THDL1_PS_REG,thd_l);
-}
-
-static int32_t stk3x1x_set_ps_thd_h(struct stk3x1x_data *ps_data, uint16_t thd_h)
-{
-    uint8_t temp;
-    uint8_t* pSrc = (uint8_t*)&thd_h;
-
-    temp = *pSrc;
-    *pSrc = *(pSrc+1);
-    *(pSrc+1) = temp;
-    ps_data->ps_thd_h = thd_h;
-	return i2c_smbus_write_word_data(ps_data->client,STK_THDH1_PS_REG,thd_h);
-}
-
-/*
-static int32_t stk3x1x_set_ps_foffset(struct stk3x1x_data *ps_data, uint16_t offset)
-{
-	uint8_t temp;
-    uint8_t* pSrc = (uint8_t*)&offset;
-    temp = *pSrc;
-    *pSrc = *(pSrc+1);
-    *(pSrc+1) = temp;
-    return i2c_smbus_write_word_data(ps_data->client,STK_DATA1_OFFSET_REG,offset);
-}
-
-static int32_t stk3x1x_set_ps_aoffset(struct stk3x1x_data *ps_data, uint16_t offset)
-{
-	uint8_t temp;
-    uint8_t* pSrc = (uint8_t*)&offset;
-	int ret;
-	uint8_t w_state_reg;
-	uint8_t re_en;
-
-	ret = i2c_smbus_read_byte_data(ps_data->client, STK_STATE_REG);
-	if (ret < 0)
-	{
-		printk(KERN_ERR "%s: write i2c error\n", __func__);
-		return ret;
-	}
-	re_en = (ret & STK_STATE_EN_AK_MASK) ? 1: 0;
-	if(re_en)
-	{
-		w_state_reg = (uint8_t)(ret & (~STK_STATE_EN_AK_MASK));
-		ret = i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, w_state_reg);
-		if (ret < 0)
-		{
-			printk(KERN_ERR "%s: write i2c error\n", __func__);
-			return ret;
-		}
-		msleep(1);
-	}
-    temp = *pSrc;
-    *pSrc = *(pSrc+1);
-    *(pSrc+1) = temp;
-	ret = i2c_smbus_write_word_data(ps_data->client,0x0E,offset);
-	if(!re_en)
-		return ret;
-
-	w_state_reg |= STK_STATE_EN_AK_MASK;
-	ret = i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, w_state_reg);
-	if (ret < 0)
-	{
-		printk(KERN_ERR "%s: write i2c error\n", __func__);
-		return ret;
-	}
-
-	return 0;
-}
-*/
-
-static inline uint32_t stk3x1x_get_ps_reading(struct stk3x1x_data *ps_data)
-{
-	int32_t word_data, tmp_word_data;
-
-	tmp_word_data = i2c_smbus_read_word_data(ps_data->client,STK_DATA1_PS_REG);
-	if(tmp_word_data < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, tmp_word_data);
-		return tmp_word_data;
-	}
-	word_data = ((tmp_word_data & 0xFF00) >> 8) | ((tmp_word_data & 0x00FF) << 8) ;
-	return word_data;
-}
-
-static int32_t stk3x1x_set_flag(struct stk3x1x_data *ps_data, uint8_t org_flag_reg, uint8_t clr)
-{
-	uint8_t w_flag;
-	w_flag = org_flag_reg | (STK_FLG_ALSINT_MASK | STK_FLG_PSINT_MASK | STK_FLG_OUI_MASK | STK_FLG_IR_RDY_MASK);
-	w_flag &= (~clr);
-	//printk(KERN_INFO "%s: org_flag_reg=0x%x, w_flag = 0x%x\n", __func__, org_flag_reg, w_flag);
-    return i2c_smbus_write_byte_data(ps_data->client,STK_FLAG_REG, w_flag);
-}
-
-static int32_t stk3x1x_get_flag(struct stk3x1x_data *ps_data)
-{
-    return i2c_smbus_read_byte_data(ps_data->client,STK_FLAG_REG);
-}
-
-static int32_t stk3x1x_enable_ps(struct stk3x1x_data *ps_data, uint8_t enable)
-{
-    int32_t ret;
-	uint8_t w_state_reg;
-	uint8_t curr_ps_enable;
-	curr_ps_enable = ps_data->ps_enabled?1:0;
-	if(curr_ps_enable == enable)
-		return 0;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (enable) {
 		ret = stk3x1x_device_ctl(ps_data, enable);
 		if (ret)
 			return ret;
-<<<<<<< HEAD
 	}	
 #endif
 	
@@ -1792,80 +1324,6 @@ static int32_t stk3x1x_enable_ps(struct stk3x1x_data *ps_data, uint8_t enable)
 			return ret;		
 #endif			
 	}
-=======
-	}
-
-    ret = i2c_smbus_read_byte_data(ps_data->client, STK_STATE_REG);
-    if (ret < 0)
-    {
-			printk(KERN_ERR "%s: write i2c error, ret=%d\n", __func__, ret);
-		return ret;
-    }
-	w_state_reg = ret;
-	w_state_reg &= ~(STK_STATE_EN_PS_MASK | STK_STATE_EN_WAIT_MASK | 0x60);
-	if(enable)
-	{
-		w_state_reg |= STK_STATE_EN_PS_MASK;
-		if(!(ps_data->als_enabled))
-			w_state_reg |= STK_STATE_EN_WAIT_MASK;
-	}
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, w_state_reg);
-    if (ret < 0)
-	{
-		printk(KERN_ERR "%s: write i2c error, ret=%d\n", __func__, ret);
-		return ret;
-	}
-
-    if(enable)
-	{
-#ifdef STK_POLL_PS
-		hrtimer_start(&ps_data->ps_timer, ps_data->ps_poll_delay, HRTIMER_MODE_REL);
-		ps_data->ps_distance_last = -1;
-#endif
-		ps_data->ps_enabled = true;
-#ifndef STK_POLL_PS
-#ifndef STK_POLL_ALS
-		if(!(ps_data->als_enabled))
-#endif	/* #ifndef STK_POLL_ALS	*/
-			enable_irq(ps_data->irq);
-		msleep(1);
-		ret = stk3x1x_get_flag(ps_data);
-		if (ret < 0)
-		{
-			printk(KERN_ERR "%s: read i2c error, ret=%d\n", __func__, ret);
-			return ret;
-		}
-
-		near_far_state = ret & STK_FLG_NF_MASK;
-		ps_data->ps_distance_last = near_far_state;
-		input_report_abs(ps_data->ps_input_dev, ABS_DISTANCE, near_far_state);
-		input_sync(ps_data->ps_input_dev);
-		wake_lock_timeout(&ps_data->ps_wakelock, 3*HZ);
-		reading = stk3x1x_get_ps_reading(ps_data);
-		dev_dbg(&ps_data->client->dev,
-			"%s: ps input event=%d, ps code = %d\n",
-			__func__, near_far_state, reading);
-#endif	/* #ifndef STK_POLL_PS */
-	}
-	else
-	{
-#ifdef STK_POLL_PS
-		hrtimer_cancel(&ps_data->ps_timer);
-#else
-#ifndef STK_POLL_ALS
-		if(!(ps_data->als_enabled))
-#endif
-			disable_irq(ps_data->irq);
-#endif
-		ps_data->ps_enabled = false;
-	}
-	if (!enable) {
-		ret = stk3x1x_device_ctl(ps_data, enable);
-		if (ret)
-			return ret;
-	}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return ret;
 }
 
@@ -1875,7 +1333,6 @@ static int32_t stk3x1x_enable_als(struct stk3x1x_data *ps_data, uint8_t enable)
 	uint8_t w_state_reg;
 	uint8_t curr_als_enable = (ps_data->als_enabled)?1:0;
 
-<<<<<<< HEAD
 #ifdef STK_GES			
 	if(ps_data->ges_enabled)
 	{
@@ -1887,16 +1344,10 @@ static int32_t stk3x1x_enable_als(struct stk3x1x_data *ps_data, uint8_t enable)
 	if(curr_als_enable == enable)
 		return 0;
 #ifdef STK_QUALCOMM_POWER_CTRL		
-=======
-	if(curr_als_enable == enable)
-		return 0;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (enable) {
 		ret = stk3x1x_device_ctl(ps_data, enable);
 		if (ret)
 			return ret;
-<<<<<<< HEAD
 	}	
 #endif	
 #ifndef STK_POLL_ALS			
@@ -1943,51 +1394,11 @@ static int32_t stk3x1x_enable_als(struct stk3x1x_data *ps_data, uint8_t enable)
 #endif		
 #ifdef STK_IRS
 		ps_data->als_data_index = 0;
-=======
-	}
-#ifndef STK_POLL_ALS
-    if (enable)
-	{
-        stk3x1x_set_als_thd_h(ps_data, 0x0000);
-        stk3x1x_set_als_thd_l(ps_data, 0xFFFF);
-	}
-#endif
-    ret = i2c_smbus_read_byte_data(ps_data->client, STK_STATE_REG);
-    if (ret < 0)
-    {
-        printk(KERN_ERR "%s: write i2c error\n", __func__);
-		return ret;
-    }
-	w_state_reg = (uint8_t)(ret & (~(STK_STATE_EN_ALS_MASK | STK_STATE_EN_WAIT_MASK)));
-	if(enable)
-		w_state_reg |= STK_STATE_EN_ALS_MASK;
-	else if (ps_data->ps_enabled)
-		w_state_reg |= STK_STATE_EN_WAIT_MASK;
-
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, w_state_reg);
-    if (ret < 0)
-	{
-		printk(KERN_ERR "%s: write i2c error\n", __func__);
-		return ret;
-	}
-
-    if (enable)
-    {
-		ps_data->als_enabled = true;
-#ifdef STK_POLL_ALS
-		hrtimer_start(&ps_data->als_timer, ps_data->als_poll_delay, HRTIMER_MODE_REL);
-#else
-#ifndef STK_POLL_PS
-		if(!(ps_data->ps_enabled))
-#endif
-			enable_irq(ps_data->irq);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
     }
 	else
 	{
 		ps_data->als_enabled = false;
-<<<<<<< HEAD
 #ifdef STK_POLL_ALS			
 		hrtimer_cancel(&ps_data->als_timer);
 		cancel_work_sync(&ps_data->stk_als_work);
@@ -2027,51 +1438,19 @@ static int32_t stk3x1x_get_als_reading(struct stk3x1x_data *ps_data)
 #ifdef STK_ALS_FIR
 	if(ps_data->fir.number < firlen)
 	{                
-=======
-#ifdef STK_POLL_ALS
-		hrtimer_cancel(&ps_data->als_timer);
-#else
-#ifndef STK_POLL_PS
-		if(!(ps_data->ps_enabled))
-#endif
-			disable_irq(ps_data->irq);
-#endif
-	}
-	if (!enable) {
-		ret = stk3x1x_device_ctl(ps_data, enable);
-		if (ret)
-			return ret;
-	}
-
-    return ret;
-}
-
-static inline int32_t stk3x1x_filter_reading(struct stk3x1x_data *ps_data,
-			int32_t word_data)
-{
-	int index;
-	int firlen = atomic_read(&ps_data->firlength);
-
-	if (ps_data->fir.number < firlen) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ps_data->fir.raw[ps_data->fir.number] = word_data;
 		ps_data->fir.sum += word_data;
 		ps_data->fir.number++;
 		ps_data->fir.idx++;
-<<<<<<< HEAD
 	}
 	else
 	{
-=======
-	} else {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		index = ps_data->fir.idx % firlen;
 		ps_data->fir.sum -= ps_data->fir.raw[index];
 		ps_data->fir.raw[index] = word_data;
 		ps_data->fir.sum += word_data;
 		ps_data->fir.idx++;
 		word_data = ps_data->fir.sum/firlen;
-<<<<<<< HEAD
 	}	
 #endif	
 	
@@ -2111,32 +1490,10 @@ static int32_t stk3x1x_set_irs_it_slp(struct stk3x1x_data *ps_data, uint16_t *sl
 		return ret;		
 	}		
 	return 0;
-=======
-	}
-	return word_data;
-}
-
-static inline int32_t stk3x1x_get_als_reading(struct stk3x1x_data *ps_data)
-{
-    int32_t word_data, tmp_word_data;
-
-	tmp_word_data = i2c_smbus_read_word_data(ps_data->client, STK_DATA1_ALS_REG);
-	if(tmp_word_data < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, tmp_word_data);
-		return tmp_word_data;
-	}
-	word_data = ((tmp_word_data & 0xFF00) >> 8) | ((tmp_word_data & 0x00FF) << 8) ;
-	if (ps_data->use_fir)
-		word_data = stk3x1x_filter_reading(ps_data, word_data);
-
-	return word_data;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static int32_t stk3x1x_get_ir_reading(struct stk3x1x_data *ps_data)
 {
-<<<<<<< HEAD
     int32_t word_data, ret;
 	uint8_t w_reg, retry = 0;	
 	uint16_t irs_slp_time = 100;
@@ -2340,95 +1697,12 @@ static ssize_t stk_als_code_show(struct device *dev, struct device_attribute *at
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);		
     int32_t reading;
 	
-=======
-    int32_t word_data, tmp_word_data;
-	int32_t ret;
-	uint8_t w_reg, retry = 0;
-
-	if(ps_data->ps_enabled)
-	{
-		stk3x1x_enable_ps(ps_data, 0);
-		ps_data->ps_enabled = true;
-	}
-    ret = i2c_smbus_read_byte_data(ps_data->client, STK_STATE_REG);
-    if (ret < 0)
-    {
-        printk(KERN_ERR "%s: write i2c error\n", __func__);
-		return ret;
-    }
-	w_reg = (uint8_t)(ret & (~STK_STATE_EN_IRS_MASK));
-	w_reg |= STK_STATE_EN_IRS_MASK;
-
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, w_reg);
-    if (ret < 0)
-	{
-		printk(KERN_ERR "%s: write i2c error\n", __func__);
-		return ret;
-	}
-	msleep(100);
-
-	do
-	{
-		msleep(50);
-		ret = stk3x1x_get_flag(ps_data);
-		if (ret < 0)
-		{
-			printk(KERN_ERR "%s: write i2c error\n", __func__);
-			return ret;
-		}
-		retry++;
-	}while(retry < 5 && ((ret&STK_FLG_IR_RDY_MASK) == 0));
-
-	if(retry == 5)
-	{
-		printk(KERN_ERR "%s: ir data is not ready for 300ms\n", __func__);
-		return -EINVAL;
-	}
-
-	ret = stk3x1x_get_flag(ps_data);
-    if (ret < 0)
-    {
-        printk(KERN_ERR "%s: write i2c error\n", __func__);
-		return ret;
-    }
-
-	ret = stk3x1x_set_flag(ps_data, ret, STK_FLG_IR_RDY_MASK);
-    if (ret < 0)
-	{
-		printk(KERN_ERR "%s: write i2c error\n", __func__);
-		return ret;
-	}
-
-	tmp_word_data = i2c_smbus_read_word_data(ps_data->client, STK_DATA1_IR_REG);
-	if(tmp_word_data < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, tmp_word_data);
-		return tmp_word_data;
-	}
-	word_data = ((tmp_word_data & 0xFF00) >> 8) | ((tmp_word_data & 0x00FF) << 8) ;
-
-	if(ps_data->ps_enabled)
-		stk3x1x_enable_ps(ps_data, 1);
-	return word_data;
-}
-
-
-static ssize_t stk_als_code_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-    int32_t reading;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     reading = stk3x1x_get_als_reading(ps_data);
     return scnprintf(buf, PAGE_SIZE, "%d\n", reading);
 }
 
-<<<<<<< HEAD
 #ifdef QUALCOMM_PLATFORM
 static int stk_als_enable_set(struct sensors_classdev *sensors_cdev,
-=======
-static ssize_t stk_als_enable_set(struct sensors_classdev *sensors_cdev,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 						unsigned int enabled)
 {
 	struct stk3x1x_data *als_data = container_of(sensors_cdev,
@@ -2443,15 +1717,11 @@ static ssize_t stk_als_enable_set(struct sensors_classdev *sensors_cdev,
 		return err;
 	return 0;
 }
-<<<<<<< HEAD
 #endif
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static ssize_t stk_als_enable_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-<<<<<<< HEAD
     int32_t ret;
 	
 	ret = stk3x1x_get_state(ps_data);
@@ -2460,20 +1730,6 @@ static ssize_t stk_als_enable_show(struct device *dev, struct device_attribute *
     ret = (ret & STK_STATE_EN_ALS_MASK)?1:0;
 	
 	return scnprintf(buf, PAGE_SIZE, "%d\n", ret);	
-=======
-    int32_t enable, ret;
-
-    mutex_lock(&ps_data->io_lock);
-	enable = (ps_data->als_enabled)?1:0;
-    mutex_unlock(&ps_data->io_lock);
-    ret = i2c_smbus_read_byte_data(ps_data->client,STK_STATE_REG);
-    ret = (ret & STK_STATE_EN_ALS_MASK)?1:0;
-
-	if(enable != ret)
-		printk(KERN_ERR "%s: driver and sensor mismatch! driver_enable=0x%x, sensor_enable=%x\n", __func__, enable, ret);
-
-	return scnprintf(buf, PAGE_SIZE, "%d\n", ret);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static ssize_t stk_als_enable_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
@@ -2484,21 +1740,12 @@ static ssize_t stk_als_enable_store(struct device *dev, struct device_attribute 
 		en = 1;
 	else if (sysfs_streq(buf, "0"))
 		en = 0;
-<<<<<<< HEAD
 	else 
 	{
 		printk(KERN_ERR "%s, invalid value %d\n", __func__, *buf);
 		return -EINVAL;
 	}	
     printk(KERN_INFO "%s: Enable ALS : %d\n", __func__, en);
-=======
-	else
-	{
-		printk(KERN_ERR "%s, invalid value %d\n", __func__, *buf);
-		return -EINVAL;
-	}
-	dev_dbg(dev, "%s: Enable ALS : %d\n", __func__, en);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     mutex_lock(&ps_data->io_lock);
     stk3x1x_enable_als(ps_data, en);
     mutex_unlock(&ps_data->io_lock);
@@ -2510,31 +1757,19 @@ static ssize_t stk_als_lux_show(struct device *dev, struct device_attribute *att
 	struct stk3x1x_data *ps_data = dev_get_drvdata(dev);
     int32_t als_reading;
 	uint32_t als_lux;
-<<<<<<< HEAD
     als_reading = stk3x1x_get_als_reading(ps_data);    
 	als_lux = stk_alscode2lux(ps_data, als_reading);
-=======
-    als_reading = stk3x1x_get_als_reading(ps_data);
-	mutex_lock(&ps_data->io_lock);
-	als_lux = stk_alscode2lux(ps_data, als_reading);
-	mutex_unlock(&ps_data->io_lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return scnprintf(buf, PAGE_SIZE, "%d lux\n", als_lux);
 }
 
 static ssize_t stk_als_lux_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned long value = 0;
 	int ret;
 	ret = kstrtoul(buf, 16, &value);
 	if(ret < 0)
 	{
-<<<<<<< HEAD
 		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n", __func__, ret);	
 		return ret;	
 	}
@@ -2542,18 +1777,6 @@ static ssize_t stk_als_lux_store(struct device *dev, struct device_attribute *at
 	input_report_abs(ps_data->als_input_dev, ABS_MISC, value);
 	input_sync(ps_data->als_input_dev);
 	printk(KERN_INFO "%s: als input event %ld lux\n",__func__, value);	
-=======
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-    mutex_lock(&ps_data->io_lock);
-    ps_data->als_lux_last = value;
-	input_report_abs(ps_data->als_input_dev, ABS_MISC, value);
-	input_sync(ps_data->als_input_dev);
-	mutex_unlock(&ps_data->io_lock);
-	dev_dbg(dev, "%s: als input event %ld lux\n", __func__, value);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     return size;
 }
@@ -2561,63 +1784,36 @@ static ssize_t stk_als_lux_store(struct device *dev, struct device_attribute *at
 
 static ssize_t stk_als_transmittance_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
     int32_t transmittance;
     transmittance = ps_data->als_transmittance;
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-    int32_t transmittance;
-    mutex_lock(&ps_data->io_lock);
-    transmittance = ps_data->als_transmittance;
-    mutex_unlock(&ps_data->io_lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return scnprintf(buf, PAGE_SIZE, "%d\n", transmittance);
 }
 
 
 static ssize_t stk_als_transmittance_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned long value = 0;
 	int ret;
 	ret = kstrtoul(buf, 10, &value);
 	if(ret < 0)
 	{
-<<<<<<< HEAD
 		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n", __func__, ret);
 		return ret;	    
 	}
     ps_data->als_transmittance = value;
-=======
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-	mutex_lock(&ps_data->io_lock);
-    ps_data->als_transmittance = value;
-    mutex_unlock(&ps_data->io_lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return size;
 }
 
 static ssize_t stk_als_delay_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-<<<<<<< HEAD
 	int64_t delay;
 	mutex_lock(&ps_data->io_lock);
 	delay = ktime_to_ns(ps_data->als_poll_delay);
 	mutex_unlock(&ps_data->io_lock);
 	return scnprintf(buf, PAGE_SIZE, "%lld\n", delay);
-=======
-	return scnprintf(buf, PAGE_SIZE, "%u\n",
-			(u32)ktime_to_ms(ps_data->als_poll_delay));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static inline void stk_als_delay_store_fir(struct stk3x1x_data *ps_data)
@@ -2627,19 +1823,11 @@ static inline void stk_als_delay_store_fir(struct stk3x1x_data *ps_data)
 	ps_data->fir.sum = 0;
 }
 
-<<<<<<< HEAD
 static int stk_als_poll_delay_set(struct sensors_classdev *sensors_cdev,
 		unsigned int delay_msec)
 {
 	struct stk3x1x_data *als_data = container_of(sensors_cdev,
 			struct stk3x1x_data, als_cdev);
-=======
-static ssize_t stk_als_poll_delay_set(struct sensors_classdev *sensors_cdev,
-						unsigned int delay_msec)
-{
-	struct stk3x1x_data *als_data = container_of(sensors_cdev,
-						struct stk3x1x_data, als_cdev);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	uint64_t value = 0;
 
 	value = delay_msec * 1000000;
@@ -2662,7 +1850,6 @@ static ssize_t stk_als_poll_delay_set(struct sensors_classdev *sensors_cdev,
 static ssize_t stk_als_delay_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
     uint64_t value = 0;
-<<<<<<< HEAD
 	int ret;	
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
 	ret = kstrtoull(buf, 10, &value);
@@ -2688,28 +1875,11 @@ static ssize_t stk_als_delay_store(struct device *dev, struct device_attribute *
 	ps_data->fir.sum = 0;
 #endif	
 	mutex_unlock(&ps_data->io_lock);
-=======
-	int ret;
-	struct stk3x1x_data *als_data =  dev_get_drvdata(dev);
-	ret = kstrtoull(buf, 10, &value);
-	if(ret < 0)
-	{
-		dev_err(dev, "%s:kstrtoull failed, ret=0x%x\n",	__func__, ret);
-		return ret;
-	}
-#ifdef STK_DEBUG_PRINTF
-	dev_dbg(dev, "%s: set als poll delay=%lld\n", __func__, value);
-#endif
-	ret = stk_als_poll_delay_set(&als_data->als_cdev, value);
-	if (ret < 0)
-		return ret;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return size;
 }
 
 static ssize_t stk_als_ir_code_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);		
     int32_t reading;
     reading = stk3x1x_get_ir_reading(ps_data);
@@ -2962,99 +2132,13 @@ static int stk3x1x_get_als_value(struct stk3x1x_data *ps_data, uint16_t als)
 static ssize_t stk_ps_code_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-    int32_t reading;
-    reading = stk3x1x_get_ir_reading(ps_data);
-    return scnprintf(buf, PAGE_SIZE, "%d\n", reading);
-}
-
-static ssize_t stk_als_firlen_show(struct device *dev,
-			struct device_attribute *attr, char *buf)
-{
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-	int len = atomic_read(&ps_data->firlength);
-
-	dev_dbg(dev, "%s: len = %2d, idx = %2d\n",
-			__func__, len, ps_data->fir.idx);
-	dev_dbg(dev, "%s: sum = %5d, ave = %5d\n",
-			__func__, ps_data->fir.sum, ps_data->fir.sum/len);
-
-	return scnprintf(buf, PAGE_SIZE, "%d\n", len);
-}
-
-static ssize_t stk_als_firlen_store(struct device *dev,
-			struct device_attribute *attr,
-			const char *buf, size_t size)
-{
-	uint64_t value = 0;
-	int ret;
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-	ret = kstrtoull(buf, 10, &value);
-	if (ret < 0) {
-		dev_err(dev, "%s:strict_strtoull failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-
-	if (value > MAX_FIR_LEN) {
-		dev_err(dev, "%s: firlen exceed maximum filter length\n",
-			__func__);
-	} else if (value < 1) {
-		atomic_set(&ps_data->firlength, 1);
-		memset(&ps_data->fir, 0x00, sizeof(ps_data->fir));
-	} else {
-		atomic_set(&ps_data->firlength, value);
-		memset(&ps_data->fir, 0x00, sizeof(ps_data->fir));
-	}
-	return size;
-}
-
-static ssize_t stk_als_fir_enable_show(struct device *dev,
-			struct device_attribute *attr, char *buf)
-{
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-
-	return scnprintf(buf, PAGE_SIZE, "%d\n", ps_data->use_fir);
-}
-
-static ssize_t stk_als_fir_enable_store(struct device *dev,
-			struct device_attribute *attr,
-			const char *buf, size_t size)
-{
-	uint64_t value = 0;
-	int ret;
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-	ret = kstrtoull(buf, 10, &value);
-	if (ret < 0) {
-		dev_err(dev, "%s:strict_strtoull failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-
-	if (value) {
-		ps_data->use_fir = true;
-		memset(&ps_data->fir, 0x00, sizeof(ps_data->fir));
-	} else {
-		ps_data->use_fir = false;
-	}
-	return size;
-}
-static ssize_t stk_ps_code_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     uint32_t reading;
     reading = stk3x1x_get_ps_reading(ps_data);
     return scnprintf(buf, PAGE_SIZE, "%d\n", reading);
 }
 
-<<<<<<< HEAD
 #ifdef QUALCOMM_PLATFORM
 static int stk_ps_enable_set(struct sensors_classdev *sensors_cdev,
-=======
-static ssize_t stk_ps_enable_set(struct sensors_classdev *sensors_cdev,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 						unsigned int enabled)
 {
 	struct stk3x1x_data *ps_data = container_of(sensors_cdev,
@@ -3062,18 +2146,13 @@ static ssize_t stk_ps_enable_set(struct sensors_classdev *sensors_cdev,
 	int err;
 
 	mutex_lock(&ps_data->io_lock);
-<<<<<<< HEAD
 	err = stk3x1x_enable_ps(ps_data, enabled,1);
-=======
-	err = stk3x1x_enable_ps(ps_data, enabled);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	mutex_unlock(&ps_data->io_lock);
 
 	if (err < 0)
 		return err;
 	return 0;
 }
-<<<<<<< HEAD
 #endif
 
 static ssize_t stk_ps_enable_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -3087,24 +2166,6 @@ static ssize_t stk_ps_enable_show(struct device *dev, struct device_attribute *a
     ret = (ret & STK_STATE_EN_PS_MASK)?1:0;
 
 	return scnprintf(buf, PAGE_SIZE, "%d\n", ret);	
-=======
-
-static ssize_t stk_ps_enable_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-    int32_t enable, ret;
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-
-    mutex_lock(&ps_data->io_lock);
-	enable = (ps_data->ps_enabled)?1:0;
-    mutex_unlock(&ps_data->io_lock);
-    ret = i2c_smbus_read_byte_data(ps_data->client,STK_STATE_REG);
-    ret = (ret & STK_STATE_EN_PS_MASK)?1:0;
-
-	if(enable != ret)
-		printk(KERN_ERR "%s: driver and sensor mismatch! driver_enable=0x%x, sensor_enable=%x\n", __func__, enable, ret);
-
-	return scnprintf(buf, PAGE_SIZE, "%d\n", ret);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static ssize_t stk_ps_enable_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
@@ -3115,29 +2176,18 @@ static ssize_t stk_ps_enable_store(struct device *dev, struct device_attribute *
 		en = 1;
 	else if (sysfs_streq(buf, "0"))
 		en = 0;
-<<<<<<< HEAD
 	else 
-=======
-	else
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{
 		printk(KERN_ERR "%s, invalid value %d\n", __func__, *buf);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
     printk(KERN_INFO "%s: Enable PS : %d\n", __func__, en);
     mutex_lock(&ps_data->io_lock);
     stk3x1x_enable_ps(ps_data, en, 1);
-=======
-	dev_dbg(dev, "%s: Enable PS : %d\n", __func__, en);
-    mutex_lock(&ps_data->io_lock);
-    stk3x1x_enable_ps(ps_data, en);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     mutex_unlock(&ps_data->io_lock);
     return size;
 }
 
-<<<<<<< HEAD
 #ifdef CONFIG_FTS_GESTURE
 int stk_ps_enable_for_double_tap(void)
 {
@@ -3161,25 +2211,15 @@ int stk_ps_enable_for_double_tap(void)
 EXPORT_SYMBOL(stk_ps_enable_for_double_tap);
 #endif
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static ssize_t stk_ps_enable_aso_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
     int32_t ret;
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-<<<<<<< HEAD
 	
     ret = stk3x1x_i2c_smbus_read_byte_data(ps_data->client,STK_STATE_REG);
     ret = (ret & STK_STATE_EN_ASO_MASK)?1:0;
 	
 	return scnprintf(buf, PAGE_SIZE, "%d\n", ret);		
-=======
-
-    ret = i2c_smbus_read_byte_data(ps_data->client,STK_STATE_REG);
-    ret = (ret & STK_STATE_EN_ASO_MASK)?1:0;
-
-	return scnprintf(buf, PAGE_SIZE, "%d\n", ret);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static ssize_t stk_ps_enable_aso_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
@@ -3188,72 +2228,42 @@ static ssize_t stk_ps_enable_aso_store(struct device *dev, struct device_attribu
 	uint8_t en;
     int32_t ret;
 	uint8_t w_state_reg;
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (sysfs_streq(buf, "1"))
 		en = 1;
 	else if (sysfs_streq(buf, "0"))
 		en = 0;
-<<<<<<< HEAD
 	else 
-=======
-	else
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	{
 		printk(KERN_ERR "%s, invalid value %d\n", __func__, *buf);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
     printk(KERN_INFO "%s: Enable PS ASO : %d\n", __func__, en);
     
     ret = stk3x1x_i2c_smbus_read_byte_data(ps_data->client, STK_STATE_REG);
-=======
-	dev_dbg(dev, "%s: Enable PS ASO : %d\n", __func__, en);
-
-    ret = i2c_smbus_read_byte_data(ps_data->client, STK_STATE_REG);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (ret < 0)
     {
         printk(KERN_ERR "%s: write i2c error\n", __func__);
 		return ret;
-<<<<<<< HEAD
     }		
 	w_state_reg = (uint8_t)(ret & (~STK_STATE_EN_ASO_MASK)); 
 	if(en)	
 		w_state_reg |= STK_STATE_EN_ASO_MASK;	
 	
     ret = stk3x1x_i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, w_state_reg);
-=======
-    }
-	w_state_reg = (uint8_t)(ret & (~STK_STATE_EN_ASO_MASK));
-	if(en)
-		w_state_reg |= STK_STATE_EN_ASO_MASK;
-
-    ret = i2c_smbus_write_byte_data(ps_data->client, STK_STATE_REG, w_state_reg);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (ret < 0)
 	{
 		printk(KERN_ERR "%s: write i2c error\n", __func__);
 		return ret;
-<<<<<<< HEAD
 	}	
 	
 	return size;	
-=======
-	}
-
-	return size;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 
 static ssize_t stk_ps_offset_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-<<<<<<< HEAD
     int32_t word_data;		
 	unsigned char value[2];
 	int ret;
@@ -3291,51 +2301,12 @@ static ssize_t stk_ps_offset_store(struct device *dev, struct device_attribute *
 	val[0] = (offset & 0xFF00) >> 8;
 	val[1] = offset & 0x00FF;
 	ret = stk3x1x_i2c_write_data(ps_data->client, STK_DATA1_OFFSET_REG, 2, val);	
-=======
-    int32_t word_data, tmp_word_data;
-
-	tmp_word_data = i2c_smbus_read_word_data(ps_data->client, STK_DATA1_OFFSET_REG);
-	if(tmp_word_data < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, tmp_word_data);
-		return tmp_word_data;
-	}
-		word_data = ((tmp_word_data & 0xFF00) >> 8) | ((tmp_word_data & 0x00FF) << 8) ;
-	return scnprintf(buf, PAGE_SIZE, "%d\n", word_data);
-}
-
-static ssize_t stk_ps_offset_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
-{
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-	unsigned long value = 0;
-	int ret;
-	uint16_t offset;
-
-	ret = kstrtoul(buf, 10, &value);
-	if(ret < 0)
-	{
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-	if(value > 65535)
-	{
-		printk(KERN_ERR "%s: invalid value, offset=%ld\n", __func__, value);
-		return -EINVAL;
-	}
-
-	offset = (uint16_t) ((value&0x00FF) << 8) | ((value&0xFF00) >>8);
-	ret = i2c_smbus_write_word_data(ps_data->client,STK_DATA1_OFFSET_REG,offset);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if(ret < 0)
 	{
 		printk(KERN_ERR "%s: write i2c error\n", __func__);
 		return ret;
 	}
-<<<<<<< HEAD
 	
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return size;
 }
 
@@ -3345,7 +2316,6 @@ static ssize_t stk_ps_distance_show(struct device *dev, struct device_attribute 
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
     int32_t dist=1, ret;
 
-<<<<<<< HEAD
     ret = stk3x1x_get_flag(ps_data);
 	if(ret < 0)
 		return ret;
@@ -3356,40 +2326,18 @@ static ssize_t stk_ps_distance_show(struct device *dev, struct device_attribute 
 	input_sync(ps_data->ps_input_dev);
 	wake_lock_timeout(&ps_data->ps_wakelock, 3*HZ);
 	printk(KERN_INFO "%s: ps input event %d cm\n",__func__, dist);		
-=======
-    mutex_lock(&ps_data->io_lock);
-    ret = stk3x1x_get_flag(ps_data);
-	if(ret < 0)
-	{
-		printk(KERN_ERR "%s: stk3x1x_get_flag failed, ret=0x%x\n", __func__, ret);
-		return ret;
-	}
-    dist = (ret & STK_FLG_NF_MASK)?1:0;
-
-    ps_data->ps_distance_last = dist;
-	input_report_abs(ps_data->ps_input_dev, ABS_DISTANCE, dist);
-	input_sync(ps_data->ps_input_dev);
-    mutex_unlock(&ps_data->io_lock);
-	wake_lock_timeout(&ps_data->ps_wakelock, 3*HZ);
-	dev_dbg(dev, "%s: ps input event %d cm\n", __func__, dist);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return scnprintf(buf, PAGE_SIZE, "%d\n", dist);
 }
 
 
 static ssize_t stk_ps_distance_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned long value = 0;
 	int ret;
 	ret = kstrtoul(buf, 10, &value);
 	if(ret < 0)
 	{
-<<<<<<< HEAD
 		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n", __func__, ret);	
 		return ret;	
 	}
@@ -3398,19 +2346,6 @@ static ssize_t stk_ps_distance_store(struct device *dev, struct device_attribute
 	input_sync(ps_data->ps_input_dev);
 	wake_lock_timeout(&ps_data->ps_wakelock, 3*HZ);	
 	printk(KERN_INFO "%s: ps input event %ld cm\n",__func__, value);	
-=======
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-    mutex_lock(&ps_data->io_lock);
-    ps_data->ps_distance_last = value;
-	input_report_abs(ps_data->ps_input_dev, ABS_DISTANCE, value);
-	input_sync(ps_data->ps_input_dev);
-    mutex_unlock(&ps_data->io_lock);
-	wake_lock_timeout(&ps_data->ps_wakelock, 3*HZ);
-	dev_dbg(dev, "%s: ps input event %ld cm\n", __func__, value);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return size;
 }
 
@@ -3418,7 +2353,6 @@ static ssize_t stk_ps_distance_store(struct device *dev, struct device_attribute
 static ssize_t stk_ps_code_thd_l_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
     int32_t ps_thd_l1_reg, ps_thd_l2_reg;
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
     ps_thd_l1_reg = stk3x1x_i2c_smbus_read_byte_data(ps_data->client,STK_THDL1_PS_REG);
     if(ps_thd_l1_reg < 0)
@@ -3432,23 +2366,6 @@ static ssize_t stk_ps_code_thd_l_show(struct device *dev, struct device_attribut
 		printk(KERN_ERR "%s fail, err=0x%x", __func__, ps_thd_l2_reg);		
 		return -EINVAL;		
 	}
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-    mutex_lock(&ps_data->io_lock);
-    ps_thd_l1_reg = i2c_smbus_read_byte_data(ps_data->client,STK_THDL1_PS_REG);
-    if(ps_thd_l1_reg < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, ps_thd_l1_reg);
-		return -EINVAL;
-	}
-    ps_thd_l2_reg = i2c_smbus_read_byte_data(ps_data->client,STK_THDL2_PS_REG);
-    if(ps_thd_l2_reg < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, ps_thd_l2_reg);
-		return -EINVAL;
-	}
-    mutex_unlock(&ps_data->io_lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	ps_thd_l1_reg = ps_thd_l1_reg<<8 | ps_thd_l2_reg;
     return scnprintf(buf, PAGE_SIZE, "%d\n", ps_thd_l1_reg);
 }
@@ -3456,37 +2373,22 @@ static ssize_t stk_ps_code_thd_l_show(struct device *dev, struct device_attribut
 
 static ssize_t stk_ps_code_thd_l_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);		
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned long value = 0;
 	int ret;
 	ret = kstrtoul(buf, 10, &value);
 	if(ret < 0)
 	{
-<<<<<<< HEAD
 		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n", __func__, ret);
 		return ret;	    
 	}
     stk3x1x_set_ps_thd_l(ps_data, value);
-=======
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-    mutex_lock(&ps_data->io_lock);
-    stk3x1x_set_ps_thd_l(ps_data, value);
-    mutex_unlock(&ps_data->io_lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return size;
 }
 
 static ssize_t stk_ps_code_thd_h_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
     int32_t ps_thd_h1_reg, ps_thd_h2_reg;
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
     ps_thd_h1_reg = stk3x1x_i2c_smbus_read_byte_data(ps_data->client,STK_THDH1_PS_REG);
     if(ps_thd_h1_reg < 0)
@@ -3500,23 +2402,6 @@ static ssize_t stk_ps_code_thd_h_show(struct device *dev, struct device_attribut
 		printk(KERN_ERR "%s fail, err=0x%x", __func__, ps_thd_h2_reg);		
 		return -EINVAL;		
 	}
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-    mutex_lock(&ps_data->io_lock);
-    ps_thd_h1_reg = i2c_smbus_read_byte_data(ps_data->client,STK_THDH1_PS_REG);
-    if(ps_thd_h1_reg < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, ps_thd_h1_reg);
-		return -EINVAL;
-	}
-    ps_thd_h2_reg = i2c_smbus_read_byte_data(ps_data->client,STK_THDH2_PS_REG);
-    if(ps_thd_h2_reg < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, ps_thd_h2_reg);
-		return -EINVAL;
-	}
-    mutex_unlock(&ps_data->io_lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	ps_thd_h1_reg = ps_thd_h1_reg<<8 | ps_thd_h2_reg;
     return scnprintf(buf, PAGE_SIZE, "%d\n", ps_thd_h1_reg);
 }
@@ -3524,17 +2409,12 @@ static ssize_t stk_ps_code_thd_h_show(struct device *dev, struct device_attribut
 
 static ssize_t stk_ps_code_thd_h_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);		
-=======
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	unsigned long value = 0;
 	int ret;
 	ret = kstrtoul(buf, 10, &value);
 	if(ret < 0)
 	{
-<<<<<<< HEAD
 		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n", __func__, ret);
 		return ret;	    
 	}
@@ -3600,128 +2480,10 @@ static ssize_t stk_status_show(struct device *dev, struct device_attribute *attr
 		if(ps_reg[cnt] < 0)
 		{
 			printk(KERN_ERR "%s fail, ret=%d", __func__, ps_reg[cnt]);	
-=======
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-    mutex_lock(&ps_data->io_lock);
-    stk3x1x_set_ps_thd_h(ps_data, value);
-    mutex_unlock(&ps_data->io_lock);
-    return size;
-}
-
-#if 0
-static ssize_t stk_als_lux_thd_l_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-    int32_t als_thd_l0_reg,als_thd_l1_reg;
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-	uint32_t als_lux;
-
-    mutex_lock(&ps_data->io_lock);
-    als_thd_l0_reg = i2c_smbus_read_byte_data(ps_data->client,STK_THDL1_ALS_REG);
-    als_thd_l1_reg = i2c_smbus_read_byte_data(ps_data->client,STK_THDL2_ALS_REG);
-    if(als_thd_l0_reg < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, als_thd_l0_reg);
-		return -EINVAL;
-	}
-	if(als_thd_l1_reg < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, als_thd_l1_reg);
-		return -EINVAL;
-	}
-    als_thd_l0_reg|=(als_thd_l1_reg<<8);
-	als_lux = stk_alscode2lux(ps_data, als_thd_l0_reg);
-	mutex_unlock(&ps_data->io_lock);
-    return scnprintf(buf, PAGE_SIZE, "%d\n", als_lux);
-}
-
-
-static ssize_t stk_als_lux_thd_l_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
-{
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-	unsigned long value = 0;
-	int ret;
-	ret = kstrtoul(buf, 10, &value);
-	if(ret < 0)
-	{
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-    mutex_lock(&ps_data->io_lock);
-	value = stk_lux2alscode(ps_data, value);
-    stk3x1x_set_als_thd_l(ps_data, value);
-    mutex_unlock(&ps_data->io_lock);
-    return size;
-}
-
-static ssize_t stk_als_lux_thd_h_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-    int32_t als_thd_h0_reg,als_thd_h1_reg;
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-	uint32_t als_lux;
-
-    mutex_lock(&ps_data->io_lock);
-    als_thd_h0_reg = i2c_smbus_read_byte_data(ps_data->client,STK_THDH1_ALS_REG);
-    als_thd_h1_reg = i2c_smbus_read_byte_data(ps_data->client,STK_THDH2_ALS_REG);
-    if(als_thd_h0_reg < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, als_thd_h0_reg);
-		return -EINVAL;
-	}
-	if(als_thd_h1_reg < 0)
-	{
-		printk(KERN_ERR "%s fail, err=0x%x", __func__, als_thd_h1_reg);
-		return -EINVAL;
-	}
-    als_thd_h0_reg|=(als_thd_h1_reg<<8);
-	als_lux = stk_alscode2lux(ps_data, als_thd_h0_reg);
-	mutex_unlock(&ps_data->io_lock);
-    return scnprintf(buf, PAGE_SIZE, "%d\n", als_lux);
-}
-
-
-static ssize_t stk_als_lux_thd_h_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
-{
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-	unsigned long value = 0;
-	int ret;
-	ret = strict_strtoul(buf, 10, &value);
-	if(ret < 0)
-	{
-		printk(KERN_ERR "%s:strict_strtoul failed, ret=0x%x\n", __func__, ret);
-		return ret;
-	}
-	mutex_lock(&ps_data->io_lock);
-    value = stk_lux2alscode(ps_data, value);
-    stk3x1x_set_als_thd_h(ps_data, value);
-    mutex_unlock(&ps_data->io_lock);
-    return size;
-}
-#endif
-
-
-static ssize_t stk_all_reg_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-    int32_t ps_reg[27];
-	uint8_t cnt;
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-    mutex_lock(&ps_data->io_lock);
-	for(cnt=0;cnt<25;cnt++)
-	{
-		ps_reg[cnt] = i2c_smbus_read_byte_data(ps_data->client, (cnt));
-		if(ps_reg[cnt] < 0)
-		{
-			mutex_unlock(&ps_data->io_lock);
-			printk(KERN_ERR "stk_all_reg_show:i2c_smbus_read_byte_data fail, ret=%d", ps_reg[cnt]);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return -EINVAL;
 		}
 		else
 		{
-<<<<<<< HEAD
 			printk(KERN_INFO "reg[0x%2X]=0x%2X\n", cnt, ps_reg[cnt]);
 		}
 	}
@@ -3744,44 +2506,12 @@ static ssize_t stk_all_reg_show(struct device *dev, struct device_attribute *att
     return scnprintf(buf, PAGE_SIZE, "[PS=%2X] [ALS=%2X] [WAIT=0x%4Xms] [EN_ASO=%2X] [EN_AK=%2X] [NEAR/FAR=%2X] [FLAG_OUI=%2X] [FLAG_PSINT=%2X] [FLAG_ALSINT=%2X]\n", 
 		ps_reg[0]&0x01,(ps_reg[0]&0x02)>>1,((ps_reg[0]&0x04)>>2)*ps_reg[5]*6,(ps_reg[0]&0x20)>>5,
 		(ps_reg[0]&0x40)>>6,ps_reg[16]&0x01,(ps_reg[16]&0x04)>>2,(ps_reg[16]&0x10)>>4,(ps_reg[16]&0x20)>>5);		
-=======
-			dev_dbg(dev, "reg[0x%2X]=0x%2X\n", cnt, ps_reg[cnt]);
-		}
-	}
-	ps_reg[cnt] = i2c_smbus_read_byte_data(ps_data->client, STK_PDT_ID_REG);
-	if(ps_reg[cnt] < 0)
-	{
-		mutex_unlock(&ps_data->io_lock);
-		printk( KERN_ERR "all_reg_show:i2c_smbus_read_byte_data fail, ret=%d", ps_reg[cnt]);
-		return -EINVAL;
-	}
-	dev_dbg(dev, "reg[0x%x]=0x%2X\n", STK_PDT_ID_REG, ps_reg[cnt]);
-	cnt++;
-	ps_reg[cnt] = i2c_smbus_read_byte_data(ps_data->client, STK_RSRVD_REG);
-	if(ps_reg[cnt] < 0)
-	{
-		mutex_unlock(&ps_data->io_lock);
-		printk( KERN_ERR "all_reg_show:i2c_smbus_read_byte_data fail, ret=%d", ps_reg[cnt]);
-		return -EINVAL;
-	}
-	dev_dbg(dev, "reg[0x%x]=0x%2X\n", STK_RSRVD_REG, ps_reg[cnt]);
-    mutex_unlock(&ps_data->io_lock);
-
-    return scnprintf(buf, PAGE_SIZE, "%2X %2X %2X %2X %2X,%2X %2X %2X %2X %2X,%2X %2X %2X %2X %2X,%2X %2X %2X %2X %2X,%2X %2X %2X %2X %2X,%2X %2X\n",
-		ps_reg[0], ps_reg[1], ps_reg[2], ps_reg[3], ps_reg[4], ps_reg[5], ps_reg[6], ps_reg[7], ps_reg[8],
-		ps_reg[9], ps_reg[10], ps_reg[11], ps_reg[12], ps_reg[13], ps_reg[14], ps_reg[15], ps_reg[16], ps_reg[17],
-		ps_reg[18], ps_reg[19], ps_reg[20], ps_reg[21], ps_reg[22], ps_reg[23], ps_reg[24], ps_reg[25], ps_reg[26]);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static ssize_t stk_recv_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
 	return scnprintf(buf, PAGE_SIZE, "0x%04X\n", atomic_read(&ps_data->recv_reg));     		
-=======
-	return 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 
@@ -3789,7 +2519,6 @@ static ssize_t stk_recv_store(struct device *dev, struct device_attribute *attr,
 {
     unsigned long value = 0;
 	int ret;
-<<<<<<< HEAD
 	int32_t recv_data;	
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
 	
@@ -3801,19 +2530,6 @@ static ssize_t stk_recv_store(struct device *dev, struct device_attribute *attr,
 	recv_data = stk3x1x_i2c_smbus_read_byte_data(ps_data->client,value);
 //	printk("%s: reg 0x%x=0x%x\n", __func__, (int)value, recv_data);
 	atomic_set(&ps_data->recv_reg, recv_data);
-=======
-	int32_t recv_data;
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-
-	ret = kstrtoul(buf, 16, &value);
-	if (ret < 0) {
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-	recv_data = i2c_smbus_read_byte_data(ps_data->client,value);
-	printk("%s: reg 0x%x=0x%x\n", __func__, (int)value, recv_data);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return size;
 }
 
@@ -3827,7 +2543,6 @@ static ssize_t stk_send_show(struct device *dev, struct device_attribute *attr, 
 static ssize_t stk_send_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
 	int addr, cmd;
-<<<<<<< HEAD
 	int32_t ret, i;
 	char *token[10];
 	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);	
@@ -3954,63 +2669,15 @@ static ssize_t stk_ps_htnct_show(struct device *dev, struct device_attribute *at
 }
 #endif	/* #ifdef STK_TUNE0 */
 
-=======
-	u8 addr_u8, cmd_u8;
-	int32_t ret, i;
-	char *token[10];
-	struct stk3x1x_data *ps_data =  dev_get_drvdata(dev);
-
-	for (i = 0; i < 2; i++)
-		token[i] = strsep((char **)&buf, " ");
-	ret = kstrtoul(token[0], 16, (unsigned long *)&(addr));
-	if (ret < 0) {
-
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-	ret = kstrtoul(token[1], 16, (unsigned long *)&(cmd));
-	if (ret < 0) {
-		printk(KERN_ERR "%s:kstrtoul failed, ret=0x%x\n",
-			__func__, ret);
-		return ret;
-	}
-	dev_dbg(dev, "%s: write reg 0x%x=0x%x\n", __func__, addr, cmd);
-	addr_u8 = (u8) addr;
-	cmd_u8 = (u8) cmd;
-	//mutex_lock(&ps_data->io_lock);
-	ret = i2c_smbus_write_byte_data(ps_data->client,addr_u8,cmd_u8);
-	//mutex_unlock(&ps_data->io_lock);
-	if (0 != ret)
-	{
-		printk(KERN_ERR "%s: i2c_smbus_write_byte_data fail\n", __func__);
-		return ret;
-	}
-
-	return size;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static struct device_attribute als_enable_attribute = __ATTR(enable,0664,stk_als_enable_show,stk_als_enable_store);
 static struct device_attribute als_lux_attribute = __ATTR(lux,0664,stk_als_lux_show,stk_als_lux_store);
 static struct device_attribute als_code_attribute = __ATTR(code, 0444, stk_als_code_show, NULL);
 static struct device_attribute als_transmittance_attribute = __ATTR(transmittance,0664,stk_als_transmittance_show,stk_als_transmittance_store);
-<<<<<<< HEAD
 static struct device_attribute als_poll_delay_attribute = __ATTR(delay,0664,stk_als_delay_show,stk_als_delay_store);
 static struct device_attribute als_ir_code_attribute = __ATTR(ircode,0444,stk_als_ir_code_show,NULL);
 #ifdef STK_ALS_FIR
 static struct device_attribute als_firlen_attribute = __ATTR(firlen,0664,stk_als_firlen_show,stk_als_firlen_store);
 #endif
-=======
-static struct device_attribute als_poll_delay_attribute =
-	__ATTR(poll_delay, 0664, stk_als_delay_show, stk_als_delay_store);
-static struct device_attribute als_ir_code_attribute = __ATTR(ircode,0444,stk_als_ir_code_show,NULL);
-static struct device_attribute als_firlen_attribute =
-	__ATTR(firlen, 0664, stk_als_firlen_show, stk_als_firlen_store);
-static struct device_attribute als_fir_enable_attribute =
-	__ATTR(fir_enable, 0664, stk_als_fir_enable_show,
-	stk_als_fir_enable_store);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static struct attribute *stk_als_attrs [] =
 {
@@ -4020,19 +2687,13 @@ static struct attribute *stk_als_attrs [] =
     &als_transmittance_attribute.attr,
 	&als_poll_delay_attribute.attr,
 	&als_ir_code_attribute.attr,
-<<<<<<< HEAD
 #ifdef STK_ALS_FIR
 	&als_firlen_attribute.attr,
 #endif	
-=======
-	&als_firlen_attribute.attr,
-	&als_fir_enable_attribute.attr,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     NULL
 };
 
 static struct attribute_group stk_als_attribute_group = {
-<<<<<<< HEAD
 #ifndef QUALCOMM_PLATFORM
 	.name = "driver",
 #endif	
@@ -4062,11 +2723,6 @@ static struct attribute_group stk_ges_attribute_group =
 	.attrs = stk_ges_attrs,
 };
 #endif	/* #ifdef STK_GES */
-=======
-	.attrs = stk_als_attrs,
-};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static struct device_attribute ps_enable_attribute = __ATTR(enable,0664,stk_ps_enable_show,stk_ps_enable_store);
 static struct device_attribute ps_enable_aso_attribute = __ATTR(enableaso,0664,stk_ps_enable_aso_show,stk_ps_enable_aso_store);
@@ -4075,7 +2731,6 @@ static struct device_attribute ps_offset_attribute = __ATTR(offset,0664,stk_ps_o
 static struct device_attribute ps_code_attribute = __ATTR(code, 0444, stk_ps_code_show, NULL);
 static struct device_attribute ps_code_thd_l_attribute = __ATTR(codethdl,0664,stk_ps_code_thd_l_show,stk_ps_code_thd_l_store);
 static struct device_attribute ps_code_thd_h_attribute = __ATTR(codethdh,0664,stk_ps_code_thd_h_show,stk_ps_code_thd_h_store);
-<<<<<<< HEAD
 static struct device_attribute ps_recv_attribute = __ATTR(recv,0664,stk_recv_show,stk_recv_store);
 static struct device_attribute ps_send_attribute = __ATTR(send,0664,stk_send_show, stk_send_store);
 static struct device_attribute all_reg_attribute = __ATTR(allreg, 0444, stk_all_reg_show, NULL);
@@ -4086,11 +2741,6 @@ static struct device_attribute ps_maxdiff_attribute = __ATTR(maxdiff,0664,stk_ps
 static struct device_attribute ps_ltnct_attribute = __ATTR(ltnct,0664,stk_ps_ltnct_show, stk_ps_ltnct_store);
 static struct device_attribute ps_htnct_attribute = __ATTR(htnct,0664,stk_ps_htnct_show, stk_ps_htnct_store);
 #endif
-=======
-static struct device_attribute recv_attribute = __ATTR(recv,0664,stk_recv_show,stk_recv_store);
-static struct device_attribute send_attribute = __ATTR(send,0664,stk_send_show, stk_send_store);
-static struct device_attribute all_reg_attribute = __ATTR(allreg, 0444, stk_all_reg_show, NULL);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static struct attribute *stk_ps_attrs [] =
 {
@@ -4100,7 +2750,6 @@ static struct attribute *stk_ps_attrs [] =
 	&ps_offset_attribute.attr,
     &ps_code_attribute.attr,
 	&ps_code_thd_l_attribute.attr,
-<<<<<<< HEAD
 	&ps_code_thd_h_attribute.attr,	
 	&ps_recv_attribute.attr,
 	&ps_send_attribute.attr,	
@@ -4112,17 +2761,10 @@ static struct attribute *stk_ps_attrs [] =
 	&ps_ltnct_attribute.attr,
 	&ps_htnct_attribute.attr,
 #endif	
-=======
-	&ps_code_thd_h_attribute.attr,
-	&recv_attribute.attr,
-	&send_attribute.attr,
-	&all_reg_attribute.attr,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     NULL
 };
 
 static struct attribute_group stk_ps_attribute_group = {
-<<<<<<< HEAD
 #ifndef QUALCOMM_PLATFORM
 	.name = "driver",	
 #endif	
@@ -4383,16 +3025,10 @@ static enum hrtimer_restart stk_ps_tune0_timer_func(struct hrtimer *timer)
 }
 #endif
 
-=======
-	.attrs = stk_ps_attrs,
-};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef STK_POLL_ALS
 static enum hrtimer_restart stk_als_timer_func(struct hrtimer *timer)
 {
 	struct stk3x1x_data *ps_data = container_of(timer, struct stk3x1x_data, als_timer);
-<<<<<<< HEAD
 	queue_work(ps_data->stk_als_wq, &ps_data->stk_als_work);	
 	hrtimer_forward_now(&ps_data->als_timer, ps_data->als_poll_delay);
 	return HRTIMER_RESTART;	
@@ -4489,34 +3125,10 @@ static void stk_als_poll_work_func(struct work_struct *work)
 
 
 #ifdef STK_POLL_PS	
-=======
-	queue_work(ps_data->stk_als_wq, &ps_data->stk_als_work);
-	hrtimer_forward_now(&ps_data->als_timer, ps_data->als_poll_delay);
-	return HRTIMER_RESTART;
-}
-
-static void stk_als_work_func(struct work_struct *work)
-{
-	struct stk3x1x_data *ps_data = container_of(work, struct stk3x1x_data, stk_als_work);
-	int32_t reading;
-
-    mutex_lock(&ps_data->io_lock);
-	reading = stk3x1x_get_als_reading(ps_data);
-	if(reading < 0)
-		return;
-	ps_data->als_lux_last = stk_alscode2lux(ps_data, reading);
-	input_report_abs(ps_data->als_input_dev, ABS_MISC, ps_data->als_lux_last);
-	input_sync(ps_data->als_input_dev);
-	mutex_unlock(&ps_data->io_lock);
-}
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static enum hrtimer_restart stk_ps_timer_func(struct hrtimer *timer)
 {
 	struct stk3x1x_data *ps_data = container_of(timer, struct stk3x1x_data, ps_timer);
 	queue_work(ps_data->stk_ps_wq, &ps_data->stk_ps_work);
-<<<<<<< HEAD
 	hrtimer_forward_now(&ps_data->ps_timer, ps_data->ps_poll_delay);
 	return HRTIMER_RESTART;		
 }
@@ -4599,61 +3211,6 @@ err_i2c_rw:
 	return;
 }
 #endif
-=======
-#ifdef STK_POLL_PS
-	hrtimer_forward_now(&ps_data->ps_timer, ps_data->ps_poll_delay);
-	return HRTIMER_RESTART;
-#else
-	hrtimer_cancel(&ps_data->ps_timer);
-	return HRTIMER_NORESTART;
-#endif
-}
-
-static void stk_ps_work_func(struct work_struct *work)
-{
-	struct stk3x1x_data *ps_data = container_of(work, struct stk3x1x_data, stk_ps_work);
-	uint32_t reading;
-	int32_t near_far_state;
-    uint8_t org_flag_reg;
-	int32_t ret;
-    uint8_t disable_flag = 0;
-    mutex_lock(&ps_data->io_lock);
-
-	org_flag_reg = stk3x1x_get_flag(ps_data);
-	if(org_flag_reg < 0)
-	{
-		printk(KERN_ERR "%s: get_status_reg fail, ret=%d", __func__, org_flag_reg);
-		goto err_i2c_rw;
-	}
-	near_far_state = (org_flag_reg & STK_FLG_NF_MASK)?1:0;
-	reading = stk3x1x_get_ps_reading(ps_data);
-	if(ps_data->ps_distance_last != near_far_state)
-	{
-		ps_data->ps_distance_last = near_far_state;
-		input_report_abs(ps_data->ps_input_dev, ABS_DISTANCE, near_far_state);
-		input_sync(ps_data->ps_input_dev);
-		wake_lock_timeout(&ps_data->ps_wakelock, 3*HZ);
-#ifdef STK_DEBUG_PRINTF
-		printk(KERN_INFO "%s: ps input event %d cm, ps code = %d\n",__func__, near_far_state, reading);
-#endif
-	}
-	ret = stk3x1x_set_flag(ps_data, org_flag_reg, disable_flag);
-	if(ret < 0)
-	{
-		printk(KERN_ERR "%s:stk3x1x_set_flag fail, ret=%d\n", __func__, ret);
-		goto err_i2c_rw;
-	}
-
-	mutex_unlock(&ps_data->io_lock);
-	return;
-
-err_i2c_rw:
-	mutex_unlock(&ps_data->io_lock);
-	msleep(30);
-	return;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #if (!defined(STK_POLL_PS) || !defined(STK_POLL_ALS))
 static void stk_work_func(struct work_struct *work)
@@ -4665,7 +3222,6 @@ static void stk_work_func(struct work_struct *work)
     uint8_t org_flag_reg;
 #endif	/* #if ((STK_INT_PS_MODE != 0x03) && (STK_INT_PS_MODE != 0x02)) */
 
-<<<<<<< HEAD
 #ifndef CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD	
 	uint32_t nLuxIndex;	
 #endif
@@ -4676,25 +3232,11 @@ static void stk_work_func(struct work_struct *work)
 	uint8_t disable_flag2 = 0, org_flag2_reg;
 #endif	
 	
-=======
-#ifndef CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD
-	uint32_t nLuxIndex;
-#endif
-	struct stk3x1x_data *ps_data = container_of(work, struct stk3x1x_data, stk_work);
-	int32_t near_far_state;
-
-    mutex_lock(&ps_data->io_lock);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #if (STK_INT_PS_MODE	== 0x03)
 	near_far_state = gpio_get_value(ps_data->int_pin);
 #elif	(STK_INT_PS_MODE	== 0x02)
 	near_far_state = !(gpio_get_value(ps_data->int_pin));
-<<<<<<< HEAD
 #endif	
-=======
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #if ((STK_INT_PS_MODE == 0x03) || (STK_INT_PS_MODE	== 0x02))
 	ps_data->ps_distance_last = near_far_state;
@@ -4702,7 +3244,6 @@ static void stk_work_func(struct work_struct *work)
 	input_sync(ps_data->ps_input_dev);
 	wake_lock_timeout(&ps_data->ps_wakelock, 3*HZ);
 	reading = stk3x1x_get_ps_reading(ps_data);
-<<<<<<< HEAD
 #ifdef STK_DEBUG_PRINTF	
 	printk(KERN_INFO "%s: ps input event %d cm, ps code = %d\n",__func__, near_far_state, reading);			
 #endif	
@@ -4712,37 +3253,15 @@ static void stk_work_func(struct work_struct *work)
 	if(org_flag_reg < 0)
 		goto err_i2c_rw;	
 	
-=======
-#ifdef STK_DEBUG_PRINTF
-	printk(KERN_INFO "%s: ps input event %d cm, ps code = %d\n",__func__, near_far_state, reading);
-#endif
-#else
-	/* mode 0x01 or 0x04 */
-	org_flag_reg = stk3x1x_get_flag(ps_data);
-	if(org_flag_reg < 0)
-	{
-		printk(KERN_ERR "%s: get_status_reg fail, org_flag_reg=%d", __func__, org_flag_reg);
-		goto err_i2c_rw;
-	}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     if (org_flag_reg & STK_FLG_ALSINT_MASK)
     {
 		disable_flag |= STK_FLG_ALSINT_MASK;
         reading = stk3x1x_get_als_reading(ps_data);
-<<<<<<< HEAD
 		if(reading < 0)		
 		{
 			printk(KERN_ERR "%s: stk3x1x_get_als_reading fail, ret=%d", __func__, reading);
 			goto err_i2c_rw;
 		}			
-=======
-		if(reading < 0)
-		{
-			printk(KERN_ERR "%s: stk3x1x_get_als_reading fail, ret=%d", __func__, reading);
-			goto err_i2c_rw;
-		}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifndef CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD
         nLuxIndex = stk_get_lux_interval_index(reading);
         stk3x1x_set_als_thd_h(ps_data, code_threshold_table[nLuxIndex]);
@@ -4750,7 +3269,6 @@ static void stk_work_func(struct work_struct *work)
 #else
         stk_als_set_new_thd(ps_data, reading);
 #endif //CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD
-<<<<<<< HEAD
 
 		if(ps_data->ir_code)
 		{
@@ -4775,20 +3293,11 @@ static void stk_work_func(struct work_struct *work)
 #ifdef STK_DEBUG_PRINTF		
 		printk(KERN_INFO "%s: als input event %d lux\n",__func__, ps_data->als_lux_last);			
 #endif		
-=======
-		ps_data->als_lux_last = stk_alscode2lux(ps_data, reading);
-		input_report_abs(ps_data->als_input_dev, ABS_MISC, ps_data->als_lux_last);
-		input_sync(ps_data->als_input_dev);
-#ifdef STK_DEBUG_PRINTF
-		printk(KERN_INFO "%s: als input event %d lux\n",__func__, ps_data->als_lux_last);
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
     if (org_flag_reg & STK_FLG_PSINT_MASK)
     {
 		disable_flag |= STK_FLG_PSINT_MASK;
 		near_far_state = (org_flag_reg & STK_FLG_NF_MASK)?1:0;
-<<<<<<< HEAD
 		
 		ps_data->ps_distance_last = near_far_state;
 		input_report_abs(ps_data->ps_input_dev, ABS_DISTANCE, near_far_state);
@@ -4818,41 +3327,6 @@ err_i2c_rw:
 	return;	
 }
 
-=======
-
-		ps_data->ps_distance_last = near_far_state;
-		input_report_abs(ps_data->ps_input_dev, ABS_DISTANCE, near_far_state);
-		input_sync(ps_data->ps_input_dev);
-		wake_lock_timeout(&ps_data->ps_wakelock, 3*HZ);
-        reading = stk3x1x_get_ps_reading(ps_data);
-#ifdef STK_DEBUG_PRINTF
-		printk(KERN_INFO "%s: ps input event=%d, ps code = %d\n",__func__, near_far_state, reading);
-#endif
-    }
-
-    ret = stk3x1x_set_flag(ps_data, org_flag_reg, disable_flag);
-	if(ret < 0)
-	{
-		printk(KERN_ERR "%s:reset_int_flag fail, ret=%d\n", __func__, ret);
-		goto err_i2c_rw;
-	}
-#endif
-
-	msleep(1);
-    enable_irq(ps_data->irq);
-    mutex_unlock(&ps_data->io_lock);
-	return;
-
-err_i2c_rw:
-	mutex_unlock(&ps_data->io_lock);
-	msleep(30);
-	enable_irq(ps_data->irq);
-	return;
-}
-#endif
-
-#if (!defined(STK_POLL_PS) || !defined(STK_POLL_ALS))
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static irqreturn_t stk_oss_irq_handler(int irq, void *data)
 {
 	struct stk3x1x_data *pData = data;
@@ -4861,7 +3335,6 @@ static irqreturn_t stk_oss_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 #endif	/*	#if (!defined(STK_POLL_PS) || !defined(STK_POLL_ALS))	*/
-<<<<<<< HEAD
 static int32_t stk3x1x_init_all_setting(struct i2c_client *client, struct stk3x1x_platform_data *plat_data)
 {
 	int32_t ret;
@@ -4911,44 +3384,11 @@ static int32_t stk3x1x_init_all_setting(struct i2c_client *client, struct stk3x1
 	ps_data->als_data_index = 0;
 #endif	
 	ps_data->ps_distance_last = 1;
-=======
-
-static inline void stk3x1x_init_fir(struct stk3x1x_data *ps_data)
-{
-	memset(&ps_data->fir, 0x00, sizeof(ps_data->fir));
-	atomic_set(&ps_data->firlength, STK_FIR_LEN);
-}
-
-static int32_t stk3x1x_init_all_setting(struct i2c_client *client, struct stk3x1x_platform_data *plat_data)
-{
-	int32_t ret;
-	struct stk3x1x_data *ps_data = i2c_get_clientdata(client);
-
-	ret = stk3x1x_software_reset(ps_data);
-	if(ret < 0)
-		return ret;
-
-	stk3x1x_check_pid(ps_data);
-	if(ret < 0)
-		return ret;
-
-	ret = stk3x1x_init_all_reg(ps_data, plat_data);
-	if(ret < 0)
-		return ret;
-#ifndef CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD
-	stk_init_code_threshold_table(ps_data);
-#endif
-
-	if (plat_data->use_fir)
-		stk3x1x_init_fir(ps_data);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return 0;
 }
 
 #if (!defined(STK_POLL_PS) || !defined(STK_POLL_ALS))
 static int stk3x1x_setup_irq(struct i2c_client *client)
-<<<<<<< HEAD
 {		
 	int irq, err = -EIO;
 	struct stk3x1x_data *ps_data = i2c_get_clientdata(client);
@@ -4961,28 +3401,13 @@ static int stk3x1x_setup_irq(struct i2c_client *client)
 #ifdef STK_DEBUG_PRINTF	
 	printk(KERN_INFO "%s: int pin #=%d, irq=%d\n",__func__, ps_data->int_pin, irq);	
 #endif	
-=======
-{
-	int irq, err = -EIO;
-	struct stk3x1x_data *ps_data = i2c_get_clientdata(client);
-
-	irq = gpio_to_irq(ps_data->int_pin);
-#ifdef STK_DEBUG_PRINTF
-	printk(KERN_INFO "%s: int pin #=%d, irq=%d\n",__func__, ps_data->int_pin, irq);
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (irq <= 0)
 	{
 		printk(KERN_ERR "irq number is not specified, irq # = %d, int pin=%d\n",irq, ps_data->int_pin);
 		return irq;
 	}
-<<<<<<< HEAD
 	ps_data->irq = irq;	
 	err = gpio_request(ps_data->int_pin,"stk-int");        
-=======
-	ps_data->irq = irq;
-	err = gpio_request(ps_data->int_pin,"stk-int");
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if(err < 0)
 	{
 		printk(KERN_ERR "%s: gpio_request, err=%d", __func__, err);
@@ -4993,7 +3418,6 @@ static int stk3x1x_setup_irq(struct i2c_client *client)
 	{
 		printk(KERN_ERR "%s: gpio_direction_input, err=%d", __func__, err);
 		return err;
-<<<<<<< HEAD
 	}		
 #if ((STK_INT_PS_MODE == 0x03) || (STK_INT_PS_MODE	== 0x02))	
 	err = request_any_context_irq(irq, stk_oss_irq_handler, IRQF_TRIGGER_FALLING|IRQF_TRIGGER_RISING, DEVICE_NAME, ps_data);
@@ -5164,91 +3588,16 @@ static const struct dev_pm_ops stk3x1x_pm_ops = {
 static void stk3x1x_early_suspend(struct early_suspend *h)
 {
 	
-=======
-	}
-#if ((STK_INT_PS_MODE == 0x03) || (STK_INT_PS_MODE	== 0x02))
-	err = request_any_context_irq(irq, stk_oss_irq_handler, IRQF_TRIGGER_FALLING|IRQF_TRIGGER_RISING, DEVICE_NAME, ps_data);
-#else
-	err = request_any_context_irq(irq, stk_oss_irq_handler, IRQF_TRIGGER_LOW, DEVICE_NAME, ps_data);
-#endif
-	if (err < 0)
-	{
-		printk(KERN_WARNING "%s: request_any_context_irq(%d) failed for (%d)\n", __func__, irq, err);
-		goto err_request_any_context_irq;
-	}
-	disable_irq(irq);
-
-	return 0;
-err_request_any_context_irq:
-	gpio_free(ps_data->int_pin);
-	return err;
-}
-#endif
-
-#ifdef CONFIG_HAS_EARLYSUSPEND
-static void stk3x1x_early_suspend(struct early_suspend *h)
-{
-	struct stk3x1x_data *ps_data = container_of(h, struct stk3x1x_data, stk_early_suspend);
-#ifndef STK_POLL_PS
-	int err;
-#endif
-
-    mutex_lock(&ps_data->io_lock);
-	if(ps_data->als_enabled)
-	{
-		stk3x1x_enable_als(ps_data, 0);
-		ps_data->als_enabled = true;
-	}
-	if(ps_data->ps_enabled)
-	{
-#ifdef STK_POLL_PS
-		wake_lock(&ps_data->ps_nosuspend_wl);
-#else
-		err = enable_irq_wake(ps_data->irq);
-		if (err)
-			printk(KERN_WARNING "%s: set_irq_wake(%d) failed, err=(%d)\n", __func__, ps_data->irq, err);
-#endif
-	}
-	mutex_unlock(&ps_data->io_lock);
-	return;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static void stk3x1x_late_resume(struct early_suspend *h)
 {
-<<<<<<< HEAD
 
 }
 #endif	//#ifdef CONFIG_HAS_EARLYSUSPEND
 
 
 #ifdef STK_QUALCOMM_POWER_CTRL
-=======
-	struct stk3x1x_data *ps_data = container_of(h, struct stk3x1x_data, stk_early_suspend);
-#ifndef STK_POLL_PS
-	int err;
-#endif
-
-    mutex_lock(&ps_data->io_lock);
-	if(ps_data->als_enabled)
-		stk3x1x_enable_als(ps_data, 1);
-
-	if(ps_data->ps_enabled)
-	{
-#ifdef STK_POLL_PS
-		wake_lock(&ps_data->ps_nosuspend_wl);
-#else
-		err = disable_irq_wake(ps_data->irq);
-		if (err)
-			printk(KERN_WARNING "%s: disable_irq_wake(%d) failed, err=(%d)\n", __func__, ps_data->irq, err);
-#endif
-	}
-	mutex_unlock(&ps_data->io_lock);
-	return;
-}
-#endif	//#ifdef CONFIG_HAS_EARLYSUSPEND
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int stk3x1x_power_ctl(struct stk3x1x_data *data, bool on)
 {
 	int ret = 0;
@@ -5270,7 +3619,6 @@ static int stk3x1x_power_ctl(struct stk3x1x_data *data, bool on)
 				dev_err(&data->client->dev,
 					"Regulator vdd enable failed ret=%d\n",
 					ret);
-<<<<<<< HEAD
 			}			
 			return ret;
 		}
@@ -5279,16 +3627,6 @@ static int stk3x1x_power_ctl(struct stk3x1x_data *data, bool on)
 		dev_dbg(&data->client->dev, "stk3x1x_power_ctl on=%d\n",
 				on);
 	} else if (on && !data->power_enabled) {
-=======
-			}
-			return ret;
-		}
-		data->power_enabled = on;
-		dev_dbg(&data->client->dev, "stk3x1x_power_ctl on=%d\n",
-				on);
-	} else if (on && !data->power_enabled) {
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ret = regulator_enable(data->vdd);
 		if (ret) {
 			dev_err(&data->client->dev,
@@ -5304,10 +3642,7 @@ static int stk3x1x_power_ctl(struct stk3x1x_data *data, bool on)
 			return ret;
 		}
 		data->power_enabled = on;
-<<<<<<< HEAD
 		//printk(KERN_INFO "%s: enable stk3x1x power", __func__);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		dev_dbg(&data->client->dev, "stk3x1x_power_ctl on=%d\n",
 				on);
 	} else {
@@ -5406,15 +3741,11 @@ static int stk3x1x_device_ctl(struct stk3x1x_data *ps_data, bool enable)
 			goto err_exit;
 		}
 	} else if (!enable && ps_data->power_enabled) {
-<<<<<<< HEAD
 	#ifdef STK_GES		
 		if (!ps_data->als_enabled && !ps_data->ps_enabled && !ps_data->ges_enabled) {
 	#else
 		if (!ps_data->als_enabled && !ps_data->ps_enabled) {
 	#endif
-=======
-		if (!ps_data->als_enabled && !ps_data->ps_enabled) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			ret = stk3x1x_power_ctl(ps_data, false);
 			if (ret) {
 				dev_err(dev, "Failed to disable device power\n");
@@ -5433,11 +3764,8 @@ static int stk3x1x_device_ctl(struct stk3x1x_data *ps_data, bool enable)
 err_exit:
 	return ret;
 }
-<<<<<<< HEAD
 #endif	/* #ifdef STK_QUALCOMM_POWER_CTRL */
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_OF
 static int stk3x1x_parse_dt(struct device *dev,
 			struct stk3x1x_platform_data *pdata)
@@ -5517,11 +3845,7 @@ static int stk3x1x_parse_dt(struct device *dev,
 		return rc;
 	}
 
-<<<<<<< HEAD
 	//pdata->use_fir = of_property_read_bool(np, "stk,use-fir");
-=======
-	pdata->use_fir = of_property_read_bool(np, "stk,use-fir");
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return 0;
 }
@@ -5533,7 +3857,6 @@ static int stk3x1x_parse_dt(struct device *dev,
 }
 #endif /* !CONFIG_OF */
 
-<<<<<<< HEAD
 static int stk3x1x_set_wq(struct stk3x1x_data *ps_data)
 {
 #ifdef STK_POLL_ALS	
@@ -5659,33 +3982,17 @@ static int stk3x1x_set_input_devices(struct stk3x1x_data *ps_data)
 	return 0;
 }
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int stk3x1x_probe(struct i2c_client *client,
                         const struct i2c_device_id *id)
 {
     int err = -ENODEV;
     struct stk3x1x_data *ps_data;
-<<<<<<< HEAD
     struct stk3x1x_platform_data *plat_data;
     printk(KERN_INFO "%s: driver version = %s\n", __func__, DRIVER_VERSION);
 	
     if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
     {
         printk(KERN_ERR "%s: No Support for I2C_FUNC_I2C\n", __func__);
-=======
-	struct stk3x1x_platform_data *plat_data;
-    printk(KERN_INFO "%s: driver version = %s\n", __func__, DRIVER_VERSION);
-
-    if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
-    {
-        printk(KERN_ERR "%s: No Support for I2C_FUNC_SMBUS_BYTE_DATA\n", __func__);
-        return -ENODEV;
-    }
-    if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-    {
-        printk(KERN_ERR "%s: No Support for I2C_FUNC_SMBUS_WORD_DATA\n", __func__);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
         return -ENODEV;
     }
 
@@ -5700,19 +4007,12 @@ static int stk3x1x_probe(struct i2c_client *client,
 	mutex_init(&ps_data->io_lock);
 	wake_lock_init(&ps_data->ps_wakelock,WAKE_LOCK_SUSPEND, "stk_input_wakelock");
 
-<<<<<<< HEAD
 #ifdef STK_POLL_PS			
 	wake_lock_init(&ps_data->ps_nosuspend_wl,WAKE_LOCK_SUSPEND, "stk_nosuspend_wakelock");
 #endif	
 
 	if (client->dev.of_node) {
 		printk(KERN_INFO "%s: probe with device tree\n", __func__);
-=======
-#ifdef STK_POLL_PS
-	wake_lock_init(&ps_data->ps_nosuspend_wl,WAKE_LOCK_SUSPEND, "stk_nosuspend_wakelock");
-#endif
-	if (client->dev.of_node) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		plat_data = devm_kzalloc(&client->dev,
 			sizeof(struct stk3x1x_platform_data), GFP_KERNEL);
 		if (!plat_data) {
@@ -5725,7 +4025,6 @@ static int stk3x1x_probe(struct i2c_client *client,
 			"%s: stk3x1x_parse_dt ret=%d\n", __func__, err);
 		if (err)
 			return err;
-<<<<<<< HEAD
 	} else {
 		printk(KERN_INFO "%s: probe with platform data\n", __func__);	
 #ifdef SPREADTRUM_PLATFORM		
@@ -5734,11 +4033,6 @@ static int stk3x1x_probe(struct i2c_client *client,
 		plat_data = client->dev.platform_data;	
 #endif		
 	}
-=======
-	} else
-		plat_data = client->dev.platform_data;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (!plat_data) {
 		dev_err(&client->dev,
 			"%s: no stk3x1x platform data!\n", __func__);
@@ -5746,20 +4040,13 @@ static int stk3x1x_probe(struct i2c_client *client,
 	}
 	ps_data->als_transmittance = plat_data->transmittance;
 	ps_data->int_pin = plat_data->int_pin;
-<<<<<<< HEAD
 	ps_data->pdata = plat_data;
 	ps_data->als_level_num = sizeof(als_level)/sizeof(als_level[0]);
 	ps_data->als_value_num = sizeof(als_value)/sizeof(als_value[0]);
-=======
-	ps_data->use_fir = plat_data->use_fir;
-	ps_data->pdata = plat_data;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ps_data->als_transmittance == 0) {
 		dev_err(&client->dev,
 			"%s: Please set als_transmittance\n", __func__);
 		goto err_als_input_allocate;
-<<<<<<< HEAD
 	}	
 	
 	stk3x1x_set_wq(ps_data);
@@ -5776,88 +4063,11 @@ static int stk3x1x_probe(struct i2c_client *client,
 	err = stk3x1x_power_init(ps_data, true);
 	if (err)
 		goto err_power_on;
-=======
-	}
-
-	ps_data->als_input_dev = input_allocate_device();
-	if (ps_data->als_input_dev==NULL)
-	{
-		printk(KERN_ERR "%s: could not allocate als device\n", __func__);
-		err = -ENOMEM;
-		goto err_als_input_allocate;
-	}
-	ps_data->ps_input_dev = input_allocate_device();
-	if (ps_data->ps_input_dev==NULL)
-	{
-		printk(KERN_ERR "%s: could not allocate ps device\n", __func__);
-		err = -ENOMEM;
-		goto err_ps_input_allocate;
-	}
-	ps_data->als_input_dev->name = ALS_NAME;
-	ps_data->ps_input_dev->name = PS_NAME;
-	set_bit(EV_ABS, ps_data->als_input_dev->evbit);
-	set_bit(EV_ABS, ps_data->ps_input_dev->evbit);
-	input_set_abs_params(ps_data->als_input_dev, ABS_MISC, 0, stk_alscode2lux(ps_data, (1<<16)-1), 0, 0);
-	input_set_abs_params(ps_data->ps_input_dev, ABS_DISTANCE, 0,1, 0, 0);
-	err = input_register_device(ps_data->als_input_dev);
-	if (err<0)
-	{
-		printk(KERN_ERR "%s: can not register als input device\n", __func__);
-		goto err_als_input_register;
-	}
-	err = input_register_device(ps_data->ps_input_dev);
-	if (err<0)
-	{
-		printk(KERN_ERR "%s: can not register ps input device\n", __func__);
-		goto err_ps_input_register;
-	}
-
-	err = sysfs_create_group(&ps_data->als_input_dev->dev.kobj, &stk_als_attribute_group);
-	if (err < 0)
-	{
-		printk(KERN_ERR "%s:could not create sysfs group for als\n", __func__);
-		goto err_als_sysfs_create_group;
-	}
-	err = sysfs_create_group(&ps_data->ps_input_dev->dev.kobj, &stk_ps_attribute_group);
-	if (err < 0)
-	{
-		printk(KERN_ERR "%s:could not create sysfs group for ps\n", __func__);
-		goto err_ps_sysfs_create_group;
-	}
-	input_set_drvdata(ps_data->als_input_dev, ps_data);
-	input_set_drvdata(ps_data->ps_input_dev, ps_data);
-
-#ifdef STK_POLL_ALS
-	ps_data->stk_als_wq = create_singlethread_workqueue("stk_als_wq");
-	INIT_WORK(&ps_data->stk_als_work, stk_als_work_func);
-	hrtimer_init(&ps_data->als_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	ps_data->als_poll_delay = ns_to_ktime(110 * NSEC_PER_MSEC);
-	ps_data->als_timer.function = stk_als_timer_func;
-#endif
-
-	ps_data->stk_ps_wq = create_singlethread_workqueue("stk_ps_wq");
-	INIT_WORK(&ps_data->stk_ps_work, stk_ps_work_func);
-	hrtimer_init(&ps_data->ps_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	ps_data->ps_poll_delay = ns_to_ktime(110 * NSEC_PER_MSEC);
-	ps_data->ps_timer.function = stk_ps_timer_func;
-#if (!defined(STK_POLL_ALS) || !defined(STK_POLL_PS))
-	ps_data->stk_wq = create_singlethread_workqueue("stk_wq");
-	INIT_WORK(&ps_data->stk_work, stk_work_func);
-	err = stk3x1x_setup_irq(client);
-	if(err < 0)
-		goto err_stk3x1x_setup_irq;
-#endif
-
-	err = stk3x1x_power_init(ps_data, true);
-	if (err)
-		goto err_power_init;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	err = stk3x1x_power_ctl(ps_data, true);
 	if (err)
 		goto err_power_on;
 
-<<<<<<< HEAD
 	err = stk3x1x_check_pid(ps_data);
 	if(err < 0)
 		goto err_init_all_setting;
@@ -5883,26 +4093,17 @@ static int stk3x1x_probe(struct i2c_client *client,
 	
 //#ifdef CONFIG_HAS_EARLYSUSPEND
 #if 0
-=======
-	ps_data->als_enabled = false;
-	ps_data->ps_enabled = false;
-#ifdef CONFIG_HAS_EARLYSUSPEND
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	ps_data->stk_early_suspend.level = EARLY_SUSPEND_LEVEL_BLANK_SCREEN + 1;
 	ps_data->stk_early_suspend.suspend = stk3x1x_early_suspend;
 	ps_data->stk_early_suspend.resume = stk3x1x_late_resume;
 	register_early_suspend(&ps_data->stk_early_suspend);
 #endif
-<<<<<<< HEAD
 
 #ifdef QUALCOMM_PLATFORM
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* make sure everything is ok before registering the class device */
 	ps_data->als_cdev = sensors_light_cdev;
 	ps_data->als_cdev.sensors_enable = stk_als_enable_set;
 	ps_data->als_cdev.sensors_poll_delay = stk_als_poll_delay_set;
-<<<<<<< HEAD
 	err = sensors_classdev_register(&client->dev, &ps_data->als_cdev);
 	if (err)
 		goto err_class_sysfs_als;
@@ -5984,67 +4185,6 @@ err_als_input_allocate:
     wake_lock_destroy(&ps_data->ps_nosuspend_wl);	
 #endif	
     wake_lock_destroy(&ps_data->ps_wakelock);	
-=======
-	err = sensors_classdev_register(&ps_data->als_input_dev->dev,
-			&ps_data->als_cdev);
-	if (err)
-		goto err_power_on;
-
-	ps_data->ps_cdev = sensors_proximity_cdev;
-	ps_data->ps_cdev.sensors_enable = stk_ps_enable_set;
-	err = sensors_classdev_register(&ps_data->ps_input_dev->dev,
-			&ps_data->ps_cdev);
-	if (err)
-		goto err_class_sysfs;
-
-	/* enable device power only when it is enabled */
-	err = stk3x1x_power_ctl(ps_data, false);
-	if (err)
-		goto err_init_all_setting;
-
-	dev_dbg(&client->dev, "%s: probe successfully", __func__);
-	return 0;
-
-err_init_all_setting:
-	stk3x1x_power_ctl(ps_data, false);
-	sensors_classdev_unregister(&ps_data->ps_cdev);
-err_class_sysfs:
-	sensors_classdev_unregister(&ps_data->als_cdev);
-err_power_on:
-	stk3x1x_power_init(ps_data, false);
-err_power_init:
-#ifndef STK_POLL_PS
-	free_irq(ps_data->irq, ps_data);
-	gpio_free(plat_data->int_pin);
-#endif
-#if (!defined(STK_POLL_ALS) || !defined(STK_POLL_PS))
-err_stk3x1x_setup_irq:
-#endif
-#ifdef STK_POLL_ALS
-	hrtimer_try_to_cancel(&ps_data->als_timer);
-	destroy_workqueue(ps_data->stk_als_wq);
-#endif
-	destroy_workqueue(ps_data->stk_ps_wq);
-#if (!defined(STK_POLL_ALS) || !defined(STK_POLL_PS))
-	destroy_workqueue(ps_data->stk_wq);
-#endif
-	sysfs_remove_group(&ps_data->ps_input_dev->dev.kobj, &stk_ps_attribute_group);
-err_ps_sysfs_create_group:
-	sysfs_remove_group(&ps_data->als_input_dev->dev.kobj, &stk_als_attribute_group);
-err_als_sysfs_create_group:
-	input_unregister_device(ps_data->ps_input_dev);
-err_ps_input_register:
-	input_unregister_device(ps_data->als_input_dev);
-err_als_input_register:
-	input_free_device(ps_data->ps_input_dev);
-err_ps_input_allocate:
-	input_free_device(ps_data->als_input_dev);
-err_als_input_allocate:
-#ifdef STK_POLL_PS
-    wake_lock_destroy(&ps_data->ps_nosuspend_wl);
-#endif
-    wake_lock_destroy(&ps_data->ps_wakelock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     mutex_destroy(&ps_data->io_lock);
 	kfree(ps_data);
     return err;
@@ -6054,7 +4194,6 @@ err_als_input_allocate:
 static int stk3x1x_remove(struct i2c_client *client)
 {
 	struct stk3x1x_data *ps_data = i2c_get_clientdata(client);
-<<<<<<< HEAD
 	
 	device_init_wakeup(&client->dev, false);
 #ifdef STK_QUALCOMM_POWER_CTRL	
@@ -6109,33 +4248,6 @@ static int stk3x1x_remove(struct i2c_client *client)
     mutex_destroy(&ps_data->io_lock);
 	kfree(ps_data);
 	
-=======
-#ifndef STK_POLL_PS
-	free_irq(ps_data->irq, ps_data);
-	gpio_free(ps_data->int_pin);
-#endif
-#ifdef STK_POLL_ALS
-	hrtimer_try_to_cancel(&ps_data->als_timer);
-	destroy_workqueue(ps_data->stk_als_wq);
-#endif
-	destroy_workqueue(ps_data->stk_ps_wq);
-#if (!defined(STK_POLL_ALS) || !defined(STK_POLL_PS))
-	destroy_workqueue(ps_data->stk_wq);
-#endif
-	sysfs_remove_group(&ps_data->ps_input_dev->dev.kobj, &stk_ps_attribute_group);
-	sysfs_remove_group(&ps_data->als_input_dev->dev.kobj, &stk_als_attribute_group);
-	input_unregister_device(ps_data->ps_input_dev);
-	input_unregister_device(ps_data->als_input_dev);
-	input_free_device(ps_data->ps_input_dev);
-	input_free_device(ps_data->als_input_dev);
-#ifdef STK_POLL_PS
-	wake_lock_destroy(&ps_data->ps_nosuspend_wl);
-#endif
-	wake_lock_destroy(&ps_data->ps_wakelock);
-    mutex_destroy(&ps_data->io_lock);
-	kfree(ps_data);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return 0;
 }
 
@@ -6155,16 +4267,11 @@ static struct i2c_driver stk_ps_driver =
 {
     .driver = {
         .name = DEVICE_NAME,
-<<<<<<< HEAD
 		.owner = THIS_MODULE,	
 #ifdef CONFIG_OF		
 		.of_match_table = stk_match_table,		
 #endif		
 		.pm = &stk3x1x_pm_ops,		
-=======
-		.owner = THIS_MODULE,
-		.of_match_table = stk_match_table,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     },
     .probe = stk3x1x_probe,
     .remove = stk3x1x_remove,
@@ -6177,34 +4284,21 @@ static int __init stk3x1x_init(void)
 	int ret;
     ret = i2c_add_driver(&stk_ps_driver);
     if (ret)
-<<<<<<< HEAD
 	{
 		i2c_del_driver(&stk_ps_driver);
         return ret;
 	}
-=======
-        return ret;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return 0;
 }
 
 static void __exit stk3x1x_exit(void)
 {
-<<<<<<< HEAD
     i2c_del_driver(&stk_ps_driver);	
-=======
-    i2c_del_driver(&stk_ps_driver);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 module_init(stk3x1x_init);
 module_exit(stk3x1x_exit);
-<<<<<<< HEAD
 MODULE_AUTHOR("Lex Hsieh <lex_hsieh@sensortek.com.tw>");
-=======
-MODULE_AUTHOR("Lex Hsieh <lex_hsieh@sitronix.com.tw>");
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 MODULE_DESCRIPTION("Sensortek stk3x1x Proximity Sensor driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRIVER_VERSION);

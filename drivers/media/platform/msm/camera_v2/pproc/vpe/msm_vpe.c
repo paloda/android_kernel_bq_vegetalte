@@ -1382,11 +1382,6 @@ static long msm_vpe_subdev_ioctl(struct v4l2_subdev *sd,
 				process_frame,
 				sizeof(struct msm_vpe_frame_info_t))) {
 					mutex_unlock(&vpe_dev->mutex);
-<<<<<<< HEAD
-=======
-					kfree(process_frame);
-					kfree(event_qcmd);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 					return -EINVAL;
 		}
 

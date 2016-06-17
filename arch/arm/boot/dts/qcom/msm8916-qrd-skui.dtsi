@@ -12,11 +12,8 @@
 
 #include "msm8916-qrd.dtsi"
 #include "dsi-panel-otm8019a-fwvga-video.dtsi"
-<<<<<<< HEAD
 #include "dsi-panel-trulyotm1288a-720p-video.dtsi"
 #include "dsi-panel-trulyotm1288a-720p-cmd.dtsi"
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "msm8916-camera-sensor-qrd-skui.dtsi"
 
 &soc {
@@ -27,11 +24,7 @@
 		pinctrl-0 = <&button_backlight_off>;
 
 		keypad-backlight {
-<<<<<<< HEAD
 			gpios = <&msm_gpio 34 0>;
-=======
-			gpios = <&msm_gpio 119 0>;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			label = "button-backlight";
 			linux,default-trigger = "none";
 		};
@@ -43,13 +36,8 @@
 		qcom,msm-snd-card-id = <0>;
 		qcom,msm-ext-pa = "primary";
 		qcom,msm-codec-type = "internal";
-<<<<<<< HEAD
 		qcom,msm-mbhc-hphl-swh = <0>;
 		qcom,msm-mbhc-gnd-swh = <1>;
-=======
-		qcom,msm-mbhc-hphl-swh = <1>;
-		qcom,msm-mbhc-gnd-swh = <0>;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		qcom,msm-hs-micbias-type = "internal";
 		qcom,audio-routing =
 			"RX_BIAS", "MCLK",
@@ -118,7 +106,6 @@
 	qcom,pins = <&gp 25>;
 };
 
-<<<<<<< HEAD
 &pmx_mdss_te {
 	qcom,num-grp-pins = <1>;
 	qcom,pins = <&gp 24>;
@@ -129,13 +116,6 @@
 	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
-=======
-&mdss_dsi0 {
-	qcom,dsi-pref-prim-pan = <&dsi_otm8019a_fwvga_video>;
-	pinctrl-names = "mdss_default", "mdss_sleep";
-	pinctrl-0 = <&mdss_dsi_active>;
-	pinctrl-1 = <&mdss_dsi_suspend>;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	qcom,platform-reset-gpio = <&msm_gpio 25 0>;
 };
@@ -188,24 +168,6 @@
 		avago,ga-value = <768>;
 	};
 
-<<<<<<< HEAD
-=======
-	bosch@18 { /* Accelerometer sensor */
-		compatible = "bosch,bma2x2";
-		reg = <0x18>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&bma2x2_int1_default &bma2x2_int2_default>;
-		interrupt-parent = <&msm_gpio>;
-		interrupts = <112 0x2002>;
-		vdd-supply = <&pm8916_l17>;
-		vio-supply = <&pm8916_l6>;
-		bosch,init-interval = <200>;
-		bosch,place = <2>;
-		bosch,gpio-int1 = <&msm_gpio 112 0x2002>;
-		bosch,gpio-int2 = <&msm_gpio 114 0x2002>;
-	};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	memsic@30 { /* Magnetic field sensor */
 		compatible = "memsic,mmc3416x";
 		reg = <0x30>;
@@ -229,7 +191,6 @@
 		invn,gpio-int = <&msm_gpio 115 0x2>;
 		invn,place = "Portrait Up Back Side";
 	};
-<<<<<<< HEAD
 
 	stk@48 {
 		compatible = "stk,stk3x1x";
@@ -291,8 +252,6 @@
 			awinic,ledg-parameter_array = <3 0 3 0 5 0 0>;
 			awinic,ledb-parameter_array = <3 0 3 0 5 0 0>;
 		};
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 &sdc2_cd_on {

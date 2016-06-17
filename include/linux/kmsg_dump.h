@@ -64,11 +64,6 @@ bool kmsg_dump_get_line(struct kmsg_dumper *dumper, bool syslog,
 bool kmsg_dump_get_buffer(struct kmsg_dumper *dumper, bool syslog,
 			  char *buf, size_t size, size_t *len);
 
-bool kmsg_dump_get_buffer_panic(struct kmsg_dumper *dumper, bool syslog,
-			  char *buf, size_t size, size_t *len);
-
-int clear_log_buffer(bool clear);
-
 void kmsg_dump_rewind_nolock(struct kmsg_dumper *dumper);
 
 void kmsg_dump_rewind(struct kmsg_dumper *dumper);
@@ -96,17 +91,6 @@ static inline bool kmsg_dump_get_line(struct kmsg_dumper *dumper, bool syslog,
 
 static inline bool kmsg_dump_get_buffer(struct kmsg_dumper *dumper, bool syslog,
 					char *buf, size_t size, size_t *len)
-{
-	return false;
-}
-
-static inline bool kmsg_dump_get_buffer_panic(struct kmsg_dumper *dumper, bool syslog,
-					char *buf, size_t size, size_t *len)
-{
-	return false;
-}
-
-static int clear_log_buffer(bool clear)
 {
 	return false;
 }

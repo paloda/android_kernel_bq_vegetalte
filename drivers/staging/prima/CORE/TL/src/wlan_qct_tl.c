@@ -141,10 +141,7 @@
 #include "vos_trace.h"
 #include "wlan_qct_tl_trace.h"
 #include "tlDebug.h"
-<<<<<<< HEAD
 #include "cfgApi.h"
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef FEATURE_WLAN_WAPI
 /*Included to access WDI_RxBdType */
 #include "wlan_qct_wdi_bd.h"
@@ -1087,11 +1084,7 @@ void WLANTL_AssocFailed(v_U8_t staId)
        " %s fails to start forwarding (staId %d)", __func__, staId);
   }
 }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
   /*===========================================================================
 
   FUNCTION  WLANTL_Finish_ULA
@@ -1105,16 +1098,11 @@ void WLANTL_AssocFailed(v_U8_t staId)
   DEPENDENCIES
 
      TL must have been initialized before this gets called.
-<<<<<<< HEAD
   
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
   PARAMETERS
 
    callbackRoutine:   HDD Callback function.
    callbackContext : HDD userdata context.
-<<<<<<< HEAD
   
    RETURN VALUE
 
@@ -1122,15 +1110,6 @@ void WLANTL_AssocFailed(v_U8_t staId)
    
   SIDE EFFECTS
    
-=======
-
-   RETURN VALUE
-
-   VOS_STATUS_SUCCESS/VOS_STATUS_FAILURE
-
-  SIDE EFFECTS
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 ============================================================================*/
 
 VOS_STATUS WLANTL_Finish_ULA( void (*callbackRoutine) (void *callbackContext),
@@ -1198,11 +1177,8 @@ WLANTL_RegisterSTAClient
   WLANTL_CbType*  pTLCb = NULL;
   WLANTL_STAClientType* pClientSTA = NULL;
   v_U8_t    ucTid = 0;/*Local variable to clear previous replay counters of STA on all TIDs*/
-<<<<<<< HEAD
   v_U32_t   istoggleArpEnb = 0;
   tpAniSirGlobal pMac;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
   /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
   /*------------------------------------------------------------------------
@@ -1286,7 +1262,6 @@ WLANTL_RegisterSTAClient
   pClientSTA->wSTADesc.ucSTAId  = pwSTADescType->ucSTAId;
   pClientSTA->ptkInstalled = 0;
 
-<<<<<<< HEAD
   pMac = vos_get_context(VOS_MODULE_ID_PE, pvosGCtx);
   if ( NULL != pMac )
   {
@@ -1298,12 +1273,6 @@ WLANTL_RegisterSTAClient
    "WLAN TL:Registering STA Client ID: %d with UC %d and BC %d toggleArp :%hhu",
     pwSTADescType->ucSTAId, pwSTADescType->ucUcastSig,
     pwSTADescType->ucBcastSig, pClientSTA->arpRate));
-=======
-  TLLOG2(VOS_TRACE( VOS_MODULE_ID_TL, VOS_TRACE_LEVEL_INFO_HIGH,
-             "WLAN TL:Registering STA Client ID: %d with UC %d and BC %d", 
-             pwSTADescType->ucSTAId, 
-              pwSTADescType->ucUcastSig, pwSTADescType->ucBcastSig));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
   pClientSTA->wSTADesc.wSTAType = pwSTADescType->wSTAType;
 
@@ -7964,7 +7933,6 @@ WLANTL_STATxAuth
 #endif /* FEATURE_WLAN_TDLS */
   if( tlMetaInfo.ucIsArp )
   {
-<<<<<<< HEAD
     if (pStaClient->arpRate == 0)
     {
         ucTxFlag |= HAL_USE_BD_RATE_1_MASK;
@@ -7976,10 +7944,6 @@ WLANTL_STATxAuth
     }
     TLLOG2(VOS_TRACE( VOS_MODULE_ID_TL, VOS_TRACE_LEVEL_INFO,
            "arp pkt sending on BD rate: %hhu", pStaClient->arpRate));
-=======
-    /*Send ARP at lowest Phy rate and through WQ5 */
-    ucTxFlag |= HAL_USE_BD_RATE_MASK;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
   }
 
   vosStatus = (VOS_STATUS)WDA_DS_BuildTxPacketInfo( pvosGCtx, 
@@ -11501,10 +11465,7 @@ WLANTL_CleanSTA
    ptlSTAClient->ucCurrentAC     = WLANTL_AC_HIGH_PRIO;
    ptlSTAClient->ucCurrentWeight = 0;
    ptlSTAClient->ucServicedAC    = WLANTL_AC_BK;
-<<<<<<< HEAD
    ptlSTAClient->ucPktPending = 0;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
    vos_mem_zero( ptlSTAClient->aucACMask, sizeof(ptlSTAClient->aucACMask));
    vos_mem_zero( &ptlSTAClient->wUAPSDInfo, sizeof(ptlSTAClient->wUAPSDInfo));

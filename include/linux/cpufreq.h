@@ -16,10 +16,7 @@
 #include <linux/kobject.h>
 #include <linux/notifier.h>
 #include <linux/sysfs.h>
-<<<<<<< HEAD
 #include <asm/cputime.h>
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /*********************************************************************
  *                        CPUFREQ INTERFACE                          *
@@ -103,14 +100,11 @@ struct cpufreq_policy {
 	 *     __cpufreq_governor(data, CPUFREQ_GOV_POLICY_EXIT);
 	 */
 	struct rw_semaphore	rwsem;
-<<<<<<< HEAD
 
 	unsigned int    util;
 	unsigned int	util_thres; /* Threshold to increase utilization*/
 	unsigned int	load_at_max;  /* CPU utilization at max frequency */
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 /* Only for ACPI */
@@ -137,13 +131,10 @@ static inline bool policy_is_shared(struct cpufreq_policy *policy)
 
 /* /sys/devices/system/cpu/cpufreq: entry point for global variables */
 extern struct kobject *cpufreq_global_kobject;
-<<<<<<< HEAD
 int cpufreq_get_global_kobject(void);
 void cpufreq_put_global_kobject(void);
 int cpufreq_sysfs_create_file(const struct attribute *attr);
 void cpufreq_sysfs_remove_file(const struct attribute *attr);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #ifdef CONFIG_CPU_FREQ
 unsigned int cpufreq_get(unsigned int cpu);
@@ -178,11 +169,7 @@ static inline void disable_cpufreq(void) { }
 
 #define CPUFREQ_RELATION_L 0  /* lowest frequency at or above target */
 #define CPUFREQ_RELATION_H 1  /* highest frequency below or at target */
-<<<<<<< HEAD
 #define CPUFREQ_RELATION_C 2  /* closest frequency to target */
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct freq_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct cpufreq_policy *, char *);
@@ -238,6 +225,8 @@ struct cpufreq_driver {
 	unsigned int	(*get)	(unsigned int cpu);
 
 	/* optional */
+	unsigned int (*getavg)	(struct cpufreq_policy *policy,
+				 unsigned int cpu);
 	int	(*bios_limit)	(int cpu, unsigned int *limit);
 
 	int	(*exit)		(struct cpufreq_policy *policy);
@@ -276,12 +265,9 @@ int cpufreq_unregister_driver(struct cpufreq_driver *driver_data);
 
 const char *cpufreq_get_current_driver(void);
 
-<<<<<<< HEAD
 void cpufreq_notify_utilization(struct cpufreq_policy *policy,
 		unsigned int load);
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static inline void cpufreq_verify_within_limits(struct cpufreq_policy *policy,
 		unsigned int min, unsigned int max)
 {
@@ -397,7 +383,6 @@ static inline unsigned long cpufreq_scale(unsigned long old, u_int div,
  */
 #define CPUFREQ_POLICY_POWERSAVE	(1)
 #define CPUFREQ_POLICY_PERFORMANCE	(2)
-<<<<<<< HEAD
 
 /* Governor Events */
 #define CPUFREQ_GOV_START	1
@@ -406,16 +391,6 @@ static inline unsigned long cpufreq_scale(unsigned long old, u_int div,
 #define CPUFREQ_GOV_POLICY_INIT	4
 #define CPUFREQ_GOV_POLICY_EXIT	5
 
-=======
-
-/* Governor Events */
-#define CPUFREQ_GOV_START	1
-#define CPUFREQ_GOV_STOP	2
-#define CPUFREQ_GOV_LIMITS	3
-#define CPUFREQ_GOV_POLICY_INIT	4
-#define CPUFREQ_GOV_POLICY_EXIT	5
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct cpufreq_governor {
 	char	name[CPUFREQ_NAME_LEN];
 	int	initialized;
@@ -439,11 +414,8 @@ int cpufreq_driver_target(struct cpufreq_policy *policy,
 int __cpufreq_driver_target(struct cpufreq_policy *policy,
 				   unsigned int target_freq,
 				   unsigned int relation);
-<<<<<<< HEAD
 extern int __cpufreq_driver_getavg(struct cpufreq_policy *policy,
 				   unsigned int cpu);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 int cpufreq_register_governor(struct cpufreq_governor *governor);
 void cpufreq_unregister_governor(struct cpufreq_governor *governor);
 
@@ -469,7 +441,6 @@ extern struct cpufreq_governor cpufreq_gov_ondemand;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE)
 extern struct cpufreq_governor cpufreq_gov_conservative;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_conservative)
-<<<<<<< HEAD
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_DANCEDANCE)
 extern struct cpufreq_governor cpufreq_gov_dancedance;
 #define CPUFREQ_DEFAULT_GOVERNOR 	(&cpufreq_gov_DANCEDANCE)
@@ -494,8 +465,6 @@ extern struct cpufreq_governor cpufreq_gov_electrodemand;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_WAVE)
 extern struct cpufreq_governor cpufreq_gov_wave;
 #define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_wave)
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
@@ -551,13 +520,10 @@ static inline int cpufreq_generic_exit(struct cpufreq_policy *policy)
 	return 0;
 }
 
-<<<<<<< HEAD
 /*********************************************************************
  *                         CPUFREQ STATS                             *
  *********************************************************************/
 
 void acct_update_power(struct task_struct *p, cputime_t cputime);
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif /* _LINUX_CPUFREQ_H */

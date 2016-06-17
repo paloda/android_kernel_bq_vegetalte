@@ -256,23 +256,14 @@ config SND_SOC_MSM8X16
 	select SLIMBUS
 	select MFD_CORE
 	select SND_DYNAMIC_MINORS
-<<<<<<< HEAD
 	select QTI_PP
 	select DTS_SRS_TM
 	select DOLBY_DAP
 	select DOLBY_DS2
-=======
-	select DTS_SRS_TM
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	select MSM_QDSP6_APRV3
 	select MSM_QDSP6V2_CODECS
 	select SND_SOC_CPE
 	select SND_HWDEP
-<<<<<<< HEAD
-=======
-	select SND_SOC_FSA8500
-	select SND_SOC_TFA9890
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	help
 	 To add support for SoC audio on MSM8X16.
 	 This will enable sound soc drivers which
@@ -296,10 +287,6 @@ config SND_SOC_MSM8909
 	select MSM_QDSP6_APRV3
 	select MSM_QDSP6V2_CODECS
 	select SND_HWDEP
-<<<<<<< HEAD
-=======
-	select DOLBY_DS2
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	help
 	 To add support for SoC audio on MSM8909.
 	 This will enable sound soc drivers which
@@ -327,10 +314,6 @@ config SND_SOC_MSM8994
 	select SND_DYNAMIC_MINORS
 	select MSM_QDSP6_APRV2
 	select MSM_QDSP6V2_CODECS
-<<<<<<< HEAD
-=======
-	select SND_SOC_FLORIDA
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	select SND_SOC_WCD9330
 	select SND_SOC_MSM_HDMI_CODEC_RX
 	select QTI_PP

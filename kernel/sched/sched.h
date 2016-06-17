@@ -146,10 +146,8 @@ struct task_group {
 	unsigned long shares;
 
 	atomic_t load_weight;
-#ifdef	CONFIG_SMP
 	atomic64_t load_avg;
 	atomic_t runnable_avg;
-#endif
 #endif
 
 #ifdef CONFIG_RT_GROUP_SCHED
@@ -360,6 +358,7 @@ struct rt_rq {
 	unsigned long rt_nr_boosted;
 
 	struct rq *rq;
+	struct list_head leaf_rt_rq_list;
 	struct task_group *tg;
 #endif
 };
@@ -590,16 +589,7 @@ struct nr_stats_s {
 	seqcount_t ave_seqcnt;
 };
 
-<<<<<<< HEAD
 #define NR_AVE_PERIOD_EXP	28
-=======
-/* 27 ~= 134217728ns = 134.2ms
- * 26 ~=  67108864ns =  67.1ms
- * 25 ~=  33554432ns =  33.5ms
- * 24 ~=  16777216ns =  16.8ms
- */
-#define NR_AVE_PERIOD_EXP	27
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define NR_AVE_SCALE(x)		((x) << FSHIFT)
 #define NR_AVE_PERIOD		(1 << NR_AVE_PERIOD_EXP)
 #define NR_AVE_DIV_PERIOD(x)	((x) >> NR_AVE_PERIOD_EXP)
@@ -607,19 +597,6 @@ struct nr_stats_s {
 DECLARE_PER_CPU(struct nr_stats_s, runqueue_stats);
 #endif
 
-<<<<<<< HEAD
-=======
-static inline u64 rq_clock(struct rq *rq)
-{
-	return rq->clock;
-}
-
-static inline u64 rq_clock_task(struct rq *rq)
-{
-	return rq->clock_task;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_SMP
 
 #define rcu_dereference_check_sched_domain(p) \

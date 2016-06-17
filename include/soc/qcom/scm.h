@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -113,11 +109,6 @@ extern s32 scm_call_atomic2(u32 svc, u32 cmd, u32 arg1, u32 arg2);
 extern s32 scm_call_atomic3(u32 svc, u32 cmd, u32 arg1, u32 arg2, u32 arg3);
 extern s32 scm_call_atomic4_3(u32 svc, u32 cmd, u32 arg1, u32 arg2, u32 arg3,
 		u32 arg4, u32 *ret1, u32 *ret2);
-<<<<<<< HEAD
-=======
-extern s32 scm_call_atomic5_3(u32 svc, u32 cmd, u32 arg1, u32 arg2, u32 arg3,
-		u32 arg4, u32 arg5, u32 *ret1, u32 *ret2, u32 *ret3);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define SCM_VERSION(major, minor) (((major) << 16) | ((minor) & 0xFF))
 
@@ -129,13 +120,6 @@ extern int scm_restore_sec_cfg(u32 device_id, u32 spare, int *scm_ret);
 extern u32 scm_io_read(phys_addr_t address);
 extern int scm_io_write(phys_addr_t address, u32 val);
 
-<<<<<<< HEAD
-=======
-#ifndef CONFIG_ARM64
-extern void scm_inv_range(unsigned long start, unsigned long end);
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define SCM_HDCP_MAX_REG 5
 
 struct scm_hdcp_req {
@@ -195,15 +179,6 @@ static inline s32 scm_call_atomic4_3(u32 svc, u32 cmd, u32 arg1, u32 arg2,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
-static inline s32 scm_call_atomic5_3(u32 svc, u32 cmd, u32 arg1, u32 arg2,
-	u32 arg3, u32 arg4, u32 arg5, u32 *ret1, u32 *ret2, u32 *ret3)
-{
-	return 0;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static inline u32 scm_get_version(void)
 {
 	return 0;
@@ -238,14 +213,5 @@ static inline int scm_io_write(phys_addr_t address, u32 val)
 {
 	return 0;
 }
-<<<<<<< HEAD
-=======
-
-static inline void scm_inv_range(unsigned long start, unsigned long end)
-{
-	return;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif
 #endif

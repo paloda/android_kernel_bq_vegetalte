@@ -153,13 +153,10 @@
 #define REAL_TIME_PLAYBACK_STRENGTH 0x7F
 #endif
 
-<<<<<<< HEAD
 #define MAX_VIBE_STRENGTH   REAL_TIME_PLAYBACK_STRENGTH
 #define MIN_VIBE_STRENGTH   0x20
 #define DEF_VIBE_STRENGTH   MAX_VIBE_STRENGTH
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define MAX_TIMEOUT 15000	/* 15s */
 
 #define DEFAULT_EFFECT 14	/* Strong buzz 100% */
@@ -204,10 +201,7 @@ static struct vibrator {
 
 static char g_effect_bank = EFFECT_LIBRARY;
 static int device_id = -1;
-<<<<<<< HEAD
 static int vibe_strength = DEF_VIBE_STRENGTH;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static unsigned char ERM_autocal_sequence[] = {
 	MODE_REG, AUTO_CALIBRATION,
@@ -308,7 +302,6 @@ static unsigned char LRA_init_sequence[] = {
 };
 #endif
 
-<<<<<<< HEAD
 static ssize_t drv260x_vib_min_show(struct device *dev,
 		struct device_attribute *attr,
 		char *buf)
@@ -383,8 +376,6 @@ static struct attribute_group timed_dev_attr_group = {
 	.attrs = timed_dev_attrs,
 };
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef CONFIG_OF
 static struct drv260x_platform_data *drv260x_of_init(struct i2c_client *client)
 {
@@ -678,11 +669,7 @@ static void vibrator_enable(struct timed_output_dev *dev, int value)
 		if (mode != MODE_REAL_TIME_PLAYBACK) {
 			if (audio_haptics_enabled && mode == MODE_AUDIOHAPTIC)
 				setAudioHapticsEnabled(NO);
-<<<<<<< HEAD
 			drv260x_set_rtp_val(vibe_strength);
-=======
-			drv260x_set_rtp_val(REAL_TIME_PLAYBACK_STRENGTH);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			drv260x_change_mode(MODE_REAL_TIME_PLAYBACK);
 			vibrator_is_playing = YES;
 		}
@@ -1071,13 +1058,10 @@ static void probe_work(struct work_struct *work)
 		return;
 	}
 
-<<<<<<< HEAD
 	if (sysfs_create_group(&to_dev.dev->kobj, &timed_dev_attr_group)) {
 		printk(KERN_ALERT "drv260x: fail to create strength tunables\n");
 	}
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	printk(KERN_ALERT "drv260x probe work succeeded");
 	return;
 }
@@ -1174,11 +1158,7 @@ static ssize_t drv260x_write(struct file *filp, const char *buff, size_t len,
 					    && mode == MODE_AUDIOHAPTIC)
 						setAudioHapticsEnabled(NO);
 					drv260x_set_rtp_val
-<<<<<<< HEAD
 					    (vibe_strength);
-=======
-					    (REAL_TIME_PLAYBACK_STRENGTH);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 					drv260x_change_mode
 					    (MODE_REAL_TIME_PLAYBACK);
 					vibrator_is_playing = YES;

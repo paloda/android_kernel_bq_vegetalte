@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
-=======
- * Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -63,11 +59,7 @@ static unsigned int no_ctrl_smd_ports;
 static unsigned int no_ctrl_qti_ports;
 static unsigned int no_ctrl_hsic_ports;
 static unsigned int no_ctrl_hsuart_ports;
-<<<<<<< HEAD
 static unsigned int no_data_bam_ports;
-=======
-static unsigned int no_rmnet_data_bam_ports;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static unsigned int no_data_bam2bam_ports;
 static unsigned int no_data_hsic_ports;
 static unsigned int no_data_hsuart_ports;
@@ -316,7 +308,6 @@ static int rmnet_gport_setup(void)
 	pr_debug("%s: bam ports: %u bam2bam ports: %u data hsic ports: %u data hsuart ports: %u"
 		" smd ports: %u ctrl hsic ports: %u ctrl hsuart ports: %u"
 		" nr_rmnet_ports: %u\n",
-<<<<<<< HEAD
 		__func__, no_data_bam_ports, no_data_bam2bam_ports,
 		no_data_hsic_ports, no_data_hsuart_ports, no_ctrl_smd_ports,
 		no_ctrl_hsic_ports, no_ctrl_hsuart_ports, nr_rmnet_ports);
@@ -325,21 +316,6 @@ static int rmnet_gport_setup(void)
 		ret = gbam_setup(no_data_bam_ports,
 				 no_data_bam2bam_ports);
 		if (ret)
-=======
-		__func__, no_rmnet_data_bam_ports, no_data_bam2bam_ports,
-		no_data_hsic_ports, no_data_hsuart_ports, no_ctrl_smd_ports,
-		no_ctrl_hsic_ports, no_ctrl_hsuart_ports, nr_rmnet_ports);
-
-	if (no_rmnet_data_bam_ports) {
-		ret = gbam_setup(no_rmnet_data_bam_ports);
-		if (ret < 0)
-			return ret;
-	}
-
-	if (no_data_bam2bam_ports) {
-		ret = gbam2bam_setup(no_data_bam2bam_ports);
-		if (ret < 0)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			return ret;
 	}
 
@@ -1419,11 +1395,7 @@ static void frmnet_cleanup(void)
 	nr_rmnet_ports = 0;
 	no_ctrl_smd_ports = 0;
 	no_ctrl_qti_ports = 0;
-<<<<<<< HEAD
 	no_data_bam_ports = 0;
-=======
-	no_rmnet_data_bam_ports = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	no_data_bam2bam_ports = 0;
 	no_ctrl_hsic_ports = 0;
 	no_data_hsic_ports = 0;
@@ -1493,13 +1465,8 @@ static int frmnet_init_port(const char *ctrl_name, const char *data_name,
 
 	switch (rmnet_port->data_xport) {
 	case USB_GADGET_XPORT_BAM:
-<<<<<<< HEAD
 		rmnet_port->data_xport_num = no_data_bam_ports;
 		no_data_bam_ports++;
-=======
-		rmnet_port->data_xport_num = no_rmnet_data_bam_ports;
-		no_rmnet_data_bam_ports++;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 	case USB_GADGET_XPORT_BAM2BAM:
 	case USB_GADGET_XPORT_BAM2BAM_IPA:
@@ -1535,11 +1502,7 @@ fail_probe:
 	nr_rmnet_ports = 0;
 	no_ctrl_smd_ports = 0;
 	no_ctrl_qti_ports = 0;
-<<<<<<< HEAD
 	no_data_bam_ports = 0;
-=======
-	no_rmnet_data_bam_ports = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	no_ctrl_hsic_ports = 0;
 	no_data_hsic_ports = 0;
 	no_ctrl_hsuart_ports = 0;

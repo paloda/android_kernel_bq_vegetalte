@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
-=======
- * Copyright (c) 2012-2013 The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -45,11 +41,7 @@
 
 #include "palTypes.h"
 #include "wniApi.h"
-<<<<<<< HEAD
 #include "wniCfg.h"
-=======
-#include "wniCfgSta.h"
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "cfgApi.h"
 #include "sirApi.h"
 #include "schApi.h"
@@ -1380,7 +1372,6 @@ __limProcessSmeScanReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
                    */
                   limLog(pMac, LOGP,
                           FL("could not retrieve Valid channel list"));
-<<<<<<< HEAD
 
                   if (pMac->lim.gLimRspReqd)
                   {
@@ -1433,10 +1424,6 @@ __limProcessSmeScanReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
                                 pMlmScanReq->channelList.channelNumber,
                                 pMlmScanReq->channelList.numChannels);
               }
-=======
-              }
-              pMlmScanReq->channelList.numChannels = (tANI_U8) cfg_len;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
           }
           else
           {
@@ -2865,7 +2852,6 @@ __limProcessSmeDeauthReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
 
     if ((status == eSIR_FAILURE) || (!limIsSmeDeauthReqValid(pMac, &smeDeauthReq, psessionEntry)))
     {
-<<<<<<< HEAD
         PELOGE(limLog(pMac, LOGW,FL("received invalid SME_DEAUTH_REQ message"));)
         if (pMac->lim.gLimRspReqd)
         {
@@ -2877,15 +2863,6 @@ __limProcessSmeDeauthReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
         }
 
         return;
-=======
-        PELOGE(limLog(pMac, LOGE,FL
-                   ("received invalid SME_DEAUTH_REQ message"));)
-        pMac->lim.gLimRspReqd = false;
-
-        retCode       = eSIR_SME_INVALID_PARAMETERS;
-        deauthTrigger = eLIM_HOST_DEAUTH;
-        goto sendDeauth;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
     limLog(pMac, LOG1,FL("received DEAUTH_REQ message on sessionid %d "
       "Systemrole %d with reasoncode %u in limSmestate %d from "
@@ -3355,15 +3332,9 @@ void limProcessSmeGetScanChannelInfo(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
         pMac->lim.scanChnInfo.numChnInfo = SIR_MAX_SUPPORTED_CHANNEL_LIST;
     }
 
-<<<<<<< HEAD
     PELOG2(limLog(pMac, LOG2,
            FL("Sending message %s with number of channels %d"),
            limMsgStr(eWNI_SME_GET_SCANNED_CHANNEL_RSP), pMac->lim.scanChnInfo.numChnInfo);)
-=======
-    limLog(pMac, LOG1,
-           FL("Sending message %s with number of channels %d"),
-           limMsgStr(eWNI_SME_GET_SCANNED_CHANNEL_RSP), pMac->lim.scanChnInfo.numChnInfo);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     len = sizeof(tSmeGetScanChnRsp) + (pMac->lim.scanChnInfo.numChnInfo - 1) * sizeof(tLimScanChn);
     pSirSmeRsp = vos_mem_malloc(len);
@@ -5619,10 +5590,6 @@ limProcessSmeReqMessages(tpAniSirGlobal pMac, tpSirMsgQ pMsg)
      * want to insert NOA before processing those msgs. These msgs will be processed later when
      * start event happens
      */
-<<<<<<< HEAD
-=======
-    MTRACE(macTraceMsgRx(pMac, NO_SESSION, pMsg->type));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     switch (pMsg->type)
     {
         case eWNI_SME_SCAN_REQ:

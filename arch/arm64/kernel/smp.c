@@ -162,11 +162,6 @@ asmlinkage void __cpuinit secondary_start_kernel(void)
 	 * Enable GIC and timers.
 	 */
 	smp_store_cpu_info(cpu);
-<<<<<<< HEAD
-=======
-
-	notify_cpu_starting(cpu);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	notify_cpu_starting(cpu);
 
@@ -190,22 +185,6 @@ asmlinkage void __cpuinit secondary_start_kernel(void)
 
 #ifdef CONFIG_HOTPLUG_CPU
 static int op_cpu_disable(unsigned int cpu)
-<<<<<<< HEAD
-{
-	/*
-	 * If we don't have a cpu_die method, abort before we reach the point
-	 * of no return. CPU0 may not have an cpu_ops, so test for it.
-	 */
-	if (!cpu_ops[cpu] || !cpu_ops[cpu]->cpu_die)
-		return -EOPNOTSUPP;
-
-	/*
-	 * We may need to abort a hot unplug for some other mechanism-specific
-	 * reason.
-	 */
-	if (cpu_ops[cpu]->cpu_disable)
-		return cpu_ops[cpu]->cpu_disable(cpu);
-=======
 {
 	/*
 	 * If we don't have a cpu_die method, abort before we reach the point
@@ -224,39 +203,6 @@ static int op_cpu_disable(unsigned int cpu)
 	return 0;
 }
 
-/*
- * __cpu_disable runs on the processor to be shutdown.
- */
-int __cpu_disable(void)
-{
-	unsigned int cpu = smp_processor_id();
-	int ret;
-
-	ret = op_cpu_disable(cpu);
-	if (ret)
-		return ret;
-
-	/*
-	 * Take this CPU offline.  Once we clear this, we can't return,
-	 * and we must not schedule until we're ready to give up the cpu.
-	 */
-	set_cpu_online(cpu, false);
-
-	/*
-	 * OK - migrate IRQs away from this CPU
-	 */
-	migrate_irqs();
-
-	/*
-	 * Remove this CPU from the vm mask set of all processes.
-	 */
-	clear_tasks_mm_cpumask(cpu);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
-
-	return 0;
-}
-
-<<<<<<< HEAD
 /*
  * __cpu_disable runs on the processor to be shutdown.
  */
@@ -323,107 +269,7 @@ void __cpu_die(unsigned int cpu)
 	 */
 	if (!op_cpu_kill(cpu))
 		pr_warn("CPU%d may not have shut down cleanly\n", cpu);
-=======
-static int op_cpu_kill(unsigned int cpu)
-{
-	/*
-	 * If we have no means of synchronising with the dying CPU, then assume
-	 * that it is really dead. We can only wait for an arbitrary length of
-	 * time and hope that it's dead, so let's skip the wait and just hope.
-	 */
-	if (!cpu_ops[cpu]->cpu_kill)
-		return 1;
-
-	return cpu_ops[cpu]->cpu_kill(cpu);
 }
-
-static DECLARE_COMPLETION(cpu_died);
-
-/*
- * called on the thread which is asking for a CPU to be shutdown -
- * waits until shutdown has completed, or it is timed out.
- */
-void __cpu_die(unsigned int cpu)
-{
-	if (!wait_for_completion_timeout(&cpu_died, msecs_to_jiffies(5000))) {
-		pr_crit("CPU%u: cpu didn't die\n", cpu);
-		return;
-	}
-	pr_notice("CPU%u: shutdown\n", cpu);
-
-	/*
-	 * Now that the dying CPU is beyond the point of no return w.r.t.
-	 * in-kernel synchronisation, try to get the firwmare to help us to
-	 * verify that it has really left the kernel before we consider
-	 * clobbering anything it might still be using.
-	 */
-	if (!op_cpu_kill(cpu))
-		pr_warn("CPU%d may not have shut down cleanly\n", cpu);
-}
-
-/*
- * Called from the idle thread for the CPU which has been shutdown.
- *
- * Note that we disable IRQs here, but do not re-enable them
- * before returning to the caller. This is also the behaviour
- * of the other hotplug-cpu capable cores, so presumably coming
- * out of idle fixes this.
- */
-void __ref cpu_die(void)
-{
-	unsigned int cpu = smp_processor_id();
-
-	idle_task_exit();
-
-	local_irq_disable();
-
-	/* Tell __cpu_die() that this CPU is now safe to dispose of */
-	complete(&cpu_died);
-
-	/*
-	 * Actually shutdown the CPU. This must never fail. The specific hotplug
-	 * mechanism must perform all required cache maintenance to ensure that
-	 * no dirty lines are lost in the process of shutting down the CPU.
-	 */
-	cpu_ops[cpu]->cpu_die(cpu);
-
-	/*
-	 * Do not return to the idle loop - jump back to the secondary
-	 * cpu initialisation.  There's some initialisation which needs
-	 * to be repeated to undo the effects of taking the CPU offline.
-	 */
-
-	asm volatile("mov       sp, %0\n"
-		     "mov       x29, #0\n"
-		     "b         secondary_start_kernel"
-		     : : "r" (task_stack_page(current) + THREAD_START_SP));
-}
-#endif
-
-void __init smp_cpus_done(unsigned int max_cpus)
-{
-	pr_info("SMP: Total of %d processors activated.\n", num_online_cpus());
-}
-
-void __init smp_prepare_boot_cpu(void)
-{
-	set_my_cpu_offset(per_cpu_offset(smp_processor_id()));
-}
-
-static void (*smp_cross_call)(const struct cpumask *, unsigned int);
-DEFINE_PER_CPU(bool, pending_ipi);
-
-void smp_cross_call_common(const struct cpumask *cpumask, unsigned int func)
-{
-	unsigned int cpu;
-
-	for_each_cpu(cpu, cpumask)
-		per_cpu(pending_ipi, cpu) = true;
-
-	smp_cross_call(cpumask, func);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
-}
-
 
 /*
  * Called from the idle thread for the CPU which has been shutdown.

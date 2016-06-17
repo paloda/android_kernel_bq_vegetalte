@@ -334,9 +334,5 @@ VOS_STATUS vos_randomize_n_bytes(void *mac_addr, tANI_U32 n);
 
 v_BOOL_t vos_is_wlan_in_badState(VOS_MODULE_ID moduleId,
                                  v_VOID_t *moduleContext);
-<<<<<<< HEAD
 
-=======
-v_BOOL_t vos_isLoadUnloadInProgress(void);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif // if !defined __VOS_NVITEM_H

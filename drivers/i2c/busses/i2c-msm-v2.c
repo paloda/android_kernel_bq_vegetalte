@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -396,7 +392,6 @@ static const struct i2c_msm_qup_reg_dump i2c_msm_qup_reg_dump_map[] = {
 };
 
 const char *i2c_msm_err_str_table[] = {
-<<<<<<< HEAD
 	[I2C_MSM_ERR_NACK] =
 		 "NACK: slave not responding, ensure its powered",
 	[I2C_MSM_ERR_ARB_LOST] = "arb_lost",
@@ -410,15 +405,6 @@ const char *i2c_msm_err_str_table[] = {
 	[I2C_MSM_ERR_INVALID_READ_ADDR] = "Invalid slave addr",
 	[I2C_MSM_ERR_INVALID_READ_SEQ] = "start tag error for read",
 	[I2C_MSM_ERR_FAILED] = "I2C transfer failed",
-=======
-	[I2C_MSM_NO_ERR]     = "NONE",
-	[I2C_MSM_ERR_NACK]   = "NACK: slave not responding, ensure its powered",
-	[I2C_MSM_ERR_ARB_LOST] = "ARB_LOST",
-	[I2C_MSM_ERR_BUS_ERR] = "BUS ERROR:noisy bus/unexpected start/stop tag",
-	[I2C_MSM_ERR_TIMEOUT]  = "TIMEOUT_ERROR",
-	[I2C_MSM_ERR_CORE_CLK] = "CLOCK OFF: Check Core Clock",
-	[I2C_MSM_ERR_OVR_UNDR_RUN] = "OVER_UNDER_RUN_ERROR",
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 /*
  * see: struct i2c_msm_qup_reg_dump for more
@@ -445,22 +431,16 @@ static void i2c_msm_dbg_dump_diag(struct i2c_msm_ctrl *ctrl,
 				bool use_param_vals, u32 status, u32 qup_op)
 {
 	struct i2c_msm_xfer *xfer = &ctrl->xfer;
-<<<<<<< HEAD
 	char str[I2C_MSM_MAX_ERR_BUF_SZ] = {'\0'};
 	char *p_str = str;
 	const char **diag_msg = i2c_msm_err_str_table;
 	int err = xfer->err;
-=======
-	const char *str = i2c_msm_err_str_table[xfer->err];
-	char buf[I2C_MSM_REG_2_STR_BUF_SZ];
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (!use_param_vals) {
 		void __iomem        *base = ctrl->rsrcs.base;
 		status = readl_relaxed(base + QUP_I2C_STATUS);
 		qup_op = readl_relaxed(base + QUP_OPERATIONAL);
 	}
-<<<<<<< HEAD
 	if ((err & BIT(I2C_MSM_ERR_TIMEOUT))) {
 		/*
 		 * if we are not the bus master or SDA/SCL is
@@ -486,24 +466,6 @@ static void i2c_msm_dbg_dump_diag(struct i2c_msm_ctrl *ctrl,
 			p_str += snprintf(p_str,
 			(I2C_MSM_MAX_ERR_BUF_SZ - (p_str - str)),
 			 "%s, ", *diag_msg);
-=======
-
-	if (xfer->err == I2C_MSM_ERR_TIMEOUT) {
-		/*
-		 * if we are not the bus master or SDA/SCL is low then it may be
-		 * that slave is pulling the lines low. Otherwise it is likely a
-		 * GPIO issue
-		 */
-		if (!(status & QUP_BUS_MASTER))
-			snprintf(buf, I2C_MSM_REG_2_STR_BUF_SZ,
-				"%s(val:%dmsec) misconfigured GPIO or slave pulling bus line(s) low\n",
-				str, jiffies_to_msecs(xfer->timeout));
-		 else
-			snprintf(buf, I2C_MSM_REG_2_STR_BUF_SZ,
-			"%s(val:%dmsec)", str, jiffies_to_msecs(xfer->timeout));
-
-		str = buf;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	/* dump xfer details */
@@ -883,14 +845,11 @@ static void i2c_msm_prof_evnt_dump(struct i2c_msm_ctrl *ctrl)
  * @is_new_addr Is start tag required? (which requires two more bytes.)
  * @is_last     Use the XXXXX_N_STOP tag varient
  * @is_rx       READ/WRITE
-<<<<<<< HEAD
  * is_high_speed Requires a post-fix of a start-tag and the reserved
  *               high-speed address.
  *
  * workaround! Due to an HW issues, a stop is issued after every read.
  *    QUP_TAG2_DATA_READ is replaced by QUP_TAG2_DATA_READ_N_STOP.
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  */
 static const struct i2c_msm_tag tag_lookup_table[2][2][2][2] = {
 	{{{{QUP_TAG2_DATA_WRITE                                   , 2},
@@ -1026,11 +985,7 @@ static int i2c_msm_qup_sw_reset(struct i2c_msm_ctrl *ctrl)
 	ret = i2c_msm_qup_state_wait_valid(ctrl, QUP_STATE_RESET, false);
 	if (ret) {
 		if (atomic_read(&ctrl->xfer.is_active))
-<<<<<<< HEAD
 			ctrl->xfer.err |= BIT(I2C_MSM_ERR_CORE_CLK);
-=======
-			ctrl->xfer.err = I2C_MSM_ERR_CORE_CLK;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		dev_err(ctrl->dev, "error on issuing QUP software-reset\n");
 	}
 	return ret;
@@ -2763,7 +2718,6 @@ static irqreturn_t i2c_msm_qup_isr(int irq, void *devid)
 	if (i2c_status & QUP_MSTR_STTS_ERR_MASK) {
 		signal_complete = true;
 		log_event       = true;
-<<<<<<< HEAD
 
 		if (i2c_status & QUP_PACKET_NACKED)
 			ctrl->xfer.err |= BIT(I2C_MSM_ERR_NACK);
@@ -2788,29 +2742,11 @@ static irqreturn_t i2c_msm_qup_isr(int irq, void *devid)
 
 		if (i2c_status & QUP_FAILED)
 			ctrl->xfer.err |= BIT(I2C_MSM_ERR_FAILED);
-=======
-		/*
-		 * If there is more than 1 error here, last one sticks.
-		 * The order of the error set here matters.
-		 */
-		if (i2c_status & QUP_ARB_LOST)
-			ctrl->xfer.err = I2C_MSM_ERR_ARB_LOST;
-
-		if (i2c_status & QUP_BUS_ERROR)
-			ctrl->xfer.err = I2C_MSM_ERR_BUS_ERR;
-
-		if (i2c_status & QUP_PACKET_NACKED)
-			ctrl->xfer.err = I2C_MSM_ERR_NACK;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	/* check for FIFO over/under runs error */
 	if (err_flags & QUP_ERR_FLGS_MASK)
-<<<<<<< HEAD
 		ctrl->xfer.err = BIT(I2C_MSM_ERR_OVR_UNDR_RUN);
-=======
-		ctrl->xfer.err = I2C_MSM_ERR_OVR_UNDR_RUN;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/* Dump the register values before reset the core */
 	if (ctrl->xfer.err && ctrl->dbgfs.dbg_lvl >= MSM_DBG)
@@ -2835,35 +2771,13 @@ static irqreturn_t i2c_msm_qup_isr(int irq, void *devid)
 		need_wmb = true;
 	}
 
-<<<<<<< HEAD
-=======
-	if (need_wmb)
-		/*
-		 * flush writes that clear the interrupt flags before changing
-		 * state to reset.
-		 */
-		wmb();
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* Reset and bail out on error */
 	if (ctrl->xfer.err) {
 
 		/* Flush for the tags in case of an error and BAM Mode*/
-<<<<<<< HEAD
 		if (ctrl->xfer.mode_id == I2C_MSM_XFER_MODE_BAM)
 			writel_relaxed(QUP_I2C_FLUSH, ctrl->rsrcs.base
 								+ QUP_STATE);
-=======
-		if (ctrl->xfer.mode_id == I2C_MSM_XFER_MODE_BAM) {
-			writel_relaxed(QUP_I2C_FLUSH, ctrl->rsrcs.base
-								+ QUP_STATE);
-			/*
-			 * Ensure that QUP_I2C_FLUSH is written before
-			 * State reset
-			 */
-			wmb();
-		}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		/* HW workaround: when interrupt is level triggerd, more
 		 * than one interrupt may fire in error cases. Thus we
@@ -2872,10 +2786,7 @@ static irqreturn_t i2c_msm_qup_isr(int irq, void *devid)
 		 */
 		writel_relaxed(QUP_STATE_RESET, ctrl->rsrcs.base + QUP_STATE);
 
-<<<<<<< HEAD
 		need_wmb        = true;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		signal_complete = true;
 		log_event       = true;
 		goto isr_end;
@@ -2936,13 +2847,10 @@ static irqreturn_t i2c_msm_qup_isr(int irq, void *devid)
 	}
 
 isr_end:
-<<<<<<< HEAD
 	/* Ensure that QUP configuration is written before leaving this func */
 	if (need_wmb)
 		wmb();
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ctrl->xfer.err || (ctrl->dbgfs.dbg_lvl >= MSM_DBG))
 		i2c_msm_dbg_dump_diag(ctrl, true, i2c_status, qup_op);
 
@@ -3101,15 +3009,9 @@ static int i2c_msm_qup_post_xfer(struct i2c_msm_ctrl *ctrl, int err)
 {
 	/* poll until bus is released */
 	if (i2c_msm_qup_poll_bus_active_unset(ctrl)) {
-<<<<<<< HEAD
 		if ((ctrl->xfer.err & BIT(I2C_MSM_ERR_ARB_LOST)) ||
 		    (ctrl->xfer.err & BIT(I2C_MSM_ERR_BUS_ERR)) ||
 		    (ctrl->xfer.err & BIT(I2C_MSM_ERR_TIMEOUT))) {
-=======
-		if ((ctrl->xfer.err == I2C_MSM_ERR_ARB_LOST) ||
-		    (ctrl->xfer.err == I2C_MSM_ERR_BUS_ERR)  ||
-		    (ctrl->xfer.err == I2C_MSM_ERR_TIMEOUT)) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			if (i2c_msm_qup_slv_holds_bus(ctrl))
 				qup_i2c_recover_bus_busy(ctrl);
 
@@ -3129,11 +3031,7 @@ static int i2c_msm_qup_post_xfer(struct i2c_msm_ctrl *ctrl, int err)
 	/* flush bam data and reset the qup core in timeout error.
 	 * for other error case, its handled by the ISR
 	 */
-<<<<<<< HEAD
 	if (ctrl->xfer.err & BIT(I2C_MSM_ERR_TIMEOUT)) {
-=======
-	if (ctrl->xfer.err == I2C_MSM_ERR_TIMEOUT) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		/* Flush for the BAM registers */
 		if (ctrl->xfer.mode_id == I2C_MSM_XFER_MODE_BAM)
 			writel_relaxed(QUP_I2C_FLUSH, ctrl->rsrcs.base
@@ -3142,7 +3040,6 @@ static int i2c_msm_qup_post_xfer(struct i2c_msm_ctrl *ctrl, int err)
 		/* reset the qup core */
 		i2c_msm_qup_state_set(ctrl, QUP_STATE_RESET);
 		err = -ETIMEDOUT;
-<<<<<<< HEAD
 	}
 
 	if (ctrl->xfer.err & BIT(I2C_MSM_ERR_BUS_ERR)) {
@@ -3152,11 +3049,6 @@ static int i2c_msm_qup_post_xfer(struct i2c_msm_ctrl *ctrl, int err)
 
 	if (ctrl->xfer.err & BIT(I2C_MSM_ERR_NACK))
 		err = -ENOTCONN;
-=======
-	} else if (ctrl->xfer.err == I2C_MSM_ERR_NACK) {
-		err = -ENOTCONN;
-	}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	return err;
 }
@@ -3261,11 +3153,7 @@ static int i2c_msm_xfer_wait_for_completion(struct i2c_msm_ctrl *ctrl,
 
 	time_left = wait_for_completion_timeout(complete, xfer->timeout);
 	if (!time_left) {
-<<<<<<< HEAD
 		xfer->err |= BIT(I2C_MSM_ERR_TIMEOUT);
-=======
-		xfer->err = I2C_MSM_ERR_TIMEOUT;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		i2c_msm_dbg_dump_diag(ctrl, false, 0, 0);
 		ret = -EIO;
 		i2c_msm_prof_evnt_add(ctrl, MSM_ERR, i2c_msm_prof_dump_cmplt_fl,
@@ -3461,10 +3349,7 @@ static void i2c_msm_pm_xfer_end(struct i2c_msm_ctrl *ctrl)
 	struct i2c_msm_bam_pipe      *prod = &bam->pipe[I2C_MSM_BAM_PROD];
 	struct i2c_msm_bam_pipe      *cons = &bam->pipe[I2C_MSM_BAM_CONS];
 
-<<<<<<< HEAD
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	atomic_set(&ctrl->xfer.is_active, 0);
 
 	if (cons->is_init)
@@ -4025,21 +3910,7 @@ static void i2c_msm_pm_suspend(struct device *dev)
 	i2c_msm_dbg(ctrl, MSM_DBG, "suspending...");
 	i2c_msm_pm_pinctrl_state(ctrl, false);
 	i2c_msm_clk_path_unvote(ctrl);
-<<<<<<< HEAD
 	ctrl->pwr_state = MSM_I2C_PM_SUSPENDED;
-=======
-	/*
-	 * We implement system and runtime suspend in the same way. However
-	 * it is important for us to distinguish between them in when servicing
-	 * a transfer requests. If we get transfer request while in runtime
-	 * suspend we want to simply wake up and service that request. But if we
-	 * get a transfer request while system is suspending we want to bail
-	 * out on that request. This is why if we marked that we are in system
-	 * suspend, we do not want to override that state with runtime suspend.
-	 */
-	if (ctrl->pwr_state != MSM_I2C_PM_SYS_SUSPENDED)
-		ctrl->pwr_state = MSM_I2C_PM_SUSPENDED;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	return;
 }
 
@@ -4067,19 +3938,12 @@ static int i2c_msm_pm_sys_suspend_noirq(struct device *dev)
 	int ret = 0;
 	struct i2c_msm_ctrl *ctrl = dev_get_drvdata(dev);
 	enum msm_i2c_power_state prev_state = ctrl->pwr_state;
-<<<<<<< HEAD
 	i2c_msm_dbg(ctrl, MSM_DBG, "pm_sys_noirq: suspending...");
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/* Acquire mutex to ensure current transaction is over */
 	mutex_lock(&ctrl->xfer.mtx);
 	ctrl->pwr_state = MSM_I2C_PM_SYS_SUSPENDED;
 	mutex_unlock(&ctrl->xfer.mtx);
-<<<<<<< HEAD
-=======
-	i2c_msm_dbg(ctrl, MSM_DBG, "pm_sys_noirq: suspending...");
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (prev_state == MSM_I2C_PM_ACTIVE) {
 		i2c_msm_pm_suspend(dev);

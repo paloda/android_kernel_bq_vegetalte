@@ -149,11 +149,7 @@ static struct policydb_compat_info policydb_compat[] = {
 		.ocon_num	= OCON_NUM,
 	},
 	{
-<<<<<<< HEAD
 		.version	= POLICYDB_VERSION_XPERMS_IOCTL,
-=======
-		.version	= POLICYDB_VERSION_IOCTL_OPERATIONS,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		.sym_num	= SYM_NUM,
 		.ocon_num	= OCON_NUM,
 	},

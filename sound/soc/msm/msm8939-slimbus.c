@@ -36,19 +36,6 @@
 #include "../codecs/wcd9306.h"
 #include "../codecs/wcd9330.h"
 
-<<<<<<< HEAD
-=======
-#include "../codecs/fsa8500-core.h"
-#ifdef CONFIG_SND_SOC_FLORIDA
-#include "../codecs/florida.h"
-#include "../codecs/arizona.h"
-#include "../codecs/aov_trigger.h"
-
-#include <linux/mfd/arizona/core.h>
-#include <linux/mfd/arizona/registers.h>
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define DRV_NAME "msm8939-slimbus-wcd"
 
 #define SAMPLING_RATE_8KHZ      8000
@@ -75,12 +62,6 @@
 #define WCD9XXX_MBHC_DEF_BUTTONS    8
 #define WCD9XXX_MBHC_DEF_RLOADS     5
 #define CODEC_EXT_CLK_RATE         9600000
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-#define FLORIDA_SYSCLK_RATE (48000 * 1024 * 3)
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #define PRI_MI2S_ID	(1 << 0)
 #define SEC_MI2S_ID	(1 << 1)
@@ -100,19 +81,9 @@ static int slim0_rx_sample_rate = SAMPLING_RATE_48KHZ;
 static int slim0_rx_bit_format = SNDRV_PCM_FORMAT_S16_LE;
 static int msm_slim_0_rx_ch = 1;
 static int msm_slim_0_tx_ch = 1;
-<<<<<<< HEAD
 static int msm_btsco_rate = BTSCO_RATE_8KHZ;
 static int msm_btsco_ch = 1;
 static int msm8939_spk_control = 1;
-=======
-static int msm_slim_1_tx_ch = 1;
-static int msm_btsco_rate = BTSCO_RATE_8KHZ;
-static int msm_btsco_ch = 1;
-static int msm8939_spk_control = 1;
-#ifdef CONFIG_SND_SOC_FLORIDA
-static struct clk *codec_clk;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int clk_users;
 static struct platform_device *spdev;
 
@@ -398,139 +369,18 @@ exit:
 	return ret;
 }
 
-<<<<<<< HEAD
 static int msm8x16_mclk_event(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *kcontrol, int event)
 {
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-static int msm_snd_enable_pmic_bb_clk2(struct snd_soc_codec *codec, int enable,
-					bool dapm)
-{
-	int ret = 0;
-	struct snd_soc_card *card = codec->card;
-	struct msm8939_asoc_mach_data *pdata = snd_soc_card_get_drvdata(card);
-
-	pr_debug("%s: enable = %d clk_users = %d\n",
-		__func__, enable, clk_users);
-
-	mutex_lock(&pdata->cdc_mclk_mutex);
-
-	if (enable) {
-		if (!codec_clk) {
-			dev_err(codec->dev, "%s: did not get codec MCLK\n",
-				__func__);
-			ret = -EINVAL;
-			goto exit;
-		}
-		clk_users++;
-		if (clk_users != 1)
-			goto exit;
-
-		ret = clk_prepare_enable(codec_clk);
-		if (ret) {
-			pr_err("%s: clk_prepare failed, err:%d\n",
-				__func__, ret);
-			clk_users--;
-			goto exit;
-		}
-	} else {
-		if (clk_users > 0) {
-			clk_users--;
-			if (clk_users == 0)
-				clk_disable_unprepare(codec_clk);
-		} else {
-			pr_err("%s: Error releasing codec MCLK\n", __func__);
-			ret = -EINVAL;
-			goto exit;
-		}
-	}
-exit:
-	mutex_unlock(&pdata->cdc_mclk_mutex);
-	return ret;
-}
-#endif
-
-static int msm8x16_mclk_event(struct snd_soc_dapm_widget *w,
-		struct snd_kcontrol *kcontrol, int event)
-{
-#ifdef CONFIG_SND_SOC_FLORIDA
-	int ret;
-	struct snd_soc_codec *codec = w->codec;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("%s: event = %d\n", __func__, event);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-<<<<<<< HEAD
 		return msm_snd_enable_codec_ext_clk(w->codec, 1, true);
 	case SND_SOC_DAPM_POST_PMD:
 		return msm_snd_enable_codec_ext_clk(w->codec, 0, true);
 	}
 	return 0;
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-		ret = msm_snd_enable_pmic_bb_clk2(codec, 1, true);
-		if (ret < 0) {
-			pr_err("%s Cannot set ext clk %d\n", __func__, ret);
-			goto exit;
-		}
-		ret = snd_soc_codec_set_pll(codec, FLORIDA_FLL1_REFCLK,
-			ARIZONA_FLL_SRC_MCLK1,
-			19200000,
-			FLORIDA_SYSCLK_RATE);
-		if (ret < 0) {
-			pr_err("%s Cannot set REFCLK 9.6MHz %d\n", __func__,
-				ret);
-			goto exit;
-		}
-		ret = snd_soc_codec_set_pll(codec, FLORIDA_FLL1,
-			ARIZONA_FLL_SRC_MCLK1,
-			19200000,
-			FLORIDA_SYSCLK_RATE);
-		if (ret < 0)
-			pr_err("%s Cannot set SYNC CLK 9.6MHz %d\n", __func__,
-				ret);
-		break;
-#else
-		return msm_snd_enable_codec_ext_clk(w->codec, 1, true);
-#endif
-	case SND_SOC_DAPM_POST_PMD:
-#ifdef CONFIG_SND_SOC_FLORIDA
-		ret = snd_soc_codec_set_pll(codec, FLORIDA_FLL1_REFCLK,
-			ARIZONA_FLL_SRC_MCLK2,
-			32768,
-			FLORIDA_SYSCLK_RATE);
-		if (ret < 0) {
-			pr_err("%s Cannot set REFCLK 32kHz %d\n", __func__,
-				ret);
-			goto exit;
-		}
-		ret = snd_soc_codec_set_pll(codec, FLORIDA_FLL1,
-			ARIZONA_FLL_SRC_MCLK2,
-			32768,
-			FLORIDA_SYSCLK_RATE);
-		if (ret < 0)
-			pr_err("%s Cant set SYNC CLK 32kHz %d\n", __func__,
-				ret);
-
-		ret = msm_snd_enable_pmic_bb_clk2(codec, 0, true);
-		if (ret < 0) {
-			pr_err("%s Cannot set ext clk %d\n", __func__, ret);
-			goto exit;
-		}
-		break;
-#else
-		return msm_snd_enable_codec_ext_clk(w->codec, 0, true);
-#endif
-	}
-	return 0;
-#ifdef CONFIG_SND_SOC_FLORIDA
-exit:
-	return ret;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static const struct snd_soc_dapm_widget msm8939_dapm_widgets[] = {
@@ -555,23 +405,6 @@ static const struct snd_soc_dapm_widget msm8939_dapm_widgets[] = {
 
 };
 
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-static const struct snd_soc_dapm_route florida_audio_routes[] = {
-	{"Slim1 Playback", NULL, "MCLK"},
-	{"Slim1 Capture", NULL, "MCLK"},
-	{"Slim2 Playback", NULL, "MCLK"},
-	{"Slim2 Capture", NULL, "MCLK"},
-	{"IN1L", NULL, "MICBIAS3"},
-	{"IN2L", NULL, "MICBIAS3"},
-	{"IN2R", NULL, "MICBIAS3"},
-	{"IN3L", NULL, "MICBIAS1"},
-	{"IN3R", NULL, "MICBIAS2"},
-};
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int slim0_rx_sample_rate_get(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -697,27 +530,6 @@ static int msm_slim_0_tx_ch_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
-static int msm_slim_1_tx_ch_get(struct snd_kcontrol *kcontrol,
-       struct snd_ctl_elem_value *ucontrol)
-{
-	pr_debug("%s: msm_slim_1_tx_ch  = %d\n", __func__,
-		msm_slim_1_tx_ch);
-	ucontrol->value.integer.value[0] = msm_slim_1_tx_ch - 1;
-	return 0;
-}
-
-static int msm_slim_1_tx_ch_put(struct snd_kcontrol *kcontrol,
-	struct snd_ctl_elem_value *ucontrol)
-{
-	msm_slim_1_tx_ch = ucontrol->value.integer.value[0] + 1;
-
-	pr_debug("%s: msm_slim_1_tx_ch = %d\n", __func__, msm_slim_1_tx_ch);
-	return 1;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static const struct snd_soc_dapm_widget msm8x16_dapm_widgets[] = {
 
 	SND_SOC_DAPM_SUPPLY("MCLK",  SND_SOC_NOPM, 0, 0,
@@ -747,42 +559,6 @@ static const char *const slim0_tx_ch_text[] = {"One", "Two", "Three", "Four",
 static char const *rx_bit_format_text[] = {"S16_LE", "S24_LE"};
 static char const *slim0_rx_sample_rate_text[] = {"KHZ_48", "KHZ_96",
 					"KHZ_192"};
-<<<<<<< HEAD
-=======
-static const char *const slim1_tx_ch_text[] = {"One", "Two"};
-
-static const char *const btsco_rate_text[] = {"8000", "16000"};
-static const struct soc_enum msm_btsco_enum[] = {
-	SOC_ENUM_SINGLE_EXT(2, btsco_rate_text),
-};
-
-static int msm_btsco_rate_get(struct snd_kcontrol *kcontrol,
-				struct snd_ctl_elem_value *ucontrol)
-{
-	pr_debug("%s: msm_btsco_rate  = %d", __func__, msm_btsco_rate);
-	ucontrol->value.integer.value[0] = msm_btsco_rate;
-	return 0;
-}
-
-static int msm_btsco_rate_put(struct snd_kcontrol *kcontrol,
-				struct snd_ctl_elem_value *ucontrol)
-{
-	switch (ucontrol->value.integer.value[0]) {
-	case 0:
-		msm_btsco_rate = BTSCO_RATE_8KHZ;
-		break;
-	case 1:
-		msm_btsco_rate = BTSCO_RATE_16KHZ;
-		break;
-	default:
-		msm_btsco_rate = BTSCO_RATE_8KHZ;
-		break;
-	}
-
-	pr_debug("%s: msm_btsco_rate = %d\n", __func__, msm_btsco_rate);
-	return 0;
-}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 static const struct soc_enum msm_snd_enum[] = {
 	SOC_ENUM_SINGLE_EXT(2, spk_function),
@@ -790,10 +566,6 @@ static const struct soc_enum msm_snd_enum[] = {
 	SOC_ENUM_SINGLE_EXT(8, slim0_tx_ch_text),
 	SOC_ENUM_SINGLE_EXT(2, rx_bit_format_text),
 	SOC_ENUM_SINGLE_EXT(3, slim0_rx_sample_rate_text),
-<<<<<<< HEAD
-=======
-	SOC_ENUM_SINGLE_EXT(2, slim1_tx_ch_text),
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 static const struct snd_kcontrol_new msm_snd_controls[] = {
@@ -807,13 +579,6 @@ static const struct snd_kcontrol_new msm_snd_controls[] = {
 			slim0_rx_bit_format_get, slim0_rx_bit_format_put),
 	SOC_ENUM_EXT("SLIM_0_RX SampleRate", msm_snd_enum[4],
 			slim0_rx_sample_rate_get, slim0_rx_sample_rate_put),
-<<<<<<< HEAD
-=======
-	SOC_ENUM_EXT("SLIM_1_TX Channels", msm_snd_enum[5],
-			msm_slim_1_tx_ch_get, msm_slim_1_tx_ch_put),
-	SOC_ENUM_EXT("Internal BTSCO SampleRate", msm_btsco_enum[0],
-			msm_btsco_rate_get, msm_btsco_rate_put),
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 static int msm_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
@@ -976,118 +741,6 @@ static int  msm8939_adsp_state_callback(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-#define MSM8939_AIF1_CHANNELS 2
-#define MSM8939_AIF1_SAMPLE_DEPTH 16
-#define MSM8939_AIF1_BCLK_RATE (SAMPLE_RATE_48KHZ * \
-					MSM8939_AIF1_SAMPLE_DEPTH * \
-					MSM8939_AIF1_CHANNELS)
-static struct snd_soc_codec *florida_codec;
-static int florida_dai_init(struct snd_soc_pcm_runtime *rtd)
-{
-	int ret;
-	struct snd_soc_codec *codec = rtd->codec;
-	struct snd_soc_dapm_context *dapm = &codec->dapm;
-
-	/* BODGE */
-	florida_codec = rtd->codec;
-
-	/* This is for if you want to have MCLK connected MCLK1 on the FLORIDA. */
-	codec_clk = clk_get(&spdev->dev, "bb_clk2");
-	if (IS_ERR(codec_clk)) {
-		pr_err("%s: error clk_get %lu\n",
-			__func__, PTR_ERR(codec_clk));
-		return -EINVAL;
-	}
-
-	dev_crit(codec->dev, "florida_dai_init first BE dai initing ...\n");
-
-	ret = snd_soc_codec_set_pll(codec, FLORIDA_FLL1_REFCLK,
-					ARIZONA_FLL_SRC_NONE,
-					0, 0);
-
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to set FLL1REFCLK\n");
-
-	ret = snd_soc_codec_set_pll(codec, FLORIDA_FLL1,
-							ARIZONA_FLL_SRC_MCLK2,
-							32768,
-							FLORIDA_SYSCLK_RATE);
-
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to start FLL1: %d\n", ret);
-
-	ret = snd_soc_codec_set_sysclk(codec, ARIZONA_CLK_SYSCLK,
-				ARIZONA_CLK_SRC_FLL1, FLORIDA_SYSCLK_RATE,
-				SND_SOC_CLOCK_IN);
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to set SYSCLK: %d\n", ret);
-
-	ret = snd_soc_dapm_new_controls(dapm, msm8x16_dapm_widgets,
-				ARRAY_SIZE(msm8x16_dapm_widgets));
-
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to add msm8x16_dapm_widgets\n");
-
-	ret = snd_soc_dapm_add_routes(dapm, florida_audio_routes,
-				ARRAY_SIZE(florida_audio_routes));
-
-	snd_soc_dapm_ignore_suspend(dapm, "DSP2 Virtual Output");
-	snd_soc_dapm_ignore_suspend(dapm, "DSP3 Virtual Output");
-	snd_soc_dapm_ignore_suspend(dapm, "DSP Virtual Input");
-	snd_soc_dapm_ignore_suspend(dapm, "MICBIAS1");
-	snd_soc_dapm_ignore_suspend(dapm, "MICBIAS2");
-	snd_soc_dapm_ignore_suspend(dapm, "MICBIAS3");
-	snd_soc_dapm_ignore_suspend(dapm, "MICSUPP");
-	snd_soc_dapm_ignore_suspend(dapm, "IN1L");
-	snd_soc_dapm_ignore_suspend(dapm, "IN1R");
-	snd_soc_dapm_ignore_suspend(dapm, "IN2L");
-	snd_soc_dapm_ignore_suspend(dapm, "IN2R");
-	snd_soc_dapm_ignore_suspend(dapm, "IN3R");
-	snd_soc_dapm_ignore_suspend(dapm, "IN3L");
-	snd_soc_dapm_ignore_suspend(dapm, "AIF1RX1");
-	snd_soc_dapm_ignore_suspend(dapm, "AIF1RX2");
-	snd_soc_dapm_ignore_suspend(dapm, "HPOUT1L");
-	snd_soc_dapm_ignore_suspend(dapm, "HPOUT1R");
-	snd_soc_dapm_ignore_suspend(dapm, "HPOUT2L");
-	snd_soc_dapm_ignore_suspend(dapm, "HPOUT2R");
-	snd_soc_dapm_ignore_suspend(dapm, "SLIMTX5");
-	snd_soc_dapm_ignore_suspend(dapm, "Slim2 Capture");
-
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to add florida_audio_routes\n");
-
-	ret = snd_soc_add_codec_controls(codec, msm_snd_controls,
-					 ARRAY_SIZE(msm_snd_controls));
-	if (ret != 0)
-		dev_err(rtd->platform->dev, "Failed to add msm_snd_controls\n");
-
-	/* Cargo-culted from QC */
-	snd_soc_dapm_sync(dapm);
-
-	/* Start FSA8500 headset detection */
-	ret = fsa8500_hs_detect(codec);
-	if (ret)
-		dev_info(codec->dev, "fsa8500 hs det load error %d", ret);
-
-	aov_trigger_init(codec);
-	return 0;
-}
-#endif
-
-#ifdef CONFIG_SND_SOC_FLORIDA
-static const struct snd_soc_pcm_stream tfa9890_params = {
-	.formats = SNDRV_PCM_FORMAT_S16_LE,
-	.rate_min = 48000,
-	.rate_max = 48000,
-	.channels_min = 1,
-	.channels_max = 2,
-};
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static struct notifier_block adsp_state_notifier_block = {
 	.notifier_call = msm8939_adsp_state_callback,
 	.priority = -INT_MAX,
@@ -1602,29 +1255,6 @@ static int msm_slim_0_tx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-static int msm_slim_1_tx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
-					    struct snd_pcm_hw_params *params)
-{
-	struct snd_interval *rate = hw_param_interval(params,
-	SNDRV_PCM_HW_PARAM_RATE);
-
-	struct snd_interval *channels = hw_param_interval(params,
-			SNDRV_PCM_HW_PARAM_CHANNELS);
-
-	pr_debug("%s()\n", __func__);
-	param_set_mask(params, SNDRV_PCM_HW_PARAM_FORMAT,
-				   SNDRV_PCM_FORMAT_S16_LE);
-	rate->min = rate->max = SAMPLING_RATE_48KHZ;
-	channels->min = channels->max = msm_slim_1_tx_ch;
-
-	return 0;
-}
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int msm_slim_5_tx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 					    struct snd_pcm_hw_params *params)
 {
@@ -2198,189 +1828,6 @@ static struct snd_soc_dai_link msm8x16_9330_dai[] = {
 	},
 };
 
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-static struct snd_soc_dai_link msm8x16_florida_dai[] = {
-	/* Backend DAI Links */
-	{
-		.name = LPASS_BE_SLIMBUS_0_RX,
-		.stream_name = "Slimbus Playback",
-		.cpu_dai_name = "msm-dai-q6-dev.16384",
-		.platform_name = "msm-pcm-routing",
-		.codec_name = "florida-codec",
-		.codec_dai_name	= "florida-slim1",
-		.no_pcm = 1,
-		.be_id = MSM_BACKEND_DAI_SLIMBUS_0_RX,
-		.init = &florida_dai_init,
-		.be_hw_params_fixup = msm_slim_0_rx_be_hw_params_fixup,
-		.ignore_pmdown_time = 1, /* dai link has playback support */
-		.ignore_suspend = 1,
-		.ops = &slimbus_be_ops,
-	},
-	{
-		.name = LPASS_BE_SLIMBUS_0_TX,
-		.stream_name = "Slimbus Capture",
-		.cpu_dai_name = "msm-dai-q6-dev.16385",
-		.platform_name = "msm-pcm-routing",
-		.codec_name = "florida-codec",
-		.codec_dai_name = "florida-slim1",
-		.no_pcm = 1,
-		.be_id = MSM_BACKEND_DAI_SLIMBUS_0_TX,
-		.be_hw_params_fixup = msm_slim_0_tx_be_hw_params_fixup,
-		.ignore_suspend = 1,
-		.ops = &slimbus_be_ops,
-	},
-	{
-		.name = LPASS_BE_SLIMBUS_1_RX,
-		.stream_name = "Slimbus1 Playback",
-		.cpu_dai_name = "msm-dai-q6-dev.16386",
-		.platform_name = "msm-pcm-routing",
-		.codec_name = "florida-codec",
-		.codec_dai_name	= "florida-slim2",
-		.no_pcm = 1,
-		.be_id = MSM_BACKEND_DAI_SLIMBUS_1_RX,
-		.be_hw_params_fixup = msm_slim_0_rx_be_hw_params_fixup,
-		.ops = &slimbus_be_ops,
-		/* dai link has playback support */
-		.ignore_pmdown_time = 1,
-		.ignore_suspend = 1,
-	},
-	{
-		.name = LPASS_BE_SLIMBUS_1_TX,
-		.stream_name = "Slimbus1 Capture",
-		.cpu_dai_name = "msm-dai-q6-dev.16387",
-		.platform_name = "msm-pcm-hostless",
-		.codec_name = "florida-codec",
-		.codec_dai_name	= "florida-slim2",
-		.be_id = MSM_BACKEND_DAI_SLIMBUS_1_TX,
-		.be_hw_params_fixup = msm_slim_1_tx_be_hw_params_fixup,
-		.ops = &slimbus_be_ops,
-		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
-		.ignore_suspend = 1,
-	},
-	{
-		.name = LPASS_BE_SLIMBUS_3_RX,
-		.stream_name = "Slimbus3 Playback",
-		.cpu_dai_name = "msm-dai-q6-dev.16390",
-		.platform_name = "msm-pcm-routing",
-		.codec_name = "florida-codec",
-		.codec_dai_name	= "florida-slim1",
-		.no_pcm = 1,
-		.be_id = MSM_BACKEND_DAI_SLIMBUS_3_RX,
-		.be_hw_params_fixup = msm_slim_0_rx_be_hw_params_fixup,
-		.ops = &slimbus_be_ops,
-		/* dai link has playback support */
-		.ignore_pmdown_time = 1,
-		.ignore_suspend = 1,
-	},
-	{
-		.name = LPASS_BE_SLIMBUS_3_TX,
-		.stream_name = "Slimbus3 Capture",
-		.cpu_dai_name = "msm-dai-q6-dev.16391",
-		.platform_name = "msm-pcm-routing",
-		.codec_name = "florida-codec",
-		.codec_dai_name	= "florida-slim1",
-		.no_pcm = 1,
-		.be_id = MSM_BACKEND_DAI_SLIMBUS_3_TX,
-		.be_hw_params_fixup = msm_slim_0_tx_be_hw_params_fixup,
-		.ops = &slimbus_be_ops,
-		.ignore_suspend = 1,
-	},
-	{
-		.name = LPASS_BE_SLIMBUS_4_RX,
-		.stream_name = "Slimbus4 Playback",
-		.cpu_dai_name = "msm-dai-q6-dev.16392",
-		.platform_name = "msm-pcm-routing",
-		.codec_name = "florida-codec",
-		.codec_dai_name	= "florida-slim1",
-		.no_pcm = 1,
-		.be_id = MSM_BACKEND_DAI_SLIMBUS_4_RX,
-		.be_hw_params_fixup = msm_slim_0_rx_be_hw_params_fixup,
-		.ops = &slimbus_be_ops,
-		/* dai link has playback support */
-		.ignore_pmdown_time = 1,
-		.ignore_suspend = 1,
-	},
-	{
-		.name = "CPU-DSP Voice Control",
-		.stream_name = "CPU-DSP Voice Control",
-		.cpu_dai_name = "florida-cpu-voicectrl",
-		.codec_name = "florida-codec",
-		.codec_dai_name = "florida-dsp-voicectrl",
-		.platform_name  = "florida-codec",
-		.ignore_suspend = 1,
-		.dynamic = 0,
-	},
-	{
-		.name = "CPU-DSP Trace",
-		.stream_name = "CPU-DSP Trace",
-		.cpu_dai_name = "florida-cpu-trace",
-		.codec_name = "florida-codec",
-		.codec_dai_name = "florida-dsp-trace",
-		.platform_name  = "florida-codec",
-		.ignore_suspend = 1,
-		.dynamic = 0,
-	},
-	{ /* DSP2 Event Logging */
-		.name = "CPU-DSP2 Text",
-		.stream_name = "CPU-DSP2 Text",
-		.cpu_dai_name = "florida-dsp2-cpu-txt",
-		.platform_name = "florida-codec",
-		.codec_dai_name = "florida-dsp2-txt",
-		.codec_name = "florida-codec",
-	},
-	{ /* DSP3 Event Logging */
-		.name = "CPU-DSP3 Text",
-		.stream_name = "CPU-DSP3 Text",
-		.cpu_dai_name = "florida-dsp3-cpu-txt",
-		.platform_name = "florida-codec",
-		.codec_dai_name = "florida-dsp3-txt",
-		.codec_name = "florida-codec",
-	},
-	/* MAD BE */
-	{
-		.name = LPASS_BE_SLIMBUS_5_TX,
-		.stream_name = "Slimbus5 Capture",
-		.cpu_dai_name = "msm-dai-q6-dev.16395",
-		.platform_name = "msm-pcm-routing",
-		.codec_name = "florida-codec",
-		.codec_dai_name = "florida-slim1",
-		.no_pcm = 1,
-		.async_ops = ASYNC_DPCM_SND_SOC_PREPARE,
-		.be_id = MSM_BACKEND_DAI_SLIMBUS_5_TX,
-		.be_hw_params_fixup = msm_slim_5_tx_be_hw_params_fixup,
-		.ignore_suspend = 1,
-	},
-	/* FLORIDA - TFA9890 codec-codec link */
-	{
-		.name = "florida-tfa9890-left",
-		.stream_name = "TFA9890_LEFT Playback",
-		.cpu_name = "florida-codec",
-		.cpu_dai_name = "florida-aif1",
-		.codec_name = "tfa9890.1-0034",
-		.codec_dai_name = "tfa9890_codec_left",
-		.no_pcm = 1,
-		.ignore_suspend = 1,
-		.ignore_pmdown_time = 1,
-		.params = &tfa9890_params,
-	},
-	{
-		.name = "florida-tfa9890-left-cap",
-		.stream_name = "TFA9890_LEFT Capture",
-		.cpu_name = "florida-codec",
-		.cpu_dai_name = "florida-aif1",
-		.codec_name = "tfa9890.1-0034",
-		.codec_dai_name = "tfa9890_codec_left",
-		.no_pcm = 1,
-		.ignore_suspend = 1,
-		.ignore_pmdown_time = 1,
-		.params = &tfa9890_params,
-	},
-};
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* Digital audio interface glue - connects codec <---> CPU */
 static struct snd_soc_dai_link msm8x16_dai[] = {
 	/* FrontEnd DAI Links */
@@ -2956,15 +2403,6 @@ static struct snd_soc_dai_link msm8x16_dai[] = {
 	},
 };
 
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-static struct snd_soc_dai_link msm8x16_florida_dai_links[
-				ARRAY_SIZE(msm8x16_dai) +
-				ARRAY_SIZE(msm8x16_florida_dai)];
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static struct snd_soc_dai_link msm8x16_9306_dai_links[
 				ARRAY_SIZE(msm8x16_dai) +
 				ARRAY_SIZE(msm8x16_9306_dai)];
@@ -2981,10 +2419,6 @@ enum codecs {
 	TAPAN_CODEC,
 	TAPAN_9302_CODEC,
 	TOMTOM_CODEC,
-<<<<<<< HEAD
-=======
-	FLORIDA_CODEC,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	MAX_CODECS,
 };
 
@@ -3131,11 +2565,7 @@ cpu_dai:
 					      index);
 			if (!phandle) {
 				pr_err("%s: retrieving phandle for cpu dai %s failed\n",
-<<<<<<< HEAD
 					__func__, dai_link[i].cpu_dai_name);
-=======
-				__func__, dai_link[i].cpu_dai_name);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 				ret = -ENODEV;
 				goto err;
 			}
@@ -3150,10 +2580,6 @@ codec_dai:
 						 dai_link[i].codec_name);
 			if (index < 0)
 				continue;
-<<<<<<< HEAD
-=======
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			phandle = of_parse_phandle(cdev->of_node, "asoc-codec",
 					      index);
 			if (!phandle) {
@@ -3170,48 +2596,15 @@ err:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-int florida_mclk_enable(struct snd_soc_codec *codec, int mclk_enable,
-			     bool dapm)
-{
-	return 0;
-}
-
-int florida_hs_detect(struct snd_soc_codec *codec,
-			   struct wcd9xxx_mbhc_config *mbhc_cfg)
-{
-	return 0;
-}
-
-void *florida_get_afe_config(struct snd_soc_codec *codec,
-				  enum afe_config_type config_type)
-{
-	return 0;
-}
-#endif
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int msm8939_asoc_machine_probe(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = &snd_card_msm;
 	struct msm8939_asoc_mach_data *pdata = NULL;
-<<<<<<< HEAD
 	const char *ext_pa = "qcom,msm-ext-pa";
 	const char *ext_pa_str = NULL;
 	int num_strings = 0;
 	int ret, i;
 
-=======
-	int ret;
-
-#ifndef CONFIG_SND_SOC_FLORIDA
-	const char *ext_pa = "qcom,msm-ext-pa";
-	const char *ext_pa_str = NULL;
-	int num_strings = 0, i;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	pdata = devm_kzalloc(&pdev->dev,
 			sizeof(struct msm8939_asoc_mach_data), GFP_KERNEL);
@@ -3272,24 +2665,6 @@ static int msm8939_asoc_machine_probe(struct platform_device *pdev)
 		pdata->msm8939_codec_fn.get_afe_config_fn =
 						tomtom_get_afe_config;
 		pdata->msm8939_codec_fn.mbhc_hs_detect = tomtom_hs_detect;
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_SND_SOC_FLORIDA
-	} else if (!strcmp(card->name, "msm8939-florida-snd-card")) {
-		snd_soc_card_msm[FLORIDA_CODEC].name = card->name;
-		card = &snd_soc_card_msm[FLORIDA_CODEC];
-		memcpy(msm8x16_florida_dai_links, msm8x16_dai,
-				sizeof(msm8x16_dai));
-		memcpy(msm8x16_florida_dai_links + ARRAY_SIZE(msm8x16_dai),
-			msm8x16_florida_dai, sizeof(msm8x16_florida_dai));
-		card->dai_link	= msm8x16_florida_dai_links;
-		card->num_links	= ARRAY_SIZE(msm8x16_florida_dai_links);
-		pdata->msm8939_codec_fn.mclk_enable_fn = florida_mclk_enable;
-		pdata->msm8939_codec_fn.get_afe_config_fn =
-						florida_get_afe_config;
-		pdata->msm8939_codec_fn.mbhc_hs_detect = florida_hs_detect;
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	card->dev = &pdev->dev;
@@ -3299,18 +2674,10 @@ static int msm8939_asoc_machine_probe(struct platform_device *pdev)
 	wcd9xxx_mbhc_cfg.gpio_level_insert = of_property_read_bool(
 						pdev->dev.of_node,
 					"qcom,headset-jack-type-NC");
-<<<<<<< HEAD
-=======
-#ifndef CONFIG_SND_SOC_FLORIDA
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	ret = snd_soc_of_parse_audio_routing(card,
 			"qcom,audio-routing");
 	if (ret)
 		goto err;
-<<<<<<< HEAD
-=======
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/* initialize the mclk */
 	pdata->digital_cdc_clk.i2s_cfg_minor_version =
@@ -3331,10 +2698,6 @@ static int msm8939_asoc_machine_probe(struct platform_device *pdev)
 			ret);
 		goto err;
 	}
-<<<<<<< HEAD
-=======
-#ifndef CONFIG_SND_SOC_FLORIDA
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	num_strings = of_property_count_strings(pdev->dev.of_node,
 						ext_pa);
 	if (num_strings < 0) {
@@ -3355,10 +2718,6 @@ static int msm8939_asoc_machine_probe(struct platform_device *pdev)
 		else if (!strcmp(ext_pa_str, "quaternary"))
 			pdata->ext_pa = (pdata->ext_pa | QUAT_MI2S_ID);
 	}
-<<<<<<< HEAD
-=======
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* Populate external codec TLMM configs */
 	ret = cdc_slim_get_pinctrl(pdev, pdata);
 	if (ret < 0) {

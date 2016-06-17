@@ -23,10 +23,6 @@
 #include "power.h"
 
 #define DWC3_IDEV_CHG_MAX 1500
-<<<<<<< HEAD
-=======
-#define DWC3_IDEV_CHG_MIN 500
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct dwc3_charger;
 

@@ -16,11 +16,7 @@ obj-y			:= filemap.o mempool.o oom_kill.o fadvise.o \
 			   readahead.o swap.o truncate.o vmscan.o shmem.o \
 			   util.o mmzone.o vmstat.o backing-dev.o \
 			   mm_init.o mmu_context.o percpu.o slab_common.o \
-<<<<<<< HEAD
 			   compaction.o balloon_compaction.o \
-=======
-			   compaction.o balloon_compaction.o vmacache.o \
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			   interval_tree.o $(mmu-y) \
 			   showmem.o vmpressure.o
 
@@ -65,12 +61,6 @@ obj-$(CONFIG_DEBUG_KMEMLEAK_TEST) += kmemleak-test.o
 obj-$(CONFIG_CLEANCACHE) += cleancache.o
 obj-$(CONFIG_MEMORY_ISOLATION) += page_isolation.o
 obj-$(CONFIG_PAGE_OWNER) += pageowner.o
-<<<<<<< HEAD
 obj-$(CONFIG_ZBUD)	+= zbud.o
-=======
-obj-$(CONFIG_ZPOOL)	+= zpool.o
-obj-$(CONFIG_ZBUD)	+= zbud.o
-obj-$(CONFIG_ZSMALLOC)	+= zsmalloc.o
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 obj-$(CONFIG_GENERIC_EARLY_IOREMAP) += early_ioremap.o
 obj-$(CONFIG_PROCESS_RECLAIM)	+= process_reclaim.o

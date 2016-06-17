@@ -552,11 +552,7 @@
 			qcom,min-level = <1>; /* No Request */
 		};
 
-<<<<<<< HEAD
 		qcom,vdd-apps-rstr{
-=======
-		msm_thermal_freq: qcom,vdd-apps-rstr{
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			qcom,vdd-rstr-reg = "vdd-apps";
 			qcom,levels = <998400>;
 			qcom,freq-req;
@@ -978,11 +974,7 @@
 		      <0x7884000 0x23000>;
 		interrupt-names = "qup_irq", "bam_irq";
 		interrupts = <0 99 0>, <0 238 0>;
-<<<<<<< HEAD
 		qcom,clk-freq-out = <100000>;
-=======
-		qcom,clk-freq-out = <400000>;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		qcom,clk-freq-in  = <19200000>;
 		clock-names = "iface_clk", "core_clk";
 		clocks = <&clock_gcc clk_gcc_blsp1_ahb_clk>,
@@ -1044,11 +1036,7 @@
 
 	qcom,rmtfs_sharedmem@8e580000 {
 		compatible = "qcom,sharedmem-uio";
-<<<<<<< HEAD
 		reg = <0x86700000 0x160000>;
-=======
-		reg = <0x866c0000 0x120000>;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		reg-names = "rmtfs";
 		qcom,client-id = <0x00000001>;
 	};
@@ -1363,13 +1351,8 @@
 		dai_mi2s3: qcom,msm-dai-q6-mi2s-quat {
 			compatible = "qcom,msm-dai-q6-mi2s";
 			qcom,msm-dai-q6-mi2s-dev-id = <3>;
-<<<<<<< HEAD
 			qcom,msm-mi2s-rx-lines = <1>;
 			qcom,msm-mi2s-tx-lines = <2>;
-=======
-			qcom,msm-mi2s-rx-lines = <2>;
-			qcom,msm-mi2s-tx-lines = <1>;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		};
 	};
 

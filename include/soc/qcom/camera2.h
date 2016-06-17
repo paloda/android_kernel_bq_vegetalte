@@ -45,10 +45,6 @@ struct msm_camera_slave_info {
 	uint16_t sensor_slave_addr;
 	uint16_t sensor_id_reg_addr;
 	uint16_t sensor_id;
-<<<<<<< HEAD
-=======
-	enum i2c_freq_mode_t sensor_i2c_freq_mode;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct msm_cam_clk_info {

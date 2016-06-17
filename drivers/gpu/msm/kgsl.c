@@ -1611,15 +1611,9 @@ static void _kgsl_cmdbatch_timer(unsigned long data)
 	spin_lock(&cmdbatch->lock);
 	/* Print all the fences */
 	list_for_each_entry(event, &cmdbatch->synclist, node) {
-<<<<<<< HEAD
 		if (KGSL_CMD_SYNCPOINT_TYPE_FENCE == event->type &&
 			event->handle && event->handle->fence)
 			kgsl_sync_fence_log(event->handle->fence);
-=======
-			if (KGSL_CMD_SYNCPOINT_TYPE_FENCE == event->type &&
-					event->handle && event->handle->fence)
-					kgsl_sync_fence_log(event->handle->fence);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 	spin_unlock(&cmdbatch->lock);
 	dev_err(device->dev, "--gpu syncpoint deadlock print end--\n");

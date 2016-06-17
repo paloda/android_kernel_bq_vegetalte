@@ -106,7 +106,6 @@ struct msm_vfe_fetch_engine_cfg {
 	uint32_t buf_stride;
 };
 
-<<<<<<< HEAD
 struct msm_vfe_camif_subsample_cfg {
 	uint32_t irq_subsample_period;
 	uint32_t irq_subsample_pattern;
@@ -114,8 +113,6 @@ struct msm_vfe_camif_subsample_cfg {
 	uint32_t line_skip;
 };
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct msm_vfe_camif_cfg {
 	uint32_t lines_per_frame;
 	uint32_t pixels_per_line;
@@ -126,10 +123,7 @@ struct msm_vfe_camif_cfg {
 	uint32_t epoch_line0;
 	uint32_t epoch_line1;
 	enum msm_vfe_camif_input camif_input;
-<<<<<<< HEAD
 	struct msm_vfe_camif_subsample_cfg subsample_cfg;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 enum msm_vfe_inputmux {

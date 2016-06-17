@@ -171,7 +171,6 @@
 				qcom,supply-post-on-sleep = <20>;
 			};
 		};
-<<<<<<< HEAD
 
 		qcom,panel-supply-entries {
 			#address-cells = <1>;
@@ -195,8 +194,6 @@
 				qcom,supply-disable-load = <100>;
 			};
 		};
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	};
 
 	qcom,mdss_wb_panel {

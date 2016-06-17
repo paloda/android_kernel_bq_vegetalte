@@ -226,41 +226,6 @@ static ssize_t restart_level_store(struct device *dev,
 	return -EPERM;
 }
 
-<<<<<<< HEAD
-=======
-static ssize_t system_debug_show(struct device *dev,
-				struct device_attribute *attr, char *buf)
-{
-	struct subsys_device *subsys = to_subsys(dev);
-	char p[6] = "set";
-
-	if (!subsys->desc->system_debug)
-		strlcpy(p, "reset", sizeof(p));
-
-	return snprintf(buf, PAGE_SIZE, "%s\n", p);
-}
-
-static ssize_t system_debug_store(struct device *dev,
-				struct device_attribute *attr, const char *buf,
-				size_t count)
-{
-	struct subsys_device *subsys = to_subsys(dev);
-	const char *p;
-
-	p = memchr(buf, '\n', count);
-	if (p)
-		count = p - buf;
-
-	if (!strncasecmp(buf, "set", count))
-		subsys->desc->system_debug = true;
-	else if (!strncasecmp(buf, "reset", count))
-		subsys->desc->system_debug = false;
-	else
-		return -EPERM;
-	return count;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 int subsys_get_restart_level(struct subsys_device *dev)
 {
 	return dev->restart_level;
@@ -301,10 +266,6 @@ static struct device_attribute subsys_attrs[] = {
 	__ATTR_RO(state),
 	__ATTR_RO(crash_count),
 	__ATTR(restart_level, 0644, restart_level_show, restart_level_store),
-<<<<<<< HEAD
-=======
-	__ATTR(system_debug, 0644, system_debug_show, system_debug_store),
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	__ATTR_NULL,
 };
 
@@ -573,16 +534,7 @@ static void subsystem_powerup(struct subsys_device *dev, void *data)
 	if (dev->desc->powerup(dev->desc) < 0) {
 		notify_each_subsys_device(&dev, 1, SUBSYS_POWERUP_FAILURE,
 								NULL);
-<<<<<<< HEAD
 		panic("[%p]: Powerup error: %s!", current, name);
-=======
-		if (system_state != SYSTEM_RESTART && system_state != SYSTEM_POWER_OFF)
-			panic("[%p]: Powerup error: %s!", current, name);
-		else {
-			pr_info("[%p]: Powerup abort: %s\n", current, name);
-			return;
-		}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 	enable_all_irqs(dev);
 
@@ -915,11 +867,8 @@ int subsystem_restart_dev(struct subsys_device *dev)
 		return -EBUSY;
 	}
 
-<<<<<<< HEAD
         dev->restart_level = 1; //added by shenyuzhong  
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_info("Restart sequence requested for %s, restart_level = %s.\n",
 		name, restart_levels[dev->restart_level]);
 
@@ -1335,7 +1284,6 @@ static int __get_gpio(struct subsys_desc *desc, const char *prop,
 }
 
 static int __get_irq(struct subsys_desc *desc, const char *prop,
-<<<<<<< HEAD
 		unsigned int *irq)
 {
 	int ret, gpio, irql;
@@ -1345,17 +1293,6 @@ static int __get_irq(struct subsys_desc *desc, const char *prop,
 		return ret;
 
 	irql = gpio_to_irq(gpio);
-=======
-		unsigned int *irq, int *gpio)
-{
-	int ret, gpiol, irql;
-
-	ret = __get_gpio(desc, prop, &gpiol);
-	if (ret)
-		return ret;
-
-	irql = gpio_to_irq(gpiol);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (irql == -ENOENT)
 		irql = -ENXIO;
@@ -1365,11 +1302,6 @@ static int __get_irq(struct subsys_desc *desc, const char *prop,
 				prop);
 		return irql;
 	} else {
-<<<<<<< HEAD
-=======
-		if (gpio)
-			*gpio = gpiol;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		*irq = irql;
 	}
 
@@ -1384,7 +1316,6 @@ static int subsys_parse_devicetree(struct subsys_desc *desc)
 	struct platform_device *pdev = container_of(desc->dev,
 					struct platform_device, dev);
 
-<<<<<<< HEAD
 	ret = __get_irq(desc, "qcom,gpio-err-fatal", &desc->err_fatal_irq);
 	if (ret && ret != -ENOENT)
 		return ret;
@@ -1394,19 +1325,6 @@ static int subsys_parse_devicetree(struct subsys_desc *desc)
 		return ret;
 
 	ret = __get_irq(desc, "qcom,gpio-stop-ack", &desc->stop_ack_irq);
-=======
-	ret = __get_irq(desc, "qcom,gpio-err-fatal", &desc->err_fatal_irq,
-							&desc->err_fatal_gpio);
-	if (ret && ret != -ENOENT)
-		return ret;
-
-	ret = __get_irq(desc, "qcom,gpio-err-ready", &desc->err_ready_irq,
-							NULL);
-	if (ret && ret != -ENOENT)
-		return ret;
-
-	ret = __get_irq(desc, "qcom,gpio-stop-ack", &desc->stop_ack_irq, NULL);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ret && ret != -ENOENT)
 		return ret;
 

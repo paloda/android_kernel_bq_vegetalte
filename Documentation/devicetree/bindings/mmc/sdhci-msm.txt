@@ -48,11 +48,6 @@ Optional Properties:
 	- qcom,nonhotplug - specifies the card in slot is not hot pluggable.
 			    if card lost or removed manually at runtime, don't retry
 			    to redetect it until next reboot probe.
-<<<<<<< HEAD
-=======
-	- qcom,no-1p8v - specifies the system physically doesn't support 1.8v, even if the
-			  host does.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	- qcom,bus-speed-mode - specifies supported bus speed modes by host.
 				The supported bus speed modes are :
 				"HS400_1p8v" - indicates that host can support HS400 at 1.8v.
@@ -61,13 +56,6 @@ Optional Properties:
 				"HS200_1p2v" - indicates that host can support HS200 at 1.2v.
 				"DDR_1p8v" - indicates that host can support DDR mode at 1.8v.
 				"DDR_1p2v" - indicates that host can support DDR mode at 1.2v.
-<<<<<<< HEAD
-=======
-				"SDR104_1p8v" - indicates that host can support SDR104 at 1.8v.
-				"SDR50_1p8v" - indicates that host can support SDR50 at 1.8v.
-				"SDR25_1p8v" - indicates that host can support SDR25 at 1.8v.
-				"SDR12_1p8v" - indicates that host can support SDR12 at 1.8v.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	- qcom,cpu-dma-latency-us: specifies acceptable DMA latency in microseconds. There is
 				   no default value that the driver assumes if this property
 				   is not specified. So if this property is not specified,
@@ -130,12 +118,9 @@ In the following, <supply> can be vdd (flash core voltage) or vdd-io (I/O voltag
 	  cores used for PM QoS voting. This is parsed only for pm QoS request type of
 	  PM_QOS_REQ_AFFINE_CORES ("affine_cores").
 
-<<<<<<< HEAD
 	- qcom,wakeup-on-idle: if configured, the mmcqd thread will call
 	  set_wake_up_idle(), thereby voting for it to be called on idle CPUs.
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 Example:
 
 	aliases {

@@ -104,10 +104,7 @@ enum mdss_hw_index {
 	MDSS_HW_DSI1,
 	MDSS_HW_HDMI,
 	MDSS_HW_EDP,
-<<<<<<< HEAD
 	MDSS_HW_IOMMU,
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	MDSS_MAX_HW_BLK
 };
 
@@ -115,10 +112,6 @@ enum mdss_bus_clients {
 	MDSS_MDP_RT,
 	MDSS_DSI_RT,
 	MDSS_MDP_NRT,
-<<<<<<< HEAD
-=======
-	MDSS_IOMMU_RT,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	MDSS_MAX_BUS_CLIENTS
 };
 

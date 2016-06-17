@@ -305,10 +305,7 @@ struct msm_vfe_axi_stream {
 	uint32_t request_frm_num;
 	uint8_t buf_divert;
 	enum msm_vfe_axi_stream_type stream_type;
-<<<<<<< HEAD
 	uint32_t vt_enable;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	uint32_t frame_based;
 	enum msm_vfe_frame_skip_pattern frame_skip_pattern;
 	uint32_t framedrop_period;

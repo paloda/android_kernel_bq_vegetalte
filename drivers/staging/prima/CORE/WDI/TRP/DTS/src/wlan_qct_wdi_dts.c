@@ -414,12 +414,6 @@ wpt_status WDTS_TxPacketComplete(void *pContext, wpt_packet *pFrame, wpt_status 
 
   // Do Sanity checks
   if(NULL == pContext || NULL == pFrame){
-<<<<<<< HEAD
-=======
-    VOS_TRACE(VOS_MODULE_ID_WDI, VOS_TRACE_LEVEL_WARN,
-                 "%s: Tx complete cannot proceed(%p:%p)",
-                 __func__, pContext, pFrame);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     return eWLAN_PAL_STATUS_E_FAILURE;
   }
 
@@ -458,11 +452,6 @@ wpt_status WDTS_TxPacketComplete(void *pContext, wpt_packet *pFrame, wpt_status 
     // intentional fall-through to handle eapol packet as mgmt
     case WDI_MAC_MGMT_FRAME:
       WDI_DS_MemPoolFree(&(pClientData->mgmtMemPool), pvBDHeader, physBDHeader);
-<<<<<<< HEAD
-=======
-      VOS_TRACE(VOS_MODULE_ID_WDI, VOS_TRACE_LEVEL_INFO,
-                   "%s: Management frame Tx complete status: %d", __func__, status);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
       break;
   }
   WDI_SetBDPointers(pFrame, 0, 0);

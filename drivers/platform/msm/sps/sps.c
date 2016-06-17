@@ -1326,10 +1326,6 @@ int sps_connect(struct sps_pipe *h, struct sps_connect *connect)
 		goto exit_err;
 	}
 
-<<<<<<< HEAD
-=======
-	mutex_lock(&bam->lock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	SPS_DBG2("sps:sps_connect: bam %pa src 0x%lx dest 0x%lx mode %s",
 			BAM_ID(bam),
 			connect->source,
@@ -1338,7 +1334,6 @@ int sps_connect(struct sps_pipe *h, struct sps_connect *connect)
 
 	/* Allocate resources for the specified connection */
 	pipe->connect = *connect;
-<<<<<<< HEAD
 	mutex_lock(&bam->lock);
 	result = sps_rm_state_change(pipe, SPS_STATE_ALLOCATE);
 	mutex_unlock(&bam->lock);
@@ -1347,15 +1342,6 @@ int sps_connect(struct sps_pipe *h, struct sps_connect *connect)
 
 	/* Configure the connection */
 	mutex_lock(&bam->lock);
-=======
-	result = sps_rm_state_change(pipe, SPS_STATE_ALLOCATE);
-	if (result) {
-		mutex_unlock(&bam->lock);
-		goto exit_err;
-	}
-
-	/* Configure the connection */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	result = sps_rm_state_change(pipe, SPS_STATE_CONNECT);
 	mutex_unlock(&bam->lock);
 	if (result) {

@@ -1172,226 +1172,6 @@ static void __exit mt9m114_exit_module(void)
 	return;
 }
 
-<<<<<<< HEAD
-=======
-static int32_t mt9m114_set_gamma(struct msm_sensor_ctrl_t *s_ctrl,
-		uint8_t unity)
-{
-	int32_t rc = 0;
-	uint16_t data = 0;
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_read(
-			s_ctrl->sensor_i2c_client,
-			0x3210, &data,
-			MSM_CAMERA_I2C_WORD_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: read gamma register failed\n", __func__);
-		return rc;
-	}
-
-	if (unity)
-		data |= 0x0080;
-	else
-		data &= 0xFF7F;
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
-			s_ctrl->sensor_i2c_client,
-			0x3210, data,
-			MSM_CAMERA_I2C_WORD_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: write gamma register failed\n", __func__);
-		return rc;
-	}
-
-	return rc;
-}
-
-static int32_t mt9m114_set_sharpening(struct msm_sensor_ctrl_t *s_ctrl,
-		uint8_t sharpening)
-{
-	int32_t rc = 0;
-	uint16_t data1 = 0;
-	uint16_t data2 = 0;
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_read(
-			s_ctrl->sensor_i2c_client,
-			0xBC04, &data1,
-			MSM_CAMERA_I2C_WORD_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: read algo register failed\n", __func__);
-		return rc;
-	}
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_read(
-			s_ctrl->sensor_i2c_client,
-			0x3210, &data2,
-			MSM_CAMERA_I2C_WORD_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: read sharpening register failed\n", __func__);
-		return rc;
-	}
-
-	if (sharpening != 0x00) {
-		/* Enable sharpening */
-		data1 |= 0x0010;
-		data2 |= 0x0010;
-	} else {
-		/* Disable sharpening */
-		data1 &= 0xFFEF;
-		data2 &= 0xFFEF;
-	}
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
-			s_ctrl->sensor_i2c_client,
-			0xBC04, data1,
-			MSM_CAMERA_I2C_WORD_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: write algo register failed\n", __func__);
-		return rc;
-	}
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
-			s_ctrl->sensor_i2c_client,
-			0x3210, data2,
-			MSM_CAMERA_I2C_WORD_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: write sharpening register failed\n", __func__);
-		return rc;
-	}
-
-	return rc;
-}
-
-static int32_t mt9m114_set_lens_shading(struct msm_sensor_ctrl_t *s_ctrl,
-		uint8_t enable)
-{
-	int32_t rc = 0;
-	uint16_t data = 0;
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_read(
-			s_ctrl->sensor_i2c_client,
-			0xC95E, &data,
-			MSM_CAMERA_I2C_WORD_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: read lens shading register failed\n", __func__);
-		return rc;
-	}
-
-	if (enable)
-		data |= 0x0003;
-	else
-		data &= 0xFFFC;
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
-			s_ctrl->sensor_i2c_client,
-			0xC95E, data,
-			MSM_CAMERA_I2C_WORD_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: read lens shading register failed\n", __func__);
-		return rc;
-	}
-
-	return rc;
-}
-
-static int32_t mt9m114_set_target_exposure(struct msm_sensor_ctrl_t *s_ctrl,
-		int8_t target_exposure)
-{
-	int32_t rc = 0;
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
-			s_ctrl->sensor_i2c_client,
-			0xC87A, target_exposure,
-			MSM_CAMERA_I2C_BYTE_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: Write tgt exp average luma register failed\n",
-				__func__);
-		return rc;
-	}
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(
-			s_ctrl->sensor_i2c_client,
-			0xC87B, target_exposure,
-			MSM_CAMERA_I2C_BYTE_DATA);
-
-	if (rc < 0) {
-		pr_err("%s: Write tgt exp average luma dark register failed\n",
-				__func__);
-		return rc;
-	}
-
-	return rc;
-}
-static struct msm_camera_i2c_reg_conf mt9m114_15_15_fps_settings[] = {
-	{0xC810, 0x05BD,}, /*cam_sensor_cfg_fine_integ_time_max = 1469*/
-	{0xC812, 0x07D0,}, /*cam_sensor_cfg_frame_length_lines = 2000*/
-	{0xC814, 0x0640,}, /*cam_sensor_cfg_line_length_pclk = 1600*/
-	{0xC88C, 0x0F00,}, /*cam_aet_max_frame_rate = 3840*/
-	{0xC88E, 0x0F00,}, /*cam_aet_min_frame_rate = 3840*/
-};
-
-static struct msm_camera_i2c_reg_conf mt9m114_15_30_fps_settings[] = {
-	{0xC810, 0x05B3,}, /*cam_sensor_cfg_fine_integ_time_max = 1459*/
-	{0xC812, 0x03EE,}, /*cam_sensor_cfg_frame_length_lines = 1006*/
-	{0xC814, 0x0636,}, /*cam_sensor_cfg_line_length_pclk = 1590*/
-	{0xC88C, 0x1E02,}, /*cam_aet_max_frame_rate = 7682*/
-	{0xC88E, 0x0F00,}, /*cam_aet_min_frame_rate = 3840*/
-};
-
-static int32_t mt9m114_set_frame_rate_range(struct msm_sensor_ctrl_t *s_ctrl,
-		struct var_fps_range_t *fps_range)
-{
-	int32_t rc = 0;
-	static bool fps_15_30 = true;
-
-	if (fps_range->min_fps == 15 && fps_range->max_fps == 30) {
-		if (fps_15_30)
-			return rc;
-
-		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->
-			i2c_write_conf_tbl(
-					s_ctrl->sensor_i2c_client,
-					mt9m114_15_30_fps_settings,
-					ARRAY_SIZE(mt9m114_15_30_fps_settings),
-					MSM_CAMERA_I2C_WORD_DATA);
-		fps_15_30 = true;
-	} else if (fps_range->min_fps == 15 && fps_range->max_fps == 15) {
-		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->
-			i2c_write_conf_tbl(
-					s_ctrl->sensor_i2c_client,
-					mt9m114_15_15_fps_settings,
-					ARRAY_SIZE(mt9m114_15_15_fps_settings),
-					MSM_CAMERA_I2C_WORD_DATA);
-		fps_15_30 = false;
-	} else {
-		pr_err("%s: Invalid frame rate range!\n", __func__);
-		return -EINVAL;
-	}
-
-	if (rc) {
-		pr_err("%s: failed to set frame rate range (%d)\n",
-				__func__, rc);
-		return rc;
-	}
-
-	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write_conf_tbl(
-			s_ctrl->sensor_i2c_client,
-			mt9m114_config_change_settings,
-			ARRAY_SIZE(mt9m114_config_change_settings),
-			MSM_CAMERA_I2C_WORD_DATA);
-	return rc;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 	void __user *argp)
 {
@@ -1487,16 +1267,6 @@ int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 			break;
 		}
 
-<<<<<<< HEAD
-=======
-		if (!conf_array.size ||
-			conf_array.size > I2C_REG_DATA_MAX) {
-			pr_err("%s:%d failed\n", __func__, __LINE__);
-			rc = -EFAULT;
-			break;
-		}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		reg_setting = kzalloc(conf_array.size *
 			(sizeof(struct msm_camera_i2c_reg_array)), GFP_KERNEL);
 		if (!reg_setting) {
@@ -1586,23 +1356,6 @@ int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 		pr_debug("%s: Contrast Value is %d", __func__, con_lev);
 		break;
 		}
-<<<<<<< HEAD
-=======
-	case CFG_SET_GAMMA: {
-		int gamma = 0;
-		if (copy_from_user(&gamma,
-			(void *)cdata->cfg.setting,
-			sizeof(gamma))) {
-			pr_err("%s:%d failed\n", __func__, __LINE__);
-			rc = -EFAULT;
-			break;
-		}
-		CDBG("%s:%d CFG_SET_GAMMA %d\n", __func__,
-				__LINE__, gamma);
-		rc = mt9m114_set_gamma(s_ctrl, (uint8_t)gamma);
-		break;
-		}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		case CFG_SET_SHARPNESS: {
 			int32_t shp_lev;
 			if (copy_from_user(&shp_lev, (void *)cdata->cfg.setting,
@@ -1612,42 +1365,8 @@ int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 				break;
 			}
 		pr_debug("%s: Sharpness Value is %d", __func__, shp_lev);
-<<<<<<< HEAD
 		break;
 		}
-=======
-		rc = mt9m114_set_sharpening(s_ctrl, (uint8_t)shp_lev);
-		break;
-		}
-	        case CFG_SET_LENS_SHADING: {
-	                int lens = 0;
-	                if (copy_from_user(&lens,
-	                        (void *)cdata->cfg.setting,
-	                        sizeof(lens))) {
-	                        pr_err("%s:%d failed\n", __func__, __LINE__);
-	                        rc = -EFAULT;
-	                        break;
-	                }
-                CDBG("%s:%d CFG_SET_LENS_SHADING %d\n", __func__,
-                                __LINE__, lens);
-                rc = mt9m114_set_lens_shading(s_ctrl, (uint8_t)lens);
-                break;
-	        }
-	        case CFG_SET_TARGET_EXPOSURE: {
-	                int expo = 0;
-	                if (copy_from_user(&expo,
-	                        (void *)cdata->cfg.setting,
-	                        sizeof(expo))) {
-	                        pr_err("%s:%d failed\n", __func__, __LINE__);
-	                        rc = -EFAULT;
-				break;
-	                }
-	                CDBG("%s:%d CFG_SET_TARGET_EXPOSURE %d\n", __func__,
-	                                __LINE__, expo);
-	                rc = mt9m114_set_target_exposure(s_ctrl, (int8_t)expo);
-                break;
-	        }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		case CFG_SET_AUTOFOCUS: {
 		/* TO-DO: set the Auto Focus */
 		pr_debug("%s: Setting Auto Focus", __func__);
@@ -1670,23 +1389,6 @@ int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 			break;
 		case CFG_SET_ISO:
 			break;
-<<<<<<< HEAD
-=======
-	case CFG_SET_FPS_RANGE: {
-		struct var_fps_range_t data;
-		if (copy_from_user(&data,
-			(void *)cdata->cfg.setting,
-			sizeof(data))) {
-			pr_err("%s:%d failed\n", __func__, __LINE__);
-			rc = -EFAULT;
-			break;
-		}
-		CDBG("%s:%d CFG_SET_FPS_RANGE %u,%u\n", __func__,
-				__LINE__, data.min_fps, data.max_fps);
-		rc = mt9m114_set_frame_rate_range(s_ctrl, &data);
-		break;
-	}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		default:
 		rc = -EFAULT;
 		break;
@@ -1801,16 +1503,6 @@ int32_t mt9m114_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 		conf_array.reg_setting = compat_ptr(conf_array32.reg_setting);
 		conf_array.qup_i2c_batch = conf_array32.qup_i2c_batch;
 
-<<<<<<< HEAD
-=======
-		if (!conf_array.size ||
-			conf_array.size > I2C_REG_DATA_MAX) {
-			pr_err("%s:%d failed\n", __func__, __LINE__);
-			rc = -EFAULT;
-			break;
-		}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		reg_setting = kzalloc(conf_array.size *
 			(sizeof(struct msm_camera_i2c_reg_array)), GFP_KERNEL);
 		if (!reg_setting) {

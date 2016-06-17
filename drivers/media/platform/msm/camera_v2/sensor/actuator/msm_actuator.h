@@ -26,10 +26,6 @@
 	static struct mutex mutexname = __MUTEX_INITIALIZER(mutexname)
 
 #define	MSM_ACTUATOT_MAX_VREGS (10)
-<<<<<<< HEAD
-=======
-#define	ACTUATOR_MAX_POLL_COUNT 10
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct msm_actuator_ctrl_t;
 

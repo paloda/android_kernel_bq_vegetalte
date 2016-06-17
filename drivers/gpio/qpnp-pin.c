@@ -1433,9 +1433,5 @@ static void __exit qpnp_pin_exit(void)
 MODULE_DESCRIPTION("QPNP PMIC gpio driver");
 MODULE_LICENSE("GPL v2");
 
-<<<<<<< HEAD
 module_init(qpnp_pin_init);
-=======
-subsys_initcall(qpnp_pin_init);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 module_exit(qpnp_pin_exit);

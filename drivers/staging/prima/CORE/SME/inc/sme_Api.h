@@ -646,7 +646,6 @@ eHalStatus sme_ScanFlushResult(tHalHandle hHal, tANI_U8 sessionId);
  */
 eHalStatus sme_FilterScanResults(tHalHandle hHal, tANI_U8 sessionId);
 
-<<<<<<< HEAD
 /*
  * ---------------------------------------------------------------------------
  *  \fn sme_FilterScanDFSResults
@@ -657,8 +656,6 @@ eHalStatus sme_FilterScanResults(tHalHandle hHal, tANI_U8 sessionId);
  */
 eHalStatus sme_FilterScanDFSResults(tHalHandle hHal);
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 eHalStatus sme_ScanFlushP2PResult(tHalHandle hHal, tANI_U8 sessionId);
 
 /* ---------------------------------------------------------------------------
@@ -3252,7 +3249,6 @@ VOS_STATUS sme_StartTdlsLinkTeardownReq(tHalHandle hHal, tANI_U8 sessionId, tSir
 #endif /* FEATURE_WLAN_TDLS */
 eHalStatus sme_UpdateDfsSetting(tHalHandle hHal, tANI_U8 fUpdateEnableDFSChnlScan);
 
-<<<<<<< HEAD
 /* ---------------------------------------------------------------------------
     \fn sme_UpdateDFSRoamMode
     \brief  Update DFS roam scan mode
@@ -3307,8 +3303,6 @@ v_U8_t sme_GetDFSScanMode(tHalHandle hHal);
     -------------------------------------------------------------------------*/
 eHalStatus sme_HandleDFSChanScan(tHalHandle hHal);
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*
  * SME API to enable/disable WLAN driver initiated SSR
  */
@@ -3445,12 +3439,7 @@ eHalStatus sme_SendRateUpdateInd(tHalHandle hHal, tSirRateUpdateInd *rateUpdateP
 */
 eHalStatus smeIssueFastRoamNeighborAPEvent (tHalHandle hHal,
                                             tANI_U8 *bssid,
-<<<<<<< HEAD
                                             tSmeFastRoamTrigger fastRoamTrig);
-=======
-                                            tSmeFastRoamTrigger fastRoamTrig,
-                                            tANI_U8 channel);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 eHalStatus sme_RoamDelPMKIDfromCache( tHalHandle hHal, tANI_U8 sessionId,
                                       tANI_U8 *pBSSId,
@@ -3553,12 +3542,7 @@ VOS_STATUS sme_SendTdlsChanSwitchReq(tHalHandle hHal,
                                      tANI_S32 tdlsOffCh,
                                      tANI_S32 tdlsOffChBwOffset,
                                      tANI_U8 tdlsSwMode);
-<<<<<<< HEAD
 
-=======
-eHalStatus sme_GetFwStats(tHalHandle hHal, tANI_U32 stats, void *data,
-                                                void *callback);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 void sme_SetMiracastMode (tHalHandle hHal,tANI_U8 mode);
 
 void sme_resetCoexEevent(tHalHandle hHal);
@@ -3568,17 +3552,6 @@ tANI_U32 sme_GetChannelBondingMode24G(tHalHandle hHal);
 
 void sme_disable_dfs_channel(tHalHandle hHal, bool disable_dfs);
 
-<<<<<<< HEAD
-=======
-/* HDD Callback function */
-typedef void(*pEncryptMsgRSPCb)(void *pUserData, void *infoParam);
-
-eHalStatus sme_Encryptmsgsend (tHalHandle hHal,
-                               u8 *pCmd,
-                               int length,
-                               pEncryptMsgRSPCb encCB);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* ---------------------------------------------------------------------------
      \fn sme_RegisterBtCoexTDLSCallback
      \brief  Used to plug in callback function
@@ -3595,22 +3568,15 @@ eHalStatus sme_RegisterBtCoexTDLSCallback
 );
 
 /* ---------------------------------------------------------------------------
-<<<<<<< HEAD
     \fn smeNeighborRoamIsHandoffInProgress
 
     \brief This function is a wrapper to call csrNeighborRoamIsHandoffInProgress
-=======
-    \fn smeNeighborMiddleOfRoaming
-
-    \brief This function is a wrapper to call csrNeighborMiddleOfRoaming
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     \param hHal - The handle returned by macOpen.
 
     \return eANI_BOOLEAN_TRUE if reassoc in progress,
             eANI_BOOLEAN_FALSE otherwise
 ---------------------------------------------------------------------------*/
-<<<<<<< HEAD
 tANI_BOOLEAN smeNeighborRoamIsHandoffInProgress(tHalHandle hHal);
 
 void sme_SetDefDot11Mode(tHalHandle hHal);
@@ -3624,25 +3590,4 @@ tANI_BOOLEAN sme_handleSetFccChannel(tHalHandle hHal,
                                       tANI_U8 fcc_constraint);
 
 
-=======
-tANI_BOOLEAN smeNeighborMiddleOfRoaming(tHalHandle hHal);
-
-/* --------------------------------------------------------------------------
-
-    \fn sme_IsCoexScoIndicationSet
-    \brief To check if the BTC module in fwr has sent the SCO
-           indication to host or not
-
-    \param hHal - The handle returned by macOpen.
-    \return TRUE - Sco call in progress FALSE- No SCO call in progress
-
-  --------------------------------------------------------------------------*/
-tANI_BOOLEAN sme_IsCoexScoIndicationSet(tHalHandle hHal);
-
-eHalStatus sme_SetMiracastVendorConfig(tHalHandle hHal,
-                               tANI_U32 iniNumBuffAdvert,
-                                      tANI_U32 set_value);
-
-void sme_SetDefDot11Mode(tHalHandle hHal);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif //#if !defined( __SME_API_H )

@@ -521,13 +521,6 @@ static int hw_ep_flush(int num, int dir)
 					dir ? "IN" : "OUT");
 				debug_ept_flush_info(num, dir);
 				_udc->skip_flush = true;
-<<<<<<< HEAD
-=======
-				/* Notify to trigger h/w reset recovery later */
-				if (_udc->udc_driver->notify_event)
-					_udc->udc_driver->notify_event(_udc,
-						CI13XXX_CONTROLLER_ERROR_EVENT);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 				return 0;
 			}
 		}
@@ -3627,31 +3620,9 @@ static int ci13xxx_vbus_session(struct usb_gadget *_gadget, int is_active)
 	return 0;
 }
 
-<<<<<<< HEAD
 static int ci13xxx_vbus_draw(struct usb_gadget *_gadget, unsigned mA)
 {
 	struct ci13xxx *udc = container_of(_gadget, struct ci13xxx, gadget);
-=======
-#define VBUS_DRAW_BUF_LEN 10
-#define MAX_OVERRIDE_VBUS_ALLOWED 900	/* 900 mA */
-static char vbus_draw_mA[VBUS_DRAW_BUF_LEN];
-module_param_string(vbus_draw_mA, vbus_draw_mA, VBUS_DRAW_BUF_LEN,
-			S_IRUGO | S_IWUSR);
-
-static int ci13xxx_vbus_draw(struct usb_gadget *_gadget, unsigned mA)
-{
-	struct ci13xxx *udc = container_of(_gadget, struct ci13xxx, gadget);
-	unsigned int override_mA = 0;
-
-	/* override param to draw more current if battery draining faster */
-	if ((mA == CONFIG_USB_GADGET_VBUS_DRAW) &&
-		(vbus_draw_mA[0] != '\0')) {
-		if ((!kstrtoint(vbus_draw_mA, 10, &override_mA)) &&
-				(override_mA <= MAX_OVERRIDE_VBUS_ALLOWED)) {
-			mA = override_mA;
-		}
-	}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (udc->transceiver)
 		return usb_phy_set_power(udc->transceiver, mA);
@@ -4090,16 +4061,9 @@ static int udc_probe(struct ci13xxx_udc_driver *driver, struct device *dev,
 
 	_udc = udc;
 	return retval;
-<<<<<<< HEAD
 
 del_udc:
 	usb_del_gadget_udc(&udc->gadget);
-=======
-#ifdef CONFIG_USB_GADGET_DEBUG_FILES
-del_udc:
-	usb_del_gadget_udc(&udc->gadget);
-#endif
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 remove_trans:
 	if (udc->transceiver)
 		otg_set_peripheral(udc->transceiver->otg, &udc->gadget);

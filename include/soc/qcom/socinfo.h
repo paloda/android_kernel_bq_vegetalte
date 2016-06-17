@@ -194,10 +194,6 @@ enum msm_cpu socinfo_get_msm_cpu(void);
 uint32_t socinfo_get_id(void);
 uint32_t socinfo_get_version(void);
 uint32_t socinfo_get_raw_id(void);
-<<<<<<< HEAD
-=======
-uint32_t socinfo_get_raw_version(void);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 char *socinfo_get_build_id(void);
 uint32_t socinfo_get_platform_type(void);
 uint32_t socinfo_get_platform_subtype(void);

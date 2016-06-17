@@ -166,12 +166,7 @@ static ssize_t avail_level_get(struct file *fp, char __user *user_buffer,
 		if (count <= 0) {
 			pr_err("Error getting freq value idx:%d. err:%d\n",
 				       idx, count);
-<<<<<<< HEAD
 			return count;
-=======
-			count = 0;
-			break;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		}
 		buf_start += count;
 	}

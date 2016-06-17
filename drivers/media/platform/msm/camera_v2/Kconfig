@@ -164,19 +164,6 @@ config MT9M114
 		and snapshot. The preview and snapshot resolution shall be
 		1280 * 270. It does not support auto focus. It supports
 		few special effects like saturation.
-<<<<<<< HEAD
-=======
-
-config MT9V113
-	bool "Sensor MT9V113 (YUV .3MP)"
-	depends on MSMB_CAMERA
-	---help---
-		MT9V113 is Aptina YUV sensor. It supports .3 MP preview
-		and snapshot. The preview and snapshot resolution shall be
-		640 * 480. It does not support auto focus. It supports
-		few special effects like saturation.
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 config OV5645
 	bool "Sensor OV5645 (YUV 5.0MP)"
 	depends on MSMB_CAMERA
@@ -277,15 +264,3 @@ config MSM_FD
 	 depends on MSMB_CAMERA
 	 ---help---
 	    Enables support for the MSM FD face detection engine.
-<<<<<<< HEAD
-=======
-
-config MSM_CHECK_CAMERA_ACTUATOR
-	bool "Read camera actuator state in power up"
-	default n
-	depends on MSM_CAMERA_SENSOR
-	---help---
-	   Older binaries didn't have struct msm_sensor_actuator_info_t in the
-	   camera API structs and will break with this enabled. New Motorola
-	   camera binaries from Marshmallow require this.
->>>>>>> ca57d1d... Merge in Linux 3.10.100

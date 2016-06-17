@@ -949,44 +949,6 @@ static int msm_tlmm_gp_irq_suspend(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
-extern int msm_show_resume_irq_mask;
-
-static void msm_tlmm_gp_show_resume_irq(void)
-{
-	unsigned long i;
-	unsigned int virq = 0;
-	struct msm_tlmm_irq_chip *ic = &msm_tlmm_gp_irq;
-	struct msm_pintype_info *pinfo = ic_to_pintype(ic);
-	struct gpio_chip *gc = pintype_get_gc(pinfo);
-
-	if (!msm_show_resume_irq_mask)
-		return;
-
-	for_each_set_bit(i, ic->enabled_irqs, ic->num_irqs) {
-		if (msm_tlmm_get_intr_status(ic, i)) {
-			struct irq_desc *desc;
-			const char *name = "null";
-
-			virq = msm_tlmm_gp_to_irq(gc, i);
-			if (virq != 0) {
-				desc = irq_to_desc(virq);
-				if (desc == NULL)
-					name = "stray irq";
-				else {
-					desc->wakeup_irqs++;
-					if (desc->action && desc->action->name)
-						name = desc->action->name;
-				}
-				pr_warn("%s: %d triggered %s\n",
-						__func__, virq, name);
-			}
-		}
-	}
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static void msm_tlmm_gp_irq_resume(void)
 {
 	unsigned long irq_flags;
@@ -994,11 +956,6 @@ static void msm_tlmm_gp_irq_resume(void)
 	struct msm_tlmm_irq_chip *ic = &msm_tlmm_gp_irq;
 	int num_irqs = ic->num_irqs;
 
-<<<<<<< HEAD
-=======
-	msm_tlmm_gp_show_resume_irq();
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	spin_lock_irqsave(&ic->irq_lock, irq_flags);
 	for_each_set_bit(i, ic->wake_irqs, num_irqs)
 		msm_tlmm_set_intr_cfg_enable(ic, i, 0);

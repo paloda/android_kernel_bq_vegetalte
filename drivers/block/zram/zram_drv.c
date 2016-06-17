@@ -106,11 +106,7 @@ static void zram_set_obj_size(struct zram_meta *meta,
 	meta->table[index].value = (flags << ZRAM_FLAG_SHIFT) | size;
 }
 
-<<<<<<< HEAD
 static inline bool is_partial_io(struct bio_vec *bvec)
-=======
-static inline int is_partial_io(struct bio_vec *bvec)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	return bvec->bv_len != PAGE_SIZE;
 }
@@ -118,42 +114,25 @@ static inline int is_partial_io(struct bio_vec *bvec)
 /*
  * Check if request is within bounds and aligned on zram logical blocks.
  */
-<<<<<<< HEAD
 static inline bool valid_io_request(struct zram *zram,
-=======
-static inline int valid_io_request(struct zram *zram,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		sector_t start, unsigned int size)
 {
 	u64 end, bound;
 
 	/* unaligned request */
 	if (unlikely(start & (ZRAM_SECTOR_PER_LOGICAL_BLOCK - 1)))
-<<<<<<< HEAD
 		return false;
 	if (unlikely(size & (ZRAM_LOGICAL_BLOCK_SIZE - 1)))
 		return false;
-=======
-		return 0;
-	if (unlikely(size & (ZRAM_LOGICAL_BLOCK_SIZE - 1)))
-		return 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	end = start + (size >> SECTOR_SHIFT);
 	bound = zram->disksize >> SECTOR_SHIFT;
 	/* out of range range */
 	if (unlikely(start >= bound || end > bound || start > end))
-<<<<<<< HEAD
 		return false;
 
 	/* I/O request is valid */
 	return true;
-=======
-		return 0;
-
-	/* I/O request is valid */
-	return 1;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static void update_position(u32 *index, int *offset, struct bio_vec *bvec)
@@ -178,11 +157,7 @@ static inline void update_used_max(struct zram *zram,
 	} while (old_max != cur_max);
 }
 
-<<<<<<< HEAD
 static bool page_zero_filled(void *ptr)
-=======
-static int page_zero_filled(void *ptr)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	unsigned int pos;
 	unsigned long *page;
@@ -191,17 +166,10 @@ static int page_zero_filled(void *ptr)
 
 	for (pos = 0; pos != PAGE_SIZE / sizeof(*page); pos++) {
 		if (page[pos])
-<<<<<<< HEAD
 			return false;
 	}
 
 	return true;
-=======
-			return 0;
-	}
-
-	return 1;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static void handle_zero_page(struct bio_vec *bvec)
@@ -1307,10 +1275,6 @@ static int zram_remove(struct zram *zram)
 
 	pr_info("Removed device: %s\n", zram->disk->disk_name);
 
-<<<<<<< HEAD
-=======
-	idr_remove(&zram_index_idr, zram->disk->first_minor);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	blk_cleanup_queue(zram->disk->queue);
 	del_gendisk(zram->disk);
 	put_disk(zram->disk);
@@ -1352,19 +1316,12 @@ static ssize_t hot_remove_store(struct class *class,
 	mutex_lock(&zram_index_mutex);
 
 	zram = idr_find(&zram_index_idr, dev_id);
-<<<<<<< HEAD
 	if (zram) {
 		ret = zram_remove(zram);
 		idr_remove(&zram_index_idr, dev_id);
 	} else {
 		ret = -ENODEV;
 	}
-=======
-	if (zram)
-		ret = zram_remove(zram);
-	else
-		ret = -ENODEV;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	mutex_unlock(&zram_index_mutex);
 	return ret ? ret : count;

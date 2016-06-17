@@ -33,7 +33,6 @@
 #include <linux/atomic.h>
 #include <media/radio-iris-commands.h>
 
-<<<<<<< HEAD
 #define MIN_TX_TONE_VAL 0x00
 #define MAX_TX_TONE_VAL 0x07
 #define MIN_HARD_MUTE_VAL 0x00
@@ -78,55 +77,6 @@
 #define MAX_SINR_TH 127
 #define MIN_SINR_SAMPLES 0x01
 #define MAX_SINR_SAMPLES 0xFF
-=======
-static const unsigned char MIN_TX_TONE_VAL = 0x00;
-static const unsigned char MAX_TX_TONE_VAL = 0x07;
-static const unsigned char MIN_HARD_MUTE_VAL = 0x00;
-static const unsigned char MAX_HARD_MUTE_VAL = 0x03;
-static const unsigned char MIN_SRCH_MODE = 0x00;
-static const unsigned char MAX_SRCH_MODE = 0x09;
-static const unsigned char MIN_SCAN_DWELL = 0x00;
-static const unsigned char MAX_SCAN_DWELL = 0x0F;
-static const unsigned char MIN_SIG_TH = 0x00;
-static const unsigned char MAX_SIG_TH = 0x03;
-static const unsigned char MIN_PTY = 0X00;
-static const unsigned char MAX_PTY = 0x1F;
-static const unsigned short MIN_PI = 0x0000;
-static const unsigned short MAX_PI = 0xFFFF;
-static const unsigned char MIN_SRCH_STATIONS_CNT = 0x00;
-static const unsigned char MAX_SRCH_STATIONS_CNT = 0x14;
-static const unsigned char MIN_CHAN_SPACING = 0x00;
-static const unsigned char MAX_CHAN_SPACING = 0x02;
-static const unsigned char MIN_EMPHASIS = 0x00;
-static const unsigned char MAX_EMPHASIS = 0x01;
-static const unsigned char MIN_RDS_STD = 0x00;
-static const unsigned char MAX_RDS_STD = 0x02;
-static const unsigned char MIN_ANTENNA_VAL = 0x00;
-static const unsigned char MAX_ANTENNA_VAL = 0x01;
-static const unsigned char MIN_TX_PS_REPEAT_CNT = 0x01;
-static const unsigned char MAX_TX_PS_REPEAT_CNT = 0x0F;
-static const unsigned char MIN_SOFT_MUTE = 0x00;
-static const unsigned char MAX_SOFT_MUTE = 0x01;
-static const unsigned char MIN_PEEK_ACCESS_LEN = 0x01;
-static const unsigned char MAX_PEEK_ACCESS_LEN = 0xF9;
-static const unsigned char MIN_RESET_CNTR = 0x00;
-static const unsigned char MAX_RESET_CNTR = 0x01;
-static const unsigned char MIN_HLSI = 0x00;
-static const unsigned char MAX_HLSI = 0x02;
-static const unsigned char MIN_NOTCH_FILTER = 0x00;
-static const unsigned char MAX_NOTCH_FILTER = 0x02;
-static const unsigned char MIN_INTF_DET_OUT_LW_TH = 0x00;
-static const unsigned char MAX_INTF_DET_OUT_LW_TH = 0xFF;
-static const unsigned char MIN_INTF_DET_OUT_HG_TH = 0x00;
-static const unsigned char MAX_INTF_DET_OUT_HG_TH = 0xFF;
-static const signed char MIN_SINR_TH = -128;
-static const signed char MAX_SINR_TH = 127;
-static const unsigned char MIN_SINR_SAMPLES = 0x01;
-static const unsigned char MAX_SINR_SAMPLES = 0xFF;
-static const signed char MIN_BLEND_HI = -128;
-static const signed char MAX_BLEND_HI = 127;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /* ---- HCI Packet structures ---- */
 #define RADIO_HCI_COMMAND_HDR_SIZE sizeof(struct radio_hci_command_hdr)
@@ -178,10 +128,6 @@ static const signed char MAX_BLEND_HI = 127;
 #define FM_AF_LIST_MAX_SIZE   200
 #define AF_LIST_MAX     (FM_AF_LIST_MAX_SIZE / 4) /* Each AF frequency consist
 							of sizeof(int) bytes */
-<<<<<<< HEAD
-=======
-#define MAX_BLEND_INDEX 49
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* HCI timeouts */
 #define RADIO_HCI_TIMEOUT	(10000)	/* 10 seconds */
 
@@ -268,11 +214,6 @@ void radio_hci_event_packet(struct radio_hci_dev *hdev, struct sk_buff *skb);
 #define HCI_OCF_FM_SET_EVENT_MASK           0x0016
 #define HCI_OCF_FM_SET_CH_DET_THRESHOLD     0x0017
 #define HCI_OCF_FM_GET_CH_DET_THRESHOLD     0x0018
-<<<<<<< HEAD
-=======
-#define HCI_OCF_FM_SET_BLND_TBL             0x001B
-#define HCI_OCF_FM_GET_BLND_TBL             0x001C
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /* HCI trans control commans opcode*/
 #define HCI_OCF_FM_ENABLE_TRANS_REQ         0x0001
 #define HCI_OCF_FM_DISABLE_TRANS_REQ        0x0002
@@ -345,10 +286,6 @@ void radio_hci_event_packet(struct radio_hci_dev *hdev, struct sk_buff *skb);
 #define HCI_FM_DISABLE_TRANS_CMD 14
 #define HCI_FM_GET_TX_CONFIG 15
 #define HCI_FM_GET_DET_CH_TH_CMD 16
-<<<<<<< HEAD
-=======
-#define HCI_FM_GET_BLND_TBL_CMD 17
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 /* Defines for FM TX*/
 #define TX_PS_DATA_LENGTH 108
@@ -477,21 +414,6 @@ struct hci_fm_ch_det_threshold {
 
 } __packed;
 
-<<<<<<< HEAD
-=======
-struct hci_fm_blend_table {
-	__u8 ucBlendType;
-	__u8 ucBlendRampRateUp;
-	__u8 ucBlendDebounceNumSampleUp;
-	__u8 ucBlendDebounceIdxUp;
-	__u8 ucBlendSinrIdxSkipStep;
-	__u8 scBlendSinrHi;
-	__u8 scBlendRmssiHi;
-	__u8 ucBlendIndexHi;
-	__u8 ucBlendIndex[MAX_BLEND_INDEX];
-} __packed;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*HCI events*/
 #define HCI_EV_TUNE_STATUS              0x01
 #define HCI_EV_RDS_LOCK_STATUS          0x02
@@ -1169,15 +1091,4 @@ static inline int is_valid_fm_state(int state)
 		return 0;
 }
 
-<<<<<<< HEAD
-=======
-static inline int is_valid_blend_value(int val)
-{
-	if ((val >= MIN_BLEND_HI) && (val <= MAX_BLEND_HI))
-		return 1;
-	else
-		return 0;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #endif /* __UAPI_RADIO_HCI_CORE_H */

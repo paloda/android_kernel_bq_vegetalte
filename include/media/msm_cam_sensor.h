@@ -79,30 +79,6 @@ enum sensor_sub_module_t {
 	SUB_MODULE_MAX,
 };
 
-<<<<<<< HEAD
-=======
-/* NOTE: Careful when adding params below,
- * certain sensor drivers are doing one
- * big copy for muliple params at one time
- */
-struct mod_info_t {
-	uint8_t SensorSerialNum[13];
-	uint8_t MotPartNum[8];
-	uint8_t LensId[1];
-	uint8_t ManufactureId[2];
-	uint8_t FactoryId[2];
-	uint8_t ManufactureDate[9];
-	uint8_t ManufactureLine[2];
-	uint8_t ModuleSerialNum[4];
-	uint8_t FocuserLiftoff[2];
-	uint8_t FocuserMacro[2];
-	uint8_t FocuserInf[2];
-	uint8_t ShutterCal[16];
-	uint8_t SensorHwRev[5];
-	char SensorName[10];
-};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 enum {
 	MSM_CAMERA_EFFECT_MODE_OFF,
 	MSM_CAMERA_EFFECT_MODE_MONO,
@@ -239,24 +215,12 @@ struct camera_vreg_t {
 	enum camera_vreg_type type;
 };
 
-<<<<<<< HEAD
-=======
-struct var_fps_range_t {
-	uint16_t min_fps;
-	uint16_t max_fps;
-};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct sensorb_cfg_data {
 	int cfgtype;
 	union {
 		struct msm_sensor_info_t      sensor_info;
 		struct msm_sensor_init_params sensor_init_params;
 		void                         *setting;
-<<<<<<< HEAD
-=======
-		struct otp_info_t             sensor_otp;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} cfg;
 };
 
@@ -437,15 +401,6 @@ enum msm_sensor_cfg_type_t {
 	CFG_SET_AUTOFOCUS,
 	CFG_CANCEL_AUTOFOCUS,
 	CFG_SET_STREAM_TYPE,
-<<<<<<< HEAD
-=======
-	CFG_SET_FPS_RANGE,
-        CFG_SET_GAMMA,
-        CFG_SET_LENS_SHADING,
-        CFG_SET_TARGET_EXPOSURE,
-	CFG_GET_MODULE_INFO,
-	CFG_GET_LENS_SHADING,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 enum msm_actuator_cfg_type_t {
@@ -457,13 +412,9 @@ enum msm_actuator_cfg_type_t {
 	CFG_ACTUATOR_POWERDOWN,
 	CFG_ACTUATOR_POWERUP,
 	CFG_ACTUATOR_INIT,
-<<<<<<< HEAD
 // add by gpg
 	CFG_AK7345_ACTUATOR_SET_OTP_TUNE,
 //
-=======
-	CFG_DIRECT_I2C_WRITE, /*to support non-trivial actuators*/
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 enum msm_ois_cfg_type_t {
@@ -510,14 +461,6 @@ struct msm_actuator_move_params_t {
 	struct damping_params_t *ringing_params;
 };
 
-<<<<<<< HEAD
-=======
-struct msm_mot_actuator_tuning_params_t {
-	int16_t infinity_dac;
-	int16_t macro_dac;
-};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct msm_actuator_tuning_params_t {
 	int16_t initial_code;
 	uint16_t pwd_step;
@@ -549,10 +492,6 @@ struct msm_actuator_params_t {
 struct msm_actuator_set_info_t {
 	struct msm_actuator_params_t actuator_params;
 	struct msm_actuator_tuning_params_t af_tuning_params;
-<<<<<<< HEAD
-=======
-	struct msm_mot_actuator_tuning_params_t mot_af_tuning_params;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct msm_actuator_get_info_t {
@@ -596,7 +535,6 @@ struct msm_actuator_set_position_t {
 	uint16_t delay[MAX_NUMBER_OF_STEPS];
 };
 
-<<<<<<< HEAD
 // add by gpg
 struct ak7345_actuator_otp_info_t {
 	uint16_t m_inf_code;
@@ -605,19 +543,6 @@ struct ak7345_actuator_otp_info_t {
 	uint16_t m_macro_adj_code;
 };
 // end by gpg
-=======
-struct msm_actuator_i2c {
-	uint16_t addr;
-	uint16_t value;
-	uint32_t wait_time;
-};
-
-#define MSM_ACTUATOR_I2C_MAX_TABLE_SIZE (8)
-struct msm_actuator_i2c_table {
-	struct msm_actuator_i2c data[MSM_ACTUATOR_I2C_MAX_TABLE_SIZE];
-	uint32_t size;
-};
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct msm_actuator_cfg_data {
 	int cfgtype;
@@ -628,13 +553,9 @@ struct msm_actuator_cfg_data {
 		struct msm_actuator_get_info_t get_info;
 		struct msm_actuator_set_position_t setpos;
 		enum af_camera_name cam_name;
-<<<<<<< HEAD
 	// add by gpg
 		struct ak7345_actuator_otp_info_t ak7345_otp_info;
 	// end by gpg
-=======
-		struct msm_actuator_i2c_table i2c_table;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} cfg;
 };
 
@@ -733,21 +654,6 @@ struct msm_camera_i2c_reg_setting32 {
 	enum msm_camera_qup_i2c_write_batch_t qup_i2c_batch;
 };
 
-<<<<<<< HEAD
-=======
-struct msm_camera_i2c_read_config32 {
-	uint16_t slave_addr;
-	uint16_t reg_addr;
-	enum msm_camera_i2c_data_type data_type;
-	compat_uptr_t data;
-};
-
-struct msm_mot_actuator_tuning_params_t32 {
-	int16_t infinity_dac;
-	int16_t macro_dac;
-};
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct msm_actuator_tuning_params_t32 {
 	int16_t initial_code;
 	uint16_t pwd_step;
@@ -772,10 +678,6 @@ struct msm_actuator_params_t32 {
 struct msm_actuator_set_info_t32 {
 	struct msm_actuator_params_t32 actuator_params;
 	struct msm_actuator_tuning_params_t32 af_tuning_params;
-<<<<<<< HEAD
-=======
-	struct msm_mot_actuator_tuning_params_t32 mot_af_tuning_params;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 struct sensor_init_cfg_data32 {
@@ -805,10 +707,6 @@ struct msm_actuator_cfg_data32 {
 		struct msm_actuator_get_info_t get_info;
 		struct msm_actuator_set_position_t setpos;
 		enum af_camera_name cam_name;
-<<<<<<< HEAD
-=======
-		struct msm_actuator_i2c_table i2c_table;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	} cfg;
 };
 
@@ -825,10 +723,6 @@ struct sensorb_cfg_data32 {
 	union {
 		struct msm_sensor_info_t      sensor_info;
 		struct msm_sensor_init_params sensor_init_params;
-<<<<<<< HEAD
-=======
-		compat_int_t                  otp_info;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		compat_uptr_t                 setting;
 	} cfg;
 };

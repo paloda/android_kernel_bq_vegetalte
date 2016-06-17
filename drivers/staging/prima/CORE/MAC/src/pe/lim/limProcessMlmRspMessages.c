@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
-=======
- * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -40,11 +36,7 @@
  *
  */
 #include "wniApi.h"
-<<<<<<< HEAD
 #include "wniCfg.h"
-=======
-#include "wniCfgSta.h"
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include "cfgApi.h"
 #include "sirApi.h"
 #include "schApi.h"
@@ -956,26 +948,6 @@ limProcessMlmReassocCnf(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
         psessionEntry->pLimReAssocReq = NULL;
     }
 
-<<<<<<< HEAD
-=======
-    /* Upon Reassoc success or failure, freeup the cached
-     * preauth request, to ensure that channel switch is now
-     * allowed following any change in HT params.
-     */
-    if (pMac->ft.ftPEContext.pFTPreAuthReq)
-    {
-        limLog(pMac, LOG1, "%s: Freeing pFTPreAuthReq= %p", __func__,
-               pMac->ft.ftPEContext.pFTPreAuthReq);
-        if (pMac->ft.ftPEContext.pFTPreAuthReq->pbssDescription)
-        {
-            vos_mem_free(pMac->ft.ftPEContext.pFTPreAuthReq->pbssDescription);
-            pMac->ft.ftPEContext.pFTPreAuthReq->pbssDescription = NULL;
-        }
-        vos_mem_free(pMac->ft.ftPEContext.pFTPreAuthReq);
-        pMac->ft.ftPEContext.pFTPreAuthReq = NULL;
-    }
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     PELOGE(limLog(pMac, LOG1, FL("Rcv MLM_REASSOC_CNF with result code %d"), pLimMlmReassocCnf->resultCode);)
     if (pLimMlmReassocCnf->resultCode == eSIR_SME_SUCCESS) {
         // Successful Reassociation
@@ -2565,11 +2537,7 @@ limProcessApMlmAddBssRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ)
     mlmStartCnf.sessionId = pAddBssParams->sessionId;
     if( eHAL_STATUS_SUCCESS == pAddBssParams->status )
     {
-<<<<<<< HEAD
         PELOG2(limLog(pMac, LOG2, FL("WDA_ADD_BSS_RSP returned with eHAL_STATUS_SUCCESS"));)
-=======
-        limLog(pMac, LOG1, FL("WDA_ADD_BSS_RSP returned with eHAL_STATUS_SUCCESS"));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
         if (limSetLinkState(pMac, eSIR_LINK_AP_STATE,psessionEntry->bssId,
               psessionEntry->selfMacAddr, NULL, NULL) != eSIR_SUCCESS )
             goto end;
@@ -3491,47 +3459,28 @@ void limProcessMlmSetStaKeyRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ )
 }
 void limProcessMlmSetBssKeyRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ )
 {
-<<<<<<< HEAD
     tANI_U8 respReqd = 1;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     tLimMlmSetKeysCnf mlmSetKeysCnf;
     tANI_U16          resultCode;
     tANI_U8           sessionId = 0;
     tpPESession  psessionEntry;
-<<<<<<< HEAD
     SET_LIM_PROCESS_DEFD_MESGS(pMac, true);
     vos_mem_set((void *)&mlmSetKeysCnf, sizeof( tLimMlmSetKeysCnf ), 0);
    //BTAMP
     if( NULL == limMsgQ->bodyptr )
-=======
-    tpLimMlmSetKeysReq lpLimMlmSetKeysReq;
-
-    SET_LIM_PROCESS_DEFD_MESGS(pMac, true);
-    vos_mem_set((void *)&mlmSetKeysCnf, sizeof( tLimMlmSetKeysCnf ), 0);
-    if ( NULL == limMsgQ->bodyptr )
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     {
         PELOGE(limLog(pMac, LOGE,FL("limMsgQ bodyptr is null"));)
         return;
     }
     sessionId = ((tpSetBssKeyParams) limMsgQ->bodyptr)->sessionId;
-<<<<<<< HEAD
     if((psessionEntry = peFindSessionBySessionId(pMac, sessionId))== NULL)
     {
         PELOGE(limLog(pMac, LOGE,FL("session does not exist for given sessionId"));)
-=======
-    if ((psessionEntry = peFindSessionBySessionId(pMac, sessionId))== NULL)
-    {
-        limLog(pMac, LOGE,FL("session does not exist for sessionId %d"),
-                                                                 sessionId);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
         vos_mem_zero(limMsgQ->bodyptr, sizeof(tSetBssKeyParams));
         vos_mem_free( limMsgQ->bodyptr );
         limMsgQ->bodyptr = NULL;
         return;
     }
-<<<<<<< HEAD
     if( eLIM_MLM_WT_SET_BSS_KEY_STATE == psessionEntry->limMlmState )
         resultCode = (tANI_U16) (((tpSetBssKeyParams) limMsgQ->bodyptr)->status);
     else
@@ -3552,22 +3501,6 @@ void limProcessMlmSetBssKeyRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ )
         limLog( pMac, LOGW, FL( "Received unexpected [Mesg Id - %d] in state %d" ), limMsgQ->type, psessionEntry->limMlmState );
         // There's not much that MLME can do at this stage...
         respReqd = 0;
-=======
-    if ( eLIM_MLM_WT_SET_BSS_KEY_STATE == psessionEntry->limMlmState )
-        resultCode = (tANI_U16) (((tpSetBssKeyParams) limMsgQ->bodyptr)->status);
-    else
-        /* BCAST key also uses tpSetStaKeyParams. Done this way for readabilty */
-        resultCode = (tANI_U16) (((tpSetStaKeyParams) limMsgQ->bodyptr)->status);
-
-    if( eLIM_MLM_WT_SET_BSS_KEY_STATE != psessionEntry->limMlmState &&
-        eLIM_MLM_WT_SET_STA_BCASTKEY_STATE != psessionEntry->limMlmState )
-    {
-        /* Mesg received from HAL in Invalid state! */
-        limLog( pMac, LOGW,
-                 FL( "Received unexpected [Mesg Id - %d] in state %d" ),
-                 limMsgQ->type, psessionEntry->limMlmState );
-        mlmSetKeysCnf.resultCode = eSIR_SME_INVALID_STATE;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
     else
       mlmSetKeysCnf.resultCode = resultCode;
@@ -3578,7 +3511,6 @@ void limProcessMlmSetBssKeyRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ )
     // Restore MLME state
     psessionEntry->limMlmState = psessionEntry->limPrevMlmState;
 
-<<<<<<< HEAD
     MTRACE(macTrace(pMac, TRACE_CODE_MLM_STATE, psessionEntry->peSessionId, psessionEntry->limMlmState));
     if( respReqd )
     {
@@ -3599,26 +3531,6 @@ void limProcessMlmSetBssKeyRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ )
         }
         limPostSmeMessage(pMac, LIM_MLM_SETKEYS_CNF, (tANI_U32 *) &mlmSetKeysCnf);
     }
-=======
-    MTRACE(macTrace(pMac, TRACE_CODE_MLM_STATE,
-           psessionEntry->peSessionId, psessionEntry->limMlmState));
-    lpLimMlmSetKeysReq = (tpLimMlmSetKeysReq) pMac->lim.gpLimMlmSetKeysReq;
-    mlmSetKeysCnf.sessionId = sessionId;
-
-    /* Prepare and Send LIM_MLM_SETKEYS_CNF */
-    if( NULL != lpLimMlmSetKeysReq )
-    {
-        vos_mem_copy((tANI_U8 *) &mlmSetKeysCnf.peerMacAddr,
-                     (tANI_U8 *) lpLimMlmSetKeysReq->peerMacAddr,
-                      sizeof(tSirMacAddr));
-        /* Free the buffer cached for the global pMac->lim.gpLimMlmSetKeysReq */
-        vos_mem_zero(pMac->lim.gpLimMlmSetKeysReq,
-                        sizeof(tLimMlmSetKeysReq));
-        vos_mem_free(pMac->lim.gpLimMlmSetKeysReq);
-        pMac->lim.gpLimMlmSetKeysReq = NULL;
-    }
-    limPostSmeMessage(pMac, LIM_MLM_SETKEYS_CNF, (tANI_U32 *) &mlmSetKeysCnf);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 /**
  * limProcessMlmRemoveKeyRsp()

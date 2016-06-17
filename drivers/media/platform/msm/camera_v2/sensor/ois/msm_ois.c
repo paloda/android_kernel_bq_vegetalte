@@ -383,12 +383,7 @@ static int msm_ois_close(struct v4l2_subdev *sd,
 	int rc = 0;
 	struct msm_ois_ctrl_t *o_ctrl =  v4l2_get_subdevdata(sd);
 	CDBG("Enter\n");
-<<<<<<< HEAD
 	if (!o_ctrl) {
-=======
-	if (!o_ctrl || !o_ctrl->i2c_client.i2c_func_tbl) {
-		/* check to make sure that init happens before release */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_err("failed\n");
 		return -EINVAL;
 	}
@@ -420,17 +415,8 @@ static long msm_ois_subdev_ioctl(struct v4l2_subdev *sd,
 	case VIDIOC_MSM_OIS_CFG:
 		return msm_ois_config(o_ctrl, argp);
 	case MSM_SD_SHUTDOWN:
-<<<<<<< HEAD
 		msm_ois_close(sd, NULL);
 		return 0;
-=======
-		if (!o_ctrl->i2c_client.i2c_func_tbl) {
-			pr_err("o_ctrl->i2c_client.i2c_func_tbl NULL\n");
-			return -EINVAL;
-		} else {
-			return msm_ois_close(sd, NULL);
-		}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	default:
 		return -ENOIOCTLCMD;
 	}

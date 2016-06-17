@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -37,10 +33,6 @@
 #include <linux/coresight-cti.h>
 #include <linux/moduleparam.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
-#include <linux/cpu_pm.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #include <soc/qcom/spm.h>
 #include <soc/qcom/pm.h>
 #include <soc/qcom/rpm-notifier.h>
@@ -115,11 +107,7 @@ module_param_named(
 	print_parsed_dt, print_parsed_dt, bool, S_IRUGO | S_IWUSR | S_IWGRP
 );
 
-<<<<<<< HEAD
 static bool sleep_disabled;
-=======
-static bool sleep_disabled = true;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 module_param_named(sleep_disabled,
 	sleep_disabled, bool, S_IRUGO | S_IWUSR | S_IWGRP);
 
@@ -269,7 +257,6 @@ static int cpu_power_select(struct cpuidle_device *dev,
 	if (sleep_disabled)
 		return 0;
 
-<<<<<<< HEAD
 	/*
 	 * TODO:
 	 * Assumes event happens always on Core0. Need to check for validity
@@ -277,9 +264,6 @@ static int cpu_power_select(struct cpuidle_device *dev,
 	 */
 	if (!dev->cpu)
 		next_event_us = (uint32_t)(ktime_to_us(get_next_event_time()));
-=======
-	next_event_us = (uint32_t)(ktime_to_us(get_next_event_time(dev->cpu)));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	for (i = 0; i < cpu->nlevels; i++) {
 		struct lpm_cpu_level *level = &cpu->levels[i];
@@ -340,11 +324,7 @@ static int cpu_power_select(struct cpuidle_device *dev,
 		}
 	}
 
-<<<<<<< HEAD
 	if (modified_time_us && !dev->cpu)
-=======
-	if (modified_time_us)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		msm_pm_set_timer(modified_time_us);
 
 	return best_level;
@@ -403,16 +383,6 @@ static int cluster_select(struct lpm_cluster *cluster, bool from_idle)
 
 	if (!cluster)
 		return -EINVAL;
-<<<<<<< HEAD
-=======
-	/*
-	 * TODO:
-	 * use per_cpu pm_qos to prevent low power modes based on
-	 * latency
-	 */
-	if (msm_rpm_waiting_for_ack())
-		return best_level;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	sleep_us = (uint32_t)get_cluster_sleep_time(cluster, NULL, from_idle);
 
@@ -506,13 +476,6 @@ static int cluster_configure(struct lpm_cluster *cluster, int idx,
 				level->notify_rpm);
 		if (ret)
 			goto failed_set_mode;
-<<<<<<< HEAD
-=======
-
-		if (level->mode[i] == MSM_SPM_MODE_POWER_COLLAPSE)
-			cpu_cluster_pm_enter(cluster->aff_level);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 	if (level->notify_rpm) {
 		struct cpumask nextcpu;
@@ -650,14 +613,6 @@ static void cluster_unprepare(struct lpm_cluster *cluster,
 				level->mode[i],
 				level->notify_rpm);
 		BUG_ON(ret);
-<<<<<<< HEAD
-=======
-
-		if (cluster->levels[last_level].mode[i] ==
-				MSM_SPM_MODE_POWER_COLLAPSE)
-			cpu_cluster_pm_exit(cluster->aff_level);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 unlock_return:
 	spin_unlock(&cluster->sync_lock);

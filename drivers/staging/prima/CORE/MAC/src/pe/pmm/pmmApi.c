@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
-=======
- * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -42,11 +38,7 @@
  */
 
 #include "palTypes.h"
-<<<<<<< HEAD
 #include "wniCfg.h"
-=======
-#include "wniCfgSta.h"
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #include "sirCommon.h"
 #include "aniGlobal.h"
@@ -238,13 +230,8 @@ void pmmInitBmpsResponseHandler(tpAniSirGlobal pMac, tpSirMsgQ limMsg )
     //If response is failure, then send the response back to PMC and reset its state.
     if(pEnterBmpsParams->status == eHAL_STATUS_SUCCESS)
     {
-<<<<<<< HEAD
         PELOG2(pmmLog(pMac, LOG2,
             FL("pmmBmps: Received successful response from HAL to enter BMPS_POWER_SAVE "));)
-=======
-        pmmLog(pMac, LOG1,
-            FL("pmmBmps: Received successful response from HAL to enter BMPS_POWER_SAVE "));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         pMac->pmm.gPmmState = ePMM_STATE_BMPS_SLEEP;
 
@@ -698,13 +685,8 @@ tSirRetStatus  pmmSendInitPowerSaveMsg(tpAniSirGlobal pMac,tpPESession psessionE
     msgQ.bodyptr = pBmpsParams;
     msgQ.bodyval = 0;
 
-<<<<<<< HEAD
     PELOG2(pmmLog( pMac, LOG2,
         FL( "pmmBmps: Sending WDA_ENTER_BMPS_REQ" ));)
-=======
-    pmmLog( pMac, LOG1,
-        FL( "pmmBmps: Sending WDA_ENTER_BMPS_REQ" ));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
     /* we need to defer any incoming messages until we get a
      * WDA_ENTER_BMPS_RSP from HAL.
@@ -1580,13 +1562,8 @@ void pmmEnterImpsResponseHandler (tpAniSirGlobal pMac, eHalStatus rspStatus)
         //if success, change the state to IMPS sleep mode
         pMac->pmm.gPmmState = ePMM_STATE_IMPS_SLEEP;
 
-<<<<<<< HEAD
         PELOG2(pmmLog(pMac, LOG2,
             FL("pmmImps: Received successful WDA_ENTER_IMPS_RSP from HAL"));)
-=======
-        pmmLog(pMac, LOG1,
-            FL("pmmImps: Received successful WDA_ENTER_IMPS_RSP from HAL"));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
         //update power save statistics
         pmmImpsUpdatePwrSaveStats(pMac);
@@ -1734,13 +1711,8 @@ void pmmExitImpsResponseHandler(tpAniSirGlobal pMac, eHalStatus rspStatus)
         {
             resultCode = eSIR_SME_SUCCESS;
             pMac->pmm.gPmmState = ePMM_STATE_IMPS_WAKEUP;
-<<<<<<< HEAD
             PELOG2(pmmLog(pMac, LOG2,
                           FL("pmmImps: Received WDA_EXIT_IMPS_RSP with Successful response from HAL"));)
-=======
-            pmmLog(pMac, LOG1,
-                          FL("pmmImps: Received WDA_EXIT_IMPS_RSP with Successful response from HAL"));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
             //update power save statistics
             pmmImpsUpdateWakeupStats(pMac);
         }
@@ -2538,20 +2510,12 @@ tSirRetStatus pmmImpsSendChangePwrSaveMsg(tpAniSirGlobal pMac, tANI_U8 mode)
     if (SIR_PM_SLEEP_MODE == mode)
     {
         msgQ.type = WDA_ENTER_IMPS_REQ;
-<<<<<<< HEAD
         PELOG2(pmmLog (pMac, LOG2, FL("Sending WDA_ENTER_IMPS_REQ to HAL"));)
-=======
-        pmmLog (pMac, LOG1, FL("Sending WDA_ENTER_IMPS_REQ to HAL"));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
     else
     {
         msgQ.type = WDA_EXIT_IMPS_REQ;
-<<<<<<< HEAD
         PELOG2(pmmLog (pMac, LOG2, FL("Sending WDA_EXIT_IMPS_REQ to HAL"));)
-=======
-        pmmLog (pMac, LOG1, FL("Sending WDA_EXIT_IMPS_REQ to HAL"));
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     msgQ.reserved = 0;

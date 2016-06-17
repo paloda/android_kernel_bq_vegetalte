@@ -74,8 +74,8 @@ struct idletimer_tg {
 	bool work_pending;
 	bool send_nl_msg;
 	bool active;
-	bool suspend_time_valid;
 	uid_t uid;
+	bool suspend_time_valid;
 };
 
 static LIST_HEAD(idletimer_tg_list);

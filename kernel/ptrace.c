@@ -225,19 +225,6 @@ static int ptrace_has_cap(struct user_namespace *ns, unsigned int mode)
 static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 {
 	const struct cred *cred = current_cred(), *tcred;
-<<<<<<< HEAD
-=======
-	int dumpable = 0;
-	kuid_t caller_uid;
-	kgid_t caller_gid;
-
-	if (!(mode & PTRACE_MODE_FSCREDS) == !(mode & PTRACE_MODE_REALCREDS)) {
-		/*
-		WARN(1, "denying ptrace access check without PTRACE_MODE_*CREDS\n");
-		 */
-		return -EPERM;
-	}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	/* May we inspect the given task?
 	 * This check is used both for attaching with ptrace

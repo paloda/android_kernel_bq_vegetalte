@@ -187,15 +187,8 @@ struct sdhci_host {
  * the bounce buffer logic when preparing data
  */
 #define SDHCI_QUIRK2_ADMA_SKIP_DATA_ALIGNMENT             (1<<13)
-<<<<<<< HEAD
 /* Use reset workaround in case sdhci reset timeouts */
 #define SDHCI_QUIRK2_USE_RESET_WORKAROUND (1 << 14)
-=======
-/* Some controllers doesn't have have any LED control */
-#define SDHCI_QUIRK2_BROKEN_LED_CONTROL	(1 << 14)
-/* Use reset workaround in case sdhci reset timeouts */
-#define SDHCI_QUIRK2_USE_RESET_WORKAROUND (1 << 15)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	int irq;		/* Device IRQ */
 	void __iomem *ioaddr;	/* Mapped address */
@@ -269,8 +262,6 @@ struct sdhci_host {
 	struct tasklet_struct finish_tasklet;
 
 	struct timer_list timer;	/* Timer for timeouts */
-	unsigned long timeout_jiffies;	/* Current timeout in jiffies */
-	unsigned int last_blocks;	/* Blocks transferred since last timeout */
 
 	u32 caps;		/* Alternative CAPABILITY_0 */
 	u32 caps1;		/* Alternative CAPABILITY_1 */

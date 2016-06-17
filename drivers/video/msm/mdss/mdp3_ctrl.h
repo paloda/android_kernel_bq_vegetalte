@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -29,11 +25,6 @@
 #include "mdss_panel.h"
 
 #define MDP3_MAX_BUF_QUEUE 8
-<<<<<<< HEAD
-=======
-#define MDP3_LUT_HIST_EN 0x001
-#define MDP3_LUT_GC_EN 0x002
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 struct mdp3_buffer_queue {
 	struct mdp3_img_data img_data[MDP3_MAX_BUF_QUEUE];
@@ -63,10 +54,7 @@ struct mdp3_session_data {
 	int histo_status;
 	struct mutex histo_lock;
 	int lut_sel;
-<<<<<<< HEAD
 	int cc_vect_sel;
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	bool vsync_before_commit;
 	bool first_commit;
 	int clk_on;
@@ -75,10 +63,6 @@ struct mdp3_session_data {
 	int vsync_enabled;
 	atomic_t vsync_countdown; /* Used to count down  */
 	bool in_splash_screen;
-<<<<<<< HEAD
-=======
-	int dyn_pu_state; /* dynamic partial update status */
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	bool dma_active;
 	struct completion dma_completion;

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -567,13 +563,8 @@ static int msm_rpm_add_kvp_data_common(struct msm_rpm_request *handle,
 	if (probe_status)
 		return probe_status;
 
-<<<<<<< HEAD
 	if (!handle) {
 		pr_err("%s(): Invalid handle\n", __func__);
-=======
-	if (!handle || !data) {
-		pr_err("%s(): Invalid handle/data\n", __func__);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return -EINVAL;
 	}
 
@@ -909,11 +900,7 @@ static void msm_rpm_smd_work(struct work_struct *work)
 	char buf[MAX_ERR_BUFFER_SIZE] = {0};
 
 	while (1) {
-<<<<<<< HEAD
 		wait_for_completion(&data_ready);
-=======
-		wait_for_completion_interruptible(&data_ready);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 		spin_lock(&msm_rpm_data.smd_lock_read);
 		while (smd_is_pkt_avail(msm_rpm_data.ch_info)) {
@@ -1239,15 +1226,7 @@ int msm_rpm_wait_for_ack(uint32_t msg_id)
 	if (!elem)
 		return rc;
 
-<<<<<<< HEAD
 	wait_for_completion(&elem->ack);
-=======
-	if (!wait_for_completion_timeout(&elem->ack, 20*HZ)) {
-		pr_err("%s TIMEOUT msg_id %d\n", __func__, msg_id);
-		BUG();
-	}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	trace_rpm_smd_ack_recvd(0, msg_id, 0xDEADFEED);
 
 	rc = elem->errno;

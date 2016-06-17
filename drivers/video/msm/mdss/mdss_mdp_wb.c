@@ -420,13 +420,6 @@ static struct mdss_mdp_wb_data *get_user_node(struct msm_fb_data_type *mfd,
 		struct ion_client *iclient = mdss_get_ionclient();
 		struct ion_handle *ihdl;
 
-<<<<<<< HEAD
-=======
-		if (IS_ERR_OR_NULL(iclient)) {
-			pr_err("unable to get mdss ion client\n");
-			return NULL;
-		}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ihdl = ion_import_dma_buf(iclient, data->memory_id);
 		if (IS_ERR_OR_NULL(ihdl)) {
 			pr_err("unable to import fd %d\n", data->memory_id);
@@ -631,12 +624,7 @@ static int mdss_mdp_wb_dequeue(struct msm_fb_data_type *mfd,
 	return ret;
 }
 
-<<<<<<< HEAD
 int mdss_mdp_wb_kickoff(struct msm_fb_data_type *mfd)
-=======
-int mdss_mdp_wb_kickoff(struct msm_fb_data_type *mfd,
-		struct mdss_mdp_commit_cb *commit_cb)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	struct mdss_mdp_wb *wb = mfd_to_wb(mfd);
 	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
@@ -690,23 +678,8 @@ int mdss_mdp_wb_kickoff(struct msm_fb_data_type *mfd,
 		pr_err("error on commit ctl=%d\n", ctl->num);
 		goto kickoff_fail;
 	}
-<<<<<<< HEAD
 	mdss_mdp_display_wait4comp(ctl);
 
-=======
-
-	if (commit_cb)
-		commit_cb->commit_cb_fnc(
-			MDP_COMMIT_STAGE_SETUP_DONE,
-			commit_cb->data);
-
-	mdss_mdp_display_wait4comp(ctl);
-
-	if (commit_cb)
-		commit_cb->commit_cb_fnc(MDP_COMMIT_STAGE_READY_FOR_KICKOFF,
-			commit_cb->data);
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (wb && node) {
 		mutex_lock(&wb->lock);
 		list_add_tail(&node->active_entry, &wb->busy_queue);

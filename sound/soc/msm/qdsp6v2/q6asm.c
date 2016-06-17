@@ -30,10 +30,6 @@
 #include <linux/atomic.h>
 #include <linux/msm_audio_ion.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-=======
-#include <linux/ratelimit.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #include <asm/ioctls.h>
 
@@ -969,10 +965,6 @@ struct audio_client *q6asm_audio_client_alloc(app_cb cb, void *priv)
 	int n;
 	int lcnt = 0;
 	int rc = 0;
-<<<<<<< HEAD
-=======
-	static DEFINE_RATELIMIT_STATE(rl, 5*HZ, 1);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	ac = kzalloc(sizeof(struct audio_client), GFP_KERNEL);
 	if (!ac) {
@@ -1001,12 +993,7 @@ struct audio_client *q6asm_audio_client_alloc(app_cb cb, void *priv)
 			ac);
 
 	if (ac->apr == NULL) {
-<<<<<<< HEAD
 		pr_err("%s: Registration with APR failed\n", __func__);
-=======
-		if (__ratelimit(&rl))
-			pr_err("%s: Registration with APR failed\n", __func__);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		mutex_unlock(&session_lock);
 		goto fail_apr1;
 	}
@@ -1461,18 +1448,8 @@ static int32_t q6asm_callback(struct apr_client_data *data, void *priv)
 		pr_err("%s: data NULL\n", __func__);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
 	if (ac->session <= 0 || ac->session > 8 ||
 		!q6asm_is_valid_audio_client(ac)) {
-=======
-	if (!q6asm_is_valid_audio_client(ac)) {
-		pr_err("%s: audio client pointer is invalid, ac = %p\n",
-				__func__, ac);
-		return -EINVAL;
-	}
-
-	if (ac->session <= 0 || ac->session > 8) {
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		pr_err("%s: Session ID is invalid, session = %d\n", __func__,
 			ac->session);
 		return -EINVAL;
@@ -2264,16 +2241,7 @@ static int __q6asm_open_write(struct audio_client *ac, uint32_t format,
 	if (open.postprocopo_id == ASM_STREAM_POSTPROC_TOPO_ID_DTS_HPX)
 		open.bits_per_sample = 24;
 
-<<<<<<< HEAD
 	ac->topology = open.postprocopo_id;
-=======
-	/*
-	 * For Gapless playback it will use the same session for next stream,
-	 * So use the same topology
-	 */
-	if(!ac->topology)
-		ac->topology = open.postprocopo_id;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	switch (format) {
 	case FORMAT_LINEAR_PCM:
 		open.dec_fmt_id = ASM_MEDIA_FMT_MULTI_CHANNEL_PCM_V2;
@@ -4414,7 +4382,6 @@ fail_cmd:
 	return rc;
 }
 
-<<<<<<< HEAD
 int q6asm_dts_eagle_set(struct audio_client *ac, int param_id, int size,
 			void *data)
 {
@@ -4422,27 +4389,12 @@ int q6asm_dts_eagle_set(struct audio_client *ac, int param_id, int size,
 	struct asm_dts_eagle_param *ad = kzalloc(sz, GFP_KERNEL);
 	if (!ad) {
 		pr_err("DTS_EAGLE_ASM - %s: error allocating mem of size %i\n",
-=======
-int q6asm_dts_eagle_set(struct audio_client *ac, int param_id, uint32_t size,
-			void *data)
-{
-	int rc = 0;
-	uint32_t sz = sizeof(struct asm_dts_eagle_param) + size;
-	struct asm_dts_eagle_param *ad = kzalloc(sz, GFP_KERNEL);
-	if (!ad) {
-		pr_err("DTS_EAGLE_ASM - %s: error allocating mem of size %u\n",
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			__func__, sz);
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
 	if (!ac || ac->apr == NULL || size <= 0 || !data) {
 		pr_err("DTS_EAGLE_ASM - %s: APR handle NULL, invalid size %i or pointer %p.\n",
-=======
-	if (!ac || ac->apr == NULL || (size == 0) || !data) {
-		pr_err("DTS_EAGLE_ASM - %s: APR handle NULL, invalid size %u or pointer %p.\n",
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			__func__, size, data);
 		return -EINVAL;
 	}
@@ -4485,7 +4437,6 @@ fail_cmd:
 	return rc;
 }
 
-<<<<<<< HEAD
 int q6asm_dts_eagle_get(struct audio_client *ac, int param_id, int size,
 			void *data)
 {
@@ -4494,28 +4445,13 @@ int q6asm_dts_eagle_get(struct audio_client *ac, int param_id, int size,
 
 	if (!ac || ac->apr == NULL || size <= 0 || !data) {
 		pr_err("DTS_EAGLE_ASM - %s: APR handle NULL, invalid size %i or pointer %p.\n",
-=======
-int q6asm_dts_eagle_get(struct audio_client *ac, int param_id, uint32_t size,
-			void *data)
-{
-	struct asm_dts_eagle_param_get *ad;
-	int rc = 0;
-	uint32_t sz;
-
-	if (!ac || ac->apr == NULL || (size == 0) || !data) {
-		pr_err("DTS_EAGLE_ASM - %s: APR handle NULL, invalid size %u or pointer %p.\n",
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			__func__, size, data);
 		return -EINVAL;
 	}
 	sz = sizeof(struct asm_dts_eagle_param_get) + CMD_GET_HDR_SZ + size;
 	ad = kzalloc(sz, GFP_KERNEL);
 	if (!ad) {
-<<<<<<< HEAD
 		pr_err("DTS_EAGLE_ASM - %s: error allocating memory of size %i\n",
-=======
-		pr_err("DTS_EAGLE_ASM - %s: error allocating memory of size %u\n",
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			__func__, sz);
 		return -ENOMEM;
 	}
@@ -4533,11 +4469,7 @@ int q6asm_dts_eagle_get(struct audio_client *ac, int param_id, uint32_t size,
 	generic_get_data = kzalloc(size + sizeof(struct generic_get_data_),
 				   GFP_KERNEL);
 	if (!generic_get_data) {
-<<<<<<< HEAD
 		pr_err("DTS_EAGLE_ASM - %s: error allocating mem of size %i\n",
-=======
-		pr_err("DTS_EAGLE_ASM - %s: error allocating mem of size %u\n",
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			__func__, size);
 		rc = -ENOMEM;
 		goto fail_cmd;

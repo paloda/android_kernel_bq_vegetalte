@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -353,10 +349,6 @@ static int update_msg_mask_tbl_entry(struct diag_msg_mask_t *mask,
 				     struct diag_ssid_range_t *range)
 {
 	uint32_t temp_range;
-<<<<<<< HEAD
-=======
-	uint32_t *temp = NULL;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (!mask || !range)
 		return -EIO;
@@ -367,14 +359,6 @@ static int update_msg_mask_tbl_entry(struct diag_msg_mask_t *mask,
 	}
 	if (range->ssid_last >= mask->ssid_last) {
 		temp_range = range->ssid_last - mask->ssid_first + 1;
-<<<<<<< HEAD
-=======
-		temp = krealloc(mask->ptr, temp_range * sizeof(uint32_t),
-				GFP_KERNEL);
-		if (!temp)
-			return -ENOMEM;
-		mask->ptr = temp;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		mask->ssid_last = range->ssid_last;
 		mask->range = temp_range;
 	}
@@ -595,11 +579,7 @@ int diag_process_smd_cntl_read_data(struct diag_smd_info *smd_info, void *buf,
 	return 0;
 }
 
-<<<<<<< HEAD
 static int diag_compute_real_time(int idx)
-=======
-int diag_compute_real_time(int idx)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
 	int real_time = MODE_REALTIME;
 	if (driver->proc_active_mask == 0) {
@@ -848,11 +828,7 @@ void diag_real_time_work_fn(struct work_struct *work)
 }
 #endif
 
-<<<<<<< HEAD
 int diag_send_diag_mode_update_by_smd(struct diag_smd_info *smd_info,
-=======
-static int __diag_send_diag_mode_update_by_smd(struct diag_smd_info *smd_info,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 							int real_time)
 {
 	char buf[sizeof(struct diag_ctrl_msg_diagmode)];
@@ -889,27 +865,6 @@ static int __diag_send_diag_mode_update_by_smd(struct diag_smd_info *smd_info,
 	return err;
 }
 
-<<<<<<< HEAD
-=======
-int diag_send_diag_mode_update_by_smd(struct diag_smd_info *smd_info,
-							int real_time)
-{
-	int i;
-
-	for (i = 0; i < NUM_SMD_CONTROL_CHANNELS; i++) {
-		if (!driver->buffering_flag[i])
-			continue;
-		/*
-		 * One of the peripherals is in buffering mode. Don't set
-		 * the RT value.
-		 */
-		return -EINVAL;
-	}
-
-	return __diag_send_diag_mode_update_by_smd(smd_info, real_time);
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 {
 	int err = 0;
@@ -927,12 +882,6 @@ int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-=======
-	if (!driver->buffering_flag[peripheral])
-		return -EINVAL;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	switch (params->mode) {
 	case DIAG_BUFFERING_MODE_STREAMING:
 		mode = MODE_REALTIME;
@@ -950,10 +899,6 @@ int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 	if (!driver->peripheral_buffering_support[peripheral]) {
 		pr_debug("diag: In %s, peripheral %d doesn't support buffering\n",
 			 __func__, peripheral);
-<<<<<<< HEAD
-=======
-		driver->buffering_flag[peripheral] = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return -EIO;
 	}
 
@@ -996,11 +941,6 @@ int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 	driver->buffering_mode[peripheral].mode = params->mode;
 	driver->buffering_mode[peripheral].low_wm_val = params->low_wm_val;
 	driver->buffering_mode[peripheral].high_wm_val = params->high_wm_val;
-<<<<<<< HEAD
-=======
-	if (mode == DIAG_BUFFERING_MODE_STREAMING)
-		driver->buffering_flag[peripheral] = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 fail:
 	mutex_unlock(&driver->mode_lock);
 	return err;
@@ -1256,10 +1196,6 @@ int diagfwd_cntl_init(void)
 		goto err;
 
 	for (i = 0; i < NUM_SMD_CONTROL_CHANNELS; i++) {
-<<<<<<< HEAD
-=======
-		driver->buffering_flag[i] = 0;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ret = diag_smd_constructor(&driver->smd_cntl[i], i,
 							SMD_CNTL_TYPE);
 		if (ret)

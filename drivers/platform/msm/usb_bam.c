@@ -3563,11 +3563,8 @@ EXPORT_SYMBOL(usb_bam_get_bam_type);
 
 bool msm_bam_device_lpm_ok(enum usb_ctrl bam_type)
 {
-<<<<<<< HEAD
 	pr_debug("%s: enter bam%s\n", __func__, bam_enable_strings[bam_type]);
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/*
 	 * There is the possibility of a race between the usb_bam_probe()
 	 * function initializing the relevant spinlocks and structures, vs. the
@@ -3581,7 +3578,6 @@ bool msm_bam_device_lpm_ok(enum usb_ctrl bam_type)
 		info[bam_type].lpm_wait_pipes) {
 		info[bam_type].pending_lpm = 1;
 		spin_unlock(&usb_bam_ipa_handshake_info_lock);
-<<<<<<< HEAD
 		pr_err("%s: Scheduling LPM for later\n", __func__);
 		return 0;
 	} else {
@@ -3607,15 +3603,6 @@ bool msm_bam_device_lpm_ok(enum usb_ctrl bam_type)
 		info[bam_type].in_lpm = true;
 		spin_unlock(&usb_bam_ipa_handshake_info_lock);
 		pr_err("%s: Going to LPM now\n", __func__);
-=======
-		pr_info("%s: Scheduling LPM for later\n", __func__);
-		return 0;
-	} else {
-		info[bam_type].pending_lpm = 0;
-		info[bam_type].in_lpm = true;
-		spin_unlock(&usb_bam_ipa_handshake_info_lock);
-		pr_info("%s: Going to LPM now\n", __func__);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		return 1;
 	}
 }

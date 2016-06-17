@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -41,10 +37,6 @@
 
 #include "msm-pcm-q6-v2.h"
 #include "msm-pcm-routing-v2.h"
-<<<<<<< HEAD
-=======
-#include <linux/ratelimit.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 enum stream_state {
 	IDLE = 0,
@@ -171,11 +163,7 @@ static void event_handler(uint32_t opcode,
 		wake_up(&the_locks.write_wait);
 		if (!atomic_read(&prtd->start))
 			break;
-<<<<<<< HEAD
 		if (!prtd->mmap_flag)
-=======
-		if (!prtd->mmap_flag || prtd->reset_event)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 			break;
 		if (q6asm_is_cpu_buf_avail_nolock(IN,
 				prtd->audio_client,
@@ -509,10 +497,6 @@ static int msm_pcm_open(struct snd_pcm_substream *substream)
 	struct snd_soc_pcm_runtime *soc_prtd = substream->private_data;
 	struct msm_audio *prtd;
 	int ret = 0;
-<<<<<<< HEAD
-=======
-	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	prtd = kzalloc(sizeof(struct msm_audio), GFP_KERNEL);
 	if (prtd == NULL) {
@@ -523,12 +507,7 @@ static int msm_pcm_open(struct snd_pcm_substream *substream)
 	prtd->audio_client = q6asm_audio_client_alloc(
 				(app_cb)event_handler, prtd);
 	if (!prtd->audio_client) {
-<<<<<<< HEAD
 		pr_info("%s: Could not allocate memory\n", __func__);
-=======
-		if (__ratelimit(&rl))
-			pr_err("%s: Could not allocate memory\n", __func__);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		kfree(prtd);
 		return -ENOMEM;
 	}

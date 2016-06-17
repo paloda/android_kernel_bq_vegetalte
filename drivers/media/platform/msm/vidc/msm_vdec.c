@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,10 +20,7 @@
 
 #define MSM_VDEC_DVC_NAME "msm_vdec_8974"
 #define MIN_NUM_OUTPUT_BUFFERS 4
-<<<<<<< HEAD
 #define MIN_NUM_CAPTURE_BUFFERS 6
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define MAX_NUM_OUTPUT_BUFFERS VB2_MAX_FRAME
 #define DEFAULT_VIDEO_CONCEAL_COLOR_BLACK 0x8010
 #define MB_SIZE_IN_PIXEL (16 * 16)
@@ -1449,7 +1442,6 @@ static int msm_vdec_queue_setup(struct vb2_queue *q,
 			break;
 		}
 		*num_buffers = max(*num_buffers, bufreq->buffer_count_min);
-<<<<<<< HEAD
 
 		if ((*num_buffers < MIN_NUM_CAPTURE_BUFFERS ||
 			*num_buffers > VB2_MAX_FRAME) &&
@@ -1464,8 +1456,6 @@ static int msm_vdec_queue_setup(struct vb2_queue *q,
 				temp, *num_buffers);
 		}
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		if (*num_buffers != bufreq->buffer_count_actual) {
 			property_id = HAL_PARAM_BUFFER_COUNT_ACTUAL;
 			new_buf_count.buffer_type =

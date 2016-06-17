@@ -40,7 +40,6 @@
 #define MON_MASK(m)		((m)->base + 0x298)
 #define MON_MATCH(m)		((m)->base + 0x29C)
 
-<<<<<<< HEAD
 /*
  * Don't set the threshold lower than this value. This helps avoid
  * threshold IRQs when the traffic is close to zero and even small
@@ -48,8 +47,6 @@
  */
 #define FLOOR_MBPS	100UL
 
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 struct bwmon_spec {
 	bool wrap_on_thres;
 	bool overflow;
@@ -208,11 +205,7 @@ static unsigned long meas_bw_and_set_irq(struct bw_hwmon *hw,
 	 * multiple times before the IRQ is processed.
 	 */
 	if (likely(!m->spec->wrap_on_thres))
-<<<<<<< HEAD
 		limit = mbps_to_bytes(max(mbps, FLOOR_MBPS), sample_ms, tol);
-=======
-		limit = mbps_to_bytes(mbps, sample_ms, tol);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	else
 		limit = mbps_to_bytes(max(mbps, 400UL), sample_ms, tol);
 

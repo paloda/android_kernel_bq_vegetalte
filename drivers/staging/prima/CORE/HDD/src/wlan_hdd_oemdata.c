@@ -45,11 +45,7 @@
 #include <linux/wireless.h>
 #include <wlan_hdd_includes.h>
 #include <net/arp.h>
-<<<<<<< HEAD
 
-=======
-#include <vos_sched.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*---------------------------------------------------------------------------------------------
 
   \brief hdd_OemDataReqCallback() - 
@@ -101,11 +97,7 @@ static eHalStatus hdd_OemDataReqCallback(tHalHandle hHal,
 
 /**--------------------------------------------------------------------------------------------
 
-<<<<<<< HEAD
   \brief iw_get_oem_data_rsp() - 
-=======
-  \brief __iw_get_oem_data_rsp() -
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
   This function gets the oem data response. This invokes
   the respective sme functionality. Function for handling the oem data rsp 
@@ -119,13 +111,8 @@ static eHalStatus hdd_OemDataReqCallback(tHalHandle hHal,
   \return - 0 for success, non zero for failure
 
 -----------------------------------------------------------------------------------------------*/
-<<<<<<< HEAD
 int iw_get_oem_data_rsp(
         struct net_device *dev, 
-=======
-int __iw_get_oem_data_rsp(
-        struct net_device *dev,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
         struct iw_request_info *info,
         union iwreq_data *wrqu,
         char *extra)
@@ -134,7 +121,6 @@ int __iw_get_oem_data_rsp(
     eHalStatus                            status;
     struct iw_oem_data_rsp*               pHddOemDataRsp;
     tOemDataRsp*                          pSmeOemDataRsp;
-<<<<<<< HEAD
 
     hdd_adapter_t *pAdapter = (netdev_priv(dev));
 
@@ -145,26 +131,6 @@ int __iw_get_oem_data_rsp(
        return -EBUSY;
     }
 
-=======
-    hdd_adapter_t *pAdapter;
-    hdd_context_t *pHddCtx;
-
-    pAdapter = (netdev_priv(dev));
-    if (NULL == pAdapter)
-    {
-        VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
-                  "%s: Adapter is NULL",__func__);
-        return -EINVAL;
-    }
-    pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
-    rc = wlan_hdd_validate_context(pHddCtx);
-    if (0 != rc)
-    {
-        VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
-                  "%s: HDD context is not valid",__func__);
-        return rc;
-    }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     do
     {
         //get the oem data response from sme
@@ -194,30 +160,9 @@ int __iw_get_oem_data_rsp(
     return rc;
 }
 
-<<<<<<< HEAD
 /**--------------------------------------------------------------------------------------------
 
   \brief iw_set_oem_data_req() - 
-=======
-int iw_get_oem_data_rsp(
-        struct net_device *dev,
-        struct iw_request_info *info,
-        union iwreq_data *wrqu,
-        char *extra)
-{
-    int ret;
-
-    vos_ssr_protect(__func__);
-    ret = __iw_get_oem_data_rsp(dev, info, wrqu, extra);
-    vos_ssr_unprotect(__func__);
-
-    return ret;
-}
-
-/**--------------------------------------------------------------------------------------------
-
-  \brief __iw_set_oem_data_req() -
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
   This function sets the oem data req configuration. This invokes
   the respective sme oem data req functionality. Function for 
@@ -231,13 +176,8 @@ int iw_get_oem_data_rsp(
   \return - 0 for success, non zero for failure
 
 -----------------------------------------------------------------------------------------------*/
-<<<<<<< HEAD
 int iw_set_oem_data_req(
         struct net_device *dev, 
-=======
-int __iw_set_oem_data_req(
-        struct net_device *dev,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
         struct iw_request_info *info,
         union iwreq_data *wrqu,
         char *extra)
@@ -246,7 +186,6 @@ int __iw_set_oem_data_req(
     eHalStatus status = eHAL_STATUS_SUCCESS;
     struct iw_oem_data_req *pOemDataReq = NULL;
     tOemDataReqConfig oemDataReqConfig;
-<<<<<<< HEAD
 
     tANI_U32 oemDataReqID = 0;
 
@@ -264,35 +203,6 @@ int __iw_set_oem_data_req(
        VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_FATAL,
                                   "%s:LOGP in Progress. Ignore!!!",__func__);
        return -EBUSY;
-=======
-    tANI_U32 oemDataReqID = 0;
-    hdd_adapter_t *pAdapter;
-    hdd_context_t *pHddCtx;
-    hdd_wext_state_t *pwextBuf;
-
-    pAdapter = (netdev_priv(dev));
-    if (NULL == pAdapter)
-    {
-       VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
-                 "%s: Adapter is NULL",__func__);
-       return -EINVAL;
-    }
-    pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
-    rc = wlan_hdd_validate_context(pHddCtx);
-    if (0 != rc)
-    {
-        VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
-                  "%s: HDD context is not valid",__func__);
-        return rc;
-    }
-
-    pwextBuf = WLAN_HDD_GET_WEXT_STATE_PTR(pAdapter);
-    if (NULL == pwextBuf)
-    {
-        VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
-                  "%s: pwextBuf is NULL",__func__);
-        return -EINVAL;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
     }
 
     do
@@ -342,22 +252,5 @@ int __iw_set_oem_data_req(
     return rc;
 }
 
-<<<<<<< HEAD
-=======
-int iw_set_oem_data_req(
-        struct net_device *dev,
-        struct iw_request_info *info,
-        union iwreq_data *wrqu,
-        char *extra)
-{
-    int ret;
-
-    vos_ssr_protect(__func__);
-    ret = __iw_set_oem_data_req(dev, info, wrqu, extra);
-    vos_ssr_unprotect(__func__);
-
-    return ret;
-}
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 #endif

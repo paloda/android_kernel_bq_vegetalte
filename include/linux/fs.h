@@ -30,10 +30,6 @@
 
 #include <asm/byteorder.h>
 #include <uapi/linux/fs.h>
-#ifdef CONFIG_POWER_OFF_BATTERY_LOG
-
-#include <linux/notifier.h>
-#endif
 
 struct export_operations;
 struct hd_geometry;
@@ -2208,10 +2204,6 @@ extern int vfs_fsync(struct file *file, int datasync);
 extern int generic_write_sync(struct file *file, loff_t pos, loff_t count);
 extern void emergency_sync(void);
 extern void emergency_remount(void);
-#ifdef CONFIG_POWER_OFF_BATTERY_LOG
-extern int register_fs_notifier(struct notifier_block *nb);
-extern int unregister_fs_notifier(struct notifier_block *nb);
-#endif
 #ifdef CONFIG_BLOCK
 extern sector_t bmap(struct inode *, sector_t);
 #endif

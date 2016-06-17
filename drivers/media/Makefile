@@ -31,4 +31,3 @@ obj-y += rc/
 obj-y += common/ platform/ pci/ usb/ mmc/ firewire/ parport/
 obj-$(CONFIG_VIDEO_DEV) += radio/
 
-obj-$(CONFIG_ISDBT_NMI) += nmi326.o

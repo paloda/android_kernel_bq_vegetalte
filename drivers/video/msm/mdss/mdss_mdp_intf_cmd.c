@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
->>>>>>> ca57d1d... Merge in Linux 3.10.100
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -23,11 +19,6 @@
 #include "mdss_debug.h"
 #include "mdss_mdp_trace.h"
 
-<<<<<<< HEAD
-=======
-#include "mdss_timeout.h"
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #define VSYNC_EXPIRE_TICK 6
 
 #define MAX_SESSIONS 2
@@ -50,10 +41,6 @@ struct mdss_mdp_cmd_ctx {
 	struct list_head vsync_handlers;
 	int panel_power_state;
 	atomic_t koff_cnt;
-<<<<<<< HEAD
-=======
-	u32 intf_stopped;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	int clk_enabled;
 	int vsync_enabled;
 	int rdptr_enabled;
@@ -791,14 +778,6 @@ int mdss_mdp_cmd_kickoff(struct mdss_mdp_ctl *ctl, void *arg)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-=======
-	if (ctx->intf_stopped) {
-		pr_err("ctx=%d stopped already\n", ctx->pp_num);
-		return -EPERM;
-	}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	/* sctl will be null for right only in the case of Partial update */
 	sctl = mdss_mdp_get_split_ctl(ctl);
 
@@ -903,23 +882,10 @@ int mdss_mdp_cmd_intfs_stop(struct mdss_mdp_ctl *ctl, int session,
 	}
 	ctx->ref_cnt--;
 
-<<<<<<< HEAD
-=======
-	/* intf stopped,  no more kickoff */
-	ctx->intf_stopped = 1;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	spin_lock_irqsave(&ctx->clk_lock, flags);
 	if (ctx->rdptr_enabled) {
 		INIT_COMPLETION(ctx->stop_comp);
 		need_wait = 1;
-<<<<<<< HEAD
-=======
-		/*
-		 * clk off at next vsync after pp_done  OR
-		 * next vsync if there has no kickoff pending
-		 */
-		ctx->rdptr_enabled = 1;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 	spin_unlock_irqrestore(&ctx->clk_lock, flags);
 
@@ -996,31 +962,20 @@ int mdss_mdp_cmd_stop(struct mdss_mdp_ctl *ctl, int panel_power_state)
 {
 	struct mdss_mdp_cmd_ctx *ctx = ctl->priv_data;
 	struct mdss_mdp_ctl *sctl = mdss_mdp_get_split_ctl(ctl);
-<<<<<<< HEAD
 	int ret = 0;
-=======
-	int ret;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 	if (!ctx) {
 		pr_err("invalid ctx\n");
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
 	mutex_lock(&ctl->offlock);
-=======
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	if (ctx->panel_power_state != panel_power_state) {
 		ret = mdss_mdp_cmd_stop_sub(ctl, panel_power_state);
 		if (IS_ERR_VALUE(ret)) {
 			pr_err("%s: unable to stop interface: %d\n",
 					__func__, ret);
-<<<<<<< HEAD
 			goto end;
-=======
-			return ret;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		}
 
 		if (sctl) {
@@ -1028,18 +983,10 @@ int mdss_mdp_cmd_stop(struct mdss_mdp_ctl *ctl, int panel_power_state)
 			if (IS_ERR_VALUE(ret)) {
 				pr_err("%s: unable to stop slave intf: %d\n",
 						__func__, ret);
-<<<<<<< HEAD
 				goto end;
 			}
 		}
 
-=======
-				return ret;
-			}
-		}
-
-		mutex_lock(&ctl->offlock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		ret = mdss_mdp_ctl_intf_event(ctl, MDSS_EVENT_BLANK,
 				(void *) (long int) panel_power_state);
 		WARN(ret, "intf %d unblank error (%d)\n", ctl->intf_num, ret);
@@ -1047,10 +994,6 @@ int mdss_mdp_cmd_stop(struct mdss_mdp_ctl *ctl, int panel_power_state)
 		ret = mdss_mdp_ctl_intf_event(ctl, MDSS_EVENT_PANEL_OFF,
 				(void *) (long int) panel_power_state);
 		WARN(ret, "intf %d unblank error (%d)\n", ctl->intf_num, ret);
-<<<<<<< HEAD
-=======
-		mutex_unlock(&ctl->offlock);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	}
 
 	ctx->panel_power_state = panel_power_state;
@@ -1070,30 +1013,10 @@ int mdss_mdp_cmd_stop(struct mdss_mdp_ctl *ctl, int panel_power_state)
 end:
 	MDSS_XLOG(ctl->num, atomic_read(&ctx->koff_cnt), ctx->clk_enabled,
 				ctx->rdptr_enabled, XLOG_FUNC_EXIT);
-<<<<<<< HEAD
 	mutex_unlock(&ctl->offlock);
 	pr_debug("%s:-\n", __func__);
 
 	return ret;
-=======
-	pr_debug("%s:-\n", __func__);
-
-	return 0;
-}
-
-void mdss_mdp_cmd_dump_ctx(struct mdss_mdp_ctl *ctl)
-{
-	struct mdss_mdp_cmd_ctx *ctx = ctl->priv_data;
-
-	MDSS_TIMEOUT_LOG("is panel_on: %d\n",
-		__mdss_mdp_cmd_is_panel_power_on_interactive(ctx));
-
-	MDSS_TIMEOUT_LOG("pp_num=%u\n", ctx->pp_num);
-	MDSS_TIMEOUT_LOG("koff_cnt=%d\n", atomic_read(&ctx->koff_cnt));
-	MDSS_TIMEOUT_LOG("clk_enabled=%d\n", ctx->clk_enabled);
-	MDSS_TIMEOUT_LOG("vsync_enabled=%d\n", ctx->vsync_enabled);
-	MDSS_TIMEOUT_LOG("rdptr_enabled=%d\n", ctx->rdptr_enabled);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 }
 
 static int mdss_mdp_cmd_intfs_setup(struct mdss_mdp_ctl *ctl,
@@ -1166,11 +1089,6 @@ static int mdss_mdp_cmd_intfs_setup(struct mdss_mdp_ctl *ctl,
 	ctx->intf_recovery.fxn = mdss_mdp_cmd_intf_recovery;
 	ctx->intf_recovery.data = ctx;
 
-<<<<<<< HEAD
-=======
-	ctx->intf_stopped = 0;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("%s: ctx=%p num=%d mixer=%d\n", __func__,
 				ctx, ctx->pp_num, mixer->num);
 	MDSS_XLOG(ctl->num, atomic_read(&ctx->koff_cnt), ctx->clk_enabled,
@@ -1211,10 +1129,6 @@ int mdss_mdp_cmd_start(struct mdss_mdp_ctl *ctl)
 	ctl->remove_vsync_handler = mdss_mdp_cmd_remove_vsync_handler;
 	ctl->read_line_cnt_fnc = mdss_mdp_cmd_line_count;
 	ctl->restore_fnc = mdss_mdp_cmd_restore;
-<<<<<<< HEAD
-=======
-	ctl->ctx_dump_fnc = mdss_mdp_cmd_dump_ctx;
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	pr_debug("%s:-\n", __func__);
 
 	return 0;

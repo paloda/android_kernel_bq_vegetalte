@@ -6106,11 +6106,7 @@ void csrReleaseProfile(tpAniSirGlobal pMac, tCsrRoamProfile *pProfile)
 
         if (pProfile->nAddIEScanLength)
         {
-<<<<<<< HEAD
            memset(pProfile->addIEScan, 0 , SIR_MAC_MAX_ADD_IE_LENGTH+2);
-=======
-           memset(pProfile->addIEScan, 0 , SIR_MAC_MAX_IE_LENGTH+2);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
            pProfile->nAddIEScanLength = 0;
         }
 

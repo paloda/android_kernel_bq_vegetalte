@@ -567,7 +567,6 @@ static int msm_ipc_router_ioctl(struct socket *sock,
 			break;
 		}
 		server_arg.num_entries_found = ret;
-<<<<<<< HEAD
 
 		ret = copy_to_user((void *)arg, &server_arg,
 				   sizeof(server_arg));
@@ -578,22 +577,6 @@ static int msm_ipc_router_ioctl(struct socket *sock,
 				ret = -EFAULT;
 			kfree(srv_info);
 		}
-=======
-		ret = copy_to_user((void *)arg, &server_arg,
-				   sizeof(server_arg));
-
-		n = min(server_arg.num_entries_found,
-			server_arg.num_entries_in_array);
-
-		if (ret == 0 && n) {
-			ret = copy_to_user((void *)(arg + sizeof(server_arg)),
-					   srv_info, n * sizeof (*srv_info));
-		}
-
-		if (ret)
-			ret = -EFAULT;
-		kfree(srv_info);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 		break;
 
 	case IPC_ROUTER_IOCTL_BIND_CONTROL_PORT:

@@ -428,15 +428,9 @@ struct dma_contig_early_reserve {
 	phys_addr_t base;
 	unsigned long size;
 };
-<<<<<<< HEAD
 
 static struct dma_contig_early_reserve dma_mmu_remap[MAX_CMA_AREAS] __initdata;
 
-=======
-
-static struct dma_contig_early_reserve dma_mmu_remap[MAX_CMA_AREAS] __initdata;
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static int dma_mmu_remap_num __initdata;
 
 void __init dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
@@ -444,7 +438,6 @@ void __init dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
 	dma_mmu_remap[dma_mmu_remap_num].base = base;
 	dma_mmu_remap[dma_mmu_remap_num].size = size;
 	dma_mmu_remap_num++;
-<<<<<<< HEAD
 }
 
 static void __init dma_contiguous_remap(void)
@@ -455,18 +448,6 @@ static void __init dma_contiguous_remap(void)
 			       dma_mmu_remap[i].size);
 }
 
-=======
-}
-
-static void __init dma_contiguous_remap(void)
-{
-	int i;
-	for (i = 0; i < dma_mmu_remap_num; i++)
-		remap_as_pages(dma_mmu_remap[i].base,
-			       dma_mmu_remap[i].size);
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 
 
 static void __init map_mem(void)

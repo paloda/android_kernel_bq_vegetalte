@@ -40,10 +40,6 @@ enum {
 	BAM_DMUX_DATA_REV_RMNET_6,
 	BAM_DMUX_DATA_REV_RMNET_7,
 	BAM_DMUX_DATA_REV_RMNET_8,
-<<<<<<< HEAD
-=======
-	BAM_DMUX_USB_DPL,
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 	BAM_DMUX_NUM_CHANNELS
 };
 

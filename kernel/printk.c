@@ -45,7 +45,6 @@
 #include <linux/poll.h>
 #include <linux/irq_work.h>
 #include <linux/utsname.h>
-#include <linux/apanic_mmc.h>
 
 #include <asm/uaccess.h>
 
@@ -216,10 +215,6 @@ struct log {
 #if defined(CONFIG_LOG_BUF_MAGIC)
 	u32 magic;		/* handle for ramdump analysis tools */
 #endif
-<<<<<<< HEAD
-=======
-	u8 cpu;			/* which cpu that print the message*/
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 };
 
 /*
@@ -413,13 +408,10 @@ static void log_oops_store(struct log *msg)
 static void log_store(int facility, int level,
 		      enum log_flags flags, u64 ts_nsec,
 		      const char *dict, u16 dict_len,
-		      const char *text, u16 text_len, u32 cpu)
+		      const char *text, u16 text_len)
 {
 	struct log *msg;
 	u32 size, pad_len;
-	int start_apanic_threads;
-
-	start_apanic_threads = is_apanic_threads_dump();
 
 	/* number of '\0' padding bytes to next message */
 	size = sizeof(struct log) + text_len + dict_len;
@@ -446,10 +438,6 @@ static void log_store(int facility, int level,
 	}
 
 	if (log_next_idx + size + sizeof(struct log) >= log_buf_len) {
-
-		if (unlikely(start_apanic_threads)) {
-			emergency_dump();
-		}
 		/*
 		 * This message + an additional empty header does not fit
 		 * at the end of the buffer. Add an empty header with len == 0
@@ -476,7 +464,6 @@ static void log_store(int facility, int level,
 		msg->ts_nsec = local_clock();
 	memset(log_dict(msg) + dict_len, 0, pad_len);
 	msg->len = sizeof(struct log) + text_len + dict_len + pad_len;
-	msg->cpu = (u8)cpu;
 
 	/* insert message */
 	log_next_idx += msg->len;
@@ -1032,7 +1019,7 @@ static bool printk_time;
 #endif
 module_param_named(time, printk_time, bool, S_IRUGO | S_IWUSR);
 
-static size_t print_time(u64 ts, char *buf, u8 cpu)
+static size_t print_time(u64 ts, char *buf)
 {
 	unsigned long rem_nsec;
 
@@ -1042,11 +1029,10 @@ static size_t print_time(u64 ts, char *buf, u8 cpu)
 	rem_nsec = do_div(ts, 1000000000);
 
 	if (!buf)
-		return snprintf(NULL, 0, "[%5lu.000000,%u] ",
-			(unsigned long)ts, cpu);
+		return snprintf(NULL, 0, "[%5lu.000000] ", (unsigned long)ts);
 
-	return sprintf(buf, "[%5lu.%06lu,%u] ",
-		       (unsigned long)ts, rem_nsec / 1000, cpu);
+	return sprintf(buf, "[%5lu.%06lu] ",
+		       (unsigned long)ts, rem_nsec / 1000);
 }
 
 static size_t print_prefix(const struct log *msg, bool syslog, char *buf)
@@ -1068,8 +1054,7 @@ static size_t print_prefix(const struct log *msg, bool syslog, char *buf)
 		}
 	}
 
-	len += print_time(msg->ts_nsec, buf ? buf + len : NULL,
-				msg->cpu);
+	len += print_time(msg->ts_nsec, buf ? buf + len : NULL);
 	return len;
 }
 
@@ -1706,20 +1691,15 @@ static struct cont {
 	u8 facility;			/* log level of first message */
 	enum log_flags flags;		/* prefix, newline flags */
 	bool flushed:1;			/* buffer sealed and committed */
-	u8 cpu;				/* which cpu is using the cont*/
 } cont;
 
 static void cont_flush(enum log_flags flags)
 {
-	u32 this_cpu;
-
 	if (cont.flushed)
 		return;
 	if (cont.len == 0)
 		return;
 
-	this_cpu = smp_processor_id();
-	cont.cpu = (u8)this_cpu;
 	if (cont.cons) {
 		/*
 		 * If a fragment of this line was directly flushed to the
@@ -1727,8 +1707,7 @@ static void cont_flush(enum log_flags flags)
 		 * line. LOG_NOCONS suppresses a duplicated output.
 		 */
 		log_store(cont.facility, cont.level, flags | LOG_NOCONS,
-			  cont.ts_nsec, NULL, 0, cont.buf, cont.len,
-			  this_cpu);
+			  cont.ts_nsec, NULL, 0, cont.buf, cont.len);
 		cont.flags = flags;
 		cont.flushed = true;
 	} else {
@@ -1737,7 +1716,7 @@ static void cont_flush(enum log_flags flags)
 		 * just submit it to the store and free the buffer.
 		 */
 		log_store(cont.facility, cont.level, flags, 0,
-			  NULL, 0, cont.buf, cont.len, this_cpu);
+			  NULL, 0, cont.buf, cont.len);
 		cont.len = 0;
 	}
 }
@@ -1778,7 +1757,7 @@ static size_t cont_print_text(char *text, size_t size)
 	size_t len;
 
 	if (cont.cons == 0 && (console_prev & LOG_NEWLINE)) {
-		textlen += print_time(cont.ts_nsec, text, cont.cpu);
+		textlen += print_time(cont.ts_nsec, text);
 		size -= textlen;
 	}
 
@@ -1850,7 +1829,7 @@ asmlinkage int vprintk_emit(int facility, int level,
 		printed_len += strlen(recursion_msg);
 		/* emit KERN_CRIT message */
 		log_store(0, 2, LOG_PREFIX|LOG_NEWLINE, 0,
-			  NULL, 0, recursion_msg, printed_len, this_cpu);
+			  NULL, 0, recursion_msg, printed_len);
 	}
 
 	/*
@@ -1906,7 +1885,7 @@ asmlinkage int vprintk_emit(int facility, int level,
 		/* buffer line if possible, otherwise store it right away */
 		if (!cont_add(facility, level, text, text_len))
 			log_store(facility, level, lflags | LOG_CONT, 0,
-				  dict, dictlen, text, text_len, this_cpu);
+				  dict, dictlen, text, text_len);
 	} else {
 		bool stored = false;
 
@@ -1924,7 +1903,7 @@ asmlinkage int vprintk_emit(int facility, int level,
 
 		if (!stored)
 			log_store(facility, level, lflags, 0,
-				  dict, dictlen, text, text_len, this_cpu);
+				  dict, dictlen, text, text_len);
 	}
 	printed_len += text_len;
 
@@ -1993,9 +1972,6 @@ asmlinkage int printk(const char *fmt, ...)
 {
 	va_list args;
 	int r;
-
-	if (is_emergency_dump())
-		return 0;
 
 #ifdef CONFIG_KGDB_KDB
 	if (unlikely(kdb_trap_printk)) {
@@ -3156,106 +3132,6 @@ out:
 	return ret;
 }
 EXPORT_SYMBOL_GPL(kmsg_dump_get_buffer);
-
-/**
- * kmsg_dump_get_buffer_panic - copy kmsg log lines for apanic driver
- * @dumper: registered kmsg dumper
- * @syslog: include the "<4>" prefixes
- * @buf: buffer to copy the line to
- * @size: maximum size of the buffer
- * @len: length of line placed into buffer
- *
- * Start at the beginning of the kmsg buffer and fill the provided buffer
- * If the buffer is large enough, all available kmsg records will be
- * copied with a single call.
- *
- * Consecutive calls will fill the buffer with the next block of
- * available newer records, not including the earlier retrieved ones.
- *
- * A return value of FALSE indicates that there are no more records to
- * read.
- */
-bool kmsg_dump_get_buffer_panic(struct kmsg_dumper *dumper, bool syslog,
-			  char *buf, size_t size, size_t *len)
-{
-	u64 seq;
-	u32 idx;
-	u64 next_seq;
-	u32 next_idx;
-	enum log_flags prev;
-	size_t l = 0;
-	bool ret = false;
-
-	if (!dumper->active)
-		goto out;
-
-	if (dumper->cur_seq < log_first_seq) {
-		/* messages are gone, move to first available one */
-		dumper->cur_seq = log_first_seq;
-		dumper->cur_idx = log_first_idx;
-	}
-
-	/* last entry */
-	if (dumper->cur_seq >= dumper->next_seq) {
-		goto out;
-	}
-
-	/* backup the buf end */
-	next_seq = dumper->next_seq;
-	next_idx = dumper->next_idx;
-	/* Navigate to the end point of this dump */
-	seq = dumper->cur_seq;
-	idx = dumper->cur_idx;
-	prev = 0;
-	while (seq < dumper->next_seq) {
-		struct log *msg = log_from_idx(idx, true);
-
-		l += msg_print_text(msg, prev, true, NULL, 0);
-		idx = log_next(idx, true);
-		prev = msg->flags;
-		if (l >= size)
-			break;
-		seq++;
-	}
-
-	dumper->next_seq = seq;
-	dumper->next_idx = idx;
-
-	seq = dumper->cur_seq;
-	idx = dumper->cur_idx;
-
-	l = 0;
-	prev = 0;
-	while (seq < dumper->next_seq) {
-		struct log *msg = log_from_idx(idx, true);
-
-		l += msg_print_text(msg, prev, syslog, buf + l, size - l);
-		idx = log_next(idx, true);
-		seq++;
-		prev = msg->flags;
-	}
-
-	dumper->cur_seq = seq;
-	dumper->cur_idx = idx;
-	dumper->next_seq = next_seq;
-	dumper->next_idx = next_idx;
-	ret = true;
-out:
-	if (len)
-		*len = l;
-	return ret;
-}
-EXPORT_SYMBOL_GPL(kmsg_dump_get_buffer_panic);
-
-int clear_log_buffer(bool clear)
-{
-	if (clear) {
-		clear_seq = log_next_seq;
-		clear_idx = log_next_idx;
-	}
-	return true;
-}
-EXPORT_SYMBOL_GPL(clear_log_buffer);
 
 /**
  * kmsg_dump_rewind_nolock - reset the interator (unlocked version)

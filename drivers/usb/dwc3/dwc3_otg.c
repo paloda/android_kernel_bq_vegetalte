@@ -705,14 +705,6 @@ static void dwc3_otg_sm_work(struct work_struct *w)
 					work = 1;
 					break;
 				case DWC3_SDP_CHARGER:
-<<<<<<< HEAD
-=======
-					if (dotg->otg.gadget &&
-						usb_gadget_get_charge_enabled(
-							dotg->otg.gadget))
-						dwc3_otg_set_power(phy,
-							DWC3_IDEV_CHG_MIN);
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 					dwc3_otg_start_peripheral(&dotg->otg,
 									1);
 					phy->state = OTG_STATE_B_PERIPHERAL;

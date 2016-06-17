@@ -47,10 +47,6 @@
  * Include Files
  * -------------------------------------------------------------------------*/
 #include <wlan_hdd_dev_pwr.h>
-<<<<<<< HEAD
-=======
-#include <vos_sched.h>
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 #ifdef ANI_BUS_TYPE_PLATFORM
 #include <linux/wcnss_wlan.h>
 #else
@@ -325,11 +321,7 @@ static void wlan_resume(hdd_context_t* pHddCtx)
    @return None
 
 ----------------------------------------------------------------------------*/
-<<<<<<< HEAD
 int hddDevSuspendHdlr(struct device *dev)
-=======
-int __hddDevSuspendHdlr(struct device *dev)
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 {
    int ret = 0;
    hdd_context_t* pHddCtx = NULL;
@@ -339,21 +331,11 @@ int __hddDevSuspendHdlr(struct device *dev)
    VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO, "%s: WLAN suspended by platform driver",__func__);
 
    /* Get the HDD context */
-<<<<<<< HEAD
    if(!pHddCtx) {
       VOS_TRACE(VOS_MODULE_ID_HDD,VOS_TRACE_LEVEL_FATAL,"%s: HDD context is Null",__func__);
       return 0;
    }
 
-=======
-   ret = wlan_hdd_validate_context(pHddCtx);
-   if (0 != ret)
-   {
-       VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
-                 "%s: HDD context is not valid",__func__);
-       return ret;
-   }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
    if(pHddCtx->isWlanSuspended == TRUE)
    {
       VOS_TRACE(VOS_MODULE_ID_HDD,VOS_TRACE_LEVEL_FATAL,"%s: WLAN is already in suspended state",__func__);
@@ -378,19 +360,6 @@ int __hddDevSuspendHdlr(struct device *dev)
    return 0;
 }
 
-<<<<<<< HEAD
-=======
-int hddDevSuspendHdlr(struct device *dev)
-{
-    int ret;
-    vos_ssr_protect(__func__);
-    ret = __hddDevSuspendHdlr(dev);
-    vos_ssr_unprotect(__func__);
-
-    return ret;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 /*----------------------------------------------------------------------------
 
    @brief Function to resume the wlan driver.
@@ -402,7 +371,6 @@ int hddDevSuspendHdlr(struct device *dev)
    @return None
 
 ----------------------------------------------------------------------------*/
-<<<<<<< HEAD
 int hddDevResumeHdlr(struct device *dev)
 {
    hdd_context_t* pHddCtx = NULL;
@@ -411,23 +379,6 @@ int hddDevResumeHdlr(struct device *dev)
 
    VOS_TRACE(VOS_MODULE_ID_HDD,VOS_TRACE_LEVEL_INFO, "%s: WLAN being resumed by Android OS",__func__);
 
-=======
-int __hddDevResumeHdlr(struct device *dev)
-{
-   hdd_context_t* pHddCtx = NULL;
-   int ret = 0;
-
-   VOS_TRACE(VOS_MODULE_ID_HDD,VOS_TRACE_LEVEL_INFO, "%s: WLAN being resumed by Android OS",__func__);
-
-   pHddCtx =  (hdd_context_t*)wcnss_wlan_get_drvdata(dev);
-   ret = wlan_hdd_validate_context(pHddCtx);
-   if (0 != ret)
-   {
-       VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
-                 "%s: HDD context is not valid ",__func__);
-       return ret;
-   }
->>>>>>> ca57d1d... Merge in Linux 3.10.100
    if(pHddCtx->isWlanSuspended != TRUE)
    {
       VOS_TRACE(VOS_MODULE_ID_HDD,VOS_TRACE_LEVEL_FATAL,"%s: WLAN is already in resumed state",__func__);
@@ -447,20 +398,6 @@ int __hddDevResumeHdlr(struct device *dev)
    return 0;
 }
 
-<<<<<<< HEAD
-=======
-int hddDevResumeHdlr(struct device *dev)
-{
-    int ret;
-
-    vos_ssr_protect(__func__);
-    ret = __hddDevResumeHdlr(dev);
-    vos_ssr_unprotect(__func__);
-
-    return ret;
-}
-
->>>>>>> ca57d1d... Merge in Linux 3.10.100
 static const struct dev_pm_ops pm_ops = {
    .suspend = hddDevSuspendHdlr,
    .resume = hddDevResumeHdlr,
