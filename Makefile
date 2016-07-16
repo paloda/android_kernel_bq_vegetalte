@@ -1465,7 +1465,7 @@ FORCE:
 # Declare the contents of the .PHONY variable as phony.  We keep that
 # information in a variable so we can use it in if_changed and friends.
 .PHONY: $(PHONY)
-=======
+
 default: all
 
 KBUILD_OPTIONS := WLAN_ROOT=$(PWD)
