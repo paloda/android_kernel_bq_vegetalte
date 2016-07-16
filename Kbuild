@@ -99,7 +99,7 @@ missing-syscalls: scripts/checksyscalls.sh $(offsets-file) FORCE
 
 # Keep these two files during make clean
 no-clean-files := $(bounds-file) $(offsets-file)
-=======
+
 # We can build either as part of a standalone Kernel build or part
 # of an Android build.  Determine which mechanism is being used
 ifeq ($(MODNAME),)
@@ -784,4 +784,4 @@ KBUILD_CPPFLAGS += $(CDEFINES)
 obj-$(CONFIG_PRIMA_WLAN) += $(MODNAME).o
 obj-$(CONFIG_PRONTO_WLAN) += $(MODNAME).o
 $(MODNAME)-y := $(OBJS)
->>>>>>> codeaurora/LA.BR.1.1.3_rb1.53
+
