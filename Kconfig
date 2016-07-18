@@ -59,6 +59,6 @@ config QCOM_VOWIFI_11R
 config ENABLE_LINUX_REG
 	bool "Enable linux regulatory feature"
 	default n
-# PRIMA_WLAN || PRONTO_WLAN
 
-endif 
+endif # PRIMA_WLAN || PRONTO_WLAN
+>>>>>>> codeaurora/LA.BR.1.1.3_rb1.53
