@@ -526,7 +526,12 @@ typedef enum
    WLAN_HAL_DISABLE_MONITOR_MODE_REQ        = 304,
    WLAN_HAL_DISABLE_MONITOR_MODE_RSP        = 305,
    WLAN_HAL_SET_RTS_CTS_HTVHT_IND           = 306,
+   WLAN_HAL_LOST_LINK_PARAMETERS_IND        = 312,
 
+   WLAN_HAL_ANTENNA_DIVERSITY_SELECTION_REQ  = 330,
+   WLAN_HAL_ANTENNA_DIVERSITY_SELECTION_RSP  = 331,
+
+   WLAN_HAL_SET_ALLOWED_ACTION_FRAMES_IND    = 333,
    WLAN_HAL_MSG_MAX = WLAN_HAL_MSG_TYPE_MAX_ENUM_SIZE
 }tHalHostMsgType;
 
@@ -6616,6 +6621,7 @@ typedef enum {
     FW_STATS               = 47,
     WPS_PRBRSP_TMPL        = 48,
     BCN_IE_FLT_DELTA       = 49,
+    ANTENNA_DIVERSITY_SELECTION  = 62,
     MAX_FEATURE_SUPPORTED  = 128,
 } placeHolderInCapBitmap;
 
@@ -7732,6 +7738,22 @@ typedef PACKED_PRE struct PACKED_POST
    tHalBcnMissRateRspParams bcnMissRateRspParams;
 }tHalBcnMissRateRspMsg, *tpHalBcnMissRateRspMsg;
 
+/*---------------------------------------------------------------------------
+ * WLAN_HAL_SET_ALLOWED_ACTION_FRAMES_IND
+ *-------------------------------------------------------------------------*/
+
+typedef PACKED_PRE struct PACKED_POST
+{
+   tANI_U32  actionFramesBitMask;
+   tANI_U32  reserved;
+}tHalAllowedActionFrames, *tpHalAllowedActionFrames;
+
+typedef PACKED_PRE struct PACKED_POST
+{
+   tHalMsgHeader header;
+   tHalAllowedActionFrames allowedActionFrames;
+}tHalAllowedActionFramesReqInd, *tpHalAllowedActionFramesReqInd;
+
 /*--------------------------------------------------------------------------
 * WLAN_HAL_LL_SET_STATS_REQ
 *---------------------------------------------------------------------------*/
@@ -8343,6 +8365,52 @@ typedef PACKED_PRE struct PACKED_POST
     tHalMsgHeader         header;
     tMacSpoofedScanResp tMacSpoofedScanRespParams;
 }  tMacSpoofedScanRespMsg,  * tpMacSpoofedScanRespMsg;
+
+/*---------------------------------------------------------------------------
+  * WLAN_HAL_LOST_LINK_PARAMETERS_IND
+  *-------------------------------------------------------------------------*/
+typedef PACKED_PRE struct PACKED_POST
+{
+    tANI_U8  bssIdx;
+    tANI_U8  rssi;
+    tSirMacAddr selfMacAddr;
+    tANI_U32 linkFlCnt;
+    tANI_U32 linkFlTx;
+    tANI_U32 lastDataRate;
+    tANI_U32 rsvd1;
+    tANI_U32 rsvd2;
+}tHalLostLinkParametersIndParams, *tpHalLostLinkParametersIndParams;
+
+typedef PACKED_PRE struct PACKED_POST
+{
+    tHalMsgHeader header;
+    tHalLostLinkParametersIndParams lostLinkParameters;
+}tHalLostLinkParametersIndMsg, *tpHalLostLinkParametersIndMsg;
+
+/*---------------------------------------------------------------------------
+* WLAN_HAL_ANTENNA_DIVERSITY_SELECTION_REQ
+*-------------------------------------------------------------------------*/
+typedef PACKED_PRE struct PACKED_POST
+{
+   tANI_U32 reserved;
+} tHalAntennaDiversitySelectionReqParams, *tpHalAntennaDiversitySelectionReqParams;
+
+typedef PACKED_PRE struct PACKED_POST
+{
+   tHalMsgHeader header;
+   tHalAntennaDiversitySelectionReqParams AntDivSelReqParams;
+}tHalAntennaDiversitySelectionReqMsg;
+
+/*---------------------------------------------------------------------------
+* WLAN_HAL_ANTENNA_DIVERSITY_SELECTION_RSP
+*-------------------------------------------------------------------------*/
+
+typedef PACKED_PRE struct PACKED_POST
+{
+   tANI_U16 status;
+   tANI_U32 selectedAntennaId;
+   tANI_U32 reserved;
+} tHalAntennaDiversitySelectionRspParams, *tpHalAntennaDiversitySelectionRspParams;
 
 #if defined(__ANI_COMPILER_PRAGMA_PACK_STACK)
 #pragma pack(pop)
