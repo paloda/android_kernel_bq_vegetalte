@@ -1993,7 +1993,7 @@ static __inline tANI_U32 defHddRateToDefCfgRate( tANI_U32 defRateIndex )
 #define CFG_VHT_AMPDU_LEN_EXP_NAME          "gVhtMaxAmpduLenExp"
 #define CFG_VHT_AMPDU_LEN_EXP_MIN           ( 0 )
 #define CFG_VHT_AMPDU_LEN_EXP_MAX           ( 7 )
-#define CFG_VHT_AMPDU_LEN_EXP_DEFAULT       ( 3 )
+#define CFG_VHT_AMPDU_LEN_EXP_DEFAULT       ( 7 )
 
 #endif
 
@@ -2203,6 +2203,16 @@ This feature requires the dependent cfg.ini "gRoamPrefer5GHz" set to 1 */
 #define CFG_BTC_FAST_WLAN_CONN_PREF_MIN         ( 0 )
 #define CFG_BTC_FAST_WLAN_CONN_PREF_MAX         ( 1 )
 
+#define CFG_BTC_STATIC_OPP_WLAN_IDLE_WLAN_LEN             "gBtcStaticOppWlanIdleWlanLen"
+#define CFG_BTC_STATIC_OPP_WLAN_IDLE_WLAN_LEN_DEFAULT     ( 40000 )
+#define CFG_BTC_STATIC_OPP_WLAN_IDLE_WLAN_LEN_MIN         ( 0 )
+#define CFG_BTC_STATIC_OPP_WLAN_IDLE_WLAN_LEN_MAX         ( 250000 )
+
+
+#define CFG_BTC_STATIC_OPP_WLAN_IDLE_BT_LEN             "gBtcStaticOppWlanIdleBtLen"
+#define CFG_BTC_STATIC_OPP_WLAN_IDLE_BT_LEN_DEFAULT     ( 40000 )
+#define CFG_BTC_STATIC_OPP_WLAN_IDLE_BT_LEN_MIN         ( 0 )
+#define CFG_BTC_STATIC_OPP_WLAN_IDLE_BT_LEN_MAX         ( 250000 )
 /*
  * Connection related log Enable/Disable.
  * 0x1 - Enable mgmt pkt logs (no probe req/rsp).
@@ -2260,6 +2270,11 @@ This feature requires the dependent cfg.ini "gRoamPrefer5GHz" set to 1 */
 #define CFG_WLAN_LOGGING_NUM_BUF_MAX      ( 64 )
 #define CFG_WLAN_LOGGING_NUM_BUF_DEFAULT  ( 32 )
 #endif //WLAN_LOGGING_SOCK_SVC_ENABLE
+
+#define CFG_IGNORE_PEER_ERP_INFO_NAME      "gIgnorePeerErpInfo"
+#define CFG_IGNORE_PEER_ERP_INFO_MIN       ( 0 )
+#define CFG_IGNORE_PEER_ERP_INFO_MAX       ( 1 )
+#define CFG_IGNORE_PEER_ERP_INFO_DEFAULT   ( 0 )
 
 #define CFG_INITIAL_DWELL_TIME_NAME            "gInitialDwellTime"
 #define CFG_INITIAL_DWELL_TIME_DEFAULT         (0)
@@ -2433,6 +2448,24 @@ This feature requires the dependent cfg.ini "gRoamPrefer5GHz" set to 1 */
 #define CFG_TOGGLE_ARP_BDRATES_MIN         0
 #define CFG_TOGGLE_ARP_BDRATES_MAX         1
 #define CFG_TOGGLE_ARP_BDRATES_DEFAULT     0
+
+
+
+/*
+ * If within gLinkFailTimeout period(values is mentioned in msec) if FW
+ * doesn't receive acks for gLinkFailTxCnt number of packets, then link will
+ * be disconnected.
+ */
+
+#define CFG_LINK_FAIL_TIMEOUT_NAME    "gLinkFailTimeout"
+#define CFG_LINK_FAIL_TIMEOUT_MIN     ( 1000 )
+#define CFG_LINK_FAIL_TIMEOUT_MAX     ( 60000 )
+#define CFG_LINK_FAIL_TIMEOUT_DEF     ( 6000 )
+
+#define CFG_LINK_FAIL_TX_CNT_NAME    "gLinkFailTxCnt"
+#define CFG_LINK_FAIL_TX_CNT_MIN     ( 50 )
+#define CFG_LINK_FAIL_TX_CNT_MAX     ( 1000 )
+#define CFG_LINK_FAIL_TX_CNT_DEF     ( 200 )
 
 /*--------------------------------------------------------------------------- 
   Type declarations
@@ -2893,7 +2926,7 @@ typedef struct
    v_U32_t                     wlanLoggingFEToConsole;
    v_U32_t                     wlanLoggingNumBuf;
 #endif
-
+   v_BOOL_t                    ignorePeerErpInfo;
    v_BOOL_t                    initialScanSkipDFSCh;
    v_U32_t                     cfgBtcFatalHidnSniffBlkGuidance;
    v_U32_t                     cfgBtcCriticalHidnSniffBlkGuidance;
@@ -2928,6 +2961,10 @@ typedef struct
    v_BOOL_t                    btcFastWlanConnPref;
    v_U16_t                     gP2PListenDeferInterval;
    v_BOOL_t                    toggleArpBDRates;
+   v_U32_t                     linkFailTimeout;
+   v_U32_t                     linkFailTxCnt;
+   v_U32_t                     btcStaticOppWlanIdleWlanLen;
+   v_U32_t                     btcStaticOppWlanIdleBtLen;
 } hdd_config_t;
 /*--------------------------------------------------------------------------- 
   Function declarations and documenation

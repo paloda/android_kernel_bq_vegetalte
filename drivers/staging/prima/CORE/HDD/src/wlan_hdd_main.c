@@ -3327,7 +3327,7 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
                                            pHddStaCtx->conn_info.bssId, sizeof(tSirMacAddr)))
            {
                VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO, "%s:Reassoc BSSID is same as currently associated AP bssid",__func__);
-               ret = -EINVAL;
+               ret = 0;
                goto exit;
            }
 
@@ -3337,7 +3337,9 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
            {
                hddLog(VOS_TRACE_LEVEL_ERROR,
                       "%s: Invalid Channel [%d]", __func__, channel);
-               return -EINVAL;
+
+               ret = -EINVAL;
+               goto exit;
            }
 
            /* Proceed with reassoc */
@@ -4207,7 +4209,13 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
            int set_value;
            /* Move pointer to ahead of TDLSOFFCH*/
            value += 26;
-           sscanf(value, "%d", &set_value);
+           if (!(sscanf(value, "%d", &set_value))) {
+               VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO,
+                               FL("No input identified"));
+               ret = -EINVAL;
+               goto exit;
+           }
+
            VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO,
                      "%s: Tdls offchannel offset:%d",
                      __func__, set_value);
@@ -4223,7 +4231,13 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
            int set_value;
            /* Move pointer to ahead of tdlsoffchnmode*/
            value += 18;
-           sscanf(value, "%d", &set_value);
+           ret = sscanf(value, "%d", &set_value);
+           if (ret != 1) {
+                VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO,
+                           FL("No input identified"));
+               ret = -EINVAL;
+               goto exit;
+           }
            VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO,
                      "%s: Tdls offchannel mode:%d",
                      __func__, set_value);
@@ -4238,7 +4252,14 @@ static int hdd_driver_command(hdd_adapter_t *pAdapter,
            int set_value;
            /* Move pointer to ahead of TDLSOFFCH*/
            value += 14;
-           sscanf(value, "%d", &set_value);
+           ret = sscanf(value, "%d", &set_value);
+           if (ret != 1) {
+              VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+                     "Wrong value is given for hdd_set_tdls_offchannel");
+               ret = -EINVAL;
+               goto exit;
+           }
+
            VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO,
                      "%s: Tdls offchannel num: %d",
                      __func__, set_value);
@@ -4438,17 +4459,18 @@ static VOS_STATUS hdd_parse_ese_beacon_req(tANI_U8 *pValue,
     /*no argument followed by spaces*/
     if ('\0' == *inPtr) return -EINVAL;
 
-    /*getting the first argument ie measurement token*/
+    /*getting the first argument ie Number of IE fields */
     v = sscanf(inPtr, "%31s ", buf);
     if (1 != v) return -EINVAL;
 
     v = kstrtos32(buf, 10, &tempInt);
     if ( v < 0) return -EINVAL;
 
+    tempInt = VOS_MIN(tempInt, SIR_ESE_MAX_MEAS_IE_REQS);
     pEseBcnReq->numBcnReqIe = tempInt;
 
-    VOS_TRACE( VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO_HIGH,
-               "Number of Bcn Req Ie fields(%d)", pEseBcnReq->numBcnReqIe);
+    hddLog(LOG1, "Number of Bcn Req Ie fields: %d", pEseBcnReq->numBcnReqIe);
+
 
     for (j = 0; j < (pEseBcnReq->numBcnReqIe); j++)
     {
@@ -5945,32 +5967,7 @@ static hdd_adapter_t* hdd_alloc_station_adapter( hdd_context_t *pHddCtx, tSirMac
       pAdapter->magic = WLAN_HDD_ADAPTER_MAGIC;
       spin_lock_init(&pAdapter->lock_for_active_session);
 
-      init_completion(&pAdapter->session_open_comp_var);
-      init_completion(&pAdapter->session_close_comp_var);
-      init_completion(&pAdapter->disconnect_comp_var);
-      init_completion(&pAdapter->linkup_event_var);
-      init_completion(&pAdapter->cancel_rem_on_chan_var);
-      init_completion(&pAdapter->rem_on_chan_ready_event);
-      init_completion(&pAdapter->pno_comp_var);
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38))
-      init_completion(&pAdapter->offchannel_tx_event);
-#endif
-      init_completion(&pAdapter->tx_action_cnf_event);
-#ifdef FEATURE_WLAN_TDLS
-      init_completion(&pAdapter->tdls_add_station_comp);
-      init_completion(&pAdapter->tdls_del_station_comp);
-      init_completion(&pAdapter->tdls_mgmt_comp);
-      init_completion(&pAdapter->tdls_link_establish_req_comp);
-#endif
-      init_completion(&pHddCtx->mc_sus_event_var);
-      init_completion(&pHddCtx->tx_sus_event_var);
-      init_completion(&pHddCtx->rx_sus_event_var);
-      init_completion(&pAdapter->ula_complete);
-      init_completion(&pAdapter->change_country_code);
-
 #ifdef FEATURE_WLAN_BATCH_SCAN
-      init_completion(&pAdapter->hdd_set_batch_scan_req_var);
-      init_completion(&pAdapter->hdd_get_batch_scan_req_var);
       pAdapter->pBatchScanRsp = NULL;
       pAdapter->numScanList = 0;
       pAdapter->batchScanState = eHDD_BATCH_SCAN_STATE_STOPPED;
@@ -6625,6 +6622,7 @@ hdd_adapter_t* hdd_open_adapter( hdd_context_t *pHddCtx, tANI_U8 session_type,
          mutex_unlock(&pHddCtx->tdls_lock);
 #endif
 
+         hdd_initialize_adapter_common(pAdapter);
          status = hdd_init_station_mode( pAdapter );
          if( VOS_STATUS_SUCCESS != status )
             goto err_free_netdev;
@@ -6682,6 +6680,7 @@ hdd_adapter_t* hdd_open_adapter( hdd_context_t *pHddCtx, tANI_U8 session_type,
                                   NL80211_IFTYPE_P2P_GO;
          pAdapter->device_mode = session_type;
 
+         hdd_initialize_adapter_common(pAdapter);
          status = hdd_init_ap_mode(pAdapter);
          if( VOS_STATUS_SUCCESS != status )
             goto err_free_netdev;
@@ -6726,6 +6725,7 @@ hdd_adapter_t* hdd_open_adapter( hdd_context_t *pHddCtx, tANI_U8 session_type,
          pAdapter->dev->open = hdd_mon_open;
          pAdapter->dev->hard_start_xmit = hdd_mon_hard_start_xmit;
 #endif
+         hdd_initialize_adapter_common(pAdapter);
          hdd_init_tx_rx( pAdapter );
          set_bit(INIT_TX_RX_SUCCESS, &pAdapter->event_flags);
          //Set adapter to be used for data tx. It will use either GO or softap.
@@ -6764,6 +6764,7 @@ hdd_adapter_t* hdd_open_adapter( hdd_context_t *pHddCtx, tANI_U8 session_type,
          pAdapter->device_mode = session_type;
          status = hdd_register_interface( pAdapter, rtnl_held );
 
+         hdd_initialize_adapter_common(pAdapter);
          hdd_init_tx_rx( pAdapter );
 
          //Stop the Interface TX queue.
@@ -6782,7 +6783,7 @@ hdd_adapter_t* hdd_open_adapter( hdd_context_t *pHddCtx, tANI_U8 session_type,
 
    if( VOS_STATUS_SUCCESS == status )
    {
-      //Add it to the hdd's session list. 
+      //Add it to the hdd's session list.
       pHddAdapterNode = vos_mem_malloc( sizeof( hdd_adapter_list_node_t ) );
       if( NULL == pHddAdapterNode )
       {
@@ -8308,117 +8309,6 @@ free_hdd_ctx:
    hdd_set_ssr_required (VOS_FALSE);
 }
 
-/*wangxun*/
-static VOS_STATUS hdd_update_wifi_mac(hdd_context_t* pHddCtx)
-{
-	struct file *fp      = NULL;
-	char* filepath       = "/persist/softmac";
-	char macbuf[20]      ={0};
-	int ret              = 0;
-	mm_segment_t oldfs   = {0};
-	char random_mac[20]  = {0};
-	unsigned int softmac[6];
-
-	//first output random wifi mac address.
-	random_mac[0] = 0x00; /* locally administered */
-	random_mac[1] = 0x23;
-	random_mac[2] = 0xB1;
-	random_mac[3] = 0x11;//random32() & 0xff;
-	random_mac[4] = 0x22;//random32() & 0xff;
-	random_mac[5] = 0x33;//random32() & 0xff;
-		
-	fp = filp_open(filepath, O_RDWR, 0666);
-	if(IS_ERR(fp)) {
-		printk("[WIFI] %s: File open error\n", filepath);
-		return VOS_STATUS_E_FAILURE;
-	}
-	
-	oldfs = get_fs();
-	set_fs(get_ds());    
-
-	if(fp->f_mode & FMODE_READ) {
-		ret = fp->f_op->read(fp, (char *)macbuf, 17, &fp->f_pos);
-		if(ret < 0)
-			printk("[WIFI] Mac address [%s] Failed to read from File: %s\n", macbuf, filepath);
-		else
-			printk("[WIFI] Mac address [%s] read from File: %s\n", macbuf, filepath);
-	}
-	
-	set_fs(oldfs);
-
-	if (fp)
-	    filp_close(fp, NULL);
-		
-	if (sscanf(macbuf, "%02x:%02x:%02x:%02x:%02x:%02x",
-								&softmac[0], &softmac[1], &softmac[2],
-								&softmac[3], &softmac[4], &softmac[5])==6) 
-	{
-		if (memcmp(macbuf, "00:00:00:00:00:00", 17) != 0){
-			int i;
-			for (i = 0; i < 6; i++)
-			{
-			   pHddCtx->cfg_ini->intfMacAddr[0].bytes[i]= softmac[i] & 0xff;
-			}
-	        printk("wifi mac is =%02X:%02X:%02X:%02X:%02X:%02X\n",
-	            pHddCtx->cfg_ini->intfMacAddr[0].bytes[0], 
-	            pHddCtx->cfg_ini->intfMacAddr[0].bytes[1],
-	            pHddCtx->cfg_ini->intfMacAddr[0].bytes[2], 
-	            pHddCtx->cfg_ini->intfMacAddr[0].bytes[3], 
-	            pHddCtx->cfg_ini->intfMacAddr[0].bytes[4], 
-	            pHddCtx->cfg_ini->intfMacAddr[0].bytes[5]);
-		}else{		 
-			struct file *fp      = NULL;
-			char mac_in[20]      ={0};
-			int ret              = 0;
-			mm_segment_t oldfs   = {0};
-			printk("wxun: has softmac file but mac address is invalid(00:00:00:00:00:00), so write random mac address to softmac file.\n");
-			fp = filp_open(filepath, O_RDWR | O_CREAT, 0666);
-	    	if(IS_ERR(fp)) {
-	    		printk("[WIFI] %s: File open error\n", filepath);
-	    		return VOS_STATUS_E_FAILURE;
-	    	}
-	    	
-			oldfs = get_fs();
-			set_fs(get_ds());
-	        
-	        printk("random_mac is =%02X:%02X:%02X:%02X:%02X:%02X\n",
-	            random_mac[0], random_mac[1],random_mac[2], random_mac[3], random_mac[4], random_mac[5]);
-
-	    	if(fp->f_mode & FMODE_WRITE) {			
-			sprintf(mac_in,"%02x:%02x:%02x:%02x:%02x:%02x",
-	                     random_mac[0], random_mac[1], random_mac[2],
-	                     random_mac[3], random_mac[4], random_mac[5]);
-	    		ret = fp->f_op->write(fp, (const char *)mac_in, 17, &fp->f_pos);
-	    		if(ret < 0)
-	    			printk("[WIFI] Mac address [%s] Failed to write into File: %s\n", mac_in, filepath);
-	    		else
-	    			printk("[WIFI] Mac address [%s] written into File: %s\n", mac_in, filepath);
-	    	}
-	    	
-			set_fs(oldfs);
-
-			if (fp)
-			    filp_close(fp, NULL);
-
-			if (sscanf(mac_in, "%02x:%02x:%02x:%02x:%02x:%02x",
-								&softmac[0], &softmac[1], &softmac[2],
-								&softmac[3], &softmac[4], &softmac[5])==6) 
-			{
-				int i;
-				for (i = 0; i < 6; i++)
-				{
-				   pHddCtx->cfg_ini->intfMacAddr[0].bytes[i]= softmac[i] & 0xff;
-				}				
-			}
-				
-	    }
-	}
-
-	return VOS_STATUS_SUCCESS;
-	
-}
-
-/*end*/
 
 /**---------------------------------------------------------------------------
 
@@ -8932,6 +8822,12 @@ int hdd_wlan_startup(struct device *dev )
    init_completion(&pHddCtx->scan_info.abortscan_event_var);
    init_completion(&pHddCtx->wiphy_channel_update_event);
    init_completion(&pHddCtx->ssr_comp_var);
+   init_completion(&pHddCtx->mc_sus_event_var);
+   init_completion(&pHddCtx->tx_sus_event_var);
+   init_completion(&pHddCtx->rx_sus_event_var);
+
+
+   hdd_init_ll_stats_ctx(pHddCtx);
 
 #ifdef CONFIG_ENABLE_LINUX_REG
    init_completion(&pHddCtx->linux_reg_req);
@@ -9186,7 +9082,6 @@ int hdd_wlan_startup(struct device *dev )
              "%s: WLAN Mac Addr: "
              MAC_ADDRESS_STR, __func__,
              MAC_ADDR_ARRAY(pHddCtx->cfg_ini->intfMacAddr[0].bytes));
-    printk("[WIFI] hdd_wlan_startup | WLAN Mac Addr: "MAC_ADDRESS_STR, MAC_ADDR_ARRAY(pHddCtx->cfg_ini->intfMacAddr[0].bytes));
 
       /* Here, passing Arg2 as 1 because we do not want to change the
          last 3 bytes (means non OUI bytes) of first interface mac
@@ -9199,10 +9094,7 @@ int hdd_wlan_startup(struct device *dev )
                 "using MAC from ini file ", __func__);
       }
    }
-   else if (
-        (VOS_STATUS_SUCCESS != hdd_update_config_from_nv(pHddCtx)) &&
-        (VOS_STATUS_SUCCESS != hdd_update_wifi_mac(pHddCtx))
-    )
+   else if (VOS_STATUS_SUCCESS != hdd_update_config_from_nv(pHddCtx))
    {
       // Apply the NV to cfg.dat
       /* Prima Update MAC address only at here */
@@ -10945,6 +10837,46 @@ VOS_STATUS wlan_hdd_handle_dfs_chan_scan(hdd_context_t *pHddCtx,
 
     return status;
 }
+
+void hdd_initialize_adapter_common(hdd_adapter_t *pAdapter)
+{
+        if (NULL == pAdapter)
+        {
+            hddLog(VOS_TRACE_LEVEL_ERROR, "%s: pAdapter is NULL ", __func__);
+            return;
+        }
+        init_completion(&pAdapter->session_open_comp_var);
+        init_completion(&pAdapter->session_close_comp_var);
+        init_completion(&pAdapter->disconnect_comp_var);
+        init_completion(&pAdapter->linkup_event_var);
+        init_completion(&pAdapter->cancel_rem_on_chan_var);
+        init_completion(&pAdapter->rem_on_chan_ready_event);
+        init_completion(&pAdapter->pno_comp_var);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38))
+        init_completion(&pAdapter->offchannel_tx_event);
+#endif
+        init_completion(&pAdapter->tx_action_cnf_event);
+#ifdef FEATURE_WLAN_TDLS
+        init_completion(&pAdapter->tdls_add_station_comp);
+        init_completion(&pAdapter->tdls_del_station_comp);
+        init_completion(&pAdapter->tdls_mgmt_comp);
+        init_completion(&pAdapter->tdls_link_establish_req_comp);
+#endif
+
+#ifdef WLAN_FEATURE_RMC
+        init_completion(&pAdapter->ibss_peer_info_comp);
+#endif /* WLAN_FEATURE_RMC */
+        init_completion(&pAdapter->ula_complete);
+        init_completion(&pAdapter->change_country_code);
+
+#ifdef FEATURE_WLAN_BATCH_SCAN
+        init_completion(&pAdapter->hdd_set_batch_scan_req_var);
+        init_completion(&pAdapter->hdd_get_batch_scan_req_var);
+#endif
+
+        return;
+}
+
 
 //Register the module init/exit functions
 module_init(hdd_module_init);

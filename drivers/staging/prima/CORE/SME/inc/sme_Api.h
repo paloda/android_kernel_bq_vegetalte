@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2014, 2016 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -87,6 +87,46 @@
 //Macro to indicate invalid no of tspecs
 #define INVALID_TSPEC 100
 
+/**
+ * ALLOWED_ACTION_FRAMES_BITMAP
+ *
+ * Bitmask is based on the below.The frames with 0's
+ * set to their corresponding bit can be dropped in FW.
+ *
+ * -----------------------------+-----+-------+
+ *         Type                 | Bit | Allow |
+ * -----------------------------+-----+-------+
+ * SIR_MAC_ACTION_SPECTRUM_MGMT    0      1
+ * SIR_MAC_ACTION_QOS_MGMT         1      1
+ * SIR_MAC_ACTION_DLP              2      0
+ * SIR_MAC_ACTION_BLKACK           3      1
+ * SIR_MAC_ACTION_PUBLIC_USAGE     4      1
+ * SIR_MAC_ACTION_RRM              5      1
+ * SIR_MAC_ACTION_FAST_BSS_TRNST   6      0
+ * SIR_MAC_ACTION_HT               7      0
+ * SIR_MAC_ACTION_SA_QUERY         8      1
+ * SIR_MAC_ACTION_PROT_DUAL_PUB    9      0
+ * SIR_MAC_ACTION_WNM             10      1
+ * SIR_MAC_ACTION_UNPROT_WNM      11      0
+ * SIR_MAC_ACTION_TDLS            12      0
+ * SIR_MAC_ACITON_MESH            13      0
+ * SIR_MAC_ACTION_MHF             14      0
+ * SIR_MAC_SELF_PROTECTED         15      0
+ * SIR_MAC_ACTION_WME             17      1
+ * SIR_MAC_ACTION_FST             18      0
+ * SIR_MAC_ACTION_VHT             21      1
+ * ----------------------------+------+-------+
+ */
+#define ALLOWED_ACTION_FRAMES_BITMAP \
+             ((1 << SIR_MAC_ACTION_SPECTRUM_MGMT) | \
+              (1 << SIR_MAC_ACTION_QOS_MGMT) | \
+              (1 << SIR_MAC_ACTION_BLKACK) | \
+              (1 << SIR_MAC_ACTION_PUBLIC_USAGE) | \
+              (1 << SIR_MAC_ACTION_RRM) | \
+              (1 << SIR_MAC_ACTION_SA_QUERY) | \
+              (1 << SIR_MAC_ACTION_WNM) | \
+              (1 << SIR_MAC_ACTION_WME) | \
+              (1 << SIR_MAC_ACTION_VHT))
 /*-------------------------------------------------------------------------- 
   Type declarations
   ------------------------------------------------------------------------*/
@@ -777,6 +817,14 @@ eHalStatus sme_RoamConnectToLastProfile(tHalHandle hHal, tANI_U8 sessionId);
     \return eHalStatus     
   ---------------------------------------------------------------------------*/
 eHalStatus sme_RoamDisconnect(tHalHandle hHal, tANI_U8 sessionId, eCsrRoamDisconnectReason reason);
+
+/* ---------------------------------------------------------------------------
+    \fn.sme_abortConnection
+    \brief a wrapper function to request CSR to stop from connecting a network
+    \retun void.
+---------------------------------------------------------------------------*/
+
+void sme_abortConnection(tHalHandle hHal, tANI_U8 sessionId);
 
 /* ---------------------------------------------------------------------------
     \fn sme_RoamStopBss
@@ -3518,6 +3566,7 @@ eHalStatus sme_AddChAvoidCallback
 );
 #endif /* FEATURE_WLAN_CH_AVOID */
 eHalStatus sme_UpdateConnectDebug(tHalHandle hHal, tANI_U32 set_value);
+
 /* ---------------------------------------------------------------------------
     \fn sme_requestTypetoString
     \brief API to convert requestType enum values
@@ -3568,16 +3617,16 @@ eHalStatus sme_RegisterBtCoexTDLSCallback
 );
 
 /* ---------------------------------------------------------------------------
-    \fn smeNeighborRoamIsHandoffInProgress
+    \fn smeNeighborMiddleOfRoaming
 
-    \brief This function is a wrapper to call csrNeighborRoamIsHandoffInProgress
+    \brief This function is a wrapper to call csrNeighborMiddleOfRoaming
 
     \param hHal - The handle returned by macOpen.
 
     \return eANI_BOOLEAN_TRUE if reassoc in progress,
             eANI_BOOLEAN_FALSE otherwise
 ---------------------------------------------------------------------------*/
-tANI_BOOLEAN smeNeighborRoamIsHandoffInProgress(tHalHandle hHal);
+tANI_BOOLEAN smeNeighborMiddleOfRoaming(tHalHandle hHal);
 
 void sme_SetDefDot11Mode(tHalHandle hHal);
 eHalStatus sme_SetMiracastVendorConfig(tHalHandle hHal,
@@ -3589,5 +3638,8 @@ eHalStatus sme_SetRtsCtsHtVht(tHalHandle hHal, tANI_U32 set_value);
 tANI_BOOLEAN sme_handleSetFccChannel(tHalHandle hHal,
                                       tANI_U8 fcc_constraint);
 
+eHalStatus sme_GetCurrentAntennaIndex(tHalHandle hHal,
+                                      tCsrAntennaIndexCallback callback,
+                                      void *pContext, tANI_U8 sessionId);
 
 #endif //#if !defined( __SME_API_H )

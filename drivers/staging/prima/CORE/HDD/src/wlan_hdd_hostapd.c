@@ -796,6 +796,20 @@ VOS_STATUS hdd_hostapd_SAPEventCB( tpSap_Event pSapEvent, v_PVOID_t usrDataForCa
             sapCleanupChannelList();
 
             pHddApCtx->operatingChannel = 0; //Invalidate the channel info.
+
+            if ((TRUE == pHddCtx->cfg_ini->fEnableTDLSSupport) &&
+                    (TRUE == sme_IsFeatureSupportedByFW(TDLS)))
+            {
+                if (pHostapdAdapter->device_mode == WLAN_HDD_P2P_GO)
+                {
+                    /* Enable TDLS support Once P2P session ends since
+                     * upond detection of concurrency TDLS would be disabled
+                     */
+                    hddLog(LOG1, FL("Enable TDLS support"));
+                    wlan_hdd_tdls_set_mode(pHddCtx, eTDLS_SUPPORT_ENABLED, FALSE);
+                }
+            }
+
             goto stopbss;
         case eSAP_STA_SET_KEY_EVENT:
             //TODO: forward the message to hostapd once implementtation is done for now just print
@@ -4101,8 +4115,6 @@ VOS_STATUS hdd_init_ap_mode( hdd_adapter_t *pAdapter )
          return status;
     }
     
-    init_completion(&pAdapter->session_close_comp_var);
-    init_completion(&pAdapter->session_open_comp_var);
 
     sema_init(&(WLAN_HDD_GET_AP_CTX_PTR(pAdapter))->semWpsPBCOverlapInd, 1);
  
@@ -4178,13 +4190,6 @@ hdd_adapter_t* hdd_wlan_create_ap_dev( hdd_context_t *pHddCtx, tSirMacAddr macAd
         pWlanHostapdDev->ieee80211_ptr = &pHostapdAdapter->wdev ;
         pHostapdAdapter->wdev.wiphy = pHddCtx->wiphy;  
         pHostapdAdapter->wdev.netdev =  pWlanHostapdDev;
-        init_completion(&pHostapdAdapter->tx_action_cnf_event);
-        init_completion(&pHostapdAdapter->cancel_rem_on_chan_var);
-        init_completion(&pHostapdAdapter->rem_on_chan_ready_event);
-        init_completion(&pHostapdAdapter->ula_complete);
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38))
-        init_completion(&pHostapdAdapter->offchannel_tx_event);
-#endif
 
         SET_NETDEV_DEV(pWlanHostapdDev, pHddCtx->parent_dev);
     }

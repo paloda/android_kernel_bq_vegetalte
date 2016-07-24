@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2014, 2016 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -788,11 +788,7 @@ tBssSystemRole wdaGetGlobalSystemRole(tpAniSirGlobal pMac);
 /* WDA_GET_RX_RSSI_DB ********************************************************/
 // Volans RF
 #  define WDA_RSSI_OFFSET             100
-#  define WDA_GET_RSSI0_DB(rssi0)     (rssi0 - WDA_RSSI_OFFSET)
-#  define WDA_GET_RSSI1_DB(rssi0)     (0 - WDA_RSSI_OFFSET)
-#  define WDA_MAX_OF_TWO(val1, val2)  ( ((val1) > (val2)) ? (val1) : (val2))
-#  define WDA_GET_RSSI_DB(rssi0)  \
-                WDA_MAX_OF_TWO(WDA_GET_RSSI0_DB(rssi0), WDA_GET_RSSI1_DB(rssi0))
+#  define WDA_GET_RSSI_DB(rssi0)     ((int)rssi0 - WDA_RSSI_OFFSET)
 #  define WDA_GET_RX_RSSI_DB(pRxMeta) \
                        WDA_GET_RSSI_DB((((WDI_DS_RxMetaInfoType*)(pRxMeta))->rssi0))
 
@@ -996,6 +992,7 @@ tSirRetStatus uMacPostCtrlMsg(void* pSirGlobal, tSirMbMsg* pMb);
 #define WDA_DELBA_IND                  SIR_HAL_DELBA_IND
 #define WDA_DEL_BA_IND                 SIR_HAL_DEL_BA_IND
 #define WDA_MIC_FAILURE_IND            SIR_HAL_MIC_FAILURE_IND
+#define WDA_LOST_LINK_PARAMS_IND       SIR_HAL_LOST_LINK_PARAMS_IND
 
 //message from sme to initiate delete block ack session.
 #define WDA_DELBA_REQ                  SIR_HAL_DELBA_REQ
@@ -1096,6 +1093,8 @@ tSirRetStatus uMacPostCtrlMsg(void* pSirGlobal, tSirMbMsg* pMb);
 #define WDA_START_OEM_DATA_RSP         SIR_HAL_START_OEM_DATA_RSP
 #define WDA_FINISH_OEM_DATA_REQ        SIR_HAL_FINISH_OEM_DATA_REQ
 #endif
+
+#define WDA_SET_ALLOWED_ACTION_FRAMES_IND      SIR_HAL_SET_ALLOWED_ACTION_FRAMES
 
 #define WDA_SET_MAX_TX_POWER_REQ       SIR_HAL_SET_MAX_TX_POWER_REQ
 #define WDA_SET_MAX_TX_POWER_RSP       SIR_HAL_SET_MAX_TX_POWER_RSP
@@ -1265,6 +1264,7 @@ eHalStatus WDA_SetRegDomain(void * clientCtxt, v_REGDOMAIN_t regId,
 #endif /* WLAN_FEATURE_EXTSCAN */
 
 #define WDA_SPOOF_MAC_ADDR_REQ               SIR_HAL_SPOOF_MAC_ADDR_REQ
+#define WDA_ANTENNA_DIVERSITY_SELECTION_REQ    SIR_HAL_ANTENNA_DIVERSITY_SELECTION_REQ
 
 #define HAL_USE_BD_RATE2_FOR_MANAGEMENT_FRAME 0x40 // Bit 6 will be used to control BD rate for Management frames
 

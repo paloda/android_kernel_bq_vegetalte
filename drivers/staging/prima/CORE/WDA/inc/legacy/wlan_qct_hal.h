@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2014, 2016 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -230,7 +230,7 @@ typedef struct sUapsdInfo {
 
 /*------------ RSSI and SNR Information extraction -------------*/
 #define WLANHAL_RX_BD_GET_RSSI0( _pvBDHeader )  \
-    (((((tpHalRxBd)_pvBDHeader)->phyStats0) >> 24) & 0xff)
+    (((((tpHalRxBd)_pvBDHeader)->phyStats0) >> 24) & 0x7f)
 #define WLANHAL_RX_BD_GET_RSSI1( _pvBDHeader )  \
     (((((tpHalRxBd)_pvBDHeader)->phyStats0) >> 16) & 0xff)
 #define WLANHAL_RX_BD_GET_RSSI2( _pvBDHeader )  \
@@ -293,7 +293,7 @@ typedef struct sUapsdInfo {
   for UMAC in prima so declared it here */
 #define DPU_FEEDBACK_WPI_UNPROTECTED 0x20   
 #define WLANHAL_RX_IS_UNPROTECTED_WPI_FRAME(_pvBDHeader)  \
-        (DPU_FEEDBACK_WPI_UNPROTECTED == ((WDI_RxBdType *)_pvBDHeader)->dpuFeedback)
+        (DPU_FEEDBACK_WPI_UNPROTECTED == ((WDI_DS_RxMetaInfoType *)_pvBDHeader)->dpuFeedback)
 
 /*==========================================================================
 
