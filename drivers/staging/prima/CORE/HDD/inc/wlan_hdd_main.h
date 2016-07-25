@@ -104,7 +104,7 @@
 #define TDLS_INIT_DONE         (6)
 
 /** Maximum time(ms)to wait for disconnect to complete **/
-#define WLAN_WAIT_TIME_DISCONNECT  5000
+#define WLAN_WAIT_TIME_DISCONNECT  2000
 #define WLAN_WAIT_TIME_STATS       800
 #define WLAN_WAIT_TIME_POWER       800
 #define WLAN_WAIT_TIME_COUNTRY     1000
@@ -280,7 +280,6 @@ extern spinlock_t hdd_context_lock;
 #define POWER_CONTEXT_MAGIC 0x504F5752   //POWR
 #define SNR_CONTEXT_MAGIC   0x534E5200   //SNR
 #define BCN_MISS_RATE_CONTEXT_MAGIC 0x513F5753
-#define ANTENNA_CONTEXT_MAGIC 0x414E544E //ANTN
 
 /*
  * Driver miracast parameters 0-Disabled
@@ -1001,7 +1000,6 @@ struct hdd_adapter_s
 #endif
    
    v_S7_t rssi;
-   v_S7_t rssi_on_disconnect;
 
    tANI_U8 snr;
 
@@ -1082,9 +1080,6 @@ struct hdd_adapter_s
 
    /* work queue to defer the back to back p2p_listen */
    struct delayed_work roc_work;
-
-   /* Currently used antenna Index*/
-   int antennaIndex;
 };
 
 #define WLAN_HDD_GET_STATION_CTX_PTR(pAdapter) (&(pAdapter)->sessionCtx.station)
@@ -1135,23 +1130,6 @@ typedef struct
 {
    v_MACADDR_t randomMacAddr;
 }macAddrSpoof_t;
-
-#define WLAN_WAIT_TIME_LL_STATS 5000
-
-#ifdef WLAN_FEATURE_LINK_LAYER_STATS
-/**
- * struct hdd_ll_stats_context - hdd link layer stats context
- *
- * @request_id: userspace-assigned link layer stats request id
- * @request_bitmap: userspace-assigned link layer stats request bitmap
- * @response_event: LL stats request wait event
- */
-struct hdd_ll_stats_context {
-    uint32_t request_id;
-    uint32_t request_bitmap;
-    struct completion response_event;
-};
-#endif /* End of WLAN_FEATURE_LINK_LAYER_STATS */
 
 /** Adapter stucture definition */
 
@@ -1379,9 +1357,6 @@ struct hdd_context_s
     struct notifier_block ipv4_notifier;
     //Lock to avoid race condition during wmm operations
     struct mutex   wmmLock;
-#ifdef WLAN_FEATURE_LINK_LAYER_STATS
-    struct hdd_ll_stats_context ll_stats_context;
-#endif /* End of WLAN_FEATURE_LINK_LAYER_STATS */
 };
 
 
@@ -1549,27 +1524,5 @@ VOS_STATUS wlan_hdd_cancel_remain_on_channel(hdd_context_t *pHddCtx);
 
 VOS_STATUS wlan_hdd_handle_dfs_chan_scan(hdd_context_t *pHddCtx,
                                    tANI_U8 dfsScanMode);
-
-#ifdef WLAN_FEATURE_LINK_LAYER_STATS
-/**
- * hdd_init_ll_stats_ctx() - initialize link layer stats context
- * @hdd_ctx: Pointer to hdd context
- *
- * Return: none
- */
-static inline void hdd_init_ll_stats_ctx(hdd_context_t *hdd_ctx)
-{
-    init_completion(&hdd_ctx->ll_stats_context.response_event);
-    hdd_ctx->ll_stats_context.request_bitmap = 0;
-
-     return;
-}
-#else
-static inline void hdd_init_ll_stat_ctx(void)
-{
-    return;
-}
-#endif /* WLAN_FEATURE_LINK_LAYER_STATS */
-void hdd_initialize_adapter_common(hdd_adapter_t *pAdapter);
 
 #endif    // end #if !defined( WLAN_HDD_MAIN_H )

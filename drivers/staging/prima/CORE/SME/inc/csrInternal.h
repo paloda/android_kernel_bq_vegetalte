@@ -670,7 +670,6 @@ typedef struct tagCsrConfig
     tANI_U8 isCoalesingInIBSSAllowed;
     tANI_U8 allowDFSChannelRoam;
     tANI_BOOLEAN initialScanSkipDFSCh;
-    tANI_BOOLEAN ignorePeerErpInfo;
     tANI_BOOLEAN sendDeauthBeforeCon;
 }tCsrConfig;
 
@@ -975,7 +974,6 @@ typedef struct tagCsrRoamSession
     * the PMKID cache. To clear the cache in this particular case this is added
     * it is needed by the HS 2.0 passpoint certification 5.2.a and b testcases */
     tANI_BOOLEAN fIgnorePMKIDCache;
-    tANI_BOOLEAN abortConnection;
 } tCsrRoamSession;
 
 typedef struct tagCsrRoamStruct

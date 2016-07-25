@@ -180,7 +180,6 @@ static const hdd_freq_chan_map_t freq_chan_map[] = { {2412, 1}, {2417, 2},
 #define WE_GET_SAP_AUTO_CHANNEL_SELECTION 8
 #define WE_GET_CONCURRENCY_MODE 9
 #define WE_GET_SCAN_BAND_PREFERENCE     10
-#define WE_GET_ANTENA_DIVERSITY_SELECTION 11
 /* Private ioctls and their sub-ioctls */
 #define WLAN_PRIV_SET_INT_GET_INT     (SIOCIWFIRSTPRIV + 2)
 
@@ -826,14 +825,6 @@ VOS_STATUS wlan_hdd_get_rssi(hdd_adapter_t *pAdapter, v_S7_t *rssi_value)
    pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
    pHddStaCtx = WLAN_HDD_GET_STATION_CTX_PTR(pAdapter);
 
-   if (eConnectionState_Associated != pHddStaCtx->conn_info.connState)
-   {
-       VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO, "%s:Not associated, rssi on Disconnect : %d",
-                    __func__, pAdapter->rssi_on_disconnect);
-       *rssi_value = pAdapter->rssi_on_disconnect;
-       return VOS_STATUS_SUCCESS;
-   }
-
    init_completion(&context.completion);
    context.pAdapter = pAdapter;
    context.magic = RSSI_CONTEXT_MAGIC;
@@ -959,7 +950,6 @@ VOS_STATUS wlan_hdd_get_snr(hdd_adapter_t *pAdapter, v_S7_t *snr)
 
    return VOS_STATUS_SUCCESS;
 }
-
 #if defined WLAN_FEATURE_VOWIFI_11R || defined FEATURE_WLAN_ESE || defined(FEATURE_WLAN_LFR)
 
 static void hdd_GetRoamRssiCB( v_S7_t rssi, tANI_U32 staId, void *pContext )
@@ -1978,14 +1968,13 @@ static int __iw_set_genie(struct net_device *dev,
                           union iwreq_data *wrqu,
                           char *extra)
 {
-    hdd_adapter_t *pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
+   hdd_adapter_t *pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
     hdd_wext_state_t *pWextState = WLAN_HDD_GET_WEXT_STATE_PTR(pAdapter);
     u_int8_t *genie = NULL;
     u_int8_t *base_genie = NULL;
     v_U16_t remLen;
-    int ret = 0;
 
-    ENTER();
+   ENTER();
 
     if ((WLAN_HDD_GET_CTX(pAdapter))->isLogpInProgress) {
         VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_FATAL,
@@ -2033,8 +2022,8 @@ static int __iw_set_genie(struct net_device *dev,
             case IE_EID_VENDOR:
                 if ((IE_LEN_SIZE+IE_EID_SIZE+IE_VENDOR_OUI_SIZE) > eLen) /* should have at least OUI */
                 {
-                    ret = -EINVAL;
-                    goto exit;
+                    kfree(base_genie);
+                    return -EINVAL;
                 }
 
                 if (0 == memcmp(&genie[0], "\x00\x50\xf2\x04", 4))
@@ -2048,8 +2037,8 @@ static int __iw_set_genie(struct net_device *dev,
                        hddLog(VOS_TRACE_LEVEL_FATAL, "Cannot accommodate genIE. "
                                                       "Need bigger buffer space");
                        VOS_ASSERT(0);
-                       ret = -EINVAL;
-                       goto exit;
+                       kfree(base_genie);
+                       return -ENOMEM;
                     }
                     // save to Additional IE ; it should be accumulated to handle WPS IE + other IE
                     memcpy( pWextState->genIE.addIEdata + curGenIELen, genie - 2, eLen + 2);
@@ -2058,14 +2047,6 @@ static int __iw_set_genie(struct net_device *dev,
                 else if (0 == memcmp(&genie[0], "\x00\x50\xf2", 3))
                 {
                     hddLog (VOS_TRACE_LEVEL_INFO, "%s Set WPA IE (len %d)",__func__, eLen + 2);
-                    if ((eLen + 2) > (sizeof(pWextState->WPARSNIE)))
-                    {
-                       hddLog(VOS_TRACE_LEVEL_FATAL, "Cannot accommodate genIE. "
-                                                      "Need bigger buffer space");
-                       ret = -EINVAL;
-                       VOS_ASSERT(0);
-                       goto exit;
-                    }
                     memset( pWextState->WPARSNIE, 0, MAX_WPA_RSN_IE_LEN );
                     memcpy( pWextState->WPARSNIE, genie - 2, (eLen + 2));
                     pWextState->roamProfile.pWPAReqIE = pWextState->WPARSNIE;
@@ -2082,8 +2063,8 @@ static int __iw_set_genie(struct net_device *dev,
                        hddLog(VOS_TRACE_LEVEL_FATAL, "Cannot accommodate genIE. "
                                                       "Need bigger buffer space");
                        VOS_ASSERT(0);
-                       ret = -ENOMEM;
-                       goto exit;
+                       kfree(base_genie);
+                       return -ENOMEM;
                     }
                     // save to Additional IE ; it should be accumulated to handle WPS IE + other IE
                     memcpy( pWextState->genIE.addIEdata + curGenIELen, genie - 2, eLen + 2);
@@ -2092,14 +2073,6 @@ static int __iw_set_genie(struct net_device *dev,
               break;
          case DOT11F_EID_RSN:
                 hddLog (LOG1, "%s Set RSN IE (len %d)",__func__, eLen+2);
-                if ((eLen + 2) > (sizeof(pWextState->WPARSNIE)))
-                {
-                    hddLog(VOS_TRACE_LEVEL_FATAL, "Cannot accommodate genIE. "
-                                                  "Need bigger buffer space");
-                    ret = -EINVAL;
-                    VOS_ASSERT(0);
-                    goto exit;
-                }
                 memset( pWextState->WPARSNIE, 0, MAX_WPA_RSN_IE_LEN );
                 memcpy( pWextState->WPARSNIE, genie - 2, (eLen + 2));
                 pWextState->roamProfile.pRSNReqIE = pWextState->WPARSNIE;
@@ -2108,16 +2081,15 @@ static int __iw_set_genie(struct net_device *dev,
 
          default:
                 hddLog (LOGE, "%s Set UNKNOWN IE %X",__func__, elementId);
-                goto exit;
+            kfree(base_genie);
+            return 0;
     }
         genie += eLen;
         remLen -= eLen;
     }
-
-exit:
     EXIT();
     kfree(base_genie);
-    return ret;
+    return 0;
 }
 
 static int iw_set_genie(struct net_device *dev,
@@ -5060,112 +5032,6 @@ static int iw_setchar_getnone(struct net_device *dev,
     return ret;
 }
 
-static void hdd_GetCurrentAntennaIndex(int antennaId, void *pContext)
-{
-   struct statsContext *context;
-   hdd_adapter_t *pAdapter;
-
-   if (NULL == pContext)
-   {
-      hddLog(VOS_TRACE_LEVEL_ERROR,
-             "%s: Bad param, pContext [%p]",
-             __func__, pContext);
-      return;
-   }
-
-   context = pContext;
-   pAdapter      = context->pAdapter;
-
-   spin_lock(&hdd_context_lock);
-
-   if ((NULL == pAdapter) || (ANTENNA_CONTEXT_MAGIC != context->magic))
-   {
-      /* the caller presumably timed out so there is nothing we can do */
-      spin_unlock(&hdd_context_lock);
-      hddLog(VOS_TRACE_LEVEL_WARN,
-             "%s: Invalid context, pAdapter [%p] magic [%08x]",
-              __func__, pAdapter, context->magic);
-      return;
-   }
-
-   context->magic = 0;
-   pAdapter->antennaIndex = antennaId;
-
-   complete(&context->completion);
-   spin_unlock(&hdd_context_lock);
-}
-
-static VOS_STATUS wlan_hdd_get_current_antenna_index(hdd_adapter_t *pAdapter,
-                                                     int *antennaIndex)
-{
-   hdd_context_t *pHddCtx;
-   eHalStatus halStatus;
-   struct statsContext context;
-   long lrc;
-
-   ENTER();
-   if (NULL == pAdapter)
-   {
-       hddLog(VOS_TRACE_LEVEL_WARN,
-              "%s: Invalid context, pAdapter", __func__);
-       return VOS_STATUS_E_FAULT;
-   }
-   pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
-   if (0 != (wlan_hdd_validate_context(pHddCtx)))
-   {
-       return VOS_STATUS_E_FAULT;
-   }
-   if (TRUE != sme_IsFeatureSupportedByFW(ANTENNA_DIVERSITY_SELECTION))
-   {
-       hddLog(VOS_TRACE_LEVEL_ERROR,
-              "%s: ANTENNA_DIVERSITY_SELECTION is not supported by Firwmare",
-               __func__);
-       return VOS_STATUS_E_NOSUPPORT;
-   }
-   init_completion(&context.completion);
-   context.pAdapter = pAdapter;
-   context.magic = ANTENNA_CONTEXT_MAGIC;
-
-   halStatus = sme_GetCurrentAntennaIndex(pHddCtx->hHal,
-                                         hdd_GetCurrentAntennaIndex,
-                                         &context, pAdapter->sessionId);
-   if (eHAL_STATUS_SUCCESS != halStatus)
-   {
-       spin_lock(&hdd_context_lock);
-       context.magic = 0;
-       spin_unlock(&hdd_context_lock);
-       hddLog(VOS_TRACE_LEVEL_ERROR,"%s: Unable to retrieve Antenna Index",
-              __func__);
-       *antennaIndex = -1;
-       return VOS_STATUS_E_FAILURE;
-   }
-   else
-   {
-       /* request was sent -- wait for the response */
-       lrc = wait_for_completion_interruptible_timeout(&context.completion,
-                                    msecs_to_jiffies(WLAN_WAIT_TIME_STATS));
-       if (lrc <= 0)
-       {
-           spin_lock(&hdd_context_lock);
-           context.magic = 0;
-           spin_unlock(&hdd_context_lock);
-           hddLog(VOS_TRACE_LEVEL_ERROR, "%s:SME %s while retrieving Antenna"
-                                         " Index",
-                  __func__, (0 == lrc) ? "timeout" : "interrupt");
-           *antennaIndex = -1;
-           return VOS_STATUS_E_FAILURE;
-       }
-   }
-   spin_lock(&hdd_context_lock);
-   context.magic = 0;
-   spin_unlock(&hdd_context_lock);
-
-   *antennaIndex = pAdapter->antennaIndex;
-
-   EXIT();
-   return VOS_STATUS_SUCCESS;
-}
-
 /* get param sub-ioctls */
 static int __iw_setnone_getint(struct net_device *dev,
                                struct iw_request_info *info,
@@ -5287,11 +5153,7 @@ static int __iw_setnone_getint(struct net_device *dev,
                       "scanBandPreference = %d\n", *value);
             break;
         }
-        case WE_GET_ANTENA_DIVERSITY_SELECTION:
-        {
-             wlan_hdd_get_current_antenna_index(pAdapter, value);
-             break;
-        }
+
         default:
         {
             hddLog(LOGE, "Invalid IOCTL get_value command %d ",value[0]);
@@ -5707,7 +5569,6 @@ static int __iw_get_char_setnone(struct net_device *dev,
         case WE_GET_RSSI:
         {
             v_S7_t s7Rssi = 0;
-            wlan_hdd_get_station_stats(pAdapter);
             wlan_hdd_get_rssi(pAdapter, &s7Rssi);
             snprintf(extra, WE_MAX_STR_LEN, "rssi=%d",s7Rssi);
             wrqu->data.length = strlen(extra)+1;
@@ -6136,16 +5997,12 @@ void hdd_wmm_tx_snapshot(hdd_adapter_t *pAdapter)
              hddLog(LOGE, "******STAIndex: %d*********", i);
              for ( j=0; j< NUM_TX_QUEUES; j++)
              {
-                if( pAdapter->aStaInfo[i].wmm_tx_queue[j].count )
-                {
-                   spin_lock_bh(&pAdapter->aStaInfo[i].wmm_tx_queue[j].lock);
-                   hddLog(LOGE, "HDD TxQueue Info For AC: %d Count: %d"
-                         "PrevAdress:%p, NextAddress:%p",
-                         j, pAdapter->aStaInfo[i].wmm_tx_queue[j].count,
-                         pAdapter->aStaInfo[i].wmm_tx_queue[j].anchor.prev,
-                         pAdapter->aStaInfo[i].wmm_tx_queue[j].anchor.next);
-                  spin_unlock_bh(&pAdapter->aStaInfo[i].wmm_tx_queue[j].lock);
-                }
+                spin_lock_bh(&pAdapter->aStaInfo[i].wmm_tx_queue[j].lock);
+                hddLog(LOGE, "HDD TxQueue Info For AC: %d Count: %d PrevAdress:%p, NextAddress:%p",
+                       j, pAdapter->aStaInfo[i].wmm_tx_queue[j].count,
+                       pAdapter->aStaInfo[i].wmm_tx_queue[j].anchor.prev,
+                       pAdapter->aStaInfo[i].wmm_tx_queue[j].anchor.next);
+                spin_unlock_bh(&pAdapter->aStaInfo[i].wmm_tx_queue[j].lock);
              }
         }
     }
@@ -8991,11 +8848,6 @@ static const struct iw_priv_args we_private_args[] = {
         0,
         IW_PRIV_TYPE_INT | IW_PRIV_SIZE_FIXED | 1,
         "get_scan_pref"},
-
-    {   WE_GET_ANTENA_DIVERSITY_SELECTION,
-        0,
-        IW_PRIV_TYPE_INT | IW_PRIV_SIZE_FIXED | 1,
-        "getCurAnt"},
 
     /* handlers for main ioctl */
     {   WLAN_PRIV_SET_CHAR_GET_NONE,

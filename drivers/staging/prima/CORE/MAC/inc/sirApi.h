@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2014, 2016 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -1742,15 +1742,6 @@ typedef struct sSirSmeMicFailureInd
     tSirMacAddr         bssId;             // BSSID
     tSirMicFailureInfo     info;
 } tSirSmeMicFailureInd, *tpSirSmeMicFailureInd;
-
-typedef struct sSirSmeLostLinkParamsInd
-{
-    tANI_U16  messageType;
-    tANI_U16  length;
-    tANI_U8 sessionId;
-    tSirLostLinkParamsInfo info;
-} tSirSmeLostLinkParamsInd, *tpSirSmeLostLinkParamsInd;
-
 
 typedef struct sSirSmeMissedBeaconInd
 {
@@ -3696,15 +3687,6 @@ typedef struct sSirWlanSetRxpFilters
     tANI_U8 setMcstBcstFilter;
 }tSirWlanSetRxpFilters,*tpSirWlanSetRxpFilters;
 
-/**
- * struct sir_allowed_action_frames - Parameters to set Allowed action frames
- * @bitmask: Bits to convey the allowed action frames
- * @reserved: For future use
- */
-struct sir_allowed_action_frames {
-    uint32_t bitmask;
-    uint32_t reserved;
-};
 
 #ifdef FEATURE_WLAN_SCAN_PNO
 //
@@ -4807,8 +4789,6 @@ typedef struct sSirChAvoidIndType
 typedef void (*pGetBcnMissRateCB)( tANI_S32 bcnMissRate,
                                    VOS_STATUS status, void *data);
 
-typedef void (*tAntennaDivSelCB)(int antennaId, void *pContext);
-
 typedef PACKED_PRE struct PACKED_POST
 {
    tANI_U32   msgLen;
@@ -4847,26 +4827,6 @@ typedef struct
   u32  statsClearReqMask;
   u8   stopReq;
 }tSirLLStatsClearReq, *tpSirLLStatsClearReq;
-
-typedef PACKED_PRE struct PACKED_POST
-{
-  tANI_U16 status;
-  tANI_U32 selectedAntennaId;
-  tANI_U32 reserved;
-} tSirAntennaDivSelRsp, *tpSirntennaDivSelRsp;
-
-typedef PACKED_PRE struct PACKED_POST
-{
-   tAntennaDivSelCB callback;
-   void *data;
-   tANI_U32 reserved;
-}tSirAntennaDiversitySelectionReq;
-
-typedef PACKED_PRE struct PACKED_POST
-{
-   tAntennaDivSelCB callback;
-   void *data;
-}tSirAntennaDiversitySelectionInfo;
 
 /*---------------------------------------------------------------------------
   WLAN_HAL_LL_NOTIFY_STATS
@@ -5209,8 +5169,6 @@ typedef PACKED_PRE struct PACKED_POST
 }  tSirLLStatsResults, *tpSirLLStatsResults;
 
 #endif /* WLAN_FEATURE_LINK_LAYER_STATS */
-
-
 
 #ifdef WLAN_FEATURE_EXTSCAN
 

@@ -266,12 +266,9 @@ limSuspendLink(tpAniSirGlobal pMac, tSirLinkTrafficCheck trafficCheck,  SUSPEND_
       return;
    }
 
-   if( pMac->lim.gpLimSuspendCallback ||
-       pMac->lim.gLimSystemInScanLearnMode )
+   if( pMac->lim.gpLimSuspendCallback )
    {
-      limLog( pMac, LOGE, FL("Something is wrong, SuspendLinkCbk:%p "
-              "IsSystemInScanLearnMode:%d"), pMac->lim.gpLimSuspendCallback,
-               pMac->lim.gLimSystemInScanLearnMode );
+      limLog( pMac, LOGE, "%s:%d: gLimSuspendLink callback is not NULL...something is wrong", __func__, __LINE__ );
       callback( pMac, eHAL_STATUS_FAILURE, data ); 
       return;
    }
@@ -1515,18 +1512,18 @@ void limSetOemDataReqMode(tpAniSirGlobal pMac, eHalStatus status, tANI_U32* data
     if(status != eHAL_STATUS_SUCCESS)
     {
         limLog(pMac, LOGE, FL("OEM_DATA: failed in suspend link"));
-        /* If failed to suspend the link, there is no need
-         * to resume link. Return failure.
-         */
-        limSetOemDataReqModeFailed(pMac, status, data);
+        goto error;
     }
     else
     {
         PELOGE(limLog(pMac, LOGE, FL("OEM_DATA: Calling limSendHalOemDataReq"));)
         limSendHalOemDataReq(pMac);
+        return;
     }
 
-    return;
+error:
+    limResumeLink(pMac, limSetOemDataReqModeFailed, NULL);
+    return ;
 } /*** end limSendHalOemDataReq() ***/
 
 #endif //FEATURE_OEM_DATA_SUPPORT
@@ -2287,12 +2284,6 @@ limProcessMlmJoinReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
           //suspend link
           limLog(pMac, LOG1, FL("Suspend link as LimSession on sessionid %d"
           "is off channel"),sessionId);
-          if (limIsLinkSuspended(pMac))
-          {
-            limLog(pMac, LOGE, FL("Link is already suspended for some other"
-                   " reason. Return failure on sessionId:%d"), sessionId);
-            goto error;
-          }
           limSuspendLink(pMac, eSIR_DONT_CHECK_LINK_TRAFFIC_BEFORE_SCAN, 
                    limProcessMlmPostJoinSuspendLink, (tANI_U32*)psessionEntry );
         }
@@ -2314,26 +2305,31 @@ limProcessMlmJoinReq(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
     else
     {
         /**
-         * Should not have received JOIN req in states other than
-         * Idle state or on AP.
-         * Return join confirm with invalid parameters code.
-         */
+              * Should not have received JOIN req in states other than
+              * Idle state or on AP.
+              * Return join confirm with invalid parameters code.
+              */
+        PELOGE(limLog(pMac, LOGE,
+               FL("Unexpected Join request for role %d state %d"),
+               psessionEntry->limSystemRole,
+               psessionEntry->limMlmState);)
+        limPrintMlmState(pMac, LOGE, psessionEntry->limMlmState);
+        
         limLog(pMac, LOGE,
                FL("SessionId:%d Unexpected Join request for role %d state %d "),
                psessionEntry->peSessionId,psessionEntry->limSystemRole,
                psessionEntry->limMlmState);
-        limPrintMlmState(pMac, LOGE, psessionEntry->limMlmState);
     }
 
 error: 
-    vos_mem_free(pMsgBuf);
-    if (psessionEntry != NULL)
-        psessionEntry->pLimMlmJoinReq = NULL;
 
-    mlmJoinCnf.resultCode = eSIR_SME_RESOURCES_UNAVAILABLE;
-    mlmJoinCnf.sessionId = sessionId;
-    mlmJoinCnf.protStatusCode = eSIR_MAC_UNSPEC_FAILURE_STATUS;
-    limPostSmeMessage(pMac, LIM_MLM_JOIN_CNF, (tANI_U32 *) &mlmJoinCnf);
+        
+        mlmJoinCnf.resultCode = eSIR_SME_RESOURCES_UNAVAILABLE;
+        mlmJoinCnf.sessionId = sessionId;
+        mlmJoinCnf.protStatusCode = eSIR_MAC_UNSPEC_FAILURE_STATUS;
+        limPostSmeMessage(pMac, LIM_MLM_JOIN_CNF, (tANI_U32 *) &mlmJoinCnf);
+
+
 } /*** limProcessMlmJoinReq() ***/
 
 
@@ -2844,9 +2840,6 @@ limProcessMlmDisassocReqNtf(tpAniSirGlobal pMac, eHalStatus suspendStatus, tANI_
     tLimMlmDisassocCnf       mlmDisassocCnf;
     tpPESession              psessionEntry;
     extern tANI_BOOLEAN     sendDisassocFrame;
-    tSirSmeDisassocRsp      *pSirSmeDisassocRsp;
-    tANI_U32                *pMsg;
-    tANI_U8                 *pBuf;
 
     if(eHAL_STATUS_SUCCESS != suspendStatus)
     {
@@ -2942,37 +2935,11 @@ limProcessMlmDisassocReqNtf(tpAniSirGlobal pMac, eHalStatus suspendStatus, tANI_
            "or in some transit state, Addr= "
            MAC_ADDRESS_STR),MAC_ADDR_ARRAY(pMlmDisassocReq->peerMacAddr));)
 
-        /*
-         * Disassociation response due to
-         * host triggered disassociation
-         */
+        /// Prepare and Send LIM_MLM_DISASSOC_CNF
 
-         pSirSmeDisassocRsp = vos_mem_malloc(sizeof(tSirSmeDisassocRsp));
-         if ( NULL == pSirSmeDisassocRsp )
-         {
-            // Log error
-             limLog(pMac, LOGP,
-                FL("call to AllocateMemory failed for eWNI_SME_DISASSOC_RSP"));
-             return;
-         }
-         limLog(pMac, LOG1, FL("send eWNI_SME_DISASSOC_RSP with "
-                "retCode: %d for "MAC_ADDRESS_STR),eSIR_SME_DEAUTH_STATUS,
-                 MAC_ADDR_ARRAY(pMlmDisassocReq->peerMacAddr));
-         pSirSmeDisassocRsp->messageType = eWNI_SME_DISASSOC_RSP;
-         pSirSmeDisassocRsp->length      = sizeof(tSirSmeDisassocRsp);
-         pSirSmeDisassocRsp->sessionId = pMlmDisassocReq->sessionId;
-         pSirSmeDisassocRsp->transactionId = 0;
-         pSirSmeDisassocRsp->statusCode = eSIR_SME_DEAUTH_STATUS;
+        mlmDisassocCnf.resultCode = eSIR_SME_INVALID_PARAMETERS;
 
-         pBuf  = (tANI_U8 *) pSirSmeDisassocRsp->peerMacAddr;
-         vos_mem_copy( pBuf, pMlmDisassocReq->peerMacAddr, sizeof(tSirMacAddr));
-
-         pMsg = (tANI_U32*) pSirSmeDisassocRsp;
-
-         limSendSmeDisassocDeauthNtf( pMac, eHAL_STATUS_SUCCESS,
-                                                (tANI_U32*) pMsg );
-         return;
-
+        goto end;
     }
 
     //pStaDs->mlmStaContext.rxPurgeReq = 1;
@@ -3196,9 +3163,6 @@ limProcessMlmDeauthReqNtf(tpAniSirGlobal pMac, eHalStatus suspendStatus, tANI_U3
     tLimMlmDeauthReq        *pMlmDeauthReq;
     tLimMlmDeauthCnf        mlmDeauthCnf;
     tpPESession             psessionEntry;
-    tSirSmeDeauthRsp        *pSirSmeDeauthRsp;
-    tANI_U8                 *pBuf;
-    tANI_U32                *pMsg;
 
 
     if(eHAL_STATUS_SUCCESS != suspendStatus)
@@ -3380,38 +3344,11 @@ limProcessMlmDeauthReqNtf(tpAniSirGlobal pMac, eHalStatus suspendStatus, tANI_U3
            FL("received MLM_DEAUTH_REQ for STA that either has no context or in some transit state, Addr="
            MAC_ADDRESS_STR),MAC_ADDR_ARRAY(pMlmDeauthReq->peerMacAddr));)
 
-        /*
-         * Deauthentication response to host triggered
-         * deauthentication.
-         */
-        pSirSmeDeauthRsp = vos_mem_malloc(sizeof(tSirSmeDeauthRsp));
-        if ( NULL == pSirSmeDeauthRsp )
-        {
-            // Log error
-            limLog(pMac, LOGP,
-                   FL("call to AllocateMemory failed for eWNI_SME_DEAUTH_RSP"));
+        /// Prepare and Send LIM_MLM_DEAUTH_CNF
 
-            return;
-        }
-        limLog(pMac, LOG1, FL("send eWNI_SME_DEAUTH_RSP with "
-               "retCode: %d for"MAC_ADDRESS_STR),eSIR_SME_DEAUTH_STATUS,
-               MAC_ADDR_ARRAY(pMlmDeauthReq->peerMacAddr));
-        pSirSmeDeauthRsp->messageType = eWNI_SME_DEAUTH_RSP;
-        pSirSmeDeauthRsp->length  = sizeof(tSirSmeDeauthRsp);
-        pSirSmeDeauthRsp->statusCode = eSIR_SME_DEAUTH_STATUS;
-        pSirSmeDeauthRsp->sessionId = pMlmDeauthReq->sessionId;
-        pSirSmeDeauthRsp->transactionId = 0;
+        mlmDeauthCnf.resultCode    = eSIR_SME_INVALID_PARAMETERS;
 
-        pBuf  = (tANI_U8 *) pSirSmeDeauthRsp->peerMacAddr;
-        vos_mem_copy( pBuf, pMlmDeauthReq->peerMacAddr, sizeof(tSirMacAddr));
-
-        pMsg = (tANI_U32*)pSirSmeDeauthRsp;
-
-        limSendSmeDisassocDeauthNtf( pMac, eHAL_STATUS_SUCCESS,
-                                            (tANI_U32*) pMsg );
-
-        return;
-
+        goto end;
     }
 
     //pStaDs->mlmStaContext.rxPurgeReq     = 1;

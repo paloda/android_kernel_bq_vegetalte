@@ -126,8 +126,6 @@ void limDumpInit(tpAniSirGlobal pMac);
 extern void limCleanup(tpAniSirGlobal);
 /// Function to post messages to LIM thread
 extern tANI_U32  limPostMsgApi(tpAniSirGlobal, tSirMsgQ *);
-tANI_U32  limPostMsgApiHighPri(tpAniSirGlobal, tSirMsgQ *);
-
 /**
  * Function to process messages posted to LIM thread
  * and dispatch to various sub modules within LIM module.
@@ -193,12 +191,6 @@ void limHandleBmpsStatusInd(tpAniSirGlobal pMac);
 void limHandleMissedBeaconInd(tpAniSirGlobal pMac, tpSirMsgQ pMsg);
 tMgmtFrmDropReason limIsPktCandidateForDrop(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tANI_U32 subType);
 void limMicFailureInd(tpAniSirGlobal pMac, tpSirMsgQ pMsg);
-
-void limProcessLostLinkParamsInd(tpAniSirGlobal pMac, tpSirMsgQ pMsg);
-void limUpdateLostLinkParams(tpAniSirGlobal pMac,
-                   tpPESession psessionEntry, tANI_U8 *pRxPacketInfo);
-
-
 /* ----------------------------------------------------------------------- */
 // These used to be in DPH
 extern void limSetBssid(tpAniSirGlobal pMac, tANI_U8 *bssId);

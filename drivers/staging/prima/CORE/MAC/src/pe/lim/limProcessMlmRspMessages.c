@@ -571,14 +571,14 @@ limProcessMlmAuthCnf(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
             cfgAuthType = pMac->lim.gLimPreAuthType;
         
         if ((cfgAuthType == eSIR_AUTO_SWITCH) &&
-                (((tLimMlmAuthCnf *) pMsgBuf)->authType == eSIR_SHARED_KEY)
+                (((tLimMlmAuthCnf *) pMsgBuf)->authType == eSIR_OPEN_SYSTEM)
                 && (eSIR_MAC_AUTH_ALGO_NOT_SUPPORTED_STATUS == ((tLimMlmAuthCnf *) pMsgBuf)->protStatusCode))
         {
             /**
-             * When Shared authentication fails with reason code "13" and
-             * authType set to 'auto switch', Try with Open Authentication
+             * When Open authentication fails with reason code "13" and
+             * authType set to 'auto switch', Try with Shared Authentication
              */
-            authMode = eSIR_OPEN_SYSTEM;
+            authMode = eSIR_SHARED_KEY;
             // Trigger MAC based Authentication
             pMlmAuthReq = vos_mem_malloc(sizeof(tLimMlmAuthReq));
             if ( NULL == pMlmAuthReq )
@@ -946,23 +946,6 @@ limProcessMlmReassocCnf(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
     if (psessionEntry->pLimReAssocReq) {
         vos_mem_free(psessionEntry->pLimReAssocReq);
         psessionEntry->pLimReAssocReq = NULL;
-    }
-
-    /* Upon Reassoc success or failure, freeup the cached
-     * preauth request, to ensure that channel switch is now
-     * allowed following any change in HT params.
-     */
-    if (pMac->ft.ftPEContext.pFTPreAuthReq)
-    {
-        limLog(pMac, LOG1, "%s: Freeing pFTPreAuthReq= %p", __func__,
-               pMac->ft.ftPEContext.pFTPreAuthReq);
-        if (pMac->ft.ftPEContext.pFTPreAuthReq->pbssDescription)
-        {
-            vos_mem_free(pMac->ft.ftPEContext.pFTPreAuthReq->pbssDescription);
-            pMac->ft.ftPEContext.pFTPreAuthReq->pbssDescription = NULL;
-        }
-        vos_mem_free(pMac->ft.ftPEContext.pFTPreAuthReq);
-        pMac->ft.ftPEContext.pFTPreAuthReq = NULL;
     }
 
     PELOGE(limLog(pMac, LOG1, FL("Rcv MLM_REASSOC_CNF with result code %d"), pLimMlmReassocCnf->resultCode);)
@@ -1549,8 +1532,7 @@ limProcessMlmDeauthCnf(tpAniSirGlobal pMac, tANI_U32 *pMsgBuf)
     if ((psessionEntry->limSystemRole == eLIM_STA_ROLE)|| (psessionEntry->limSystemRole == eLIM_BT_AMP_STA_ROLE))
     {
         // Deauth Confirm from MLM
-        if ((psessionEntry->limSmeState != eLIM_SME_WT_DISASSOC_STATE) &&
-            (psessionEntry->limSmeState != eLIM_SME_WT_DEAUTH_STATE))
+        if (psessionEntry->limSmeState != eLIM_SME_WT_DEAUTH_STATE)
         {
             /**
              * Should not have received Deauth confirm
@@ -1823,20 +1805,12 @@ limHandleSmeJoinResult(tpAniSirGlobal pMac, tSirResultCodes resultCode, tANI_U16
             pStaDs->mlmStaContext.protStatusCode = protStatusCode;
             //Done: 7-27-2009. JIM_FIX_ME: at the end of limCleanupRxPath, make sure PE is sending eWNI_SME_JOIN_RSP to SME
             limCleanupRxPath(pMac, pStaDs, psessionEntry);
-            /* Cleanup if add bss failed */
-            if(psessionEntry->addBssfailed)
-            {
-              dphDeleteHashEntry(pMac, pStaDs->staAddr, pStaDs->assocId,
-                                   &psessionEntry->dph.dphHashTable);
-              goto error;
-            }
             vos_mem_free(psessionEntry->pLimJoinReq);
             psessionEntry->pLimJoinReq = NULL;
             return;
         }
     }
 
-error:
     vos_mem_free(psessionEntry->pLimJoinReq);
     psessionEntry->pLimJoinReq = NULL;
     //Delete teh session if JOIN failure occurred.
@@ -1900,17 +1874,10 @@ limHandleSmeReaasocResult(tpAniSirGlobal pMac, tSirResultCodes resultCode, tANI_
             pStaDs->mlmStaContext.resultCode = resultCode;
             pStaDs->mlmStaContext.protStatusCode = protStatusCode;
             limCleanupRxPath(pMac, pStaDs, psessionEntry);
-            /* Cleanup if add bss failed */
-            if(psessionEntry->addBssfailed)
-            {
-              dphDeleteHashEntry(pMac, pStaDs->staAddr, pStaDs->assocId,
-                                   &psessionEntry->dph.dphHashTable);
-              goto error;
-            }
             return;
         }
     }
-error:
+
     //Delete teh session if REASSOC failure occurred.
     if(resultCode != eSIR_SME_SUCCESS)
     {
@@ -1989,7 +1956,6 @@ void limProcessStaMlmAddStaRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ ,tpPESess
           //either assoc cnf or reassoc cnf handler.
           mlmAssocCnf.resultCode =
               (tSirResultCodes) eSIR_SME_JOIN_DEAUTH_FROM_AP_DURING_ADD_STA;
-          mlmAssocCnf.protStatusCode = eSIR_MAC_UNSPEC_FAILURE_STATUS;
           psessionEntry->staId = pAddStaParams->staIdx;
           goto end;
       }
@@ -2061,7 +2027,6 @@ void limProcessStaMlmAddStaRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ ,tpPESess
         if(psessionEntry->limSmeState == eLIM_SME_WT_REASSOC_STATE)
            mesgType = LIM_MLM_REASSOC_CNF;
         mlmAssocCnf.resultCode = (tSirResultCodes) eSIR_SME_REFUSED;
-        mlmAssocCnf.protStatusCode = eSIR_MAC_UNSPEC_FAILURE_STATUS;
     }
 end:
     if( 0 != limMsgQ->bodyptr )
@@ -2791,7 +2756,7 @@ limProcessStaMlmAddBssRspPreAssoc( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ, tpPES
                        FL("could not retrieve AuthType"));
             }
             if (cfgAuthType == eSIR_AUTO_SWITCH) 
-                authMode = eSIR_SHARED_KEY; // Try Shared Authentication first
+                authMode = eSIR_OPEN_SYSTEM; // Try Open Authentication first
             else
                 authMode = cfgAuthType;
 
@@ -3259,13 +3224,11 @@ limProcessStaMlmAddBssRsp( tpAniSirGlobal pMac, tpSirMsgQ limMsgQ,tpPESession ps
     {
         limLog( pMac, LOGP, FL( "SessionId:%d ADD_BSS failed! mlmState = %d" ),
                 psessionEntry->peSessionId,  psessionEntry->limMlmState);
-        mlmAssocCnf.protStatusCode = eSIR_MAC_UNSPEC_FAILURE_STATUS;
         // Return Assoc confirm to SME with failure
         if(eLIM_MLM_WT_ADD_BSS_RSP_FT_REASSOC_STATE == psessionEntry->limMlmState)
             mlmAssocCnf.resultCode = (tSirResultCodes) eSIR_SME_FT_REASSOC_FAILURE;
         else
             mlmAssocCnf.resultCode = (tSirResultCodes) eSIR_SME_REFUSED;
-        psessionEntry->addBssfailed = true;
     }
 
     if(mlmAssocCnf.resultCode != eSIR_SME_SUCCESS)
