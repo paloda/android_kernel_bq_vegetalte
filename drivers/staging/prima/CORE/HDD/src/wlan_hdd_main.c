@@ -123,6 +123,7 @@ int wlan_hdd_ftm_start(hdd_context_t *pAdapter);
 #endif
 #include "wlan_hdd_debugfs.h"
 
+
 #ifdef MODULE
 #define WLAN_MODULE_NAME  module_name(THIS_MODULE)
 #else
@@ -8308,7 +8309,8 @@ free_hdd_ctx:
    hdd_set_ssr_required (VOS_FALSE);
 }
 
-/*wangxun*/
+/*modify for wifi mac*/
+#ifdef    CONFIG_VEGETALTE_COMMON
 static VOS_STATUS hdd_update_wifi_mac(hdd_context_t* pHddCtx)
 {
 	struct file *fp      = NULL;
@@ -8413,11 +8415,10 @@ static VOS_STATUS hdd_update_wifi_mac(hdd_context_t* pHddCtx)
 				
 	    }
 	}
-
 	return VOS_STATUS_SUCCESS;
-	
-}
 
+}
+#endif
 /*end*/
 
 /**---------------------------------------------------------------------------
@@ -9199,10 +9200,14 @@ int hdd_wlan_startup(struct device *dev )
                 "using MAC from ini file ", __func__);
       }
    }
+#ifdef    CONFIG_VEGETALTE_COMMON
    else if (
         (VOS_STATUS_SUCCESS != hdd_update_config_from_nv(pHddCtx)) &&
         (VOS_STATUS_SUCCESS != hdd_update_wifi_mac(pHddCtx))
     )
+#else
+	   else if (VOS_STATUS_SUCCESS != hdd_update_config_from_nv(pHddCtx))
+#endif
    {
       // Apply the NV to cfg.dat
       /* Prima Update MAC address only at here */
